@@ -56,6 +56,9 @@
     #endif // TARGET_OS_IPHONE
 #endif // __APPLE__
 
+#ifdef EMSCRIPTEN
+#include "HTML5/DxGraphicsHTML5.h"
+#endif
 
 
 
@@ -17655,11 +17658,14 @@ extern	int NS_SetDrawScreen( int DrawScreen )
 	IMAGEDATA     *OldImage     = NULL ;
 	SHADOWMAPDATA *ShadowMap    = NULL ;
 	SHADOWMAPDATA *OldShadowMap = NULL ;
-	
+	printf("Hei!\n");
 	if( GSYS.InitializeFlag == FALSE ) return -1 ;
+	printf("Active Check Start\n");
 
 	// ソフトが非アクティブの場合はアクティブになるまで待つ
 	CheckActiveState() ;
+
+	printf("Active Check OK\n");
 
 	// グラフィック描画先が今までと同じだった場合何もせず終了
 //	if( DrawScreen == GSYS.DrawSetting.TargetScreen[ 0 ] && GSYS.DrawSetting.TargetScreenSurface == 0 ) return 0 ;
@@ -17709,7 +17715,7 @@ extern	int NS_SetDrawScreen( int DrawScreen )
 	{
 		return -1 ;
 	}
-
+	printf("ScreenCopy Satrt\n");
 	// 今までの画面が表画面だった場合は一度 ScreenCopy を行う
 	if( ( DWORD )GSYS.DrawSetting.TargetScreen[ 0 ] == DX_SCREEN_FRONT )
 	{
@@ -17743,7 +17749,7 @@ extern	int NS_SetDrawScreen( int DrawScreen )
 	GSYS.DrawSetting.TargetScreen[ 0 ]         = DrawScreen ;
 	GSYS.DrawSetting.TargetScreenSurface[ 0 ]  = 0 ;
 	GSYS.DrawSetting.TargetScreenMipLevel[ 0 ] = 0 ;
-
+	printf("ScreenCopy Satrt!!\n");
 	// 描画可能サイズの取得
 	NS_GetGraphSize( DrawScreen, &GSYS.DrawSetting.DrawSizeX, &GSYS.DrawSetting.DrawSizeY ) ;
 

@@ -7,6 +7,9 @@
 /Shader/iOS/
 /Shader/Android/
 
+#External Libs
+/extlib/
+
 # Utility
 /Tool/
 

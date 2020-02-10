@@ -28,6 +28,10 @@
 	#endif
 #endif // __APPLE__
 
+#ifdef EMSCRIPTEN
+#include "DxDataTypeHTML5.h"
+#endif
+
 
 
 

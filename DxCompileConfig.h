@@ -25,32 +25,32 @@
 //#define DX_NON_USING_NAMESPACE_DXLIB
 
 // インラインアセンブラを使用しないソースコードでコンパイルする場合は以下のコメントアウトを外してください
-//#define DX_NON_INLINE_ASM
+#define DX_NON_INLINE_ASM
 
 // ＤＸライブラリのプログラムから文字列を一切排除する場合はコメントを外してください
 // (バイナリエディタで実行ファイルを開いてもＤＸライブラリを使用していることが分かり難くなります(よく調べれば当然分かりますが)
 //  因みに、エラー出力が一切されなくなりますので管理人の対応時に支障をきたすかもしれません)
-//#define DX_NON_LITERAL_STRING
+// #define DX_NON_LITERAL_STRING
 
 // すべての関数をスレッドセーフにする場合はコメントを外してください
-//#define DX_THREAD_SAFE
+// #define DX_THREAD_SAFE
 
 // ネットワーク関連の関数だけスレッドセーフにする場合はコメントを外して下さい
-#define DX_THREAD_SAFE_NETWORK_ONLY
+// #define DX_THREAD_SAFE_NETWORK_ONLY
 
 // ＤＸアーカイブがいらない方は次のコメントを外してください
 // ( ＤＸアーカイブを無効にすると、ＤＸアーカイブを内部で使っている関係上 DX_NON_MODEL と DX_NON_FILTER と DX_NON_MOVIE と DX_NON_NORMAL_DRAW_SHADER も有効になります )
 //#define DX_NON_DXA
 
 // ムービー機能がいらない方は次のコメントを外してください
-//#define DX_NON_MOVIE
+#define DX_NON_MOVIE
 
 // ＴＧＡ画像の読み込み機能がいらない方は次のコメントを外してください
-//#define DX_NON_TGA
+#define DX_NON_TGA
 
 // ＪＰＥＧ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-//#define DX_NON_JPEGREAD
+#define DX_NON_JPEGREAD
 
 // ＰＮＧ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
@@ -58,19 +58,19 @@
 
 // ＴＩＦＦ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-//#define DX_NON_TIFFREAD
+#define DX_NON_TIFFREAD
 
 // GraphFilter や GraphBlend を使用しない方は次のコメントを外して下さい
-//#define DX_NON_FILTER
+// #define DX_NON_FILTER
 
 // 通常描画にプログラマブルシェーダーを使用しない方は次のコメントを外してください
-//#define DX_NON_NORMAL_DRAW_SHADER
+// #define DX_NON_NORMAL_DRAW_SHADER
 
 // グラフィックス処理がいらない方は次のコメントを外してください
-//#define DX_NON_GRAPHICS
+// #define DX_NON_GRAPHICS
 
 // ソフトウエア２Ｄ描画がいらない方は次のコメントを外してください
-//#define DX_NON_2DDRAW
+#define DX_NON_2DDRAW
 
 // 標準 WAVE ファイル以外の音声ファイルを使用しない方は次のコメントを外してください
 //#define DX_NON_ACM
@@ -91,39 +91,39 @@
 //#define DX_NON_INPUTSTRING
 
 // 通信機能がいらない方は次のコメントを外してください
-//#define DX_NON_NETWORK
+#define DX_NON_NETWORK
 
 // マスク機能がいらない方は次のコメントを外してください
 //#define DX_NON_MASK
 
 // Ｏｇｇ Ｖｏｒｂｉｓ データを使用しない方は次のコメントをはずしてください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-//#define DX_NON_OGGVORBIS
+// #define DX_NON_OGGVORBIS
 
 // Ｏｇｇ Ｔｈｅｏｒａ データを使用しない方は次のコメントをはずしてください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-//#define DX_NON_OGGTHEORA
+#define DX_NON_OGGTHEORA
 
 // Opus データを使用しない方は次のコメントをはずしてください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-//#define DX_NON_OPUS
+#define DX_NON_OPUS
 
 // ASIO を使用しない方は次のコメントをはずしてください
-//#define DX_NON_ASIO
+#define DX_NON_ASIO
 
 // 乱数発生器に Mersenne Twister を使用しない場合は以下のコメントを外して下さい
 // ※DxUseCLib.lib も再コンパイルする必要があります
 //#define DX_NON_MERSENNE_TWISTER
 
 // ＤＸライブラリ内の確保メモリのダンプ機能を有効にする場合は次のコメントを外してください
-#define DX_USE_DXLIB_MEM_DUMP
+// #define DX_USE_DXLIB_MEM_DUMP
 
 // モデルデータを扱う機能を使用しない方は次のコメントを外してください
-//#define DX_NON_MODEL
+// #define DX_NON_MODEL
 
 // Bullet Physics をリンクしない場合は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-//#define DX_NON_BULLET_PHYSICS
+#define DX_NON_BULLET_PHYSICS
 
 // ＦＢＸファイルを読み込む機能を使用する方は次のコメントを外してください( 使用には FBX SDK のセットアップが必要です )
 //#define DX_LOAD_FBX_MODEL
@@ -142,13 +142,13 @@
 //#define DX_NON_PRINTF_DX
 
 // 非同期読み込みを無効にする場合は次のコメントを外して下さい
-//#define DX_NON_ASYNCLOAD
+#define DX_NON_ASYNCLOAD
 
 // ファイル保存機能を無効にする場合は次のコメントを外して下さい
 //#define DX_NON_SAVEFUNCTION
 
 // ソフトウェアで扱うイメージを無効にする場合は次のコメントを外して下さい
-//#define DX_NON_SOFTIMAGE
+#define DX_NON_SOFTIMAGE
 
 // フォント描画機能を無効にする場合は次のコメントを外して下さい
 //#define DX_NON_FONT
@@ -160,33 +160,35 @@
 //#define DX_NON_INPUT
 
 // マルチスレッドを使用しない場合は次のコメントを外してください
-//#define DX_NON_MULTITHREAD
+#define DX_NON_MULTITHREAD
 
 // 各ハンドルのエラーチェックを無効にする場合は次のコメントを外してください( 若干高速化される代わりに無効なハンドルを関数に渡すと即不正なメモリアクセスエラーが発生するようになります )
-//#define DX_NON_HANDLE_ERROR_CHECK
+// #define DX_NON_HANDLE_ERROR_CHECK
 
 // Direct3D11 を使用しない場合は以下のコメントを外してください( 現在開発中なので、必ずコメントを外した状態にしてください )
-//#define DX_NON_DIRECT3D11
+#define DX_NON_DIRECT3D11
 
 // Direct3D9 を使用しない場合は以下のコメントを外してください
-//#define DX_NON_DIRECT3D9
+#define DX_NON_DIRECT3D9
 
 // 軽量バージョンのＤＸライブラリを生成する場合は次のコメントを外してください
-//#define DX_LIB_LITEVER
+// #define DX_LIB_LITEVER
 
 // コンパイル済みのシェーダーバイナリを使用せず、シェーダーコードの実行時コンパイルを利用する場合は次のコメントを外してください
 //#define DX_NON_SHADERCODE_BINARY
 
 // Live2D Cubism 4 関連の機能を使用しない場合は次のコメントを外してください
-//#define DX_NON_LIVE2D_CUBISM4
+#define DX_NON_LIVE2D_CUBISM4
 
 #ifndef __APPLE__
 #ifndef __ANDROID__
+#ifndef EMSCRIPTEN
 	#define WINDOWS_DESKTOP_OS
+#endif // EMSCRIPTEN
 #endif // __ANDROID__
 #endif // __APPLE__
 
-#if defined( DX_GCC_COMPILE ) || defined( __ANDROID__ ) || defined( __APPLE__ ) || defined( BC2_COMPILER )
+#if defined( DX_GCC_COMPILE ) || defined( __ANDROID__ ) || defined( __APPLE__ ) || defined( BC2_COMPILER ) || defined( EMSCRIPTEN )
 	#define USE_ULL
 #endif
 
@@ -209,7 +211,7 @@
 	#endif // DX_NON_MEDIA_FOUNDATION
 #endif // WINDOWS_DESKTOP_OS
 
-#if defined( __ANDROID__ ) || defined( __APPLE__ )
+#if defined( __ANDROID__ ) || defined( __APPLE__ ) || defined ( EMSCRIPTEN )
 //#define DX_NON_2DDRAW
 #define DX_NON_ACM
 #define DX_NON_DSHOW_MP3
@@ -221,6 +223,10 @@
 #define DX_NON_STOPTASKSWITCH
 #define DX_NON_DIRECT3D11
 #define DX_NON_DIRECT3D9
+#endif
+
+#ifdef EMSCRIPTEN
+#define DX_NON_MULTITHREAD
 #endif
 
 
@@ -382,7 +388,7 @@
 
 
 
-#if defined( _WIN64 ) || defined( __ANDROID__ ) || defined( __APPLE__ )
+#if defined( _WIN64 ) || defined( __ANDROID__ ) || defined( __APPLE__ ) || defined( EMSCRIPTEN )
 	#ifndef DX_NON_INLINE_ASM
 		#define DX_NON_INLINE_ASM
 	#endif
