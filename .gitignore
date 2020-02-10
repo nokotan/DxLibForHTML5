@@ -1,0 +1,17 @@
+# Ohter OS Files
+/Windows/
+/iOS/
+/Android/
+
+/Shader/Windows/
+/Shader/iOS/
+/Shader/Android/
+
+# Utility
+/Tool/
+
+#Build Result
+/Build/
+
+#VS Config
+/.vscode/
