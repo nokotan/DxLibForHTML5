@@ -385,18 +385,18 @@ extern int UpdateJoypadInputState_PF( int PadNo )
 	pad->State.POV[ 1 ]      = 0xffffffff ;
 	pad->State.POV[ 2 ]      = 0xffffffff ;
 	pad->State.POV[ 3 ]      = 0xffffffff ;
-	pad->State.Buttons[  0 ] = Info->KeyState[  0 ] ? 0x80 : 0x00 ;
-	pad->State.Buttons[  1 ] = Info->KeyState[  1 ] ? 0x80 : 0x00 ;
-	pad->State.Buttons[  2 ] = Info->KeyState[  2 ] ? 0x80 : 0x00 ;
-	pad->State.Buttons[  3 ] = Info->KeyState[  3 ] ? 0x80 : 0x00 ;
-	pad->State.Buttons[  4 ] = Info->KeyState[  4 ] ? 0x80 : 0x00 ;
-	pad->State.Buttons[  5 ] = Info->KeyState[  5 ] ? 0x80 : 0x00 ;
-	pad->State.Buttons[  6 ] = Info->KeyState[  6 ] ? 0x80 : 0x00 ;
-	pad->State.Buttons[  7 ] = Info->KeyState[  7 ] ? 0x80 : 0x00 ;
-	pad->State.Buttons[  8 ] = Info->KeyState[  8 ] ? 0x80 : 0x00 ;
-	pad->State.Buttons[  9 ] = Info->KeyState[  9 ] ? 0x80 : 0x00 ;
-	pad->State.Buttons[ 10 ] = Info->KeyState[ 10 ] ? 0x80 : 0x00 ;
-	pad->State.Buttons[ 11 ] = Info->KeyState[ 11 ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[  0 ] = ((Info->ButtonState & PAD_INPUT_1) 	|| Info->KeyState[  0 ]) ? 0x80 : 0x00 ;
+	pad->State.Buttons[  1 ] = ((Info->ButtonState & PAD_INPUT_2) 	|| Info->KeyState[  1 ]) ? 0x80 : 0x00 ;
+	pad->State.Buttons[  2 ] = ((Info->ButtonState & PAD_INPUT_3) 	|| Info->KeyState[  2 ]) ? 0x80 : 0x00 ;
+	pad->State.Buttons[  3 ] = ((Info->ButtonState & PAD_INPUT_4) 	|| Info->KeyState[  3 ]) ? 0x80 : 0x00 ;
+	pad->State.Buttons[  4 ] = ((Info->ButtonState & PAD_INPUT_5) 	|| Info->KeyState[  4 ]) ? 0x80 : 0x00 ;
+	pad->State.Buttons[  5 ] = ((Info->ButtonState & PAD_INPUT_6) 	|| Info->KeyState[  5 ]) ? 0x80 : 0x00 ;
+	pad->State.Buttons[  6 ] = ((Info->ButtonState & PAD_INPUT_7) 	|| Info->KeyState[  6 ]) ? 0x80 : 0x00 ;
+	pad->State.Buttons[  7 ] = ((Info->ButtonState & PAD_INPUT_8) 	|| Info->KeyState[  7 ]) ? 0x80 : 0x00 ;
+	pad->State.Buttons[  8 ] = ((Info->ButtonState & PAD_INPUT_9) 	|| Info->KeyState[  8 ]) ? 0x80 : 0x00 ;
+	pad->State.Buttons[  9 ] = ((Info->ButtonState & PAD_INPUT_10) 	|| Info->KeyState[  9 ]) ? 0x80 : 0x00 ;
+	pad->State.Buttons[ 10 ] = ((Info->ButtonState & PAD_INPUT_11) 	|| Info->KeyState[ 10 ]) ? 0x80 : 0x00 ;
+	pad->State.Buttons[ 11 ] = ((Info->ButtonState & PAD_INPUT_12) 	|| Info->KeyState[ 11 ]) ? 0x80 : 0x00 ;
 	pad->State.Buttons[ 12 ] = 0 ;
 	pad->State.Buttons[ 13 ] = 0 ;
 	pad->State.Buttons[ 14 ] = 0 ;
@@ -861,14 +861,24 @@ extern int32_t ProcessInputEvent( )
 
 		if( InputNo >= 0 && InputNo < ANDR_DEVICE_MAX_NUM )
 		{
-			InputSysData.PF.InputInfo[ InputNo ].AxisX			= event.axis[0] ;
-			InputSysData.PF.InputInfo[ InputNo ].AxisY			= event.axis[1] ;
-			InputSysData.PF.InputInfo[ InputNo ].AxisZ			= event.axis[2] ;
-			InputSysData.PF.InputInfo[ InputNo ].AxisRx			= event.axis[3] ;
-			InputSysData.PF.InputInfo[ InputNo ].AxisRy			= event.axis[4] ;
-			InputSysData.PF.InputInfo[ InputNo ].AxisRz			= event.axis[5] ;
-			InputSysData.PF.InputInfo[ InputNo ].AxisHatX		= event.axis[6] ;
-			InputSysData.PF.InputInfo[ InputNo ].AxisHatY		= event.axis[7] ;
+			int j;
+
+			InputSysData.PF.InputInfo[ InputNo ].AxisX			= event.numAxes > 0 ? event.axis[0] : 0.0f ;
+			InputSysData.PF.InputInfo[ InputNo ].AxisY			= event.numAxes > 1 ? event.axis[1] : 0.0f ;
+			InputSysData.PF.InputInfo[ InputNo ].AxisZ			= event.numAxes > 2 ? event.axis[2] : 0.0f ;
+			InputSysData.PF.InputInfo[ InputNo ].AxisRx			= event.numAxes > 3 ? event.axis[3] : 0.0f ;
+			InputSysData.PF.InputInfo[ InputNo ].AxisRy			= event.numAxes > 4 ? event.axis[4] : 0.0f ;
+			InputSysData.PF.InputInfo[ InputNo ].AxisRz			= event.numAxes > 5 ? event.axis[5] : 0.0f ;
+			InputSysData.PF.InputInfo[ InputNo ].AxisHatX		= event.numAxes > 6 ? event.axis[6] : 0.0f ;
+			InputSysData.PF.InputInfo[ InputNo ].AxisHatY		= event.numAxes > 7 ? event.axis[7] : 0.0f ;
+
+			InputSysData.PF.InputInfo[ InputNo ].ButtonState 	= 0;
+
+			for ( j = 0; j < 32 && j < event.numButtons; j++) {
+				if (event.digitalButton[j] != 0) {
+					InputSysData.PF.InputInfo[ InputNo ].ButtonState	|=  (PAD_INPUT_1 << j);
+				}
+			}
 		}
 	}
 	
