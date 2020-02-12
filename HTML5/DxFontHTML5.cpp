@@ -36,6 +36,8 @@
    in the result FT_Bitmap after the FT_Render_Glyph() call. */
 #define NUM_GRAYS       256
 
+#define DEBUG_FONTS
+
 #ifndef DX_NON_NAMESPACE
 
 namespace DxLib
@@ -119,8 +121,6 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
 		return 0 ;
 	}
 
-	int res = -1 ;
-
     FT_Error error;
     FT_Face face;
     FT_Fixed scale;
@@ -143,6 +143,8 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
 		ConvString( ( char * )ManageData->FontName, -1, WCHAR_T_CHARCODEFORMAT, UTF8_FontName, sizeof( UTF8_FontName ), DX_CHARCODEFORMAT_UTF8 ) ;
 		stream = (FT_Stream)DXALLOC(sizeof(*stream));
 
+        printf("Font Init: FontName=%s\n", UTF8_FontName);
+
     	if ( stream == NULL ) {
         	return -1;
 		}
@@ -161,6 +163,7 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
 		error = FT_Open_Face( FontSystemAndroid.library, &font->args, 0, &font->face );
 
 		if (error) {
+            printf("Font Init Error: FontName=%s, Code=%d\n", UTF8_FontName, error);
 			return -1;
 		}
     }
@@ -248,24 +251,16 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
         font->height, font->lineskip);
     printf("\tunderline_offset = %d, underline_height = %d\n",
         font->underline_offset, font->underline_height);
-    printf("\tunderline_top_row = %d, strikethrough_top_row = %d\n",
-        TTF_underline_top_row(font), TTF_strikethrough_top_row(font));
 #endif
 
     /* Set the default font style */
     font->outline = 0;
-    font->kerning = 1;
+    font->kerning = 0;
     font->glyph_overhang = face->size->metrics.y_ppem / 10;
     /* x offset = cos(((90.0-12)/360)*2*M_PI), or 12 degree angle */
     font->glyph_italics = 0.207f;
     font->glyph_italics *= font->height;
 
-	// 失敗時は解放
-	if( res == -1 )
-	{
-		TerminateFontHandle_Android( ManageData ) ;
-	}
-	else
 	{
 		// 成功時はパラメータをセット
 		ManageData->BaseInfo.FontHeight    = ManageData->PF->height ;
@@ -275,7 +270,7 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
 	}
 
 	// 戻り値を返す
-	return res ;
+	return 0 ;
 }
 
 // CreateFontToHandle の環境依存エラー処理を行う関数
@@ -327,7 +322,10 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
 	FT_Bitmap bitmap;
 	FT_UInt index;
 
+    printf("Font Init: Start font caching of %d\n", CharCode);
+
     if ( !font || !font->face ) {
+        printf("Font Error: Parameter is NULL!\n");
         return -1;
     }
 
@@ -338,16 +336,17 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
     
     error = FT_Load_Glyph( face, index, FT_LOAD_DEFAULT | font->hinting);
     if ( error ) {
-        return error;
+        printf("Font Error: Glyph cannot loaded! (%d)\n", error);
+        return -1;
     }
 
     /* Get our glyph shortcuts */
     glyph = face->glyph;
     metrics = &glyph->metrics;
     outline = &glyph->outline;
-
+    
 	{
-		int mono = TRUE;
+		int mono = FALSE;
         int i;
         FT_Bitmap* src;
         FT_Bitmap* dst;
@@ -371,7 +370,8 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             FT_Get_Glyph( glyph, &bitmap_glyph );
             error = FT_Stroker_New( FontSystemAndroid.library, &stroker );
             if ( error ) {
-                return error;
+                printf("Font Error: Glyph stroke failed! (%d)\n", error);
+                return -1;
             }
             FT_Stroker_Set( stroker, font->outline * 64, FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0 );
             FT_Glyph_Stroke( &bitmap_glyph, stroker, 1 /* delete the original glyph */ );
@@ -379,6 +379,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             /* Render the glyph */
             error = FT_Glyph_To_Bitmap( &bitmap_glyph, mono ? ft_render_mode_mono : ft_render_mode_normal, 0, 1 );
             if ( error ) {
+                printf("Font Error: Glyph convert error to Bitmap! (%d)\n", error);
                 FT_Done_Glyph( bitmap_glyph );
                 return -1;
             }
@@ -387,17 +388,20 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             /* Render the glyph */
             error = FT_Render_Glyph( glyph, mono ? ft_render_mode_mono : ft_render_mode_normal );
             if ( error ) {
+                printf("Font Error: Glyph render failed! (%d)\n", error);
                 return -1;
             }
             src = &glyph->bitmap;
         }
 
         /* Copy over information to cache */
-        if ( mono ) {
-            dst = &bitmap;
-        } else {
-            // dst = &cached->pixmap;
-        }
+        // if ( mono ) {
+        //     dst = &cached->bitmap;
+        // } else {
+        //     dst = &cached->pixmap;
+        // }
+
+        dst = &bitmap;
         memcpy( dst, src, sizeof( *dst ) );
 
         /* FT_Render_Glyph() and .fon fonts always generate a
@@ -437,6 +441,8 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             }
             memset( dst->buffer, 0, dst->pitch * dst->rows );
 
+            printf("Font Init: Src Pixel Mode is %d\n", src->pixel_mode);
+
             for ( i = 0; i < src->rows; i++ ) {
                 int soffset = i * src->pitch;
                 int doffset = i * dst->pitch;
@@ -466,13 +472,13 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
                     }  else if ( src->pixel_mode == FT_PIXEL_MODE_GRAY2 ) {
                         for ( j = 0; j < src->width; j += 4 ) {
                             unsigned char c = *srcp++;
-                            *dstp++ = (((c&0xA0) >> 6) >= 0x2) ? 1 : 0;
+                            *dstp++ = (((c&0xC0) >> 6) >= 0x2) ? 1 : 0;
                             c <<= 2;
-                            *dstp++ = (((c&0xA0) >> 6) >= 0x2) ? 1 : 0;
+                            *dstp++ = (((c&0xC0) >> 6) >= 0x2) ? 1 : 0;
                             c <<= 2;
-                            *dstp++ = (((c&0xA0) >> 6) >= 0x2) ? 1 : 0;
+                            *dstp++ = (((c&0xC0) >> 6) >= 0x2) ? 1 : 0;
                             c <<= 2;
-                            *dstp++ = (((c&0xA0) >> 6) >= 0x2) ? 1 : 0;
+                            *dstp++ = (((c&0xC0) >> 6) >= 0x2) ? 1 : 0;
                         }
                     } else if ( src->pixel_mode == FT_PIXEL_MODE_GRAY4 ) {
                         for ( j = 0; j < src->width; j += 2 ) {
@@ -520,8 +526,8 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
                     for ( j = 0; j < src->width; j += 4 ) {
                         c = *srcp++;
                         for ( k = 0; k < 4; ++k ) {
-                            if ((c&0xA0) >> 6) {
-                                *dstp++ = NUM_GRAYS * ((c&0xA0) >> 6) / 3 - 1;
+                            if ((c&0xC0) >> 6) {
+                                *dstp++ = NUM_GRAYS * ((c&0xC0) >> 6) / 3 - 1;
                             } else {
                                 *dstp++ = 0x00;
                             }
@@ -578,9 +584,45 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             }
         }
 
+        if (mono) {
+            int row;
+            int col;
+            uint8_t* pixmap;
+
+            /* The pixmap is a little hard, we have to add and clamp */
+            for ( row = dst->rows - 1; row >= 0; --row ) {
+                pixmap = (uint8_t*) dst->buffer + row * dst->pitch;
+                
+                for ( col = 0; col < dst->width; ++col ) {
+                    pixmap[col] *= 255;
+                }            
+            }
+        }
+
         /* Free outlined glyph */
         if ( bitmap_glyph ) {
             FT_Done_Glyph( bitmap_glyph );
+        }
+    }
+
+    
+
+    printf("Font Init : Succeed (width=%d, rows=%d, pitch=%d)\n", bitmap.width, bitmap.rows, bitmap.pitch);
+
+    {
+        int row;
+        int col;
+        uint8_t* pixmap;
+
+        /* The pixmap is a little hard, we have to add and clamp */
+        for ( row = 0; row < bitmap.rows; ++row ) {
+            pixmap = (uint8_t*) bitmap.buffer + row * bitmap.pitch;
+            
+            for ( col = 0; col < bitmap.width; ++col ) {
+                printf("%c", pixmap[col] >= 128 ? '*' : ' ');
+            }        
+
+            printf("\n");    
         }
     }
 
@@ -592,13 +634,13 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
 		IVSCode,
 		FALSE,
 		DX_FONT_SRCIMAGETYPE_8BIT_MAX255,
-		bitmap.buffer ,
+		bitmap.buffer,
 		bitmap.width,
 		bitmap.rows,
 		bitmap.pitch,
 		-2,
 		-2,
-		0, 
+		bitmap.width, 
 		TextureCacheUpdate
 	);
 

@@ -92,8 +92,6 @@ static void OutputiOSOSInfo_LogAddUTF8( const char *UTF16LEFormatStr, const char
 // ライブラリ初期化関数
 extern int NS_DxLib_Init( void )
 {
-	printf("DxLibInit Start\n");
-
 	// 既に初期化済みの場合は何もせず終了
 	if( DxSysData.DxLib_InitializeFlag == TRUE )
 	{
@@ -118,16 +116,11 @@ extern int NS_DxLib_Init( void )
 	// DxSysData の共通初期化処理
 	DxLib_SysInit() ;
 
-	printf("DxSysInit OK\n");
-
 	// DxBaseFunc の初期化
 	_INIT_BASEFUNC() ;
 
-	printf("DxCharInit Start\n");
 	// キャラクターコード関係の初期化を行う
 	InitCharCode() ;
-
-	printf("DxCharInit OK\n");
 
 	// 使用する文字セットをセット
 	_SET_DEFAULT_CHARCODEFORMAT() ;
@@ -139,7 +132,7 @@ extern int NS_DxLib_Init( void )
 
 	// ファイルアクセス処理の初期化
 	InitializeFile() ;
-	printf("DxFileInit Start\n");
+	
 #ifndef DX_NON_OGGTHEORA
 	// Theora 用の初期化
 	TheoraDecode_GrobalInitialize() ;
@@ -152,7 +145,7 @@ extern int NS_DxLib_Init( void )
 
 	// ストリームデータ読み込み制御用ポインタ構造体のデフォルト値をセット
 	NS_ChangeStreamFunction( NULL ) ;
-	printf("DxLibLogInit Start\n");
+	
 #ifndef DX_NON_LOG
 	// ログファイルの初期化
 	LogFileInitialize() ;
@@ -165,7 +158,7 @@ extern int NS_DxLib_Init( void )
 	// デフォルトのグラフィック復元関数を登録
 	NS_SetRestoreGraphCallback( NULL ) ;
 #endif // DX_NON_GRAPHICS
-	printf("DxLibInputInit Start\n");
+	
 	// 各処理系の初期化
 	if( DxSysData.NotInputFlag == FALSE )
 	{
@@ -190,7 +183,7 @@ extern int NS_DxLib_Init( void )
 #ifndef DX_NON_MOVIE
 		InitializeMovieManage() ;
 #endif
-	printf("DxLibGraphicInit Start\n");
+	
 #ifndef DX_NON_GRAPHICS
 		if( Graphics_Initialize() < 0 ) goto ERROR_DX ;
 #endif // DX_NON_GRAPHICS
@@ -201,7 +194,7 @@ extern int NS_DxLib_Init( void )
 
 	// ＤＸライブラリ初期化完了フラグをたてる
 	DxSysData.DxLib_InitializeFlag = TRUE ;
-	printf("DxLibLogInit Start\n");
+	
 	// ＶＳＹＮＣ待ちをする
 //	NS_SetWaitVSyncFlag( TRUE ) ;
 
@@ -209,13 +202,13 @@ extern int NS_DxLib_Init( void )
 	// ログ出力処理の初期化を行う
 	InitializeLog() ;
 #endif
-	printf("DxLibInit OK\n");
+	
 #ifndef DX_NON_GRAPHICS
 	// 描画先の変更
 	NS_SetDrawScreen( DX_SCREEN_BACK ) ;
 	NS_SetDrawScreen( DX_SCREEN_FRONT ) ;
 #endif // DX_NON_GRAPHICS
-	printf("DxChangeScreen OK\n");
+	
 	if( DxSysData.NotDrawFlag == FALSE )
 	{
 #ifndef DX_NON_MODEL
@@ -231,7 +224,7 @@ extern int NS_DxLib_Init( void )
 		Live2DCubism4_Initialize() ;
 #endif // DX_NON_LIVE2D_CUBISM4
 	}
-	printf("DxRandomInit Start\n");
+	
 	// ランダム係数を初期化
 #ifndef DX_NON_MERSENNE_TWISTER
 	srandMT( ( unsigned int )NS_GetNowCount() ) ;
@@ -1141,22 +1134,20 @@ static int SetupViewBuffer( void )
 {
 	if( g_iOSSys.ViewFrameBuffer == 0 )
 	{
-		printf("Initing Buffer %dx%d\n", GLsizei(canvas_width()), GLsizei(canvas_height()));
-		glGenFramebuffers( 1, &g_iOSSys.ViewFrameBuffer ) ;
-		glBindFramebuffer( GL_FRAMEBUFFER, g_iOSSys.ViewFrameBuffer ) ;
+		// glGenFramebuffers( 1, &g_iOSSys.ViewFrameBuffer ) ;
+		// glBindFramebuffer( GL_FRAMEBUFFER, g_iOSSys.ViewFrameBuffer ) ;
 
-		glGenRenderbuffers( 1, &g_iOSSys.ViewDepthBuffer ) ;
-		glBindRenderbuffer( GL_RENDERBUFFER, g_iOSSys.ViewDepthBuffer ) ;
-		glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, GLsizei(canvas_width()), GLsizei(canvas_height()) );
+		// glGenRenderbuffers( 1, &g_iOSSys.ViewDepthBuffer ) ;
+		// glBindRenderbuffer( GL_RENDERBUFFER, g_iOSSys.ViewDepthBuffer ) ;
+		// glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, GLsizei(canvas_width()), GLsizei(canvas_height()) );
 
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, g_iOSSys.ViewDepthBuffer ) ;
+		// glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, g_iOSSys.ViewDepthBuffer ) ;
 
-		glGenRenderbuffers( 1, &g_iOSSys.ViewRenderBuffer ) ;
-		glBindRenderbuffer( GL_RENDERBUFFER, g_iOSSys.ViewRenderBuffer ) ;
+		// glGenRenderbuffers( 1, &g_iOSSys.ViewRenderBuffer ) ;
+		// glBindRenderbuffer( GL_RENDERBUFFER, g_iOSSys.ViewRenderBuffer ) ;
 
-		glRenderbufferStorage( GL_RENDERBUFFER, GL_RGBA4, GLsizei(canvas_width()), GLsizei(canvas_height()) );
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, g_iOSSys.ViewRenderBuffer ) ;
-		printf("SetupViewBuffer OK!\n");
+		// glRenderbufferStorage( GL_RENDERBUFFER, GL_RGBA4, GLsizei(canvas_width()), GLsizei(canvas_height()) );
+		// glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, g_iOSSys.ViewRenderBuffer ) ;
 	}
 
 	return 0;
@@ -1173,9 +1164,7 @@ extern int GetGraphicsViewFramebufferInfo( unsigned int *ViewFrameBuffer, int *W
 		g_iOSSys.ViewWidth = GLsizei(canvas_width());
 		g_iOSSys.ViewHeight = GLsizei(canvas_height()) ;
 
-		printf("SetScreenSize Start!\n");
 		Graphics_iOS_SetScreenSize( g_iOSSys.ViewWidth, g_iOSSys.ViewHeight );
-		printf("SetScreenSize OK!\n");
 	}
 
     if( ViewFrameBuffer ) *ViewFrameBuffer = g_iOSSys.ViewFrameBuffer;

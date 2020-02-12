@@ -46,7 +46,7 @@
 #define DX_NON_MOVIE
 
 // ＴＧＡ画像の読み込み機能がいらない方は次のコメントを外してください
-#define DX_NON_TGA
+// #define DX_NON_TGA
 
 // ＪＰＥＧ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
@@ -123,7 +123,7 @@
 
 // Bullet Physics をリンクしない場合は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-#define DX_NON_BULLET_PHYSICS
+// #define DX_NON_BULLET_PHYSICS
 
 // ＦＢＸファイルを読み込む機能を使用する方は次のコメントを外してください( 使用には FBX SDK のセットアップが必要です )
 //#define DX_LOAD_FBX_MODEL

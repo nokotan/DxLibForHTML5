@@ -1,39 +1,122 @@
 project(DxLibForHTML5)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.13)
 
-include_directories(
-	./
-	HTML5/
-    extlib/vorbis/include/
-    extlib/freetype/include/
+
+
+# Library Declaration
+
+add_library(DxLib STATIC)
+add_library(DxDrawFunc STATIC)
+add_library(DxUseCLib STATIC)
+
+
+
+# SubDirectories
+
+add_subdirectory(HTML5)
+
+
+
+# DxLib
+
+target_include_directories(DxLib
+    PUBLIC
+        HTML5/
+        extlib/freetype/include/
 )
 
-link_directories(
-    
+target_sources(DxLib
+    PRIVATE
+        DxArchive_.cpp
+        DxASyncLoad.cpp
+        DxBaseFunc.cpp
+        DxBaseImage.cpp
+        DxChar.cpp
+        DxCharCodeTable.cpp
+        DxFile.cpp
+        DxFont.cpp
+        DxGateway.cpp
+        DxGraphics.cpp
+        DxGraphicsFilter.cpp
+        DxHandle.cpp
+        DxHeap.cpp
+        DxInput.cpp
+        DxInputString.cpp
+        DxLive2DCubism4.cpp
+        DxLog.cpp
+        DxMask.cpp
+        DxMath.cpp
+        DxMemImg.cpp
+        DxMemory.cpp
+        DxModel.cpp
+        DxModelLoader0.cpp
+        DxModelLoader1.cpp
+        DxModelLoader2.cpp
+        DxModelLoader3.cpp
+        DxModelLoader4.cpp
+        DxModelLoaderVMD.cpp
+        DxModelRead.cpp
+        DxMovie.cpp
+        DxNetwork.cpp
+        DxRingBuffer.cpp
+        DxSoftImage.cpp
+        DxSound.cpp
+        DxSoundConvert.cpp
+        DxSystem.cpp
+        DxThread.cpp
 )
 
-file(GLOB DXPORTLIB_SOURCES
-    *.cpp
-	HTML5/*.cpp
+set_target_properties(DxLib
+    PROPERTIES 
+        LINK_FLAGS "-s USE_FREETYPE=1 -s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
+        CXX_STANDARD 11
 )
 
-set(USE_LIBLALIES
-    "-s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_ZLIB=1 -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0 -s USE_SDL_MIXER=0 "
+target_link_libraries(DxLib
+    DxDrawFunc
 )
 
-set(CXX_CONFIG
-    "-Wall -std=c++11 "
+
+
+# DxDrawFunc
+
+target_sources(DxDrawFunc
+    PRIVATE
+        DxMemImgDrawFunction0.cpp
+        DxMemImgDrawFunction1.cpp
+        DxMemImgDrawFunction2.cpp
+        DxMemImgDrawFunction3.cpp
 )
 
-set(DEBUG_CONFIG
-    "-s ASSERTIONS=1 "
+set_target_properties(DxDrawFunc
+    PROPERTIES 
+        LINK_FLAGS "-s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
+        CXX_STANDARD 11
 )
 
-set(DEPLOY_CONFIG
-    "-s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1 "
+
+
+# DxUseCLib
+
+target_include_directories(DxUseCLib
+    PRIVATE 
+        extlib/vorbis/include/
+        extlib/bullet3-2.89/src/
 )
 
-string(APPEND CMAKE_CXX_FLAGS ${USE_LIBLALIES} ${CXX_CONFIG} ${DEBUG_CONFIG} ${DEPLOY_CONFIG})
+target_sources(DxUseCLib
+    PRIVATE
+        DxUseCLib.cpp
+        DxUseCLibLive2DCubism4.cpp
+        DxUseCLibOgg.cpp
+        DxUseCLibPhysics.cpp
+)
 
-add_library(DxLib STATIC ${DXPORTLIB_SOURCES})
+set_target_properties(DxUseCLib
+    PROPERTIES 
+        LINK_FLAGS "-s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
+        CXX_STANDARD 11
+)
+
+set(CMAKE_CXX_FLAGS "-s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1")

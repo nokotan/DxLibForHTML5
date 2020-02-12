@@ -1223,8 +1223,6 @@ extern int Graphics_iOS_ShaderCode_Base_Initialize( void )
 
 	// 標準描画用シェーダーオブジェクトファイルＤＸＡを圧縮したデータを解凍する
 	{
-		printf("Decode shader code from 0x%p\n", DxShaderCodeBin_Base_IOS);
-		
 		Size = DXA_Decode( DxShaderCodeBin_Base_IOS, NULL ) ;
 		SCBASE->Base2DShaderPackageImage = DXALLOC( ( size_t )Size ) ;
 		if( SCBASE->Base2DShaderPackageImage == NULL )
@@ -3524,7 +3522,7 @@ extern	int		Graphics_iOS_Device_Create( void )
 		attrib.renderViaOffscreenBackBuffer = EM_FALSE;
 		attrib.proxyContextToMainThread = EM_FALSE;
 
-		attrib.majorVersion = 2;
+		attrib.majorVersion = 3;
 		attrib.minorVersion = 0;
 		attrib.explicitSwapControl = EM_FALSE;
 
@@ -17379,7 +17377,6 @@ extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
 extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSurface, int OldScreenMipLevel, IMAGEDATA *NewTargetImage, IMAGEDATA *OldTargetImage, SHADOWMAPDATA *NewTargetShadowMap, SHADOWMAPDATA *OldTargetShadowMap )
 {
 	int i ;
-	printf("SetDrawScreen Start\n");
 
 	// 描画待機している描画物を描画
 	DRAWSTOCKINFO
@@ -17393,7 +17390,7 @@ extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSur
 	{
 		Graphics_iOS_DeviceState_SetTexture( 0, NULL ) ;
 	}
-	printf("Texture Reset OK\n");
+	
 	// 描画先の変更
 
 	// マスクサーフェスが存在していて且つ有効な場合はマスクサーフェスを描画対象にする
@@ -17427,7 +17424,7 @@ extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSur
 	{
 		Graphics_iOS_DeviceState_SetRenderTarget( GIOS.Device.Screen.SubBackBufferFrameBuffer, GIOS.Device.Screen.SubBackBufferTextureSizeX, GIOS.Device.Screen.SubBackBufferTextureSizeY ) ;
 	}
-	printf("RenderTarget Change OK\n");
+	
 	// 使用するＺバッファのセットアップ
 	Graphics_Screen_SetupUseZBuffer() ;
 

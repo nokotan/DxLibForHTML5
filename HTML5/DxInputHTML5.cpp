@@ -648,25 +648,25 @@ extern int GetAndroidDeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId )
 
 	for( i = 0 ; i < InputSysData.PF.UseInputInfoNum ; i ++ )
 	{
-		if( /* InputSysData.PF.InputInfo[ i ].Source   == Source   && */
+		if(    InputSysData.PF.InputInfo[ i ].Source   == Source   &&
 			   InputSysData.PF.InputInfo[ i ].DeviceId == DeviceId )
 		{
-			int UpdateFlag = FALSE ;
+			// int UpdateFlag = FALSE ;
 
-			if( ( InputSysData.PF.InputInfo[ i ].Source & Source ) != Source )
-			{
-				UpdateFlag = TRUE ;
-			}
+			// if( InputSysData.PF.InputInfo[ i ].Source != Source )
+			// {
+			// 	UpdateFlag = TRUE ;
+			// }
 
-			InputSysData.PF.InputInfo[ i ].Source |= Source ;
+			// InputSysData.PF.InputInfo[ i ].Source = Source ;
 			InputSysData.PF.InputInfo[ i ].UpdateCount = InputSysData.PF.UpdateCount ;
 			InputSysData.PF.UpdateCount ++ ;
 
-			if( UpdateFlag )
-			{
-				RefreshAndroidSourceNoToInputInfoTable( Source ) ;
-				RefreshAndroidGamePadSourceNoToInputInfoTable() ;
-			}
+			// if( UpdateFlag )
+			// {
+			// 	RefreshAndroidSourceNoToInputInfoTable( Source ) ;
+			// 	RefreshAndroidGamePadSourceNoToInputInfoTable() ;
+			// }
 			return i ;
 		}
 	}
@@ -738,7 +738,7 @@ extern int RefreshAndroidSourceNoToInputInfoTable( int32_t Source )
 	Info = InputSysData.PF.InputInfo ;
 	for( i = 0 ; i < InputSysData.PF.UseInputInfoNum ; i ++, Info ++ )
 	{
-		if( ( Info->Source & Source ) == Source )
+		if( Info->Source  == Source )
 		{
 			InfoTable[ Num ] = Info ;
 			Num ++ ;
@@ -880,9 +880,11 @@ static EM_BOOL onKeyAction(int eventType, const EmscriptenKeyboardEvent *keyEven
 	int32_t Source ;
 	int32_t DeviceId ;
 	int InputNo ;
+	EM_BOOL preventDefault ;
 
 	int32_t KeyCode ;
 
+	preventDefault = EM_FALSE;
 	Source = HTML5_INPUT_SOURCE_KEYBOARD;
 	DeviceId = 0;
 	InputNo = GetAndroidDeviceIdToInputInfoNo( Source, DeviceId ) ;
@@ -902,17 +904,22 @@ static EM_BOOL onKeyAction(int eventType, const EmscriptenKeyboardEvent *keyEven
 				InputSysData.PF.InputInfo[ InputNo ].KeyState[ KeyCode ] = 0 ;
 			}
 		}
+
+		preventDefault = EM_TRUE;
 	}
 
-	return false;
+	return preventDefault;
 }
 
 static EM_BOOL onMouseWheel(int eventType, const EmscriptenWheelEvent *wheelEvent, void *userData) {
 	int32_t Source ;
 	int32_t DeviceId ;
 	int InputNo ;
+	EM_BOOL preventDefault ;
 
 	int32_t KeyCode ;
+
+	preventDefault = EM_FALSE;
 
 	Source = HTML5_INPUT_SOURCE_MOUSE;
 	DeviceId = 0;
@@ -967,6 +974,8 @@ static EM_BOOL onMouseWheel(int eventType, const EmscriptenWheelEvent *wheelEven
 				}
 			}
 		}
+
+		preventDefault = EM_TRUE;
 	}
 
 	// マウス入力があった際はタップの入力を無効化する
@@ -979,30 +988,35 @@ static EM_BOOL onMouseWheel(int eventType, const EmscriptenWheelEvent *wheelEven
 		AddTouchInputData( &TouchInputData ) ;
 	}
 
-	return false;
+	return preventDefault;
 }
 
 static EM_BOOL onMouseAction(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData) {
 	EmscriptenWheelEvent wheelEvent;
+	EM_BOOL preventDefault ;
 
 	wheelEvent.mouse = *mouseEvent;
 	wheelEvent.deltaX = 0;
 	wheelEvent.deltaMode = 0;
 
 	onMouseWheel(eventType, &wheelEvent, userData);
-	return false;
+	preventDefault = false;
+	
+	return preventDefault;
 }
 
 static EM_BOOL onTouchAction(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData) {
 	int32_t Source ;
 	int32_t DeviceId ;
 	int InputNo ;
+	EM_BOOL preventDefault ;
 
 	int32_t KeyCode ;
 
 	Source = HTML5_INPUT_SOURCE_TOUCHSCREEN;
 	DeviceId = 0;
 	InputNo = GetAndroidDeviceIdToInputInfoNo( Source, DeviceId ) ;
+	preventDefault = EM_FALSE;
 
 	if( InputNo >= 0 && InputNo < ANDR_DEVICE_MAX_NUM )
 	{
@@ -1035,9 +1049,10 @@ static EM_BOOL onTouchAction(int eventType, const EmscriptenTouchEvent *touchEve
 		}
 		
 		AddTouchInputData( &TouchInputData ) ;
+		preventDefault = EM_TRUE;
 	}
 
-	return false;
+	return preventDefault;
 }
 
 static EM_BOOL onGamepadAction(int eventType, const EmscriptenGamepadEvent *gamepadEvent, void *userData) {

@@ -164,7 +164,7 @@ struct SOUNDBUFFER
 	volatile int				EnableTopPos ;				// TopPos_WriteSamples が有効かどうか
 	volatile ULONGLONG			TopPos_TotalWriteSamples ;	// バッファの先頭が再生開始される時の総再生サンプル数
 	volatile int				AddPlaySoundBufferList ;	// PlaySoundBufferList がリストに追加されているかどうか( TRUE:追加されている  FALSE:追加されていない )
-	volatile SIMPLELIST			PlaySoundBufferList ;		// 再生中サウンドバッファリスト処理用構造体
+	 		 SIMPLELIST			PlaySoundBufferList ;		// 再生中サウンドバッファリスト処理用構造体
 	volatile int				OutputDelaySamples ;		// 出力を遅らせるサンプル数
 
 	// ３Ｄサウンド再生用データ
