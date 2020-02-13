@@ -261,6 +261,8 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
     font->glyph_italics = 0.207f;
     font->glyph_italics *= font->height;
 
+    printf("Cache Info: PixelByte=%d, BitWidth=%d\n", ManageData->TextureCacheBaseImage.ColorData.PixelByte, ManageData->TextureCacheBaseImage.ColorData.ColorBitDepth);
+
 	{
 		// 成功時はパラメータをセット
 		ManageData->BaseInfo.FontHeight    = ManageData->PF->height ;
@@ -346,7 +348,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
     outline = &glyph->outline;
     
 	{
-		int mono = FALSE;
+        int mono = TRUE;
         int i;
         FT_Bitmap* src;
         FT_Bitmap* dst;
@@ -584,65 +586,34 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             }
         }
 
-        if (mono) {
-            int row;
-            int col;
-            uint8_t* pixmap;
+        printf("X=%d, Y=%d, Add=%d\n", 
+            metrics->horiBearingX / 64,
+            font->ascent - metrics->horiBearingY / 64,
+            metrics->horiAdvance / 64);
 
-            /* The pixmap is a little hard, we have to add and clamp */
-            for ( row = dst->rows - 1; row >= 0; --row ) {
-                pixmap = (uint8_t*) dst->buffer + row * dst->pitch;
-                
-                for ( col = 0; col < dst->width; ++col ) {
-                    pixmap[col] *= 255;
-                }            
-            }
-        }
+        /* We're done, mark this glyph cached */
+        FontCacheCharImageBltToHandle(
+            ManageData,
+            CharData,
+            CharCode,
+            IVSCode,
+            FALSE,
+            mono ? DX_FONT_SRCIMAGETYPE_8BIT_ON_OFF : DX_FONT_SRCIMAGETYPE_8BIT_MAX255,
+            bitmap.buffer,
+            bitmap.width,
+            bitmap.rows,
+            bitmap.pitch,
+            metrics->horiBearingX / 64,
+            font->ascent - metrics->horiBearingY / 64,
+            metrics->horiAdvance / 64, 
+            TextureCacheUpdate
+        );
 
         /* Free outlined glyph */
         if ( bitmap_glyph ) {
             FT_Done_Glyph( bitmap_glyph );
         }
     }
-
-    
-
-    printf("Font Init : Succeed (width=%d, rows=%d, pitch=%d)\n", bitmap.width, bitmap.rows, bitmap.pitch);
-
-    {
-        int row;
-        int col;
-        uint8_t* pixmap;
-
-        /* The pixmap is a little hard, we have to add and clamp */
-        for ( row = 0; row < bitmap.rows; ++row ) {
-            pixmap = (uint8_t*) bitmap.buffer + row * bitmap.pitch;
-            
-            for ( col = 0; col < bitmap.width; ++col ) {
-                printf("%c", pixmap[col] >= 128 ? '*' : ' ');
-            }        
-
-            printf("\n");    
-        }
-    }
-
-    /* We're done, mark this glyph cached */
-    FontCacheCharImageBltToHandle(
-		ManageData,
-		CharData,
-		CharCode,
-		IVSCode,
-		FALSE,
-		DX_FONT_SRCIMAGETYPE_8BIT_MAX255,
-		bitmap.buffer,
-		bitmap.width,
-		bitmap.rows,
-		bitmap.pitch,
-		-2,
-		-2,
-		bitmap.width, 
-		TextureCacheUpdate
-	);
 
 	DXFREE(bitmap.buffer);
 	res = 0;

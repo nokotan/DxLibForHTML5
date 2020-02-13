@@ -2258,8 +2258,6 @@ extern int FontCacheCharImageBltToHandle(
 		break ;
 	}
 
-	printf("Font Init: Scale=%d\n", SampleScale);
-
 	CharData->CodeUnicode = CharCode ;
 	CharData->IVSCode = IVSCode ;
 
@@ -2304,8 +2302,6 @@ extern int FontCacheCharImageBltToHandle(
 	}
 	else
 	{
-		printf("Font Init: Creating Metrixs\n");
-
 		CharData->DrawX = ( short )( ( ImageDrawX + ( SampleScale >> 2 ) ) / SampleScale ) ;
 		CharData->SizeX = ( WORD  )( ( ImageSizeX +   SampleScale - 1    ) / SampleScale ) ;
 		CharData->AddX  = ( short )( ( ImageAddX  + ( SampleScale >> 2 ) ) / SampleScale ) ;
@@ -2336,22 +2332,16 @@ extern int FontCacheCharImageBltToHandle(
 		// 文字イメージを一時的に保存するメモリ領域を初期化
 		if( ManageData->TextureCacheFlag == FALSE )
 		{
-			printf("Font Init: Memory Caching...\n");
-
 			_MEMSET(	ManageData->CacheMem + DestY * ManageData->CachePitch,
 						0,
 						( size_t )( ManageData->CachePitch * ManageData->BaseInfo.MaxWidth ) ) ;
 		}
 		else
 		{
-			printf("Font Init: Texture Caching...\n");
-
 			if( ManageData->TextureCacheBaseImage.ColorData.ColorBitDepth == 8 ||
 				ManageData->TextureCacheUsePremulAlpha ||
 				( ManageData->FontType & DX_FONTTYPE_EDGE ) != 0 )
 			{
-				printf("Font Init: Clear BaseImage...\n");
-
 				NS_ClearRectBaseImage(
 					&ManageData->TextureCacheBaseImage,
 					DestX, DestY,
@@ -2369,8 +2359,6 @@ extern int FontCacheCharImageBltToHandle(
 			}
 			else
 			{
-				printf("Font Init: FillRectBaseImage...\n");
-
 				NS_FillRectBaseImage(
 					&ManageData->TextureCacheBaseImage,
 					DestX, DestY,
@@ -2412,8 +2400,6 @@ extern int FontCacheCharImageBltToHandle(
 			DWORD	i ;
 			DWORD	j ;
 			DWORD	DestPitch ;
-
-			printf("Font Init: Scaling\n");
 
 			Width	= CharData->SizeX ;
 			Height	= CharData->SizeY ;
@@ -2532,8 +2518,6 @@ extern int FontCacheCharImageBltToHandle(
 			DWORD	HWidth ;
 			DWORD	i ;
 			DWORD	j ;
-
-			printf("Font Init: Smalling\n");
 
 			RWidth	= ( CharData->SizeX + 1 ) / 2 * 2 ;
 			HWidth	= RWidth / 2 ;
@@ -2730,8 +2714,6 @@ extern int FontCacheCharImageBltToHandle(
 			ImagePitch  = RSrcPitch ;
 		}
 
-		printf("Font Init: Rect OK.\n");
-
 		// 縁ありかどうかで処理を分岐
 		if( ( ManageData->FontType & DX_FONTTYPE_EDGE ) == 0 )
 		{
@@ -2846,6 +2828,7 @@ extern int FontCacheCharImageBltToHandle(
 				RGBMask		= cl.RedMask | cl.GreenMask | cl.BlueMask ;
 
 				printf("Font Init: Overhere? (SrcPitch=%d, DestPitch=%d)\n", ImagePitch, DestPitch);
+    			printf("Cache Info: PixelByte=%d, BitWidth=%d\n", ManageData->TextureCacheBaseImage.ColorData.PixelByte, ManageData->TextureCacheBaseImage.ColorData.ColorBitDepth);
 
 				switch( ImageType )
 				{
@@ -3415,9 +3398,7 @@ extern int FontCacheCharImageBltToHandle(
 								for( j = 0 ; j < Width ; j ++ )
 								{
 									*( (DWORD *)Dest + j ) = ( DWORD )( ( ( DWORD )Src[ j ] << ( ( cl.AlphaLoc + cl.AlphaWidth ) - 8 ) ) | RGBMask ) ;
-									printf("%c", *( (DWORD *)Dest + j ) >= 128 ? '*' : ' ');
 								}
-								printf("\n");
 
 								Src  += ImagePitch ;
 								Dest += DestPitch ;
@@ -3431,7 +3412,6 @@ extern int FontCacheCharImageBltToHandle(
 				}
 
 #ifndef DX_NON_GRAPHICS
-				printf("Font Init: Prev Cache Send.\n");
 
 				// テクスチャキャッシュに転送
 				if( TextureCacheUpdate )
@@ -3477,8 +3457,6 @@ extern int FontCacheCharImageBltToHandle(
 			int		EdgeSize ;
 			int		DestPitch ;
 			unsigned char ( *EdgePat )[ FONTEDGE_PATTERN_NUM * 2 + 1 ] ;
-			
-			printf("Font Init: No Scale\n");
 
 			Width 		= ( int )CharData->SizeX ;
 			Height 		= ( int )CharData->SizeY ;
@@ -3489,8 +3467,6 @@ extern int FontCacheCharImageBltToHandle(
 			
 			if( ManageData->TextureCacheFlag == FALSE )
 			{
-				printf("Font Init: No Cache Dest (FontType=%d)\n", ManageData->FontType);
-
 				DestPitch = ManageData->CachePitch ;
 
 				switch( ManageData->FontType )
@@ -3765,8 +3741,6 @@ extern int FontCacheCharImageBltToHandle(
 				DestPitch	= im.Pitch ;
 				DestB		= ( BYTE * )im.GraphData + im.ColorData.PixelByte * ( AddX + DestX ) + DestPitch * ( AddY + DestY ) ;
 				adp			= ( DWORD )( im.Width / 2 ) ;
-
-				printf("Font Init: nasty...\n");
 
 	#define DB0		*( (BYTE *)dp + j )
 	#define DB1		*( (BYTE *)dp + j - DestPitch )
@@ -5380,8 +5354,6 @@ extern int FontCacheCharImageBltToHandle(
 // フォントのテクスチャキャッシュの更新矩形を追加する
 extern int FontTextureCacheAddUpdateRect( FONTMANAGE *ManageData, RECT *Rect )
 {
-	printf("Font Init: Prev Cache In.\n");
-
 	if( ManageData->TextureCacheUpdateRectValid == FALSE )
 	{
 		ManageData->TextureCacheUpdateRectValid = TRUE ;
@@ -5422,6 +5394,7 @@ extern int FontTextureCacheUpdateRectApply( FONTMANAGE *ManageData )
 	}
 
 	ManageData->TextureCacheUpdateRectValid = FALSE ;
+
 
 	Graphics_Image_BltBmpOrGraphImageToGraph2Base(
 		&ManageData->TextureCacheBaseImage, NULL,
@@ -6653,7 +6626,7 @@ static int LoadFontDataFromMemToHandle_UseGParam_Static(
 		ManageData->FontDataFile.CharaTable = ( FONTDATAFILECHARADATA ** )( ( BYTE * )ManageData->FontDataFile.CharaTable + ( sizeof( FONTBASEINFO ) - DX_FONTBASEINFO_SIZE_VER0 ) ) ;
 	}
 
-	// フォントデータファイル内の 0xffff を超える文字コードの文字情報へのアドレスの配列を保存するメモリ領域へのアドレスをセット
+	// フォントデータファイル??の 0xffff を超える文字コードの文字情報へのアドレスの配列を保存するメモリ領域へのアドレスをセット
 	ManageData->FontDataFile.CharaExArray = ManageData->FontDataFile.CharaTable + 0x10000 ;
 
 	// 解凍したフォント画像データを格納するメモリアドレスをセット
@@ -12528,7 +12501,7 @@ extern int NS_FontBaseImageBltToHandle( int x, int y, const TCHAR *StrData, BASE
 #endif
 }
 
-// 基本イメージに文字列を描画する
+// 基本イメー??に文字列を描画する
 extern int NS_FontBaseImageBltToHandleWithStrLen( int x, int y, const TCHAR *StrData, size_t StrDataLength, BASEIMAGE *DestImage, BASEIMAGE *DestEdgeImage, int FontHandle, int VerticalFlag )
 {
 	int Result ;
