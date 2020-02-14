@@ -852,8 +852,13 @@ extern int32_t ProcessInputEvent( )
 		int32_t Source ;
 		int32_t DeviceId ;
 		int InputNo ;
+		EMSCRIPTEN_RESULT SampleResult ;
 
-		emscripten_get_gamepad_status(i, &event);
+		SampleResult = emscripten_get_gamepad_status(i, &event);
+
+		if (SampleResult != EMSCRIPTEN_RESULT_SUCCESS || !event.connected) {
+			continue;
+		}
 
 		Source = HTML5_INPUT_SOURCE_JOYSTICK;
 		DeviceId = event.index;
