@@ -2827,8 +2827,8 @@ extern int FontCacheCharImageBltToHandle(
 
 				RGBMask		= cl.RedMask | cl.GreenMask | cl.BlueMask ;
 
-				printf("Font Init: Overhere? (SrcPitch=%d, DestPitch=%d)\n", ImagePitch, DestPitch);
-    			printf("Cache Info: PixelByte=%d, BitWidth=%d\n", ManageData->TextureCacheBaseImage.ColorData.PixelByte, ManageData->TextureCacheBaseImage.ColorData.ColorBitDepth);
+				// printf("Font Init: Overhere? (SrcPitch=%d, DestPitch=%d)\n", ImagePitch, DestPitch);
+    			// printf("Cache Info: PixelByte=%d, BitWidth=%d\n", ManageData->TextureCacheBaseImage.ColorData.PixelByte, ManageData->TextureCacheBaseImage.ColorData.ColorBitDepth);
 
 				switch( ImageType )
 				{
@@ -3337,7 +3337,7 @@ extern int FontCacheCharImageBltToHandle(
 					{
 						if( BaseImage.ColorData.MaxPaletteNo == 15 )
 						{
-							printf("Font Init: Overhere 1?\n");
+							// printf("Font Init: Overhere 1?\n");
 
 							for( i = 0 ; i < Height ; i ++ )
 							{
@@ -3352,7 +3352,7 @@ extern int FontCacheCharImageBltToHandle(
 						}
 						else
 						{
-							printf("Font Init: Overhere 2?\n");
+							// printf("Font Init: Overhere 2?\n");
 
 							for( i = 0 ; i < Height ; i ++ )
 							{
@@ -3372,7 +3372,7 @@ extern int FontCacheCharImageBltToHandle(
 						{
 							BYTE aloc, rloc, gloc, bloc ;
 
-							printf("Font Init: Overhere 3?\n");
+							// printf("Font Init: Overhere 3?\n");
 
 							aloc = ( BYTE )( cl.AlphaLoc + cl.AlphaWidth - 8 ) ;
 							rloc = ( BYTE )( cl.RedLoc   + cl.RedWidth   - 8 ) ;
@@ -3391,7 +3391,7 @@ extern int FontCacheCharImageBltToHandle(
 						}
 						else
 						{
-							printf("Font Init: Overhere 4?\n");
+							// printf("Font Init: Overhere 4?\n");
 
 							for( i = 0 ; i < Height ; i ++ )
 							{

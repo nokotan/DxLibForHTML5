@@ -313,6 +313,7 @@ extern int FontCacheCharAddToHandle_Timing0_PF( FONTMANAGE *ManageData )
 extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHARDATA *CharData, DWORD CharCode, DWORD IVSCode, int TextureCacheUpdate )
 {
 	int res = -1 ;
+    int Space;
 
     FT_Face face;
     FT_Error error;
@@ -324,7 +325,11 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
 	FT_Bitmap bitmap;
 	FT_UInt index;
 
+#ifdef DEBUG_FONTS   
     printf("Font Init: Start font caching of %d\n", CharCode);
+#endif
+	// スペースかどうかを取得しておく
+	Space = CharCode == L' ' ? 1 : ( CharCode == ( DWORD )FSYS.DoubleByteSpaceCharCode ? 2 : 0 ) ;
 
     if ( !font || !font->face ) {
         printf("Font Error: Parameter is NULL!\n");
@@ -348,7 +353,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
     outline = &glyph->outline;
     
 	{
-        int mono = TRUE;
+        int mono = !(ManageData->FontType & DX_FONTTYPE_ANTIALIASING);
         int i;
         FT_Bitmap* src;
         FT_Bitmap* dst;
@@ -586,28 +591,50 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             }
         }
 
+#ifdef DEBUG_FONTS
         printf("X=%d, Y=%d, Add=%d\n", 
             metrics->horiBearingX / 64,
             font->ascent - metrics->horiBearingY / 64,
             metrics->horiAdvance / 64);
+#endif
 
-        /* We're done, mark this glyph cached */
-        FontCacheCharImageBltToHandle(
-            ManageData,
-            CharData,
-            CharCode,
-            IVSCode,
-            FALSE,
-            mono ? DX_FONT_SRCIMAGETYPE_8BIT_ON_OFF : DX_FONT_SRCIMAGETYPE_8BIT_MAX255,
-            bitmap.buffer,
-            bitmap.width,
-            bitmap.rows,
-            bitmap.pitch,
-            metrics->horiBearingX / 64,
-            font->ascent - metrics->horiBearingY / 64,
-            metrics->horiAdvance / 64, 
-            TextureCacheUpdate
-        );
+        if (Space != 0) {
+            /* We're done, mark this glyph cached */
+            FontCacheCharImageBltToHandle(
+                ManageData,
+                CharData,
+                CharCode,
+                IVSCode,
+                TRUE,
+                mono ? DX_FONT_SRCIMAGETYPE_8BIT_ON_OFF : DX_FONT_SRCIMAGETYPE_8BIT_MAX255,
+                NULL,
+                0,
+                0,
+                0,
+                0,
+                0,
+                metrics->horiAdvance / 64, 
+                FALSE
+            );
+        } else {
+            /* We're done, mark this glyph cached */
+            FontCacheCharImageBltToHandle(
+                ManageData,
+                CharData,
+                CharCode,
+                IVSCode,
+                FALSE,
+                mono ? DX_FONT_SRCIMAGETYPE_8BIT_ON_OFF : DX_FONT_SRCIMAGETYPE_8BIT_MAX255,
+                bitmap.buffer,
+                bitmap.width,
+                bitmap.rows,
+                bitmap.pitch,
+                metrics->horiBearingX / 64,
+                font->ascent - metrics->horiBearingY / 64,
+                metrics->horiAdvance / 64, 
+                TextureCacheUpdate
+            );
+        }
 
         /* Free outlined glyph */
         if ( bitmap_glyph ) {
