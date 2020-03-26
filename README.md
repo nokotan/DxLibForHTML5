@@ -14,25 +14,42 @@ DXライブラリをHTML5で動かしてみたい...
 
 - emscripten 1.39.6^
 - cmake
-- git (Windows のみ)
-- make (Windows のみ)
+- git
+- make (nmake, ninjaでも可)
 
 ## ビルド
 
 - macOS, Linux
 
 ```bash
+git clone --recursive https://github.com/nokotan/DxLibForHTML5.git
+cd DxLibForHTML5
 mkdir Build
 cd Build
 emcmake cmake ..
 emmake make
 ```
 
-- Windows (未テスト)
+- Windows
+
+nmake を使う場合
 
 ```bat
+git clone --recursive https://github.com/nokotan/DxLibForHTML5.git
+cd DxLibForHTML5
 mkdir Build
 cd Build
-emcmake cmake -G "Unix Makefiles" ..
-emmake make
+emcmake cmake -G "MinGW Makefiles" ..
+nmake
+```
+
+ninja を使う場合
+
+```bat
+git clone --recursive https://github.com/nokotan/DxLibForHTML5.git
+cd DxLibForHTML5
+mkdir Build
+cd Build
+emcmake cmake -G "ninja" ..
+ninja
 ```

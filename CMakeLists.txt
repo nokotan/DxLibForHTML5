@@ -101,8 +101,8 @@ set_target_properties(DxDrawFunc
 
 target_include_directories(DxUseCLib
     PRIVATE 
-        extlib/vorbis/include/
-        extlib/bullet3-2.89/src/
+        extlib/vorbis/lib/
+        extlib/bullet3/src/
 )
 
 target_sources(DxUseCLib

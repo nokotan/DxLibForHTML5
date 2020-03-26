@@ -1,0 +1,9 @@
+[submodule "extlib/vorbis"]
+	path = extlib/vorbis
+	url = https://github.com/xiph/vorbis.git
+[submodule "extlib/bullet3"]
+	path = extlib/bullet3
+	url = https://github.com/bulletphysics/bullet3.git
+[submodule "extlib/freetype"]
+	path = extlib/freetype
+	url = https://github.com/aseprite/freetype2.git
