@@ -69,7 +69,7 @@ target_sources(DxLib
 
 set_target_properties(DxLib
     PROPERTIES 
-        LINK_FLAGS "-s USE_FREETYPE=1 -s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
+        COMPILE_FLAGS "-s USE_FREETYPE=1 -s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
         CXX_STANDARD 11
 )
 
@@ -91,7 +91,7 @@ target_sources(DxDrawFunc
 
 set_target_properties(DxDrawFunc
     PROPERTIES 
-        LINK_FLAGS "-s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
+        COMPILE_FLAGS "-s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
         CXX_STANDARD 11
 )
 
@@ -115,8 +115,7 @@ target_sources(DxUseCLib
 
 set_target_properties(DxUseCLib
     PROPERTIES 
-        LINK_FLAGS "-s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
+        COMPILE_FLAGS "-s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
         CXX_STANDARD 11
 )
 
-set(CMAKE_CXX_FLAGS "-s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1")
