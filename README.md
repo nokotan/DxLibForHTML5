@@ -10,6 +10,10 @@ DXライブラリをHTML5で動かしてみたい...
 
 はい、emscripten を使ってビルドしてみます
 
+## コンパイル済みバイナリのダウンロード
+
+- [最新版のダウンロード](https://github.com/nokotan/DxLibForHTML5/releases/latest) (Windows, Linux, macOS共通)
+
 ## 必要条件
 
 - emscripten 1.39.6^
