@@ -8,19 +8,19 @@ before_install:
 
 script:
   - docker run --name dxlib trzeci/emscripten:1.39.10-upstream bash -c "git clone --recursive https://github.com/nokotan/DxLibForHTML5.git && cd DxLibForHTML5 && mkdir build && cd build && emcmake cmake .. && emmake make"
-  - mkdir extlib
-  - mkdir extlib/bin
-  - docker cp dxlib:/src/DxLibForHTML5/build/libDxLib.a extlib/bin/
-  - docker cp dxlib:/src/DxLibForHTML5/build/libDxUseCLib.a extlib/bin/
-  - docker cp dxlib:/src/DxLibForHTML5/build/libDxDrawFunc.a extlib/bin/
-  - mkdir extlib/include
-  - docker cp dxlib:/src/DxLibForHTML5/DxCompileConfig.h extlib/include/
-  - docker cp dxlib:/src/DxLibForHTML5/DxDataType.h extlib/include/
-  - docker cp dxlib:/src/DxLibForHTML5/DxDataTypeHTML5.h extlib/include/
-  - docker cp dxlib:/src/DxLibForHTML5/DxFunctionWin.h extlib/include/
-  - docker cp dxlib:/src/DxLibForHTML5/DxLib.h extlib/include/
-  - zip -r DxLibForHTML5.zip extlib
-  - tar -cvzf DxLibForHTML5.tgz extlib/*
+  - mkdir dest
+  - mkdir dest/bin
+  - docker cp dxlib:/src/DxLibForHTML5/build/libDxLib.a dest/bin/
+  - docker cp dxlib:/src/DxLibForHTML5/build/libDxUseCLib.a dest/bin/
+  - docker cp dxlib:/src/DxLibForHTML5/build/libDxDrawFunc.a dest/bin/
+  - mkdir dest/include
+  - docker cp dxlib:/src/DxLibForHTML5/DxCompileConfig.h dest/include/
+  - docker cp dxlib:/src/DxLibForHTML5/DxDataType.h dest/include/
+  - docker cp dxlib:/src/DxLibForHTML5/DxDataTypeHTML5.h dest/include/
+  - docker cp dxlib:/src/DxLibForHTML5/DxFunctionWin.h dest/include/
+  - docker cp dxlib:/src/DxLibForHTML5/DxLib.h dest/include/
+  - zip -r DxLibForHTML5.zip dest
+  - tar -cvzf DxLibForHTML5.tgz dest/*
 
 deploy:
   provider: releases
