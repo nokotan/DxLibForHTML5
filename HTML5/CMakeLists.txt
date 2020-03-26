@@ -22,12 +22,12 @@ target_sources(DxLib
         DxModelHTML5.cpp
         DxMovieHTML5.cpp
         DxNetworkHTML5.cpp
-        DXShaderCodeBin_Base_HTML5.cpp
-        DXShaderCodeBin_Base3D_HTML5.cpp
-        DXShaderCodeBin_Filter_HTML5.cpp
-        DXShaderCodeBin_Live2D_Cubism4_HTML5.cpp
-        DXShaderCodeBin_Model_HTML5.cpp
-        DXShaderCodeBin_RgbaMix_HTML5.cpp
+        DxShaderCodeBin_Base_HTML5.cpp
+        DxShaderCodeBin_Base3D_HTML5.cpp
+        DxShaderCodeBin_Filter_HTML5.cpp
+        DxShaderCodeBin_Live2D_Cubism4_HTML5.cpp
+        DxShaderCodeBin_Model_HTML5.cpp
+        DxShaderCodeBin_RgbaMix_HTML5.cpp
         DxSoundConvertHTML5.cpp
         DxSoundHTML5.cpp
         DxSystemHTML5.cpp
