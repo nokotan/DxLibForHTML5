@@ -1,0 +1,33 @@
+language: cpp
+
+services:
+  - docker
+
+before_install:
+  - docker pull trzeci/emscripten:1.39.10-upstream
+
+script:
+  - docker run --name dxlib trzeci/emscripten:1.39.10-upstream bash -c "git clone --recursive https://github.com/nokotan/DxLibForHTML5.git && cd DxLibForHTML5 && mkdir build && cd build && emcmake cmake .. && emmake make"
+  - mkdir extlib
+  - mkdir extlib/bin
+  - docker cp dxlib:/src/DxLibForHTML5/build/libDxLib.a extlib/bin/
+  - docker cp dxlib:/src/DxLibForHTML5/build/libDxUseCLib.a extlib/bin/
+  - docker cp dxlib:/src/DxLibForHTML5/build/libDxDrawFunc.a extlib/bin/
+  - mkdir extlib/include
+  - docker cp dxlib:/src/DxLibForHTML5/DxCompileConfig.h extlib/include/
+  - docker cp dxlib:/src/DxLibForHTML5/DxDataType.h extlib/include/
+  - docker cp dxlib:/src/DxLibForHTML5/DxDataTypeHTML5.h extlib/include/
+  - docker cp dxlib:/src/DxLibForHTML5/DxFunctionWin.h extlib/include/
+  - docker cp dxlib:/src/DxLibForHTML5/DxLib.h extlib/include/
+  - zip -r DxLibForHTML5.zip extlib
+  - tar -cvzf DxLibForHTML5.tgz extlib/*
+
+deploy:
+  provider: releases
+  token: $GITHUB_TOKEN
+  file:
+    - DxLibForHTML5.zip
+    - DxLibForHTML5.tgz
+  skip_cleanup: true
+  on:
+    tags: true
