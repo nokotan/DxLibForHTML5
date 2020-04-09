@@ -6,7 +6,8 @@ cmake_minimum_required(VERSION 3.13)
 
 # Library Declaration
 
-add_library(DxLib STATIC)
+# add_library(DxLib STATIC)
+add_executable(DxLib)
 add_library(DxDrawFunc STATIC)
 add_library(DxUseCLib STATIC)
 
@@ -70,11 +71,22 @@ target_sources(DxLib
 set_target_properties(DxLib
     PROPERTIES 
         COMPILE_FLAGS "-s USE_FREETYPE=1 -s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
+        LINK_FLAGS "-s USE_FREETYPE=1 -s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
         CXX_STANDARD 11
+        SUFFIX ".wasm"
 )
 
 target_link_libraries(DxLib
     DxDrawFunc
+    DxUseCLib
+    freetype
+    ogg
+    vorbis
+    png
+    jpeg
+    z
+    bullet
+    c++abi-noexcept
 )
 
 
