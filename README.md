@@ -1,27 +1,29 @@
 # DxLibForHTML5
 
-## ŠT—v
+![CI Status](https://travis-ci.org/nokotan/DxLibForHTML5.svg?branch=master)
 
-DXƒ‰ƒCƒuƒ‰ƒŠ‚ğHTML5‚Å“®‚©‚µ‚Ä‚İ‚½‚¢...
+## æ¦‚è¦
 
-- iOS, Android”Å‚Ì•`‰æƒoƒbƒNƒGƒ“ƒh‚ª OpenGLES
-- iOS ‚ÌƒTƒEƒ“ƒhÄ¶ƒoƒbƒNƒGƒ“ƒh‚ª OpenAL
-- emscripten ‚É‚Í OpenGLES, OpenAL, libpng, libjpeg, zlib, ogg, vorbis, bullet ‚Æ‚¢‚Á‚½ DXƒ‰ƒCƒuƒ‰ƒŠ‚Åg‚í‚ê‚Ä‚¢‚éŠO•”ƒ‰ƒCƒuƒ‰ƒŠ‚ª‚·‚×‚Ä‚»‚ë‚Á‚Ä‚¢‚é
+DXãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’HTML5ã§å‹•ã‹ã—ã¦ã¿ãŸã„...
 
-‚Í‚¢Aemscripten ‚ğg‚Á‚Äƒrƒ‹ƒh‚µ‚Ä‚İ‚Ü‚·
+- iOS, Androidç‰ˆã®æç”»ãƒãƒƒã‚¯ã‚¨ãƒ³ãƒ‰ãŒ OpenGLES
+- iOS ã®ã‚µã‚¦ãƒ³ãƒ‰å†ç”Ÿãƒãƒƒã‚¯ã‚¨ãƒ³ãƒ‰ãŒ OpenAL
+- emscripten ã«ã¯ OpenGLES, OpenAL, libpng, libjpeg, zlib, ogg, vorbis, bullet ã¨ã„ã£ãŸ DXãƒ©ã‚¤ãƒ–ãƒ©ãƒªã§ä½¿ã‚ã‚Œã¦ã„ã‚‹å¤–éƒ¨ãƒ©ã‚¤ãƒ–ãƒ©ãƒªãŒã™ã¹ã¦ãã‚ã£ã¦ã„ã‚‹
 
-## ƒRƒ“ƒpƒCƒ‹Ï‚İƒoƒCƒiƒŠ‚Ìƒ_ƒEƒ“ƒ[ƒh
+ã¯ã„ã€emscripten ã‚’ä½¿ã£ã¦ãƒ“ãƒ«ãƒ‰ã—ã¦ã¿ã¾ã™
 
-- [ÅV”Å‚Ìƒ_ƒEƒ“ƒ[ƒh](https://github.com/nokotan/DxLibForHTML5/releases/latest) (Windows, Linux, macOS‹¤’Ê)
+## ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«æ¸ˆã¿ãƒã‚¤ãƒŠãƒªã®ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰
 
-## •K—vğŒ
+- [æœ€æ–°ç‰ˆã®ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰](https://github.com/nokotan/DxLibForHTML5/releases/latest) (Windows, Linux, macOSå…±é€š)
+
+## å¿…è¦æ¡ä»¶
 
 - emscripten 1.39.6^
 - cmake
 - git
-- make (nmake, ninja‚Å‚à‰Â)
+- make (nmake, ninjaã§ã‚‚å¯)
 
-## ƒrƒ‹ƒh
+## ãƒ“ãƒ«ãƒ‰
 
 - macOS, Linux
 
@@ -36,7 +38,7 @@ emmake make
 
 - Windows
 
-nmake ‚ğg‚¤ê‡
+nmake ã‚’ä½¿ã†å ´åˆ
 
 ```bat
 git clone --recursive https://github.com/nokotan/DxLibForHTML5.git
@@ -47,7 +49,7 @@ emcmake cmake -G "MinGW Makefiles" ..
 nmake
 ```
 
-ninja ‚ğg‚¤ê‡
+ninja ã‚’ä½¿ã†å ´åˆ
 
 ```bat
 git clone --recursive https://github.com/nokotan/DxLibForHTML5.git
