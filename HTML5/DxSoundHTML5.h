@@ -1,6 +1,6 @@
 // -------------------------------------------------------------------------------
 // 
-// 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		iOS—pƒTƒEƒ“ƒhƒvƒƒOƒ‰ƒ€ƒwƒbƒ_ƒtƒ@ƒCƒ‹
+// 		ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒª		iOSç”¨ã‚µã‚¦ãƒ³ãƒ‰ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ«
 // 
 // 				Ver 3.21d
 // 
@@ -13,7 +13,7 @@
 
 #ifndef DX_NON_SOUND
 
-// ƒCƒ“ƒNƒ‹[ƒh ------------------------------------------------------------------
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ ------------------------------------------------------------------
 #include "../DxLib.h"
 #include "../DxThread.h"
 
@@ -27,22 +27,22 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// ƒ}ƒNƒ’è‹` --------------------------------------------------------------------
+// ãƒžã‚¯ãƒ­å®šç¾© --------------------------------------------------------------------
 
-// ƒXƒgƒŠ[ƒ€ŠÖŒW‚Ì’è‹`
-#define STS_BUFSEC_FILE						(256)			// ƒXƒgƒŠ[ƒ€•—ƒTƒEƒ“ƒhÄ¶Žž‚ÉŠm•Û‚·‚éƒTƒEƒ“ƒhƒoƒbƒtƒ@‚ÌŽžŠÔ( ’PˆÊ‚Í STS_DIVNUM•ª‚Ì1•b )( ƒtƒ@ƒCƒ‹‚©‚ç‚ÌƒXƒgƒŠ[ƒ€Ä¶—p )
-#define STS_ADVANCECOPYSEC_FILE				(192)			// ƒXƒgƒŠ[ƒ€•—ƒTƒEƒ“ƒhÄ¶Žž‚É‰¹ºƒf[ƒ^‚ðæs“WŠJ‚µ‚Ä‚¨‚­Å‘åŽžŠÔ( ’PˆÊ‚Í STS_DIVNUM•ª‚Ì1•b )( ƒtƒ@ƒCƒ‹‚©‚ç‚ÌƒXƒgƒŠ[ƒ€Ä¶—p )
-#define STS_MINADVANCECOPYSEC_FILE			(96)			// ƒXƒgƒŠ[ƒ€•—ƒTƒEƒ“ƒhÄ¶Žž‚É‰¹ºƒf[ƒ^‚ðæs“WŠJ‚µ‚Ä‚¨‚­Å¬ŽžŠÔ( ’PˆÊ‚Í STS_DIVNUM•ª‚Ì1•b )( ƒtƒ@ƒCƒ‹‚©‚ç‚ÌƒXƒgƒŠ[ƒ€Ä¶—p )
+// ã‚¹ãƒˆãƒªãƒ¼ãƒ é–¢ä¿‚ã®å®šç¾©
+#define STS_BUFSEC_FILE						(256)			// ã‚¹ãƒˆãƒªãƒ¼ãƒ é¢¨ã‚µã‚¦ãƒ³ãƒ‰å†ç”Ÿæ™‚ã«ç¢ºä¿ã™ã‚‹ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ•ã‚¡ã®æ™‚é–“( å˜ä½ã¯ STS_DIVNUMåˆ†ã®1ç§’ )( ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã®ã‚¹ãƒˆãƒªãƒ¼ãƒ å†ç”Ÿç”¨ )
+#define STS_ADVANCECOPYSEC_FILE				(192)			// ã‚¹ãƒˆãƒªãƒ¼ãƒ é¢¨ã‚µã‚¦ãƒ³ãƒ‰å†ç”Ÿæ™‚ã«éŸ³å£°ãƒ‡ãƒ¼ã‚¿ã‚’å…ˆè¡Œå±•é–‹ã—ã¦ãŠãæœ€å¤§æ™‚é–“( å˜ä½ã¯ STS_DIVNUMåˆ†ã®1ç§’ )( ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã®ã‚¹ãƒˆãƒªãƒ¼ãƒ å†ç”Ÿç”¨ )
+#define STS_MINADVANCECOPYSEC_FILE			(96)			// ã‚¹ãƒˆãƒªãƒ¼ãƒ é¢¨ã‚µã‚¦ãƒ³ãƒ‰å†ç”Ÿæ™‚ã«éŸ³å£°ãƒ‡ãƒ¼ã‚¿ã‚’å…ˆè¡Œå±•é–‹ã—ã¦ãŠãæœ€å°æ™‚é–“( å˜ä½ã¯ STS_DIVNUMåˆ†ã®1ç§’ )( ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ã®ã‚¹ãƒˆãƒªãƒ¼ãƒ å†ç”Ÿç”¨ )
 
-// ˆê‚Â‚ÌƒTƒEƒ“ƒhƒ\[ƒX‚Ìƒoƒbƒtƒ@”
+// ä¸€ã¤ã®ã‚µã‚¦ãƒ³ãƒ‰ã‚½ãƒ¼ã‚¹ã®ãƒãƒƒãƒ•ã‚¡æ•°
 #define SOUNDSOURCE_BUFFER_NUM				(6)
 
-// ƒTƒEƒ“ƒhƒoƒbƒtƒ@Ä¶ˆ——pî•ñ‚ÌÅ‘å”
+// ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ•ã‚¡å†ç”Ÿå‡¦ç†ç”¨æƒ…å ±ã®æœ€å¤§æ•°
 #define SOUNDBUFFERPLAYINFO_MAX_NUM			(512)
 
-// \‘¢‘Ì’è‹` --------------------------------------------------------------------
+// æ§‹é€ ä½“å®šç¾© --------------------------------------------------------------------
 
-// ƒTƒEƒ“ƒh”jŠüˆ——p\‘¢‘Ì
+// ã‚µã‚¦ãƒ³ãƒ‰ç ´æ£„å‡¦ç†ç”¨æ§‹é€ ä½“
 struct SOUNDRELEASE_INFO
 {
 	int								UseFlag ;
@@ -54,19 +54,19 @@ struct SOUNDRELEASE_INFO
 	DWORD							ReleaseTime ;
 } ;
 
-// ƒTƒEƒ“ƒhƒoƒbƒtƒ@ŠÂ‹«ˆË‘¶î•ñ\‘¢‘Ì
+// ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ•ã‚¡ç’°å¢ƒä¾å­˜æƒ…å ±æ§‹é€ ä½“
 struct SOUNDBUFFER_PF
 {
-	DX_CRITICAL_SECTION				CriticalSection ;					// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“
+	DX_CRITICAL_SECTION				CriticalSection ;					// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³
 
-	int								BufferEndPlayEnqueueNum ;			// ƒoƒbƒtƒ@ƒLƒ…[‚ÉÄ¶I—¹Œã‚ÌƒLƒ…[‚ðÏ‚ñ‚¾‰ñ”
+	int								BufferEndPlayEnqueueNum ;			// ãƒãƒƒãƒ•ã‚¡ã‚­ãƒ¥ãƒ¼ã«å†ç”Ÿçµ‚äº†å¾Œã®ã‚­ãƒ¥ãƒ¼ã‚’ç©ã‚“ã å›žæ•°
 
-	int								PlaySetupComp ;						// Ä¶€”õ‚ªÏ‚ñ‚Å‚¢‚é‚©‚Ç‚¤‚©
- 	ALuint							ALBuffer[ SOUNDSOURCE_BUFFER_NUM ] ; // ALƒoƒbƒtƒ@
-	void *							ALBufferImage[ SOUNDSOURCE_BUFFER_NUM ] ; // ALƒoƒbƒtƒ@ƒCƒ[ƒW
-	DWORD							ALBufferValidBytes[ SOUNDSOURCE_BUFFER_NUM ] ;	// ALƒoƒbƒtƒ@‚Ì—LŒø‚Èƒf[ƒ^‚ÌƒoƒCƒg”
-	DWORD							ALBufferEndPos[ SOUNDSOURCE_BUFFER_NUM ] ;	// ALƒoƒbƒtƒ@‚Ì—LŒøƒf[ƒ^‚ÌI—¹ˆÊ’u‚ªƒTƒEƒ“ƒhƒoƒbƒtƒ@‚Ì‚Ç‚ÌˆÊ’u‚É‘Š“–‚·‚é‚©A‚Ìî•ñ
- 	ALuint							ALSource ;							// ALƒ\[ƒX
+	int								PlaySetupComp ;						// å†ç”Ÿæº–å‚™ãŒæ¸ˆã‚“ã§ã„ã‚‹ã‹ã©ã†ã‹
+ 	ALuint							ALBuffer[ SOUNDSOURCE_BUFFER_NUM ] ; // ALãƒãƒƒãƒ•ã‚¡
+	void *							ALBufferImage[ SOUNDSOURCE_BUFFER_NUM ] ; // ALãƒãƒƒãƒ•ã‚¡ã‚¤ãƒ¡ãƒ¼ã‚¸
+	DWORD							ALBufferValidBytes[ SOUNDSOURCE_BUFFER_NUM ] ;	// ALãƒãƒƒãƒ•ã‚¡ã®æœ‰åŠ¹ãªãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒˆæ•°
+	DWORD							ALBufferEndPos[ SOUNDSOURCE_BUFFER_NUM ] ;	// ALãƒãƒƒãƒ•ã‚¡ã®æœ‰åŠ¹ãƒ‡ãƒ¼ã‚¿ã®çµ‚äº†ä½ç½®ãŒã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ•ã‚¡ã®ã©ã®ä½ç½®ã«ç›¸å½“ã™ã‚‹ã‹ã€ã®æƒ…å ±
+ 	ALuint							ALSource ;							// ALã‚½ãƒ¼ã‚¹
 
 	int								StopSoundBufferValid ;
 	struct SOUNDBUFFER *			StopSoundBufferPrev ;
@@ -80,24 +80,24 @@ struct SOUNDBUFFER_PF
 	struct SOUNDBUFFER *			RePlaySoundBufferNext ;
 } ;
 
-// ƒTƒEƒ“ƒhƒVƒXƒeƒ€—pŠÂ‹«ˆË‘¶ƒf[ƒ^\‘¢‘Ì
+// ã‚µã‚¦ãƒ³ãƒ‰ã‚·ã‚¹ãƒ†ãƒ ç”¨ç’°å¢ƒä¾å­˜ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 struct SOUNDSYSTEMDATA_PF
 {
-	ALCdevice *					ALCdeviceObject ;						// ALƒfƒoƒCƒXƒIƒuƒWƒFƒNƒg
-	ALCcontext *				ALCcontectObject ;						// ALƒRƒ“ƒeƒLƒXƒgƒIƒuƒWƒFƒNƒg
+	ALCdevice *					ALCdeviceObject ;						// ALãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+	ALCcontext *				ALCcontectObject ;						// ALã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
 
-	pthread_t					ProcessALBufferThread ;					// ALBuffer‚ÌÄ¶ˆ—‚ðs‚¤ƒXƒŒƒbƒh‚ÌID
-	volatile int				ProcessALBufferThreadEndRequest ;		// ALBuffer‚ÌÄ¶ˆ—‚ðs‚¤ƒXƒŒƒbƒh‚ðI—¹‚·‚é‚©‚Ç‚¤‚©
+	pthread_t					ProcessALBufferThread ;					// ALBufferã®å†ç”Ÿå‡¦ç†ã‚’è¡Œã†ã‚¹ãƒ¬ãƒƒãƒ‰ã®ID
+	volatile int				ProcessALBufferThreadEndRequest ;		// ALBufferã®å†ç”Ÿå‡¦ç†ã‚’è¡Œã†ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’çµ‚äº†ã™ã‚‹ã‹ã©ã†ã‹
 
-	pthread_t					ProcessSoundThread ;					// ProcessStreamSoundMemAll “™‚ðŒÄ‚ÔƒXƒŒƒbƒh‚ÌID
-	volatile int				ProcessSoundThreadEndRequest ;			// ProcessStreamSoundMemAll “™‚ðŒÄ‚ÔƒXƒŒƒbƒh‚ðI—¹‚·‚é‚©‚Ç‚¤‚©
+	pthread_t					ProcessSoundThread ;					// ProcessStreamSoundMemAll ç­‰ã‚’å‘¼ã¶ã‚¹ãƒ¬ãƒƒãƒ‰ã®ID
+	volatile int				ProcessSoundThreadEndRequest ;			// ProcessStreamSoundMemAll ç­‰ã‚’å‘¼ã¶ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’çµ‚äº†ã™ã‚‹ã‹ã©ã†ã‹
 
-	int							DXSoundProcessStart ;					// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒTƒEƒ“ƒhˆ—‚ðŠJŽn‚µ‚½‚©‚Ç‚¤‚©
+	int							DXSoundProcessStart ;					// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ã‚µã‚¦ãƒ³ãƒ‰å‡¦ç†ã‚’é–‹å§‹ã—ãŸã‹ã©ã†ã‹
 
-	DX_CRITICAL_SECTION			StopSoundBufferCriticalSection ;		// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“
+	DX_CRITICAL_SECTION			StopSoundBufferCriticalSection ;		// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³
 	struct SOUNDBUFFER *		StopSoundBuffer ;
 
-	DX_CRITICAL_SECTION			PlaySoundBufferCriticalSection ;		// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“
+	DX_CRITICAL_SECTION			PlaySoundBufferCriticalSection ;		// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³
 	struct SOUNDBUFFER *		PlaySoundBuffer ;
 
 	int							SoundReleaseInitialize ;
@@ -109,31 +109,31 @@ struct SOUNDSYSTEMDATA_PF
 	int							SoundReleaseInfoNextUseIndex ;
 } ;
 
-// ‚l‚h‚c‚hƒf[ƒ^ŠÂ‹«ˆË‘¶î•ñ
+// ï¼­ï¼©ï¼¤ï¼©ãƒ‡ãƒ¼ã‚¿ç’°å¢ƒä¾å­˜æƒ…å ±
 struct MIDIHANDLEDATA_PF
 {
 	int							Dummy ;
 } ;
 
-// ‚l‚h‚c‚hƒVƒXƒeƒ€—pŠÂ‹«ˆË‘¶ƒf[ƒ^\‘¢‘Ì
+// ï¼­ï¼©ï¼¤ï¼©ã‚·ã‚¹ãƒ†ãƒ ç”¨ç’°å¢ƒä¾å­˜ãƒ‡ãƒ¼ã‚¿æ§‹é€ ä½“
 struct MIDISYSTEMDATA_PF
 {
 	int							Dummy ;
 } ;
 
-// “à•”‘åˆæ•Ï”éŒ¾ --------------------------------------------------------------
+// å†…éƒ¨å¤§åŸŸå¤‰æ•°å®£è¨€ --------------------------------------------------------------
 
-// ŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾-----------------------------------------------------------
+// é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€-----------------------------------------------------------
 
-extern	int		MidiCallBackProcess( void ) ;																			// ‚l‚h‚c‚h‰‰‘tI—¹ŽžŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”
+extern	int		MidiCallBackProcess( void ) ;																			// ï¼­ï¼©ï¼¤ï¼©æ¼”å¥çµ‚äº†æ™‚å‘¼ã°ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
 
-extern	void	SoundBuffer_Apply_StopSoundBufferList( void ) ;							// ’âŽ~‘Ò‚¿ƒTƒEƒ“ƒhƒoƒbƒtƒ@ƒŠƒXƒg‚É“o˜^‚³‚ê‚Ä‚¢‚éƒTƒEƒ“ƒhƒoƒbƒtƒ@‚ð’âŽ~‚·‚é
+extern	void	SoundBuffer_Apply_StopSoundBufferList( void ) ;							// åœæ­¢å¾…ã¡ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ•ã‚¡ãƒªã‚¹ãƒˆã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ•ã‚¡ã‚’åœæ­¢ã™ã‚‹
 
 
-// ALƒfƒoƒCƒX‚ÆALƒRƒ“ƒeƒLƒXƒg‚ðƒZƒbƒg‚·‚é
+// ALãƒ‡ãƒã‚¤ã‚¹ã¨ALã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	void	SoundSystem_iOS_SetALDeviceAndALContext( void *ALCDevice, void *ALCContext ) ;
 
-// Ä¶’†‚Ì ALBuffer ‚ðÄì¬‚µ‚ÄÄÄ¶‚·‚é
+// å†ç”Ÿä¸­ã® ALBuffer ã‚’å†ä½œæˆã—ã¦å†å†ç”Ÿã™ã‚‹
 extern	void	SoundSystem_iOS_ALBuffer_RePlay( void ) ;
 
 extern	int		UpdateSound_PF( void ) ;

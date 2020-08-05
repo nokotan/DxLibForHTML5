@@ -1,19 +1,19 @@
 //-----------------------------------------------------------------------------
 // 
-// 		ÇcÇwÉâÉCÉuÉâÉä		Androidópì¸óÕèÓïÒÉvÉçÉOÉâÉÄ
+// 		Ôº§Ôº∏„É©„Ç§„Éñ„É©„É™		AndroidÁî®ÂÖ•ÂäõÊÉÖÂ†±„Éó„É≠„Ç∞„É©„É†
 // 
 //  	Ver 3.21d
 // 
 //-----------------------------------------------------------------------------
 
-// ÇcÇwÉâÉCÉuÉâÉäçÏê¨éûópíËã`
+// Ôº§Ôº∏„É©„Ç§„Éñ„É©„É™‰ΩúÊàêÊôÇÁî®ÂÆöÁæ©
 #define DX_MAKE
 
 #include "../DxCompileConfig.h"
 
 #ifndef DX_NON_INPUT
 
-// ÉCÉìÉNÉãÅ[Éh----------------------------------------------------------------
+// „Ç§„É≥„ÇØ„É´„Éº„Éâ----------------------------------------------------------------
 #include "DxInputHTML5.h"
 #include "DxSystemHTML5.h"
 #include "../DxLog.h"
@@ -30,7 +30,7 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// É}ÉNÉçíËã`------------------------------------------------------------------
+// „Éû„ÇØ„É≠ÂÆöÁæ©------------------------------------------------------------------
 
 #define DEADZONE_D							(0.35)
 #define DEADZONE							(DWORD)( DEADZONE_D * 65536 )
@@ -39,11 +39,11 @@ namespace DxLib
 #define VALIDRANGE_XINPUT( ZONE )			( 32767 - DEADZONE_XINPUT(ZONE))
 #define VALIDRANGE_XINPUT_TRIGGER( ZONE )	(   255 - DEADZONE_XINPUT_TRIGGER(ZONE))
 
-// å^íËã`----------------------------------------------------------------------
+// ÂûãÂÆöÁæ©----------------------------------------------------------------------
 
-// íËêîíËã` ----------------------------------------------------------------------
+// ÂÆöÊï∞ÂÆöÁæ© ----------------------------------------------------------------------
 
-// ÉfÅ[É^êÈåæ------------------------------------------------------------------
+// „Éá„Éº„ÇøÂÆ£Ë®Ä------------------------------------------------------------------
 
 const static int32_t g_AndroidInputSourceTable[ ANDR_INPUT_SOURCE_NUM ] =
 {
@@ -54,131 +54,131 @@ const static int32_t g_AndroidInputSourceTable[ ANDR_INPUT_SOURCE_NUM ] =
 	HTML5_INPUT_SOURCE_JOYSTICK
 } ;
 
-const static unsigned short g_AndroidKeyToDXInputKey[][ 2 /* 0:AndroidÉLÅ[ÉRÅ[Éh  1:DirectInputÉLÅ[ÉRÅ[Éh  */ ] =
+const static unsigned short g_AndroidKeyToDXInputKey[][ 2 /* 0:Android„Ç≠„Éº„Ç≥„Éº„Éâ  1:DirectInput„Ç≠„Éº„Ç≥„Éº„Éâ  */ ] =
 {
-	{ HTML_KEYCODE_BACK,		KEY_INPUT_BACK },		// BackSpaceÉLÅ[
-	{ HTML_KEYCODE_TAB,			KEY_INPUT_TAB },		// TabÉLÅ[
-	{ HTML_KEYCODE_RETURN,		KEY_INPUT_RETURN },		// EnterÉLÅ[
+	{ HTML_KEYCODE_BACK,		KEY_INPUT_BACK },		// BackSpace„Ç≠„Éº
+	{ HTML_KEYCODE_TAB,			KEY_INPUT_TAB },		// Tab„Ç≠„Éº
+	{ HTML_KEYCODE_RETURN,		KEY_INPUT_RETURN },		// Enter„Ç≠„Éº
 
-	{ HTML_KEYCODE_LSHIFT,		KEY_INPUT_LSHIFT },		// ç∂ShiftÉLÅ[
-	{ HTML_KEYCODE_RSHIFT,		KEY_INPUT_RSHIFT },		// âEShiftÉLÅ[
-	{ HTML_KEYCODE_LCONTROL,	KEY_INPUT_LCONTROL },	// ç∂CtrlÉLÅ[
-	{ HTML_KEYCODE_RCONTROL,	KEY_INPUT_RCONTROL },	// âECtrlÉLÅ[
-	{ HTML_KEYCODE_ESCAPE,		KEY_INPUT_ESCAPE },		// EscÉLÅ[
-	{ HTML_KEYCODE_SPACE,		KEY_INPUT_SPACE },		// ÉXÉyÅ[ÉXÉLÅ[
-	{ HTML_KEYCODE_PGUP,		KEY_INPUT_PGUP },		// PageUpÉLÅ[
-	{ HTML_KEYCODE_PGDN,		KEY_INPUT_PGDN },		// PageDownÉLÅ[
-	{ HTML_KEYCODE_END,			KEY_INPUT_END },		// EndÉLÅ[
-	{ HTML_KEYCODE_HOME,		KEY_INPUT_HOME },		// HomeÉLÅ[
-	{ HTML_KEYCODE_LEFT,		KEY_INPUT_LEFT },		// ç∂ÉLÅ[
-	{ HTML_KEYCODE_UP,			KEY_INPUT_UP },			// è„ÉLÅ[
-	{ HTML_KEYCODE_RIGHT,		KEY_INPUT_RIGHT },		// âEÉLÅ[
-	{ HTML_KEYCODE_DOWN,		KEY_INPUT_DOWN },		// â∫ÉLÅ[
-	{ HTML_KEYCODE_INSERT,		KEY_INPUT_INSERT },		// InsertÉLÅ[
-	{ HTML_KEYCODE_DELETE,		KEY_INPUT_DELETE },		// DeleteÉLÅ[
+	{ HTML_KEYCODE_LSHIFT,		KEY_INPUT_LSHIFT },		// Â∑¶Shift„Ç≠„Éº
+	{ HTML_KEYCODE_RSHIFT,		KEY_INPUT_RSHIFT },		// Âè≥Shift„Ç≠„Éº
+	{ HTML_KEYCODE_LCONTROL,	KEY_INPUT_LCONTROL },	// Â∑¶Ctrl„Ç≠„Éº
+	{ HTML_KEYCODE_RCONTROL,	KEY_INPUT_RCONTROL },	// Âè≥Ctrl„Ç≠„Éº
+	{ HTML_KEYCODE_ESCAPE,		KEY_INPUT_ESCAPE },		// Esc„Ç≠„Éº
+	{ HTML_KEYCODE_SPACE,		KEY_INPUT_SPACE },		// „Çπ„Éö„Éº„Çπ„Ç≠„Éº
+	{ HTML_KEYCODE_PGUP,		KEY_INPUT_PGUP },		// PageUp„Ç≠„Éº
+	{ HTML_KEYCODE_PGDN,		KEY_INPUT_PGDN },		// PageDown„Ç≠„Éº
+	{ HTML_KEYCODE_END,			KEY_INPUT_END },		// End„Ç≠„Éº
+	{ HTML_KEYCODE_HOME,		KEY_INPUT_HOME },		// Home„Ç≠„Éº
+	{ HTML_KEYCODE_LEFT,		KEY_INPUT_LEFT },		// Â∑¶„Ç≠„Éº
+	{ HTML_KEYCODE_UP,			KEY_INPUT_UP },			// ‰∏ä„Ç≠„Éº
+	{ HTML_KEYCODE_RIGHT,		KEY_INPUT_RIGHT },		// Âè≥„Ç≠„Éº
+	{ HTML_KEYCODE_DOWN,		KEY_INPUT_DOWN },		// ‰∏ã„Ç≠„Éº
+	{ HTML_KEYCODE_INSERT,		KEY_INPUT_INSERT },		// Insert„Ç≠„Éº
+	{ HTML_KEYCODE_DELETE,		KEY_INPUT_DELETE },		// Delete„Ç≠„Éº
 
 
-	{ HTML_KEYCODE_MINUS,			KEY_INPUT_MINUS },		// Å|ÉLÅ[
-	{ HTML_KEYCODE_YEN,				KEY_INPUT_YEN },		// ÅèÉLÅ[
-	{ HTML_KEYCODE_PREVTRACK,		KEY_INPUT_PREVTRACK },	// ÅOÉLÅ[
-	{ HTML_KEYCODE_PERIOD,			KEY_INPUT_PERIOD },		// ÅDÉLÅ[
-	{ HTML_KEYCODE_SLASH,			KEY_INPUT_SLASH },		// Å^ÉLÅ[
-	{ HTML_KEYCODE_LALT,			KEY_INPUT_LALT },		// ç∂AltÉLÅ[
-	{ HTML_KEYCODE_RALT,			KEY_INPUT_RALT },		// âEAltÉLÅ[
-	{ HTML_KEYCODE_SCROLL,			KEY_INPUT_SCROLL },		// ScrollLockÉLÅ[
-	{ HTML_KEYCODE_SEMICOLON,		KEY_INPUT_SEMICOLON },	// ÅGÉLÅ[
-	{ HTML_KEYCODE_COLON,			KEY_INPUT_COLON },		// ÅFÉLÅ[
-	{ HTML_KEYCODE_LBRACKET,		KEY_INPUT_LBRACKET },	// ÅmÉLÅ[
-	{ HTML_KEYCODE_RBRACKET,		KEY_INPUT_RBRACKET },	// ÅnÉLÅ[
-	{ HTML_KEYCODE_AT,				KEY_INPUT_AT },			// ÅóÉLÅ[
-	{ HTML_KEYCODE_BACKSLASH,		KEY_INPUT_BACKSLASH },	// Å_ÉLÅ[
-	{ HTML_KEYCODE_COMMA,			KEY_INPUT_COMMA },		// ÅCÉLÅ[
-//	{ HTML_KEYCODE_ZENKAKU_HANKAKU,	KEY_INPUT_KANJI },		// äøéöÉLÅ[
-//	{ HTML_KEYCODE_HENKAN,			KEY_INPUT_CONVERT },	// ïœä∑ÉLÅ[
-//	{ HTML_KEYCODE_MUHENKAN,		KEY_INPUT_NOCONVERT },	// ñ≥ïœä∑ÉLÅ[
-//	{ HTML_KEYCODE_KANA,			KEY_INPUT_KANA },		// ÉJÉiÉLÅ[
-//	{ HTML_KEYCODE_APPS,			KEY_INPUT_APPS },		// ÉAÉvÉäÉPÅ[ÉVÉáÉìÉÅÉjÉÖÅ[ÉLÅ[
-//	{ HTML_KEYCODE_CAPSLOCK,		KEY_INPUT_CAPSLOCK },	// CaspLockÉLÅ[
-//	{ HTML_KEYCODE_SYSRQ,			KEY_INPUT_SYSRQ },		// PrintScreenÉLÅ[
-	{ HTML_KEYCODE_PAUSE,			KEY_INPUT_PAUSE },		// PauseBreakÉLÅ[
-	{ HTML_KEYCODE_LWIN,			KEY_INPUT_LWIN },		// ç∂WinÉLÅ[
-	{ HTML_KEYCODE_RWIN,			KEY_INPUT_RWIN },		// âEWinÉLÅ[
+	{ HTML_KEYCODE_MINUS,			KEY_INPUT_MINUS },		// ‚àí„Ç≠„Éº
+	{ HTML_KEYCODE_YEN,				KEY_INPUT_YEN },		// Ôø•„Ç≠„Éº
+	{ HTML_KEYCODE_PREVTRACK,		KEY_INPUT_PREVTRACK },	// Ôºæ„Ç≠„Éº
+	{ HTML_KEYCODE_PERIOD,			KEY_INPUT_PERIOD },		// Ôºé„Ç≠„Éº
+	{ HTML_KEYCODE_SLASH,			KEY_INPUT_SLASH },		// Ôºè„Ç≠„Éº
+	{ HTML_KEYCODE_LALT,			KEY_INPUT_LALT },		// Â∑¶Alt„Ç≠„Éº
+	{ HTML_KEYCODE_RALT,			KEY_INPUT_RALT },		// Âè≥Alt„Ç≠„Éº
+	{ HTML_KEYCODE_SCROLL,			KEY_INPUT_SCROLL },		// ScrollLock„Ç≠„Éº
+	{ HTML_KEYCODE_SEMICOLON,		KEY_INPUT_SEMICOLON },	// Ôºõ„Ç≠„Éº
+	{ HTML_KEYCODE_COLON,			KEY_INPUT_COLON },		// Ôºö„Ç≠„Éº
+	{ HTML_KEYCODE_LBRACKET,		KEY_INPUT_LBRACKET },	// Ôºª„Ç≠„Éº
+	{ HTML_KEYCODE_RBRACKET,		KEY_INPUT_RBRACKET },	// ÔºΩ„Ç≠„Éº
+	{ HTML_KEYCODE_AT,				KEY_INPUT_AT },			// Ôº†„Ç≠„Éº
+	{ HTML_KEYCODE_BACKSLASH,		KEY_INPUT_BACKSLASH },	// Ôºº„Ç≠„Éº
+	{ HTML_KEYCODE_COMMA,			KEY_INPUT_COMMA },		// Ôºå„Ç≠„Éº
+//	{ HTML_KEYCODE_ZENKAKU_HANKAKU,	KEY_INPUT_KANJI },		// Êº¢Â≠ó„Ç≠„Éº
+//	{ HTML_KEYCODE_HENKAN,			KEY_INPUT_CONVERT },	// Â§âÊèõ„Ç≠„Éº
+//	{ HTML_KEYCODE_MUHENKAN,		KEY_INPUT_NOCONVERT },	// ÁÑ°Â§âÊèõ„Ç≠„Éº
+//	{ HTML_KEYCODE_KANA,			KEY_INPUT_KANA },		// „Ç´„Éä„Ç≠„Éº
+//	{ HTML_KEYCODE_APPS,			KEY_INPUT_APPS },		// „Ç¢„Éó„É™„Ç±„Éº„Ç∑„Éß„É≥„É°„Éã„É•„Éº„Ç≠„Éº
+//	{ HTML_KEYCODE_CAPSLOCK,		KEY_INPUT_CAPSLOCK },	// CaspLock„Ç≠„Éº
+//	{ HTML_KEYCODE_SYSRQ,			KEY_INPUT_SYSRQ },		// PrintScreen„Ç≠„Éº
+	{ HTML_KEYCODE_PAUSE,			KEY_INPUT_PAUSE },		// PauseBreak„Ç≠„Éº
+	{ HTML_KEYCODE_LWIN,			KEY_INPUT_LWIN },		// Â∑¶Win„Ç≠„Éº
+	{ HTML_KEYCODE_RWIN,			KEY_INPUT_RWIN },		// Âè≥Win„Ç≠„Éº
 
-	{ HTML_KEYCODE_NUMLOCK,		KEY_INPUT_NUMLOCK },	// ÉeÉìÉLÅ[NumLockÉLÅ[
-	{ HTML_KEYCODE_NUMPAD0,		KEY_INPUT_NUMPAD0 },	// ÉeÉìÉLÅ[ÇO
-	{ HTML_KEYCODE_NUMPAD1,		KEY_INPUT_NUMPAD1 },	// ÉeÉìÉLÅ[ÇP
-	{ HTML_KEYCODE_NUMPAD2,		KEY_INPUT_NUMPAD2 },	// ÉeÉìÉLÅ[ÇQ
-	{ HTML_KEYCODE_NUMPAD3,		KEY_INPUT_NUMPAD3 },	// ÉeÉìÉLÅ[ÇR
-	{ HTML_KEYCODE_NUMPAD4,		KEY_INPUT_NUMPAD4 },	// ÉeÉìÉLÅ[ÇS
-	{ HTML_KEYCODE_NUMPAD5,		KEY_INPUT_NUMPAD5 },	// ÉeÉìÉLÅ[ÇT
-	{ HTML_KEYCODE_NUMPAD6,		KEY_INPUT_NUMPAD6 },	// ÉeÉìÉLÅ[ÇU
-	{ HTML_KEYCODE_NUMPAD7,		KEY_INPUT_NUMPAD7 },	// ÉeÉìÉLÅ[ÇV
-	{ HTML_KEYCODE_NUMPAD8,		KEY_INPUT_NUMPAD8 },	// ÉeÉìÉLÅ[ÇW
-	{ HTML_KEYCODE_NUMPAD9,		KEY_INPUT_NUMPAD9 },	// ÉeÉìÉLÅ[ÇX
-	{ HTML_KEYCODE_MULTIPLY,	KEY_INPUT_MULTIPLY },	// ÉeÉìÉLÅ[ÅñÉLÅ[
-	{ HTML_KEYCODE_ADD,			KEY_INPUT_ADD },		// ÉeÉìÉLÅ[Å{ÉLÅ[
-	{ HTML_KEYCODE_SUBTRACT,	KEY_INPUT_SUBTRACT },	// ÉeÉìÉLÅ[Å|ÉLÅ[
-	{ HTML_KEYCODE_DECIMAL,		KEY_INPUT_DECIMAL },	// ÉeÉìÉLÅ[ÅDÉLÅ[
-	{ HTML_KEYCODE_DIVIDE,		KEY_INPUT_DIVIDE },		// ÉeÉìÉLÅ[Å^ÉLÅ[
-	{ HTML_KEYCODE_NUMPADENTER,	KEY_INPUT_NUMPADENTER },// ÉeÉìÉLÅ[ÇÃÉGÉìÉ^Å[ÉLÅ[
+	{ HTML_KEYCODE_NUMLOCK,		KEY_INPUT_NUMLOCK },	// „ÉÜ„É≥„Ç≠„ÉºNumLock„Ç≠„Éº
+	{ HTML_KEYCODE_NUMPAD0,		KEY_INPUT_NUMPAD0 },	// „ÉÜ„É≥„Ç≠„ÉºÔºê
+	{ HTML_KEYCODE_NUMPAD1,		KEY_INPUT_NUMPAD1 },	// „ÉÜ„É≥„Ç≠„ÉºÔºë
+	{ HTML_KEYCODE_NUMPAD2,		KEY_INPUT_NUMPAD2 },	// „ÉÜ„É≥„Ç≠„ÉºÔºí
+	{ HTML_KEYCODE_NUMPAD3,		KEY_INPUT_NUMPAD3 },	// „ÉÜ„É≥„Ç≠„ÉºÔºì
+	{ HTML_KEYCODE_NUMPAD4,		KEY_INPUT_NUMPAD4 },	// „ÉÜ„É≥„Ç≠„ÉºÔºî
+	{ HTML_KEYCODE_NUMPAD5,		KEY_INPUT_NUMPAD5 },	// „ÉÜ„É≥„Ç≠„ÉºÔºï
+	{ HTML_KEYCODE_NUMPAD6,		KEY_INPUT_NUMPAD6 },	// „ÉÜ„É≥„Ç≠„ÉºÔºñ
+	{ HTML_KEYCODE_NUMPAD7,		KEY_INPUT_NUMPAD7 },	// „ÉÜ„É≥„Ç≠„ÉºÔºó
+	{ HTML_KEYCODE_NUMPAD8,		KEY_INPUT_NUMPAD8 },	// „ÉÜ„É≥„Ç≠„ÉºÔºò
+	{ HTML_KEYCODE_NUMPAD9,		KEY_INPUT_NUMPAD9 },	// „ÉÜ„É≥„Ç≠„ÉºÔºô
+	{ HTML_KEYCODE_MULTIPLY,	KEY_INPUT_MULTIPLY },	// „ÉÜ„É≥„Ç≠„ÉºÔºä„Ç≠„Éº
+	{ HTML_KEYCODE_ADD,			KEY_INPUT_ADD },		// „ÉÜ„É≥„Ç≠„ÉºÔºã„Ç≠„Éº
+	{ HTML_KEYCODE_SUBTRACT,	KEY_INPUT_SUBTRACT },	// „ÉÜ„É≥„Ç≠„Éº‚àí„Ç≠„Éº
+	{ HTML_KEYCODE_DECIMAL,		KEY_INPUT_DECIMAL },	// „ÉÜ„É≥„Ç≠„ÉºÔºé„Ç≠„Éº
+	{ HTML_KEYCODE_DIVIDE,		KEY_INPUT_DIVIDE },		// „ÉÜ„É≥„Ç≠„ÉºÔºè„Ç≠„Éº
+	{ HTML_KEYCODE_NUMPADENTER,	KEY_INPUT_NUMPADENTER },// „ÉÜ„É≥„Ç≠„Éº„ÅÆ„Ç®„É≥„Çø„Éº„Ç≠„Éº
 
-	{ HTML_KEYCODE_F1,				KEY_INPUT_F1 },			// ÇeÇPÉLÅ[
-	{ HTML_KEYCODE_F2,				KEY_INPUT_F2 },			// ÇeÇQÉLÅ[
-	{ HTML_KEYCODE_F3,				KEY_INPUT_F3 },			// ÇeÇRÉLÅ[
-	{ HTML_KEYCODE_F4,				KEY_INPUT_F4 },			// ÇeÇSÉLÅ[
-	{ HTML_KEYCODE_F5,				KEY_INPUT_F5 },			// ÇeÇTÉLÅ[
-	{ HTML_KEYCODE_F6,				KEY_INPUT_F6 },			// ÇeÇUÉLÅ[
-	{ HTML_KEYCODE_F7,				KEY_INPUT_F7 },			// ÇeÇVÉLÅ[
-	{ HTML_KEYCODE_F8,				KEY_INPUT_F8 },			// ÇeÇWÉLÅ[
-	{ HTML_KEYCODE_F9,				KEY_INPUT_F9 },			// ÇeÇXÉLÅ[
-	{ HTML_KEYCODE_F10,				KEY_INPUT_F10 },		// ÇeÇPÇOÉLÅ[
-	{ HTML_KEYCODE_F11,				KEY_INPUT_F11 },		// ÇeÇPÇPÉLÅ[
-	{ HTML_KEYCODE_F12,				KEY_INPUT_F12 },		// ÇeÇPÇQÉLÅ[
+	{ HTML_KEYCODE_F1,				KEY_INPUT_F1 },			// Ôº¶Ôºë„Ç≠„Éº
+	{ HTML_KEYCODE_F2,				KEY_INPUT_F2 },			// Ôº¶Ôºí„Ç≠„Éº
+	{ HTML_KEYCODE_F3,				KEY_INPUT_F3 },			// Ôº¶Ôºì„Ç≠„Éº
+	{ HTML_KEYCODE_F4,				KEY_INPUT_F4 },			// Ôº¶Ôºî„Ç≠„Éº
+	{ HTML_KEYCODE_F5,				KEY_INPUT_F5 },			// Ôº¶Ôºï„Ç≠„Éº
+	{ HTML_KEYCODE_F6,				KEY_INPUT_F6 },			// Ôº¶Ôºñ„Ç≠„Éº
+	{ HTML_KEYCODE_F7,				KEY_INPUT_F7 },			// Ôº¶Ôºó„Ç≠„Éº
+	{ HTML_KEYCODE_F8,				KEY_INPUT_F8 },			// Ôº¶Ôºò„Ç≠„Éº
+	{ HTML_KEYCODE_F9,				KEY_INPUT_F9 },			// Ôº¶Ôºô„Ç≠„Éº
+	{ HTML_KEYCODE_F10,				KEY_INPUT_F10 },		// Ôº¶ÔºëÔºê„Ç≠„Éº
+	{ HTML_KEYCODE_F11,				KEY_INPUT_F11 },		// Ôº¶ÔºëÔºë„Ç≠„Éº
+	{ HTML_KEYCODE_F12,				KEY_INPUT_F12 },		// Ôº¶ÔºëÔºí„Ç≠„Éº
 
-	{ HTML_KEYCODE_A,				KEY_INPUT_A },			// Ç`ÉLÅ[
-	{ HTML_KEYCODE_B,				KEY_INPUT_B },			// ÇaÉLÅ[
-	{ HTML_KEYCODE_C,				KEY_INPUT_C },			// ÇbÉLÅ[
-	{ HTML_KEYCODE_D,				KEY_INPUT_D },			// ÇcÉLÅ[
-	{ HTML_KEYCODE_E,				KEY_INPUT_E },			// ÇdÉLÅ[
-	{ HTML_KEYCODE_F,				KEY_INPUT_F },			// ÇeÉLÅ[
-	{ HTML_KEYCODE_G,				KEY_INPUT_G },			// ÇfÉLÅ[
-	{ HTML_KEYCODE_H,				KEY_INPUT_H },			// ÇgÉLÅ[
-	{ HTML_KEYCODE_I,				KEY_INPUT_I },			// ÇhÉLÅ[
-	{ HTML_KEYCODE_J,				KEY_INPUT_J },			// ÇiÉLÅ[
-	{ HTML_KEYCODE_K,				KEY_INPUT_K },			// ÇjÉLÅ[
-	{ HTML_KEYCODE_L,				KEY_INPUT_L },			// ÇkÉLÅ[
-	{ HTML_KEYCODE_M,				KEY_INPUT_M },			// ÇlÉLÅ[
-	{ HTML_KEYCODE_N,				KEY_INPUT_N },			// ÇmÉLÅ[
-	{ HTML_KEYCODE_O,				KEY_INPUT_O },			// ÇnÉLÅ[
-	{ HTML_KEYCODE_P,				KEY_INPUT_P },			// ÇoÉLÅ[
-	{ HTML_KEYCODE_Q,				KEY_INPUT_Q },			// ÇpÉLÅ[
-	{ HTML_KEYCODE_R,				KEY_INPUT_R },			// ÇqÉLÅ[
-	{ HTML_KEYCODE_S,				KEY_INPUT_S },			// ÇrÉLÅ[
-	{ HTML_KEYCODE_T,				KEY_INPUT_T },			// ÇsÉLÅ[
-	{ HTML_KEYCODE_U,				KEY_INPUT_U },			// ÇtÉLÅ[
-	{ HTML_KEYCODE_V,				KEY_INPUT_V },			// ÇuÉLÅ[
-	{ HTML_KEYCODE_W,				KEY_INPUT_W },			// ÇvÉLÅ[
-	{ HTML_KEYCODE_X,				KEY_INPUT_X },			// ÇwÉLÅ[
-	{ HTML_KEYCODE_Y,				KEY_INPUT_Y },			// ÇxÉLÅ[
-	{ HTML_KEYCODE_Z,				KEY_INPUT_Z },			// ÇyÉLÅ[
+	{ HTML_KEYCODE_A,				KEY_INPUT_A },			// Ôº°„Ç≠„Éº
+	{ HTML_KEYCODE_B,				KEY_INPUT_B },			// Ôº¢„Ç≠„Éº
+	{ HTML_KEYCODE_C,				KEY_INPUT_C },			// Ôº£„Ç≠„Éº
+	{ HTML_KEYCODE_D,				KEY_INPUT_D },			// Ôº§„Ç≠„Éº
+	{ HTML_KEYCODE_E,				KEY_INPUT_E },			// Ôº•„Ç≠„Éº
+	{ HTML_KEYCODE_F,				KEY_INPUT_F },			// Ôº¶„Ç≠„Éº
+	{ HTML_KEYCODE_G,				KEY_INPUT_G },			// Ôºß„Ç≠„Éº
+	{ HTML_KEYCODE_H,				KEY_INPUT_H },			// Ôº®„Ç≠„Éº
+	{ HTML_KEYCODE_I,				KEY_INPUT_I },			// Ôº©„Ç≠„Éº
+	{ HTML_KEYCODE_J,				KEY_INPUT_J },			// Ôº™„Ç≠„Éº
+	{ HTML_KEYCODE_K,				KEY_INPUT_K },			// Ôº´„Ç≠„Éº
+	{ HTML_KEYCODE_L,				KEY_INPUT_L },			// Ôº¨„Ç≠„Éº
+	{ HTML_KEYCODE_M,				KEY_INPUT_M },			// Ôº≠„Ç≠„Éº
+	{ HTML_KEYCODE_N,				KEY_INPUT_N },			// ÔºÆ„Ç≠„Éº
+	{ HTML_KEYCODE_O,				KEY_INPUT_O },			// ÔºØ„Ç≠„Éº
+	{ HTML_KEYCODE_P,				KEY_INPUT_P },			// Ôº∞„Ç≠„Éº
+	{ HTML_KEYCODE_Q,				KEY_INPUT_Q },			// Ôº±„Ç≠„Éº
+	{ HTML_KEYCODE_R,				KEY_INPUT_R },			// Ôº≤„Ç≠„Éº
+	{ HTML_KEYCODE_S,				KEY_INPUT_S },			// Ôº≥„Ç≠„Éº
+	{ HTML_KEYCODE_T,				KEY_INPUT_T },			// Ôº¥„Ç≠„Éº
+	{ HTML_KEYCODE_U,				KEY_INPUT_U },			// Ôºµ„Ç≠„Éº
+	{ HTML_KEYCODE_V,				KEY_INPUT_V },			// Ôº∂„Ç≠„Éº
+	{ HTML_KEYCODE_W,				KEY_INPUT_W },			// Ôº∑„Ç≠„Éº
+	{ HTML_KEYCODE_X,				KEY_INPUT_X },			// Ôº∏„Ç≠„Éº
+	{ HTML_KEYCODE_Y,				KEY_INPUT_Y },			// Ôºπ„Ç≠„Éº
+	{ HTML_KEYCODE_Z,				KEY_INPUT_Z },			// Ôº∫„Ç≠„Éº
 
-	{ HTML_KEYCODE_0,				KEY_INPUT_0 },			// ÇOÉLÅ[
-	{ HTML_KEYCODE_1,				KEY_INPUT_1 },			// ÇPÉLÅ[
-	{ HTML_KEYCODE_2,				KEY_INPUT_2 },			// ÇQÉLÅ[
-	{ HTML_KEYCODE_3,				KEY_INPUT_3 },			// ÇRÉLÅ[
-	{ HTML_KEYCODE_4,				KEY_INPUT_4 },			// ÇSÉLÅ[
-	{ HTML_KEYCODE_5,				KEY_INPUT_5 },			// ÇTÉLÅ[
-	{ HTML_KEYCODE_6,				KEY_INPUT_6 },			// ÇUÉLÅ[
-	{ HTML_KEYCODE_7,				KEY_INPUT_7 },			// ÇVÉLÅ[
-	{ HTML_KEYCODE_8,				KEY_INPUT_8 },			// ÇWÉLÅ[
-	{ HTML_KEYCODE_9,				KEY_INPUT_9 },			// ÇXÉLÅ[
+	{ HTML_KEYCODE_0,				KEY_INPUT_0 },			// Ôºê„Ç≠„Éº
+	{ HTML_KEYCODE_1,				KEY_INPUT_1 },			// Ôºë„Ç≠„Éº
+	{ HTML_KEYCODE_2,				KEY_INPUT_2 },			// Ôºí„Ç≠„Éº
+	{ HTML_KEYCODE_3,				KEY_INPUT_3 },			// Ôºì„Ç≠„Éº
+	{ HTML_KEYCODE_4,				KEY_INPUT_4 },			// Ôºî„Ç≠„Éº
+	{ HTML_KEYCODE_5,				KEY_INPUT_5 },			// Ôºï„Ç≠„Éº
+	{ HTML_KEYCODE_6,				KEY_INPUT_6 },			// Ôºñ„Ç≠„Éº
+	{ HTML_KEYCODE_7,				KEY_INPUT_7 },			// Ôºó„Ç≠„Éº
+	{ HTML_KEYCODE_8,				KEY_INPUT_8 },			// Ôºò„Ç≠„Éº
+	{ HTML_KEYCODE_9,				KEY_INPUT_9 },			// Ôºô„Ç≠„Éº
 
-	{ HTML_KEYCODE_BACK,			KEY_INPUT_ESCAPE },		// Android ÇÃ BackÉ{É^Éì
+	{ HTML_KEYCODE_BACK,			KEY_INPUT_ESCAPE },		// Android „ÅÆ Back„Éú„Çø„É≥
 
 	{ 0xffff,					0xffff },
 } ;
 
-// ä÷êîÉvÉçÉgÉ^ÉCÉvêÈåæ -------------------------------------------------------
+// Èñ¢Êï∞„Éó„É≠„Éà„Çø„Ç§„ÉóÂÆ£Ë®Ä -------------------------------------------------------
 
 static EM_BOOL onKeyAction(int eventType, const EmscriptenKeyboardEvent *keyEvent, void *userData);
 static EM_BOOL onMouseWheel(int eventType, const EmscriptenWheelEvent *wheelEvent, void *userData);
@@ -186,31 +186,31 @@ static EM_BOOL onMouseAction(int eventType, const EmscriptenMouseEvent *mouseEve
 static EM_BOOL onTouchAction(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData);
 static EM_BOOL onGamepadAction(int eventType, const EmscriptenGamepadEvent *gamepadEvent, void *userData);
 
-// ÉvÉçÉOÉâÉÄ------------------------------------------------------------------
+// „Éó„É≠„Ç∞„É©„É†------------------------------------------------------------------
 
-// ì¸óÕÉVÉXÉeÉÄÇèâä˙âªÇ∑ÇÈèàóùÇÃä¬ã´àÀë∂èàóù
+// ÂÖ•Âäõ„Ç∑„Çπ„ÉÜ„É†„ÇíÂàùÊúüÂåñ„Åô„ÇãÂá¶ÁêÜ„ÅÆÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ
 extern int InitializeInputSystem_PF_Timing0( void )
 {
 	static int NowInitialize = FALSE ;
 	int i, j ;
 
-	// ä˘Ç…èâä˙âªèàóùÇ™äJénÇ≥ÇÍÇƒÇ¢ÇÈèÍçáÇ‡âΩÇ‡ÇπÇ∏Ç…èIóπ
+	// Êó¢„Å´ÂàùÊúüÂåñÂá¶ÁêÜ„ÅåÈñãÂßã„Åï„Çå„Å¶„ÅÑ„ÇãÂ†¥Âêà„ÇÇ‰Ωï„ÇÇ„Åõ„Åö„Å´ÁµÇ‰∫Ü
 	if( NowInitialize )
 	{
 		return 0 ;
 	}
 
-	// èâä˙âªíÜÉtÉâÉOÇóßÇƒÇÈ
+	// ÂàùÊúüÂåñ‰∏≠„Éï„É©„Ç∞„ÇíÁ´ã„Å¶„Çã
 	NowInitialize = TRUE ;
 
-	// ñ≥å¯É]Å[ÉìÇÃÉZÉbÉg
+	// ÁÑ°Âäπ„Çæ„Éº„É≥„ÅÆ„Çª„ÉÉ„Éà
 	for( i = 0 ; i < MAX_JOYPAD_NUM ; i ++ )
 	{
 		InputSysData.Pad[ i ].DeadZone = DEADZONE ;
 		InputSysData.Pad[ i ].DeadZoneD = DEADZONE_D ;
 	}
 
-	// ÉLÅ[É{Å[ÉhÇ∆ÉWÉáÉCÉpÉbÉhÇÃì¸óÕÇÃÉfÉtÉHÉãÉgÇÃëŒâûï\Çê›íËÇ∑ÇÈ
+	// „Ç≠„Éº„Éú„Éº„Éâ„Å®„Ç∏„Éß„Ç§„Éë„ÉÉ„Éâ„ÅÆÂÖ•Âäõ„ÅÆ„Éá„Éï„Ç©„É´„Éà„ÅÆÂØæÂøúË°®„ÇíË®≠ÂÆö„Åô„Çã
 	if( InputSysData.KeyToJoypadInputInitializeFlag == FALSE )
 	{
 		InputSysData.KeyToJoypadInputInitializeFlag = TRUE ;
@@ -255,41 +255,41 @@ extern int InitializeInputSystem_PF_Timing0( void )
 	emscripten_set_gamepadconnected_callback(NULL, true, &onGamepadAction);
 	emscripten_set_gamepaddisconnected_callback(NULL, true, &onGamepadAction);
 
-	// èâä˙âªíÜÉtÉâÉOÇì|Ç∑
+	// ÂàùÊúüÂåñ‰∏≠„Éï„É©„Ç∞„ÇíÂÄí„Åô
 	NowInitialize = FALSE ;
 
-	// ê≥èÌèIóπ
+	// Ê≠£Â∏∏ÁµÇ‰∫Ü
 	return 0 ;
 }
 
-// ì¸óÕÉVÉXÉeÉÄÇÃå„énññÇÇ∑ÇÈèàóùÇÃä¬ã´àÀë∂èàóù
+// ÂÖ•Âäõ„Ç∑„Çπ„ÉÜ„É†„ÅÆÂæåÂßãÊú´„Çí„Åô„ÇãÂá¶ÁêÜ„ÅÆÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ
 extern int TerminateInputSystem_PF_Timing0( void )
 {
-	// ê≥èÌèIóπ
+	// Ê≠£Â∏∏ÁµÇ‰∫Ü
 	return 0 ;
 }
 
-// é©ìÆèâä˙âªÇçsÇ§ä¬ã´àÀë∂èàóù
+// Ëá™ÂãïÂàùÊúüÂåñ„ÇíË°å„ÅÜÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ
 extern int AutoInitialize_PF( void )
 {
 	return 0 ;
 }
 
-// ÉWÉáÉCÉpÉbÉhÇÃÉZÉbÉgÉAÉbÉvÇÃä¬ã´àÀë∂èàóù
+// „Ç∏„Éß„Ç§„Éë„ÉÉ„Éâ„ÅÆ„Çª„ÉÉ„Éà„Ç¢„ÉÉ„Éó„ÅÆÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ
 extern int SetupJoypad_PF( void )
 {
-	// ê≥èÌèIóπ
+	// Ê≠£Â∏∏ÁµÇ‰∫Ü
 	return 0 ;
 }
 
-// ÉWÉáÉCÉpÉbÉhÇÃå„énññÇçsÇ§èàóùÇÃä¬ã´àÀë∂èàóù
+// „Ç∏„Éß„Ç§„Éë„ÉÉ„Éâ„ÅÆÂæåÂßãÊú´„ÇíË°å„ÅÜÂá¶ÁêÜ„ÅÆÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ
 extern int TerminateJoypad_PF( void )
 {
-	// ê≥èÌèIóπ
+	// Ê≠£Â∏∏ÁµÇ‰∫Ü
 	return 0 ;
 }
 
-// ì¸óÕèÛë‘ÇÃçXêVÇÃä¬ã´àÀë∂èàóù
+// ÂÖ•ÂäõÁä∂ÊÖã„ÅÆÊõ¥Êñ∞„ÅÆÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ
 extern int UpdateKeyboardInputState_PF( int UseProcessMessage )
 {
 	_MEMSET( &InputSysData.KeyInputBuf, 0, sizeof( InputSysData.KeyInputBuf ) ) ;
@@ -311,7 +311,7 @@ extern int UpdateKeyboardInputState_PF( int UseProcessMessage )
 	return 0 ;
 }
 
-// ÉpÉbÉhÇÃì¸óÕèÛë‘ÇÃçXêVÇÃä¬ã´àÀë∂èàóù
+// „Éë„ÉÉ„Éâ„ÅÆÂÖ•ÂäõÁä∂ÊÖã„ÅÆÊõ¥Êñ∞„ÅÆÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ
 extern int UpdateJoypadInputState_PF( int PadNo )
 {
 	INPUTPADDATA *pad = &InputSysData.Pad[ PadNo ] ;
@@ -488,30 +488,30 @@ extern int UpdateJoypadInputState_PF( int PadNo )
 //		}
 //	}
 
-	// èIóπ
+	// ÁµÇ‰∫Ü
 	return 0 ;
 }
 
-// ÉpÉbÉhÉGÉtÉFÉNÉgÇÃçƒê∂èÛë‘ÇçXêVÇ∑ÇÈä÷êîÇÃä¬ã´àÀë∂èàóù
+// „Éë„ÉÉ„Éâ„Ç®„Éï„Çß„ÇØ„Éà„ÅÆÂÜçÁîüÁä∂ÊÖã„ÇíÊõ¥Êñ∞„Åô„ÇãÈñ¢Êï∞„ÅÆÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ
 extern int RefreshEffectPlayState_PF( void )
 {
-	// èIóπ
+	// ÁµÇ‰∫Ü
 	return 0 ;
 }
 
-// éwíËÇÃÉpÉbÉhÇ™êUìÆÇ…ëŒâûÇµÇƒÇ¢ÇÈÇ©Ç«Ç§Ç©ÇéÊìæÇ∑ÇÈ( TRUE:ëŒâûÇµÇƒÇ¢ÇÈ  FALSE:ëŒâûÇµÇƒÇ¢Ç»Ç¢ )
+// ÊåáÂÆö„ÅÆ„Éë„ÉÉ„Éâ„ÅåÊåØÂãï„Å´ÂØæÂøú„Åó„Å¶„ÅÑ„Çã„Åã„Å©„ÅÜ„Åã„ÇíÂèñÂæó„Åô„Çã( TRUE:ÂØæÂøú„Åó„Å¶„ÅÑ„Çã  FALSE:ÂØæÂøú„Åó„Å¶„ÅÑ„Å™„ÅÑ )
 extern int CheckJoypadVibrationEnable_PF( INPUTPADDATA *pad, int EffectIndex )
 {
 	return FALSE ;
 }
 
-// éwíËÇÃì¸óÕÉfÉoÉCÉXÇ™ XInput Ç…ëŒâûÇµÇƒÇ¢ÇÈÇ©Ç«Ç§Ç©ÇéÊìæÇ∑ÇÈèàóùÇÃä¬ã´àÀë∂èàóù( ñﬂÇËíl  TRUE:XInputëŒâûÇÃì¸óÕÉfÉoÉCÉX  FALSE:XInputîÒëŒâûÇÃì¸óÕÉfÉoÉCÉX   -1:ÉGÉâÅ[ )( DX_INPUT_KEY Ç‚ DX_INPUT_KEY_PAD1 Ç»Ç«ÅAÉLÅ[É{Å[ÉhÇ™óçÇﬁÉ^ÉCÉvÇ InputType Ç…ìnÇ∑Ç∆ÉGÉâÅ[Ç∆Ç»ÇË -1 Çï‘Ç∑ )ÇÃä¬ã´àÀë∂èàóù
+// ÊåáÂÆö„ÅÆÂÖ•Âäõ„Éá„Éê„Ç§„Çπ„Åå XInput „Å´ÂØæÂøú„Åó„Å¶„ÅÑ„Çã„Åã„Å©„ÅÜ„Åã„ÇíÂèñÂæó„Åô„ÇãÂá¶ÁêÜ„ÅÆÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ( Êàª„ÇäÂÄ§  TRUE:XInputÂØæÂøú„ÅÆÂÖ•Âäõ„Éá„Éê„Ç§„Çπ  FALSE:XInputÈùûÂØæÂøú„ÅÆÂÖ•Âäõ„Éá„Éê„Ç§„Çπ   -1:„Ç®„É©„Éº )( DX_INPUT_KEY „ÇÑ DX_INPUT_KEY_PAD1 „Å™„Å©„ÄÅ„Ç≠„Éº„Éú„Éº„Éâ„ÅåÁµ°„ÇÄ„Çø„Ç§„Éó„Çí InputType „Å´Ê∏°„Åô„Å®„Ç®„É©„Éº„Å®„Å™„Çä -1 „ÇíËøî„Åô )„ÅÆÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ
 extern int CheckJoypadXInput_PF( int InputType )
 {
 	return FALSE ;
 }
 
-// É}ÉEÉXÇÃÉ{É^ÉìÇÃèÛë‘ÇìæÇÈèàóùÇÃä¬ã´àÀë∂èàóù
+// „Éû„Ç¶„Çπ„ÅÆ„Éú„Çø„É≥„ÅÆÁä∂ÊÖã„ÇíÂæó„ÇãÂá¶ÁêÜ„ÅÆÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ
 extern int GetMouseInput_PF( void )
 {
 	int res = 0 ;
@@ -533,7 +533,7 @@ extern int GetMouseInput_PF( void )
 	return res ;
 }
 
-// êÇíºÉ}ÉEÉXÉzÉCÅ[ÉãÇÃâÒì]ó ÇéÊìæÇ∑ÇÈ
+// ÂûÇÁõ¥„Éû„Ç¶„Çπ„Éõ„Ç§„Éº„É´„ÅÆÂõûËª¢Èáè„ÇíÂèñÂæó„Åô„Çã
 extern int GetMouseWheelRotVol_PF( int CounterReset )
 {
 	int Vol ;
@@ -547,7 +547,7 @@ extern int GetMouseWheelRotVol_PF( int CounterReset )
 	return Vol ;
 }
 
-// êÖïΩÉ}ÉEÉXÉzÉCÅ[ÉãÇÃâÒì]ó ÇéÊìæÇ∑ÇÈ
+// Ê∞¥Âπ≥„Éû„Ç¶„Çπ„Éõ„Ç§„Éº„É´„ÅÆÂõûËª¢Èáè„ÇíÂèñÂæó„Åô„Çã
 extern int GetMouseHWheelRotVol_PF( int CounterReset )
 {
 	int Vol ;
@@ -561,7 +561,7 @@ extern int GetMouseHWheelRotVol_PF( int CounterReset )
 	return Vol ;
 }
 
-// êÇíºÉ}ÉEÉXÉzÉCÅ[ÉãÇÃâÒì]ó ÇéÊìæÇ∑ÇÈ( ñﬂÇËílÇ™ float å^ )
+// ÂûÇÁõ¥„Éû„Ç¶„Çπ„Éõ„Ç§„Éº„É´„ÅÆÂõûËª¢Èáè„ÇíÂèñÂæó„Åô„Çã( Êàª„ÇäÂÄ§„Åå float Âûã )
 extern float GetMouseWheelRotVolF_PF( int CounterReset )
 {
 	float Vol ;
@@ -575,7 +575,7 @@ extern float GetMouseWheelRotVolF_PF( int CounterReset )
 	return Vol ;
 }
 
-// êÖïΩÉ}ÉEÉXÉzÉCÅ[ÉãÇÃâÒì]ó ÇéÊìæÇ∑ÇÈ( ñﬂÇËílÇ™ float å^ )
+// Ê∞¥Âπ≥„Éû„Ç¶„Çπ„Éõ„Ç§„Éº„É´„ÅÆÂõûËª¢Èáè„ÇíÂèñÂæó„Åô„Çã( Êàª„ÇäÂÄ§„Åå float Âûã )
 extern float GetMouseHWheelRotVolF_PF( int CounterReset )
 {
 	float Vol ;
@@ -589,7 +589,7 @@ extern float GetMouseHWheelRotVolF_PF( int CounterReset )
 	return Vol ;
 }
 
-// É}ÉEÉXÇÃà íuÇéÊìæÇ∑ÇÈ
+// „Éû„Ç¶„Çπ„ÅÆ‰ΩçÁΩÆ„ÇíÂèñÂæó„Åô„Çã
 extern int GetMousePoint_PF( int *XBuf, int *YBuf )
 {
 	if( XBuf != NULL )
@@ -615,20 +615,20 @@ extern int GetMousePoint_PF( int *XBuf, int *YBuf )
 	return 0 ;
 }
 
-// É}ÉEÉXÇÃà íuÇÉZÉbÉgÇ∑ÇÈ
+// „Éû„Ç¶„Çπ„ÅÆ‰ΩçÁΩÆ„Çí„Çª„ÉÉ„Éà„Åô„Çã
 extern int SetMousePoint_PF( int PointX , int PointY )
 {
 	return 0 ;
 }
 
-// ÉWÉáÉCÉpÉbÉhÇÃñ≥å¯É]Å[ÉìÇÃê›íËÇçsÇ§ä÷êîÇÃä¬ã´àÀë∂èàóù
+// „Ç∏„Éß„Ç§„Éë„ÉÉ„Éâ„ÅÆÁÑ°Âäπ„Çæ„Éº„É≥„ÅÆË®≠ÂÆö„ÇíË°å„ÅÜÈñ¢Êï∞„ÅÆÁí∞Â¢É‰æùÂ≠òÂá¶ÁêÜ
 extern int SetJoypadDeadZone_PF( INPUTPADDATA *pad )
 {
-	// ê≥èÌèIóπ
+	// Ê≠£Â∏∏ÁµÇ‰∫Ü
 	return 0 ;
 }
 
-// ÉfÉoÉCÉXÇhÇcÇ©ÇÁílÇë„ì¸Ç∑Ç◊Ç´ì¸óÕèÓïÒî‘çÜÇéÊìæÇ∑ÇÈ
+// „Éá„Éê„Ç§„ÇπÔº©Ôº§„Åã„ÇâÂÄ§„Çí‰ª£ÂÖ•„Åô„Åπ„ÅçÂÖ•ÂäõÊÉÖÂ†±Áï™Âè∑„ÇíÂèñÂæó„Åô„Çã
 extern int GetAndroidDeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId )
 {
 	int i ;
@@ -711,7 +711,7 @@ extern int GetAndroidDeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId )
 	return i ;
 }
 
-// ì¸óÕÉ\Å[ÉXî‘çÜÇ∆ì¸óÕèÓïÒÇ∆ÇÃëŒâûÉeÅ[ÉuÉãÇçXêVÇ∑ÇÈ
+// ÂÖ•Âäõ„ÇΩ„Éº„ÇπÁï™Âè∑„Å®ÂÖ•ÂäõÊÉÖÂ†±„Å®„ÅÆÂØæÂøú„ÉÜ„Éº„Éñ„É´„ÇíÊõ¥Êñ∞„Åô„Çã
 extern int RefreshAndroidSourceNoToInputInfoTable( int32_t Source )
 {
 	INPUT_ANDROID_DEVICE_INFO *Info ;
@@ -775,11 +775,11 @@ extern int RefreshAndroidSourceNoToInputInfoTable( int32_t Source )
 		SourceNoTable[ i ] = InfoTable[ NoTable[ i ] ] - InputSysData.PF.InputInfo ;
 	}
 
-	// èIóπ
+	// ÁµÇ‰∫Ü
 	return 0 ;
 }
 
-// ÉQÅ[ÉÄÉpÉbÉhÇÃî‘çÜÇ∆ì¸óÕèÓïÒÇ∆ÇÃëŒâûÉeÅ[ÉuÉãÇçXêVÇ∑ÇÈ
+// „Ç≤„Éº„É†„Éë„ÉÉ„Éâ„ÅÆÁï™Âè∑„Å®ÂÖ•ÂäõÊÉÖÂ†±„Å®„ÅÆÂØæÂøú„ÉÜ„Éº„Éñ„É´„ÇíÊõ¥Êñ∞„Åô„Çã
 extern int RefreshAndroidGamePadSourceNoToInputInfoTable( void )
 {
 	INPUT_ANDROID_DEVICE_INFO *Info ;
@@ -793,7 +793,7 @@ extern int RefreshAndroidGamePadSourceNoToInputInfoTable( void )
 	Info = InputSysData.PF.InputInfo ;
 	for( i = 0 ; i < InputSysData.PF.UseInputInfoNum ; i ++, Info ++ )
 	{
-		// ÇcÇwÉâÉCÉuÉâÉäÇ™ÉQÅ[ÉÄÉpÉbÉhÇ∆ÇµÇƒàµÇ§óvëfÇéùÇ¡ÇƒÇ¢ÇÈèÍçáÇÕÉQÅ[ÉÄÉpÉbÉhÇ∆Ç∑ÇÈ
+		// Ôº§Ôº∏„É©„Ç§„Éñ„É©„É™„Åå„Ç≤„Éº„É†„Éë„ÉÉ„Éâ„Å®„Åó„Å¶Êâ±„ÅÜË¶ÅÁ¥†„ÇíÊåÅ„Å£„Å¶„ÅÑ„ÇãÂ†¥Âêà„ÅØ„Ç≤„Éº„É†„Éë„ÉÉ„Éâ„Å®„Åô„Çã
 		if( Info->Source == HTML5_INPUT_SOURCE_JOYSTICK )
 		{
 			InfoTable[ Num ] = Info ;
@@ -833,11 +833,11 @@ extern int RefreshAndroidGamePadSourceNoToInputInfoTable( void )
 
 	InputSysData.PadNum = Num > MAX_JOYPAD_NUM ? MAX_JOYPAD_NUM : Num ;
 
-	// èIóπ
+	// ÁµÇ‰∫Ü
 	return 0 ;
 }
 
-// ì¸óÕÉCÉxÉìÉgÇèàóùÇ∑ÇÈ
+// ÂÖ•Âäõ„Ç§„Éô„É≥„Éà„ÇíÂá¶ÁêÜ„Åô„Çã
 extern int32_t ProcessInputEvent( )
 {
 	int gamePadCount;
@@ -962,7 +962,7 @@ static EM_BOOL onMouseWheel(int eventType, const EmscriptenWheelEvent *wheelEven
 	
 		InputSysData.MouseMoveZ  += InputSysData.PF.InputInfo[ InputNo ].Wheel ;
 
-		// ÉçÉOÇí«â¡
+		// „É≠„Ç∞„ÇíËøΩÂä†
 		if( LogType != -1 )
 		{
 			int MouseX, MouseY ;
@@ -993,7 +993,7 @@ static EM_BOOL onMouseWheel(int eventType, const EmscriptenWheelEvent *wheelEven
 		preventDefault = EM_TRUE;
 	}
 
-	// É}ÉEÉXì¸óÕÇ™Ç†Ç¡ÇΩç€ÇÕÉ^ÉbÉvÇÃì¸óÕÇñ≥å¯âªÇ∑ÇÈ
+	// „Éû„Ç¶„ÇπÂÖ•Âäõ„Åå„ÅÇ„Å£„ÅüÈöõ„ÅØ„Çø„ÉÉ„Éó„ÅÆÂÖ•Âäõ„ÇíÁÑ°ÂäπÂåñ„Åô„Çã
 	{
 		TOUCHINPUTDATA TouchInputData ;
 

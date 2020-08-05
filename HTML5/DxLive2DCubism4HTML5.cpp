@@ -1,19 +1,19 @@
 //-----------------------------------------------------------------------------
 // 
-// 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		Live2D Cubism4ŠÖŒWƒvƒƒOƒ‰ƒ€( Android )
+// 		ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒª		Live2D Cubism4é–¢ä¿‚ãƒ—ãƒ­ã‚°ãƒ©ãƒ ( Android )
 // 
 //  	Ver 3.21d
 // 
 //-----------------------------------------------------------------------------
 
-// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠì¬—p’è‹`
+// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªä½œæˆæ™‚ç”¨å®šç¾©
 #define DX_MAKE
 
 #include "../DxCompileConfig.h"
 
 #ifndef DX_NON_LIVE2D_CUBISM4
 
-// ƒCƒ“ƒNƒ‹[ƒh----------------------------------------------------------------
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰----------------------------------------------------------------
 #include "../DxLib.h"
 #include "../DxStatic.h"
 #include "../DxLive2DCubism4.h"
@@ -31,15 +31,15 @@
 // 
 // #endif // DX_NON_NAMESPACE
 
-// ƒ}ƒNƒ’è‹`------------------------------------------------------------------
+// ãƒã‚¯ãƒ­å®šç¾©------------------------------------------------------------------
 
-// Œ^’è‹`----------------------------------------------------------------------
+// å‹å®šç¾©----------------------------------------------------------------------
 
-// ƒf[ƒ^éŒ¾------------------------------------------------------------------
+// ãƒ‡ãƒ¼ã‚¿å®£è¨€------------------------------------------------------------------
 
 extern BYTE DxShaderCodeBin_Live2D_Cubism4_ANDR[] ;
 
-// ƒVƒF[ƒ_[‚Ì‘g‚İ‡‚í‚¹[ 0:’¸“_ƒVƒF[ƒ_[ 1:ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[ ]
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®çµ„ã¿åˆã‚ã›[ 0:é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ 1:ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ ]
 static D_ShaderNames g_Live2D_Cubism4_ShaderSet[ LIVE2D_SHADER_Num ][ 2 ] =
 {
 	{ D_ShaderNames_SetupMask,		D_ShaderNames_SetupMask									},	// LIVE2D_SHADER_SetupMask_SetupMask								0
@@ -51,17 +51,17 @@ static D_ShaderNames g_Live2D_Cubism4_ShaderSet[ LIVE2D_SHADER_Num ][ 2 ] =
 	{ D_ShaderNames_Normal,			D_ShaderNames_Normal									},	// LIVE2D_SHADER_Normal_Normal										4
 } ;
 
-// ŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾ -------------------------------------------------------
+// é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€ -------------------------------------------------------
 
-// DLL ‚Ì“Ç‚İ‚İE‰ğ•ú
-static	int			Live2DCubism4_DLL_Load( void ) ;														// Live2D Cubism 4 DLL ‚Ì“Ç‚İ‚İ
-static	int			Live2DCubism4_DLL_Unload( void ) ;														// Live2D Cubism 4 DLL ‚Ì‰ğ•ú
+// DLL ã®èª­ã¿è¾¼ã¿ãƒ»è§£æ”¾
+static	int			Live2DCubism4_DLL_Load( void ) ;														// Live2D Cubism 4 DLL ã®èª­ã¿è¾¼ã¿
+static	int			Live2DCubism4_DLL_Unload( void ) ;														// Live2D Cubism 4 DLL ã®è§£æ”¾
 
-// ƒvƒƒOƒ‰ƒ€------------------------------------------------------------------
+// ãƒ—ãƒ­ã‚°ãƒ©ãƒ ------------------------------------------------------------------
 
-// DLL ‚Ì“Ç‚İ‚İE‰ğ•ú
+// DLL ã®èª­ã¿è¾¼ã¿ãƒ»è§£æ”¾
 
-// Live2D Cubism 4 DLL ‚Ì“Ç‚İ‚İ
+// Live2D Cubism 4 DLL ã®èª­ã¿è¾¼ã¿
 static int Live2DCubism4_DLL_Load( void )
 {
 	LIVE2DDLL.csmGetVersion						= ( DWORD					( LIVE2D_CUBISM4_FUNC * )( void ) )csmGetVersion ;
@@ -101,11 +101,11 @@ static int Live2DCubism4_DLL_Load( void )
 	LIVE2DDLL.csmGetDrawableIndices 			= ( const unsigned short**	( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableIndices ;
 	LIVE2DDLL.csmResetDrawableDynamicFlags		= ( void					( LIVE2D_CUBISM4_FUNC * )( void* model ) )csmResetDrawableDynamicFlags ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// Live2D Cubism 4 DLL ‚Ì‰ğ•ú
+// Live2D Cubism 4 DLL ã®è§£æ”¾
 static int Live2DCubism4_DLL_Unload( void )
 {
 	LIVE2DDLL.csmGetVersion						= NULL ;
@@ -145,11 +145,11 @@ static int Live2DCubism4_DLL_Unload( void )
 	LIVE2DDLL.csmGetDrawableIndices 			= NULL ;
 	LIVE2DDLL.csmResetDrawableDynamicFlags		= NULL ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// Live2D Cubism4 ‚Åg—p‚µ‚Ä‚¢‚é‘S‚Ä‚ÌƒVƒF[ƒ_[‚ğŠJ•ú‚·‚é
+// Live2D Cubism4 ã§ä½¿ç”¨ã—ã¦ã„ã‚‹å…¨ã¦ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’é–‹æ”¾ã™ã‚‹
 extern int Live2D_Cubism4_Android_ReleaseShaderAll( void )
 {
 	Graphics_Android_ShaderArray_Release( LIVE2DSYS.PF.Shader, LIVE2D_SHADER_Num ) ;
@@ -157,21 +157,21 @@ extern int Live2D_Cubism4_Android_ReleaseShaderAll( void )
 	return 0 ;
 }
 
-// ŠÂ‹«ˆË‘¶ŠÖ”
+// ç’°å¢ƒä¾å­˜é–¢æ•°
 
-// Live2D Cubism4 ŠÖ˜A‚Ì‰Šú‰»‚·‚éŠÖ”‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”
+// Live2D Cubism4 é–¢é€£ã®åˆæœŸåŒ–ã™ã‚‹é–¢æ•°ã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 extern int Live2DCubism4_Initialize_PF( void )
 {
-	// DLL ‚Ì“Ç‚İ‚İ
+	// DLL ã®èª­ã¿è¾¼ã¿
 	if( Live2DCubism4_DLL_Load() < 0 )
 	{
 		return -1 ;
 	}
 
-	// ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ªg—p‚Å‚«‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg
+	// ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ãŒä½¿ç”¨ã§ãã‚‹ã‹ã©ã†ã‹ã‚’ã‚»ãƒƒãƒˆ
 	LIVE2DSYS.EnableConstantBuffer = FALSE ;
 
-	// ƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚c‚w‚`‚ğˆ³k‚µ‚½ƒf[ƒ^‚ğ‰ğ“€‚·‚é
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ï¼¤ï¼¸ï¼¡ã‚’åœ§ç¸®ã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’è§£å‡ã™ã‚‹
 	if( Live2DCubism4_SetupShaderCode( NULL, DxShaderCodeBin_Live2D_Cubism4_ANDR ) < 0 )
 	{
 		return -1 ;
@@ -180,16 +180,16 @@ extern int Live2DCubism4_Initialize_PF( void )
 	return 0 ;
 }
 
-// Live2D Cubism4 ŠÖ˜A‚ÌŒãn––‚ğ‚·‚éŠÖ”‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”
+// Live2D Cubism4 é–¢é€£ã®å¾Œå§‹æœ«ã‚’ã™ã‚‹é–¢æ•°ã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 extern int Live2DCubism4_Terminate_PF( void )
 {
-	// DLL ‚ÌƒAƒ“ƒ[ƒh
+	// DLL ã®ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰
 	Live2DCubism4_DLL_Unload() ;
 
 	return 0 ;
 }
 
-// Live2D Cubism4 ‚ÌƒVƒF[ƒ_[ì¬‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤
+// Live2D Cubism4 ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ä½œæˆã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†
 extern int Live2DCubism4_GenerateShaders_PF( void )
 {
 	int i ;
@@ -222,7 +222,7 @@ extern int Live2DCubism4_GenerateShaders_PF( void )
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[‚ÌƒZƒbƒgƒAƒbƒv‚ğs‚¤
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã‚’è¡Œã†
 extern int Live2DCubism4_SetupShader_PF( int ConstantBufferHandle, D_CubismConstantBufferDxLib *ConstantBuffer, D_ShaderNames VertexShader, D_ShaderNames PixelShader )
 {
 	D_CubismShader_DxLib* shaderManager = D_CubismRenderer_DxLib::GetShaderManager();
@@ -235,7 +235,7 @@ extern int Live2DCubism4_SetupShader_PF( int ConstantBufferHandle, D_CubismConst
 
 	for( index = 0 ; g_Live2D_Cubism4_ShaderSet[ index ][ 0 ] != VertexShader || g_Live2D_Cubism4_ShaderSet[ index ][ 1 ] != PixelShader ; index ++ ){}
 
-	// ƒVƒF[ƒ_[‚ğg—pó‘Ô‚ÉƒZƒbƒg
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ç”¨çŠ¶æ…‹ã«ã‚»ãƒƒãƒˆ
 	glUseProgram( LIVE2DSYS.PF.Shader[ index ].Shader ) ;
 
 	GLuint u_matrix      = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_matrix" ) ;
@@ -265,7 +265,7 @@ extern int Live2DCubism4_SetupShader_PF( int ConstantBufferHandle, D_CubismConst
 	return 0 ;
 }
 
-// Live2D Cubism4 ‚Ì•`‰æ‚ÌŒã‚ÉŒÄ‚Î‚ê‚éŠÂ‹«ˆË‘¶ŠÖ”
+// Live2D Cubism4 ã®æç”»ã®å¾Œã«å‘¼ã°ã‚Œã‚‹ç’°å¢ƒä¾å­˜é–¢æ•°
 extern int Live2DCubism4_DrawAfter_PF( void )
 {
 	GANDR.Device.State.SetShader_Force = NULL ;
@@ -306,7 +306,7 @@ bool D_CubismShader_DxLib::LoadShaderProgram( bool isPs, int assign, const char*
 			}
 			_shaderSetsVS[ assign ] = vertexShader;
 		}
-		// ¬Œ÷ 
+		// æˆåŠŸ 
 		bRet = true;
 	} while( 0 );
 

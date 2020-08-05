@@ -1,6 +1,6 @@
 // -------------------------------------------------------------------------------
 // 
-// 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		iOS—pƒ}ƒXƒNƒf[ƒ^ŠÇ—ƒvƒƒOƒ‰ƒ€ƒwƒbƒ_ƒtƒ@ƒCƒ‹
+// 		ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒª		iOSç”¨ãƒã‚¹ã‚¯ãƒ‡ãƒ¼ã‚¿ç®¡ç†ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ«
 // 
 // 				Ver 3.21d
 // 
@@ -13,7 +13,7 @@
 
 #ifndef DX_NON_MASK
 
-// ƒCƒ“ƒNƒ‹[ƒh ------------------------------------------------------------------
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ ------------------------------------------------------------------
 #include "../DxLib.h"
 #include "../DxGraphics.h"
 #include "../DxArchive_.h"
@@ -26,40 +26,40 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// ƒ}ƒNƒ’è‹` --------------------------------------------------------------------
+// ãƒã‚¯ãƒ­å®šç¾© --------------------------------------------------------------------
 
 #define MASKIOS					MaskManageData_iOS
 
-// \‘¢‘Ì’è‹` --------------------------------------------------------------------
+// æ§‹é€ ä½“å®šç¾© --------------------------------------------------------------------
 
-// iOS —p‚Ìƒ}ƒXƒNˆ—î•ñ\‘¢‘Ì
+// iOS ç”¨ã®ãƒã‚¹ã‚¯å‡¦ç†æƒ…å ±æ§‹é€ ä½“
 struct MASKMANAGEDATA_IOS
 {
-	int								MaskTextureSizeX ;				// ƒ}ƒXƒNƒeƒNƒXƒ`ƒƒ‚ÌƒTƒCƒY
+	int								MaskTextureSizeX ;				// ãƒã‚¹ã‚¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã‚µã‚¤ã‚º
 	int								MaskTextureSizeY ;
 
-	GLuint							MaskScreenFrameBuffer ;			// ƒ}ƒXƒNˆ——p‰¼‰æ–ÊƒtƒŒ[ƒ€ƒoƒbƒtƒ@
-	GLuint							MaskScreenTextureBuffer ;		// ƒ}ƒXƒNˆ——p‰¼‰æ–ÊƒeƒNƒXƒ`ƒƒƒoƒbƒtƒ@
-	GLuint							MaskScreenDepthBuffer ;			// ƒ}ƒXƒNˆ——p‰¼‰æ–Ê[“xƒoƒbƒtƒ@
+	GLuint							MaskScreenFrameBuffer ;			// ãƒã‚¹ã‚¯å‡¦ç†ç”¨ä»®ç”»é¢ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡
+	GLuint							MaskScreenTextureBuffer ;		// ãƒã‚¹ã‚¯å‡¦ç†ç”¨ä»®ç”»é¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ•ã‚¡
+	GLuint							MaskScreenDepthBuffer ;			// ãƒã‚¹ã‚¯å‡¦ç†ç”¨ä»®ç”»é¢æ·±åº¦ãƒãƒƒãƒ•ã‚¡
 
-	GLuint							MaskScreenOldFrameBuffer ;		// ŒÃ‚¢ƒ}ƒXƒNˆ——p‰¼‰æ–ÊƒtƒŒ[ƒ€ƒoƒbƒtƒ@
-	GLuint							MaskScreenOldTextureBuffer ;	// ŒÃ‚¢ƒ}ƒXƒNˆ——p‰¼‰æ–ÊƒeƒNƒXƒ`ƒƒƒoƒbƒtƒ@
-	GLuint							MaskScreenOldDepthBuffer ;		// ŒÃ‚¢ƒ}ƒXƒNˆ——p‰¼‰æ–Ê[“xƒoƒbƒtƒ@
+	GLuint							MaskScreenOldFrameBuffer ;		// å¤ã„ãƒã‚¹ã‚¯å‡¦ç†ç”¨ä»®ç”»é¢ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡
+	GLuint							MaskScreenOldTextureBuffer ;	// å¤ã„ãƒã‚¹ã‚¯å‡¦ç†ç”¨ä»®ç”»é¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ•ã‚¡
+	GLuint							MaskScreenOldDepthBuffer ;		// å¤ã„ãƒã‚¹ã‚¯å‡¦ç†ç”¨ä»®ç”»é¢æ·±åº¦ãƒãƒƒãƒ•ã‚¡
 
-	GLuint							MaskImageTextureBuffer ;		// ƒ}ƒXƒNƒCƒ[ƒWƒeƒNƒXƒ`ƒƒƒoƒbƒtƒ@
+	GLuint							MaskImageTextureBuffer ;		// ãƒã‚¹ã‚¯ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ•ã‚¡
 
-	GLuint							DestTargetFrameBuffer ;			// •`‰æ‘ÎÛ‚ÌƒtƒŒ[ƒ€ƒoƒbƒtƒ@
-	GLuint							DestTargetTextureBuffer ;		// •`‰æ‘ÎÛ‚ÌƒeƒNƒXƒ`ƒƒƒoƒbƒtƒ@
-	GLuint							DestTargetDepthBuffer ;			// •`‰æ‘ÎÛ‚Ì[“xƒoƒbƒtƒ@
-	GLuint							DestTargetWidth ;				// •`‰æ‘ÎÛ‚Ì•
-	GLuint							DestTargetHeight ;				// •`‰æ‘ÎÛ‚Ì‚‚³
+	GLuint							DestTargetFrameBuffer ;			// æç”»å¯¾è±¡ã®ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡
+	GLuint							DestTargetTextureBuffer ;		// æç”»å¯¾è±¡ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ•ã‚¡
+	GLuint							DestTargetDepthBuffer ;			// æç”»å¯¾è±¡ã®æ·±åº¦ãƒãƒƒãƒ•ã‚¡
+	GLuint							DestTargetWidth ;				// æç”»å¯¾è±¡ã®å¹…
+	GLuint							DestTargetHeight ;				// æç”»å¯¾è±¡ã®é«˜ã•
 } ;
 
-// “à•”‘åˆæ•Ï”éŒ¾ --------------------------------------------------------------
+// å†…éƒ¨å¤§åŸŸå¤‰æ•°å®£è¨€ --------------------------------------------------------------
 
 extern MASKMANAGEDATA_IOS MaskManageData_iOS ;
 
-// ŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾-----------------------------------------------------------
+// é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€-----------------------------------------------------------
 
 #ifndef DX_NON_NAMESPACE
 

@@ -1,15 +1,15 @@
 //-----------------------------------------------------------------------------
 // 
-// 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		Android—pƒtƒ@ƒCƒ‹ŠÖŒWƒvƒƒOƒ‰ƒ€
+// 		ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒª		Androidç”¨ãƒ•ã‚¡ã‚¤ãƒ«é–¢ä¿‚ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
 // 
 //  	Ver 3.21d
 // 
 //-----------------------------------------------------------------------------
 
-// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠì¬—p’è‹`
+// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªä½œæˆæ™‚ç”¨å®šç¾©
 #define DX_MAKE
 
-// ƒCƒ“ƒNƒ‹[ƒh ---------------------------------------------------------------
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ ---------------------------------------------------------------
 #include "../DxFile.h"
 #include "../DxLog.h"
 #include "../DxChar.h"
@@ -23,7 +23,7 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// ƒ}ƒNƒ’è‹` -----------------------------------------------------------------
+// ãƒã‚¯ãƒ­å®šç¾© -----------------------------------------------------------------
 
 #define MAX_PATH_LENGTH		1024
 #define NUM_OPS				1024
@@ -31,55 +31,55 @@ namespace DxLib
 #define MAX_DH_NUM			256
 #define CHUNK_SIZE			2048
 
-// \‘¢‘ÌéŒ¾ -----------------------------------------------------------------
+// æ§‹é€ ä½“å®£è¨€ -----------------------------------------------------------------
 
-// ƒf[ƒ^’è‹` -----------------------------------------------------------------
+// ãƒ‡ãƒ¼ã‚¿å®šç¾© -----------------------------------------------------------------
 
-// ƒpƒX‚Ìn‚Ü‚è‚ª / ‚â \\ ‚¾‚Á‚½ê‡Aƒ‹[ƒgƒfƒBƒŒƒNƒgƒŠ‚ğw’è‚µ‚½‚±‚Æ‚É‚·‚é‚©( 1:ƒ‹[ƒgƒfƒBƒŒƒNƒgƒŠ‚ğw’è‚µ‚½‚±‚Æ‚É‚·‚é  0:ƒ‹[ƒgƒfƒBƒŒƒNƒgƒŠ‚ğw’è‚µ‚½‚±‚Æ‚É‚µ‚È‚¢ )
+// ãƒ‘ã‚¹ã®å§‹ã¾ã‚ŠãŒ / ã‚„ \\ ã ã£ãŸå ´åˆã€ãƒ«ãƒ¼ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æŒ‡å®šã—ãŸã“ã¨ã«ã™ã‚‹ã‹( 1:ãƒ«ãƒ¼ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æŒ‡å®šã—ãŸã“ã¨ã«ã™ã‚‹  0:ãƒ«ãƒ¼ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æŒ‡å®šã—ãŸã“ã¨ã«ã—ãªã„ )
 int g_EnableRootDirName = 0 ;
 
-// ’Ç‰Á‚Ìƒhƒ‰ƒCƒu–¼‚Ì”
+// è¿½åŠ ã®ãƒ‰ãƒ©ã‚¤ãƒ–åã®æ•°
 int g_AddDriveNameNum = 0 ;
 
-// ’Ç‰Á‚Ìƒhƒ‰ƒCƒu–¼
+// è¿½åŠ ã®ãƒ‰ãƒ©ã‚¤ãƒ–å
 const char * g_AddDriveName[ 16 ] =
 {
 	NULL
 } ;
 
-// ŠÖ”éŒ¾ -------------------------------------------------------------------
+// é–¢æ•°å®£è¨€ -------------------------------------------------------------------
 
-// ƒvƒƒOƒ‰ƒ€ -----------------------------------------------------------------
+// ãƒ—ãƒ­ã‚°ãƒ©ãƒ  -----------------------------------------------------------------
 
-// ƒtƒ@ƒCƒ‹ƒAƒNƒZƒXˆ—‚Ì‰Šú‰»EI—¹ŠÖ”
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ã‚¯ã‚»ã‚¹å‡¦ç†ã®åˆæœŸåŒ–ãƒ»çµ‚äº†é–¢æ•°
 
-// ƒtƒ@ƒCƒ‹ƒAƒNƒZƒXˆ—‚Ì‰Šú‰»ŠÖ”‚ÌŠÂ‹«ˆË‘¶‚Ìˆ—‚ğs‚¤ŠÖ”
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ã‚¯ã‚»ã‚¹å‡¦ç†ã®åˆæœŸåŒ–é–¢æ•°ã®ç’°å¢ƒä¾å­˜ã®å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 extern int InitializeFile_PF( void )
 {
 	return 0 ;
 }
 
-// ƒtƒ@ƒCƒ‹ƒAƒNƒZƒXˆ—‚ÌŒãn––ŠÖ”‚ÌŠÂ‹«ˆË‘¶‚Ìˆ—‚ğs‚¤ŠÖ”
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ã‚¯ã‚»ã‚¹å‡¦ç†ã®å¾Œå§‹æœ«é–¢æ•°ã®ç’°å¢ƒä¾å­˜ã®å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 extern int TerminateFile_PF( void )
 {
 	return 0 ;
 }
 
-// ƒtƒ@ƒCƒ‹ƒAƒNƒZƒXŠÖ”
+// ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ã‚¯ã‚»ã‚¹é–¢æ•°
 static int ANDR_wchar_t_to_utf8_Path( const wchar_t *Path, char *utf8_PathBuffer, size_t utf8_PathBufferBytes )
 {
 	wchar_t DirPath[ 512 ], FullPath[ 512 ] ;
 
-	// ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚Ìæ“¾
+	// ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®å–å¾—
 	_WGETCWD( DirPath, sizeof( DirPath ) ) ;
 
-	// ƒtƒ‹ƒpƒX‚ğì¬
+	// ãƒ•ãƒ«ãƒ‘ã‚¹ã‚’ä½œæˆ
 	ConvertFullPathW_( Path, FullPath, sizeof( FullPath ), DirPath ) ;
 
-	// ƒpƒX’†‚Ì \ ‚ğ / ‚É’uŠ·‚·‚é
+	// ãƒ‘ã‚¹ä¸­ã® \ ã‚’ / ã«ç½®æ›ã™ã‚‹
 	ChangeEnMarkToSlashW_( FullPath ) ;
 
-//	// ƒhƒ‰ƒCƒu–¼‚ª‘å•¶š‚É‚È‚Á‚Ä‚¢‚½‚ç¬•¶š‚É‚·‚é
+//	// ãƒ‰ãƒ©ã‚¤ãƒ–åãŒå¤§æ–‡å­—ã«ãªã£ã¦ã„ãŸã‚‰å°æ–‡å­—ã«ã™ã‚‹
 //	{
 //		int i ;
 //
@@ -92,7 +92,7 @@ static int ANDR_wchar_t_to_utf8_Path( const wchar_t *Path, char *utf8_PathBuffer
 //		}
 //	}
 
-	// wchar_t ‚©‚ç UTF-8 ‚É•ÏŠ·
+	// wchar_t ã‹ã‚‰ UTF-8 ã«å¤‰æ›
 	ConvString( ( const char * )FullPath, -1, WCHAR_T_CHARCODEFORMAT, utf8_PathBuffer, utf8_PathBufferBytes, DX_CHARCODEFORMAT_UTF8 ) ;
 
 	return 0 ;
@@ -102,7 +102,7 @@ extern int ReadOnlyFileAccessOpen_PF( FILEACCESS *FileAccess, const wchar_t *Pat
 {
 	char FullPathUTF8[ 1024 ] ;
 
-	// wchar_t ‚©‚ç UTF-8 ‚É•ÏŠ·
+	// wchar_t ã‹ã‚‰ UTF-8 ã«å¤‰æ›
 	ANDR_wchar_t_to_utf8_Path( Path, FullPathUTF8, sizeof( FullPathUTF8 ) ) ;
 
 	FileAccess->PF.FilePointer = fopen( FullPathUTF8, "rb" ) ;
@@ -112,18 +112,18 @@ extern int ReadOnlyFileAccessOpen_PF( FILEACCESS *FileAccess, const wchar_t *Pat
 		return -1 ;
 	}
 
-	// ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ğæ“¾
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã‚’å–å¾—
 	fseek( FileAccess->PF.FilePointer, 0, SEEK_END ) ;
 	FileAccess->Size = ftell( FileAccess->PF.FilePointer ) ;
 	fseek( FileAccess->PF.FilePointer, 0, SEEK_SET ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
 extern int ReadOnlyFileAccessClose_PF( FILEACCESS *FileAccess )
 {
-	// ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‰ã˜ã‚‹
 	fclose( FileAccess->PF.FilePointer ) ;
 	FileAccess->PF.FilePointer = NULL ;
 	
@@ -132,10 +132,10 @@ extern int ReadOnlyFileAccessClose_PF( FILEACCESS *FileAccess )
 
 extern int ReadOnlyFileAccessSeek_PF( FILEACCESS *FileAccess, LONGLONG SeekPoint )
 {
-	// ƒtƒ@ƒCƒ‹ƒAƒNƒZƒXˆÊ’u‚ğ•ÏX‚·‚é
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ã‚¯ã‚»ã‚¹ä½ç½®ã‚’å¤‰æ›´ã™ã‚‹
 	fseek( FileAccess->PF.FilePointer, SeekPoint, SEEK_SET ) ;
 	
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
@@ -175,10 +175,10 @@ extern int ReadOnlyFileAccessFindFirst_PF(	FINDINFO *FindInfo, const wchar_t *Fi
 	wchar_t DirPath[ 1024 ] ;
 	char DirPathUTF8[ 1024 ] ;
 
-	// ƒfƒBƒŒƒNƒgƒŠƒpƒX‚Æƒtƒ@ƒCƒ‹–¼‚ğ•ª‚¯‚é
+	// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ã¨ãƒ•ã‚¡ã‚¤ãƒ«åã‚’åˆ†ã‘ã‚‹
 	AnalysisFileNameAndDirPathW_( FilePath, FindInfo->PF.SearchFileName, sizeof( FindInfo->PF.SearchFileName ), DirPath, sizeof( DirPath ) ) ;
 
-	// ƒfƒBƒŒƒNƒgƒŠƒpƒX‚ğ wchar_t ‚©‚ç UTF-8 ‚É•ÏŠ·
+	// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ã‚’ wchar_t ã‹ã‚‰ UTF-8 ã«å¤‰æ›
 	ANDR_wchar_t_to_utf8_Path( DirPath, DirPathUTF8, sizeof( DirPathUTF8 ) ) ;
 
 	FindInfo->PF.Dir = NULL ;
@@ -189,7 +189,7 @@ extern int ReadOnlyFileAccessFindFirst_PF(	FINDINFO *FindInfo, const wchar_t *Fi
 		return -1 ;
 	}
 
-	// Å‰‚Ìƒtƒ@ƒCƒ‹‚ğŒŸõ‚·‚é
+	// æœ€åˆã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¤œç´¢ã™ã‚‹
 	if( ReadOnlyFileAccessFindNext_PF( FindInfo, Buffer ) < 0 )
 	{		
 		closedir( FindInfo->PF.Dir ) ;
@@ -259,12 +259,12 @@ extern int ReadOnlyFileAccessFindClose_PF( FINDINFO *FindInfo )
 
 
 
-// ‘‚«‚İê—pƒtƒ@ƒCƒ‹ƒAƒNƒZƒXŠÖ”
+// æ›¸ãè¾¼ã¿å°‚ç”¨ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ã‚¯ã‚»ã‚¹é–¢æ•°
 extern	int			WriteOnlyFileAccessDelete_PF( const wchar_t *Path )
 {
 	char FullPathUTF8[ 1024 ] ;
 
-	// wchar_t ‚©‚ç UTF-8 ‚É•ÏŠ·
+	// wchar_t ã‹ã‚‰ UTF-8 ã«å¤‰æ›
 	ANDR_wchar_t_to_utf8_Path( Path, FullPathUTF8, sizeof( FullPathUTF8 ) ) ;
 
 	remove( FullPathUTF8 ) ;
@@ -277,10 +277,10 @@ extern	DWORD_PTR	WriteOnlyFileAccessOpen_PF(  const wchar_t *Path )
 	char FullPathUTF8[ 1024 ] ;
 	FILE *fp ;
 
-	// wchar_t ‚©‚ç UTF-8 ‚É•ÏŠ·
+	// wchar_t ã‹ã‚‰ UTF-8 ã«å¤‰æ›
 	ANDR_wchar_t_to_utf8_Path( Path, FullPathUTF8, sizeof( FullPathUTF8 ) ) ;
 
-	// ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+	// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 	fp = fopen( FullPathUTF8, "wb" ) ;
 	if( fp == NULL )
 	{

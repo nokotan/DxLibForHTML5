@@ -1,6 +1,6 @@
 // -------------------------------------------------------------------------------
 // 
-// 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		Android—pƒXƒŒƒbƒhŠÖŒWƒvƒƒOƒ‰ƒ€ƒwƒbƒ_ƒtƒ@ƒCƒ‹
+// 		ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒª		Androidç”¨ã‚¹ãƒ¬ãƒƒãƒ‰é–¢ä¿‚ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ«
 // 
 // 				Ver 3.21d
 // 
@@ -9,7 +9,7 @@
 #ifndef DX_THREADANDROID_H
 #define DX_THREADANDROID_H
 
-// ƒCƒ“ƒNƒ‹[ƒh ------------------------------------------------------------------
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
 #include <pthread.h>
 
@@ -20,17 +20,17 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// ƒ}ƒNƒ’è‹` --------------------------------------------------------------------
+// ãƒã‚¯ãƒ­å®šç¾© --------------------------------------------------------------------
 
-// \‘¢‘Ì’è‹` --------------------------------------------------------------------
+// æ§‹é€ ä½“å®šç¾© --------------------------------------------------------------------
 
-// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“
+// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³
 struct DX_CRITICAL_SECTION
 {
-	int						Mutex_valid ;								// Mutex ‚ª—LŒø‚©‚Ç‚¤‚©
-	pthread_mutex_t			Mutex ;										// ‹x~ó‘Ôˆ——p‚Ìƒ~ƒ…[ƒeƒbƒNƒX
-	int						Mutexaddr_valid ;							// Mutexaddr ‚ª—LŒø‚©‚Ç‚¤‚©
-	pthread_mutexattr_t		Mutexattr ;									// ‹x~ó‘Ôˆ——p‚Ìƒ~ƒ…[ƒeƒbƒNƒX‚Ì‘®«î•ñ
+	int						Mutex_valid ;								// Mutex ãŒæœ‰åŠ¹ã‹ã©ã†ã‹
+	pthread_mutex_t			Mutex ;										// ä¼‘æ­¢çŠ¶æ…‹å‡¦ç†ç”¨ã®ãƒŸãƒ¥ãƒ¼ãƒ†ãƒƒã‚¯ã‚¹
+	int						Mutexaddr_valid ;							// Mutexaddr ãŒæœ‰åŠ¹ã‹ã©ã†ã‹
+	pthread_mutexattr_t		Mutexattr ;									// ä¼‘æ­¢çŠ¶æ…‹å‡¦ç†ç”¨ã®ãƒŸãƒ¥ãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã®å±æ€§æƒ…å ±
 #if defined( _DEBUG )
 	char					FilePath[ 512 ] ;
 	int						LineNo ;
@@ -38,29 +38,29 @@ struct DX_CRITICAL_SECTION
 #endif
 } ;
 
-// ˆê‚Â‚ÌƒXƒŒƒbƒh‚Ìî•ñ
+// ä¸€ã¤ã®ã‚¹ãƒ¬ãƒƒãƒ‰ã®æƒ…å ±
 struct THREAD_INFO
 {
-	void					( *pFunction )( THREAD_INFO *, void * ) ;	// Às‚·‚éŠÖ”
-	void					*pParam ;									// Às‚·‚éŠÖ”‚É“n‚·ƒpƒ‰ƒ[ƒ^
-	int						Thread_valid ;								// Thread ‚ª—LŒø‚©‚Ç‚¤‚©
-	pthread_t				Thread ;									// ƒXƒŒƒbƒh
-	int						Threadattr_valid ;							// Threadattr ‚ª—LŒø‚©‚Ç‚¤‚©
-	pthread_attr_t			Threadattr ;								// ƒXƒŒƒbƒh‚Ì‘®«î•ñ
-	int						Cond_valid ;								// Cond ‚ª—LŒø‚©‚Ç‚¤‚©
-	pthread_cond_t			Cond ;										// ‹x~ó‘Ôˆ——p‚ÌğŒ•Ï”
-	int						Mutex_valid ;								// Mutex ‚ª—LŒø‚©‚Ç‚¤‚©
-	pthread_mutex_t			Mutex ;										// ‹x~ó‘Ôˆ——p‚Ìƒ~ƒ…[ƒeƒbƒNƒX
-	int						Mutexaddr_valid ;							// Mutexaddr ‚ª—LŒø‚©‚Ç‚¤‚©
-	pthread_mutexattr_t		Mutexattr ;									// ‹x~ó‘Ôˆ——p‚Ìƒ~ƒ…[ƒeƒbƒNƒX‚Ì‘®«î•ñ
-	int						SuspendFlag ;								// ‹x~ó‘Ô‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
+	void					( *pFunction )( THREAD_INFO *, void * ) ;	// å®Ÿè¡Œã™ã‚‹é–¢æ•°
+	void					*pParam ;									// å®Ÿè¡Œã™ã‚‹é–¢æ•°ã«æ¸¡ã™ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+	int						Thread_valid ;								// Thread ãŒæœ‰åŠ¹ã‹ã©ã†ã‹
+	pthread_t				Thread ;									// ã‚¹ãƒ¬ãƒƒãƒ‰
+	int						Threadattr_valid ;							// Threadattr ãŒæœ‰åŠ¹ã‹ã©ã†ã‹
+	pthread_attr_t			Threadattr ;								// ã‚¹ãƒ¬ãƒƒãƒ‰ã®å±æ€§æƒ…å ±
+	int						Cond_valid ;								// Cond ãŒæœ‰åŠ¹ã‹ã©ã†ã‹
+	pthread_cond_t			Cond ;										// ä¼‘æ­¢çŠ¶æ…‹å‡¦ç†ç”¨ã®æ¡ä»¶å¤‰æ•°
+	int						Mutex_valid ;								// Mutex ãŒæœ‰åŠ¹ã‹ã©ã†ã‹
+	pthread_mutex_t			Mutex ;										// ä¼‘æ­¢çŠ¶æ…‹å‡¦ç†ç”¨ã®ãƒŸãƒ¥ãƒ¼ãƒ†ãƒƒã‚¯ã‚¹
+	int						Mutexaddr_valid ;							// Mutexaddr ãŒæœ‰åŠ¹ã‹ã©ã†ã‹
+	pthread_mutexattr_t		Mutexattr ;									// ä¼‘æ­¢çŠ¶æ…‹å‡¦ç†ç”¨ã®ãƒŸãƒ¥ãƒ¼ãƒ†ãƒƒã‚¯ã‚¹ã®å±æ€§æƒ…å ±
+	int						SuspendFlag ;								// ä¼‘æ­¢çŠ¶æ…‹ã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°
 } ;
 
-// ƒe[ƒuƒ‹-----------------------------------------------------------------------
+// ãƒ†ãƒ¼ãƒ–ãƒ«-----------------------------------------------------------------------
 
-// “à•”‘åˆæ•Ï”éŒ¾ --------------------------------------------------------------
+// å†…éƒ¨å¤§åŸŸå¤‰æ•°å®£è¨€ --------------------------------------------------------------
 
-// ŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾-----------------------------------------------------------
+// é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€-----------------------------------------------------------
 
 #ifndef DX_NON_NAMESPACE
 

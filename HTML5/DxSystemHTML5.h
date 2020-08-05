@@ -1,6 +1,6 @@
 // -------------------------------------------------------------------------------
 // 
-// 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		iOS—pƒVƒXƒeƒ€ƒvƒƒOƒ‰ƒ€ƒwƒbƒ_ƒtƒ@ƒCƒ‹
+// 		ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒª		iOSç”¨ã‚·ã‚¹ãƒ†ãƒ ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ«
 // 
 // 				Ver 3.21d
 // 
@@ -9,7 +9,7 @@
 #ifndef DX_SYSTEMIOS_H
 #define DX_SYSTEMIOS_H
 
-// ƒCƒ“ƒNƒ‹[ƒh ------------------------------------------------------------------
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
 #include <pthread.h>
 #include <sched.h>
@@ -22,55 +22,55 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// ƒ}ƒNƒ’è‹` --------------------------------------------------------------------
+// ãƒã‚¯ãƒ­å®šç¾© --------------------------------------------------------------------
 
-// ƒ\ƒtƒg‚ªƒAƒNƒeƒBƒu‚©‚Ç‚¤‚©‚ğƒ`ƒFƒbƒN‚·‚é
+// ã‚½ãƒ•ãƒˆãŒã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã‹ã©ã†ã‹ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
 #define CheckActiveState()					\
 		if( g_iOSSys.NonActiveRunFlag == FALSE )\
 		{\
 			DxActiveWait_iOS() ;\
 		}
 
-// \‘¢‘Ì’è‹` --------------------------------------------------------------------
+// æ§‹é€ ä½“å®šç¾© --------------------------------------------------------------------
 
 struct DXLIB_IOS_SYSTEMINFO
 {
-	volatile void				( *LostFocusCallbackFunction )( void *Data ) ;		// ƒAƒvƒŠ‚ÌƒtƒH[ƒJƒX‚ª¸‚í‚ê‚½Û‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”
-	volatile void				*LostFocusCallbackFunctionData ;					// ƒAƒvƒŠ‚ÌƒtƒH[ƒJƒX‚ª¸‚í‚ê‚½Û‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”‚É“n‚·ƒ|ƒCƒ“ƒ^
-	volatile void				( *GainedFocusCallbackFunction )( void *Data ) ;	// ƒAƒvƒŠ‚ÌƒtƒH[ƒJƒX‚ª“¾‚ç‚ê‚½Û‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”
-	volatile void				*GainedFocusCallbackFunctionData ;					// ƒAƒvƒŠ‚ÌƒtƒH[ƒJƒX‚ª“¾‚ç‚ê‚½Û‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”‚É“n‚·ƒ|ƒCƒ“ƒ^
+	volatile void				( *LostFocusCallbackFunction )( void *Data ) ;		// ã‚¢ãƒ—ãƒªã®ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒå¤±ã‚ã‚ŒãŸéš›ã«å‘¼ã°ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
+	volatile void				*LostFocusCallbackFunctionData ;					// ã‚¢ãƒ—ãƒªã®ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒå¤±ã‚ã‚ŒãŸéš›ã«å‘¼ã°ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã«æ¸¡ã™ãƒã‚¤ãƒ³ã‚¿
+	volatile void				( *GainedFocusCallbackFunction )( void *Data ) ;	// ã‚¢ãƒ—ãƒªã®ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒå¾—ã‚‰ã‚ŒãŸéš›ã«å‘¼ã°ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
+	volatile void				*GainedFocusCallbackFunctionData ;					// ã‚¢ãƒ—ãƒªã®ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒå¾—ã‚‰ã‚ŒãŸéš›ã«å‘¼ã°ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã«æ¸¡ã™ãƒã‚¤ãƒ³ã‚¿
 	
-	volatile int				NonActiveRunFlag ;					// ƒAƒvƒŠ‚ªƒAƒNƒeƒBƒu‚Å‚Í‚È‚­‚Ä‚àˆ—‚ğÀs‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
+	volatile int				NonActiveRunFlag ;					// ã‚¢ãƒ—ãƒªãŒã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã§ã¯ãªãã¦ã‚‚å‡¦ç†ã‚’å®Ÿè¡Œã™ã‚‹ã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°
 
 	int							ViewWidth;
 	int							ViewHeight;
-	GLuint						ViewFrameBuffer ;					// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@
-	GLuint						ViewDepthBuffer ;					// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@
-	GLuint						ViewRenderBuffer ;					// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@
+	GLuint						ViewFrameBuffer ;					// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡
+	GLuint						ViewDepthBuffer ;					// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡
+	GLuint						ViewRenderBuffer ;					// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡
 } ;
 
-// ƒe[ƒuƒ‹-----------------------------------------------------------------------
+// ãƒ†ãƒ¼ãƒ–ãƒ«-----------------------------------------------------------------------
 
-// “à•”‘åˆæ•Ï”éŒ¾ --------------------------------------------------------------
+// å†…éƒ¨å¤§åŸŸå¤‰æ•°å®£è¨€ --------------------------------------------------------------
 
 extern DXLIB_IOS_SYSTEMINFO g_iOSSys ;
 extern int g_iOSRunFlag ;
 
-// ŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾-----------------------------------------------------------
+// é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€-----------------------------------------------------------
 
-// ƒAƒNƒeƒBƒu‚É‚È‚é‚Ü‚Å‰½‚à‚µ‚È‚¢
+// ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ãªã‚‹ã¾ã§ä½•ã‚‚ã—ãªã„
 extern void DxActiveWait_iOS( void ) ;
 
-// ƒAƒvƒŠ‚ÌŠO•”ƒf[ƒ^•Û‘¶—p‚ÌƒfƒBƒŒƒNƒgƒŠƒpƒX‚ğæ“¾‚·‚é
+// ã‚¢ãƒ—ãƒªã®å¤–éƒ¨ãƒ‡ãƒ¼ã‚¿ä¿å­˜ç”¨ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹
 extern int GetDocumentsDirPathForChar( char *PathBuffer, size_t PathBufferBytes ) ;
 
-// ƒAƒvƒŠ‚Ìƒf[ƒ^•Û‘¶—p‚ÌƒfƒBƒŒƒNƒgƒŠƒpƒX‚ğæ“¾‚·‚é
+// ã‚¢ãƒ—ãƒªã®ãƒ‡ãƒ¼ã‚¿ä¿å­˜ç”¨ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹
 extern int GetLibraryPreferencesDirPathForChar( char *PathBuffer, size_t PathBufferBytes ) ;
 
-// ƒAƒvƒŠ‚ÌƒLƒƒƒbƒVƒ…ƒtƒ@ƒCƒ‹•Û‘¶—p‚ÌƒfƒBƒŒƒNƒgƒŠƒpƒX‚ğæ“¾‚·‚é
+// ã‚¢ãƒ—ãƒªã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥ãƒ•ã‚¡ã‚¤ãƒ«ä¿å­˜ç”¨ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹
 extern int GetLibraryCachesDirPathForChar( char *PathBuffer, size_t PathBufferBytes ) ;
 
-// ƒAƒvƒŠ‚Ìˆêƒtƒ@ƒCƒ‹•Û‘¶—p‚ÌƒfƒBƒŒƒNƒgƒŠƒpƒX‚ğæ“¾‚·‚é
+// ã‚¢ãƒ—ãƒªã®ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ä¿å­˜ç”¨ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹
 extern int GetTmpDirPathForChar( char *PathBuffer, size_t PathBufferBytes ) ;
 
 extern int GetGraphicsViewFramebufferInfo( unsigned int *ViewFrameBuffer, int *Width, int *Height ) ;

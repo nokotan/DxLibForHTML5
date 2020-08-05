@@ -1,19 +1,19 @@
 //-----------------------------------------------------------------------------
 // 
-// 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		Android—pƒtƒHƒ“ƒgŠÖŒWƒvƒƒOƒ‰ƒ€
+// 		ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒª		Androidç”¨ãƒ•ã‚©ãƒ³ãƒˆé–¢ä¿‚ãƒ—ãƒ­ã‚°ãƒ©ãƒ 
 // 
 //  	Ver 3.21d
 // 
 //-----------------------------------------------------------------------------
 
-// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠì¬—p’è‹`
+// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªä½œæˆæ™‚ç”¨å®šç¾©
 #define DX_MAKE
 
 #include "../DxCompileConfig.h"
 
 #ifndef DX_NON_FONT
 
-// ƒCƒ“ƒNƒ‹[ƒh ---------------------------------------------------------------
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ ---------------------------------------------------------------
 #include "DxFontHTML5.h"
 #include "DxBaseFuncHTML5.h"
 #include "DxSystemHTML5.h"
@@ -45,19 +45,19 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// ƒ}ƒNƒ’è‹` -----------------------------------------------------------------
+// ãƒã‚¯ãƒ­å®šç¾© -----------------------------------------------------------------
 
-// \‘¢‘ÌéŒ¾ -----------------------------------------------------------------
+// æ§‹é€ ä½“å®£è¨€ -----------------------------------------------------------------
 
-// ƒf[ƒ^’è‹` -----------------------------------------------------------------
+// ãƒ‡ãƒ¼ã‚¿å®šç¾© -----------------------------------------------------------------
 
 FONTSYSTEM_ANDR FontSystemAndroid ;
 
-// ŠÖ”éŒ¾ -------------------------------------------------------------------
+// é–¢æ•°å®£è¨€ -------------------------------------------------------------------
 
-// ƒvƒƒOƒ‰ƒ€ -----------------------------------------------------------------
+// ãƒ—ãƒ­ã‚°ãƒ©ãƒ  -----------------------------------------------------------------
 
-// ƒtƒHƒ“ƒg‚Ì Android ê—pƒf[ƒ^‚ğ‰ğ•ú‚·‚é
+// ãƒ•ã‚©ãƒ³ãƒˆã® Android å°‚ç”¨ãƒ‡ãƒ¼ã‚¿ã‚’è§£æ”¾ã™ã‚‹
 static int TerminateFontHandle_Android( FONTMANAGE *ManageData )
 {
 	FONTMANAGE_PF* font = ManageData->PF;
@@ -69,11 +69,11 @@ static int TerminateFontHandle_Android( FONTMANAGE *ManageData )
 		DXFREE( font->args.stream );
 	}
             
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// InitFontManage ‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”
+// InitFontManage ã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 extern int InitFontManage_PF( void )
 {
 	FT_Error error = FT_Init_FreeType( &FontSystemAndroid.library );
@@ -86,7 +86,7 @@ extern int InitFontManage_PF( void )
     return 0;
 }
 
-// TermFontManage ‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”
+// TermFontManage ã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 extern int TermFontManage_PF( void )
 {
 	FT_Done_FreeType( FontSystemAndroid.library );
@@ -112,10 +112,10 @@ static unsigned long RWread(
     return FileRead_read(buffer, count, *src);
 }
 
-// CreateFontToHandle ‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”
+// CreateFontToHandle ã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE *ManageData, int DefaultCharSet )
 {
-	// ƒtƒHƒ“ƒgƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğg—p‚·‚éê‡‚Í‰½‚à‚¹‚¸‚ÉI—¹
+	// ãƒ•ã‚©ãƒ³ãƒˆãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½¿ç”¨ã™ã‚‹å ´åˆã¯ä½•ã‚‚ã›ãšã«çµ‚äº†
 	if( ManageData->UseFontDataFile )
 	{
 		return 0 ;
@@ -264,52 +264,52 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
     printf("Cache Info: PixelByte=%d, BitWidth=%d\n", ManageData->TextureCacheBaseImage.ColorData.PixelByte, ManageData->TextureCacheBaseImage.ColorData.ColorBitDepth);
 
 	{
-		// ¬Œ÷‚Íƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg
+		// æˆåŠŸæ™‚ã¯ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆ
 		ManageData->BaseInfo.FontHeight    = ManageData->PF->height ;
 		ManageData->BaseInfo.FontAddHeight = 0 ;
 		ManageData->BaseInfo.MaxWidth      = ManageData->PF->width > ManageData->PF->height ? ManageData->PF->width : ManageData->PF->height;
 		ManageData->BaseInfo.Ascent        = -ManageData->PF->ascent;
 	}
 
-	// –ß‚è’l‚ğ•Ô‚·
+	// æˆ»ã‚Šå€¤ã‚’è¿”ã™
 	return 0 ;
 }
 
-// CreateFontToHandle ‚ÌŠÂ‹«ˆË‘¶ƒGƒ‰[ˆ—‚ğs‚¤ŠÖ”
+// CreateFontToHandle ã®ç’°å¢ƒä¾å­˜ã‚¨ãƒ©ãƒ¼å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 extern int CreateFontToHandle_Error_PF( FONTMANAGE * ManageData )
 {
-	// ‰ğ•úˆ—‚ğÀs
+	// è§£æ”¾å‡¦ç†ã‚’å®Ÿè¡Œ
 	TerminateFontHandle_Android( ManageData ) ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// TerminateFontHandle ‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”
+// TerminateFontHandle ã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 extern int TerminateFontHandle_PF( FONTMANAGE *ManageData )
 {
-	// ‰ğ•úˆ—‚ğÀs
+	// è§£æ”¾å‡¦ç†ã‚’å®Ÿè¡Œ
 	TerminateFontHandle_Android( ManageData ) ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// SetupFontCache ‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”
+// SetupFontCache ã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 extern int SetupFontCache_PF( CREATEFONTTOHANDLE_GPARAM * /* GParam */, FONTMANAGE * /* ManageData */, int /* ASyncThread */ )
 {
-	// “Á‚É‰½‚à‚µ‚È‚¢
+	// ç‰¹ã«ä½•ã‚‚ã—ãªã„
 	return 0 ;
 }
 
-// FontCacheCharaAddToHandle‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”( Às‰ÓŠ‹æ•Ê 0 )
+// FontCacheCharaAddToHandleã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†é–¢æ•°( å®Ÿè¡Œç®‡æ‰€åŒºåˆ¥ 0 )
 extern int FontCacheCharAddToHandle_Timing0_PF( FONTMANAGE *ManageData )
 {
-	// ‚Æ‚­‚É‚·‚é‚±‚Æ–³‚µ
+	// ã¨ãã«ã™ã‚‹ã“ã¨ç„¡ã—
 	return 0 ;
 }
 
-// FontCacheCharaAddToHandle‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”( Às‰ÓŠ‹æ•Ê 1 )
+// FontCacheCharaAddToHandleã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†é–¢æ•°( å®Ÿè¡Œç®‡æ‰€åŒºåˆ¥ 1 )
 extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHARDATA *CharData, DWORD CharCode, DWORD IVSCode, int TextureCacheUpdate )
 {
 	int res = -1 ;
@@ -328,7 +328,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
 #ifdef DEBUG_FONTS   
     printf("Font Init: Start font caching of %d\n", CharCode);
 #endif
-	// ƒXƒy[ƒX‚©‚Ç‚¤‚©‚ğæ“¾‚µ‚Ä‚¨‚­
+	// ã‚¹ãƒšãƒ¼ã‚¹ã‹ã©ã†ã‹ã‚’å–å¾—ã—ã¦ãŠã
 	Space = CharCode == L' ' ? 1 : ( CharCode == ( DWORD )FSYS.DoubleByteSpaceCharCode ? 2 : 0 ) ;
 
     if ( !font || !font->face ) {
@@ -645,21 +645,21 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
 	DXFREE(bitmap.buffer);
 	res = 0;
 
-	// –ß‚è’l‚ğ•Ô‚·
+	// æˆ»ã‚Šå€¤ã‚’è¿”ã™
 	return res ;
 }
 
-// FontCacheCharaAddToHandle‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”( Às‰ÓŠ‹æ•Ê 2 )
+// FontCacheCharaAddToHandleã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†é–¢æ•°( å®Ÿè¡Œç®‡æ‰€åŒºåˆ¥ 2 )
 extern int FontCacheCharAddToHandle_Timing2_PF( FONTMANAGE *ManageData )
 {
-	// “Á‚É‰½‚à‚µ‚È‚¢
+	// ç‰¹ã«ä½•ã‚‚ã—ãªã„
 	return 0 ;
 }
 
-// EnumFontName ‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”
+// EnumFontName ã®ç’°å¢ƒä¾å­˜å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 extern int EnumFontName_PF( ENUMFONTDATA *EnumFontData, int IsEx, int CharSet )
 {
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 

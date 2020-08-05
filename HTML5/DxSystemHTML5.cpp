@@ -1,15 +1,15 @@
 // -------------------------------------------------------------------------------
 // 
-// 		�c�w���C�u����		iOS�p�V�X�e���v���O����
+// 		ＤＸライブラリ		iOS用システムプログラム
 // 
 // 				Ver 3.21d
 // 
 // -------------------------------------------------------------------------------
 
-// �c�w���C�u�����쐬���p��`
+// ＤＸライブラリ作成時用定義
 #define DX_MAKE
 
-// �C���N���[�h ------------------------------------------------------------------
+// インクルード ------------------------------------------------------------------
 #include "DxSystemHTML5.h"
 #include "DxGraphicsHTML5.h"
 #include "DxGraphicsFilterHTML5.h"
@@ -63,24 +63,24 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// �}�N����` --------------------------------------------------------------------
+// マクロ定義 --------------------------------------------------------------------
 
 #define TIME_DISTANCE( now, time )			( (now) < (time) ? 0x7fffffff - (time) + (now) : (now) - (time) )
 
-// �\���̒�` --------------------------------------------------------------------
+// 構造体定義 --------------------------------------------------------------------
 
-// �e�[�u��-----------------------------------------------------------------------
+// テーブル-----------------------------------------------------------------------
 
-// �������ϐ��錾 --------------------------------------------------------------
+// 内部大域変数宣言 --------------------------------------------------------------
 
 DXLIB_IOS_SYSTEMINFO g_iOSSys ;
 int g_iOSRunFlag ;
 
-// �֐��v���g�^�C�v�錾-----------------------------------------------------------
+// 関数プロトタイプ宣言-----------------------------------------------------------
    
-// �v���O���� --------------------------------------------------------------------
+// プログラム --------------------------------------------------------------------
 
-// UTF16LE �̏���������� UTF8 �̃p�����[�^����������O�o�͂���
+// UTF16LE の書式文字列と UTF8 のパラメータ文字列をログ出力する
 static void OutputiOSOSInfo_LogAddUTF8( const char *UTF16LEFormatStr, const char *UTF8Str )
 {
 //	char TempStr[ 1024 ] ;
@@ -89,89 +89,89 @@ static void OutputiOSOSInfo_LogAddUTF8( const char *UTF16LEFormatStr, const char
 //	DXST_LOGFILEFMT_ADDUTF16LE(( UTF16LEFormatStr, TempStr )) ;
 }
 
-// ���C�u�����������֐�
+// ライブラリ初期化関数
 extern int NS_DxLib_Init( void )
 {
-	// ���ɏ������ς݂̏ꍇ�͉��������I��
+	// 既に初期化済みの場合は何もせず終了
 	if( DxSysData.DxLib_InitializeFlag == TRUE )
 	{
 		return 0 ;
 	}
 
-	DXST_LOGFILE_ADDA( "Start initialization processing of DX library\n" /*"�c�w���C�u�����̏����������J�n"*/ ) ;
+	DXST_LOGFILE_ADDA( "Start initialization processing of DX library\n" /*"ＤＸライブラリの初期化処理開始"*/ ) ;
 	DXST_LOGFILE_TABADD ;
 
-	// ���������t���O�𗧂Ă�
+	// 初期化中フラグを立てる
 	DxSysData.DxLib_RunInitializeFlag = TRUE ;
 
 #ifndef DX_NON_LITERAL_STRING
-	// �c�w���C�u�����̃o�[�W�������o�͂���
-	DXST_LOGFILEFMT_ADDA(( "DX library Ver%s\n", DXLIB_VERSION_STR_T /*"�c�w���C�u���� Ver%s\n"*/ )) ;
+	// ＤＸライブラリのバージョンを出力する
+	DXST_LOGFILEFMT_ADDA(( "DX library Ver%s\n", DXLIB_VERSION_STR_T /*"ＤＸライブラリ Ver%s\n"*/ )) ;
 #endif
 
-	// OS���o��
+	// OS情報出力
 	{
 	}
 
-	// DxSysData �̋��ʏ���������
+	// DxSysData の共通初期化処理
 	DxLib_SysInit() ;
 
-	// DxBaseFunc �̏�����
+	// DxBaseFunc の初期化
 	_INIT_BASEFUNC() ;
 
-	// �L�����N�^�[�R�[�h�֌W�̏��������s��
+	// キャラクターコード関係の初期化を行う
 	InitCharCode() ;
 
-	// �g�p���镶���Z�b�g���Z�b�g
+	// 使用する文字セットをセット
 	_SET_DEFAULT_CHARCODEFORMAT() ;
 
 #ifndef DX_NON_ASYNCLOAD
-	// �񓯊��ǂݍ��ݏ����̏�����
+	// 非同期読み込み処理の初期化
 	InitializeASyncLoad( Thread_GetCurrentId() ) ;
 #endif // DX_NON_ASYNCLOAD
 
-	// �t�@�C���A�N�Z�X�����̏�����
+	// ファイルアクセス処理の初期化
 	InitializeFile() ;
-	
+
 #ifndef DX_NON_OGGTHEORA
-	// Theora �p�̏�����
+	// Theora 用の初期化
 	TheoraDecode_GrobalInitialize() ;
 #endif
 
-	// �A�[�J�C�u�t�@�C���A�N�Z�X�p�̃f�[�^��������
+	// アーカイブファイルアクセス用のデータを初期化
 #ifndef DX_NON_DXA
 	DXA_DIR_Initialize() ;
 #endif
 
-	// �X�g���[���f�[�^�ǂݍ��ݐ���p�|�C���^�\���̂̃f�t�H���g�l���Z�b�g
+	// ストリームデータ読み込み制御用ポインタ構造体のデフォルト値をセット
 	NS_ChangeStreamFunction( NULL ) ;
-	
+
 #ifndef DX_NON_LOG
-	// ���O�t�@�C���̏�����
+	// ログファイルの初期化
 	LogFileInitialize() ;
 #endif
 
-	// �V�X�e�����O���o��
+	// システムログを出力
 //	OutSystemInfo() ;
 
 #ifndef DX_NON_GRAPHICS
-	// �f�t�H���g�̃O���t�B�b�N�����֐���o�^
+	// デフォルトのグラフィック復元関数を登録
 	NS_SetRestoreGraphCallback( NULL ) ;
 #endif // DX_NON_GRAPHICS
-	
-	// �e�����n�̏�����
+
+	// 各処理系の初期化
 	if( DxSysData.NotInputFlag == FALSE )
 	{
 #ifndef DX_NON_INPUT
-		if( InitializeInputSystem() == -1 ) goto ERROR_DX ;			// ���̓V�X�e���̏�����
+		if( InitializeInputSystem() == -1 ) goto ERROR_DX ;			// 入力システムの初期化
 #endif // DX_NON_INPUT
 	}
 
 	if( DxSysData.NotSoundFlag == FALSE )
 	{
 #ifndef DX_NON_SOUND
-		InitializeSoundConvert() ;									// �T�E���h�ϊ������̏�����
-		InitializeSoundSystem() ;									// �T�E���h�V�X�e���̂̏�����
+		InitializeSoundConvert() ;									// サウンド変換処理の初期化
+		InitializeSoundSystem() ;									// サウンドシステムのの初期化
 #endif // DX_NON_SOUND
 	}
 	if( DxSysData.NotDrawFlag == FALSE )
@@ -183,36 +183,36 @@ extern int NS_DxLib_Init( void )
 #ifndef DX_NON_MOVIE
 		InitializeMovieManage() ;
 #endif
-	
+
 #ifndef DX_NON_GRAPHICS
 		if( Graphics_Initialize() < 0 ) goto ERROR_DX ;
 #endif // DX_NON_GRAPHICS
 	}
 #ifndef DX_NON_INPUTSTRING
-	InitializeInputCharBuf() ;									// �����R�[�h�o�b�t�@�̏�����
+	InitializeInputCharBuf() ;									// 文字コードバッファの初期化
 #endif // DX_NON_INPUTSTRING
 
-	// �c�w���C�u���������������t���O�����Ă�
+	// ＤＸライブラリ初期化完了フラグをたてる
 	DxSysData.DxLib_InitializeFlag = TRUE ;
-	
-	// �u�r�x�m�b�҂�������
+
+	// ＶＳＹＮＣ待ちをする
 //	NS_SetWaitVSyncFlag( TRUE ) ;
 
 #if !defined( DX_NON_LOG ) && !defined( DX_NON_PRINTF_DX )
-	// ���O�o�͏����̏��������s��
+	// ログ出力処理の初期化を行う
 	InitializeLog() ;
 #endif
-	
+
 #ifndef DX_NON_GRAPHICS
-	// �`���̕ύX
+	// 描画先の変更
 	NS_SetDrawScreen( DX_SCREEN_BACK ) ;
 	NS_SetDrawScreen( DX_SCREEN_FRONT ) ;
 #endif // DX_NON_GRAPHICS
-	
+
 	if( DxSysData.NotDrawFlag == FALSE )
 	{
 #ifndef DX_NON_MODEL
-		// ���f���o�[�W�����P�̏�����
+		// モデルバージョン１の初期化
 		if( MV1Initialize() < 0 )
 		{
 			goto ERROR_DX ;
@@ -220,12 +220,12 @@ extern int NS_DxLib_Init( void )
 #endif
 
 #ifndef DX_NON_LIVE2D_CUBISM4
-		// Live2D Cubism4 �֘A�̏�����
+		// Live2D Cubism4 関連の初期化
 		Live2DCubism4_Initialize() ;
 #endif // DX_NON_LIVE2D_CUBISM4
 	}
-	
-	// �����_���W����������
+
+	// ランダム係数を初期化
 #ifndef DX_NON_MERSENNE_TWISTER
 	srandMT( ( unsigned int )NS_GetNowCount() ) ;
 #else
@@ -233,69 +233,69 @@ extern int NS_DxLib_Init( void )
 #endif
 
 #ifndef DX_NON_ASYNCLOAD
-	// �񓯊��ǂݍ��ݏ������s���X���b�h�𗧂Ă�
+	// 非同期読み込み処理を行うスレッドを立てる
 	if( SetupASyncLoadThread( 3 ) < 0 )
 	{
-		DXST_LOGFILE_ADDA( "Startup of asynchronous read processing thread failed\n"/*"�񓯊��ǂݍ��ݏ������s���X���b�h�̗����グ�Ɏ��s���܂���\n"*/ ) ;
+		DXST_LOGFILE_ADDA( "Startup of asynchronous read processing thread failed\n"/*"非同期読み込み処理を行うスレッドの立ち上げに失敗しました\n"*/ ) ;
 		goto ERROR_DX ;
 	}
 #endif // DX_NON_ASYNCLOAD
 
-	// ���������t���O��|��
+	// 初期化中フラグを倒す
 	DxSysData.DxLib_RunInitializeFlag = FALSE ;
 
 	DXST_LOGFILE_TABSUB ;
-	DXST_LOGFILEFMT_ADDA(( "DX library initialization processing end" /*"�c�w���C�u�����̏����������I��"*/ ) ) ;
+	DXST_LOGFILEFMT_ADDA(( "DX library initialization processing end" /*"ＤＸライブラリの初期化処理終了"*/ ) ) ;
 
-	// �I��
+	// 終了
 	return 0 ;
 
 ERROR_DX:
 	NS_DxLib_End() ;
 
 	DXST_LOGFILE_TABSUB ;
-	DXST_LOGFILEFMT_ADDA(( "Failed to initialize the DX library" /*"�c�w���C�u�����̏������������s"*/ )) ;
+	DXST_LOGFILEFMT_ADDA(( "Failed to initialize the DX library" /*"ＤＸライブラリの初期化処理失敗"*/ )) ;
 
-	// ���������t���O��|��
+	// 初期化中フラグを倒す
 	DxSysData.DxLib_RunInitializeFlag = FALSE ;
 
 	return -1 ;
 } 
 
-// ���C�u�����g�p�̏I���֐�
+// ライブラリ使用の終了関数
 extern int NS_DxLib_End( void )
 {
-	// ���ɏI���������s���Ă��邩�A������������������Ă��Ȃ��ꍇ�͉������Ȃ�
+	// 既に終了処理が行われているか、そもそも初期化されていない場合は何もしない
 	if( DxSysData.DxLib_InitializeFlag == FALSE )
 	{
 		return 0 ;
 	}
 
 #ifndef DX_NON_SOFTIMAGE
-	// �o�^�����S�Ẵ\�t�g�C���[�W���폜
+	// 登録した全てのソフトイメージを削除
 	InitSoftImage() ;
 #endif // DX_NON_SOFTIMAGE
 
-	// �e�����n�̏I��
+	// 各処理系の終了
 #if !defined( DX_NON_LOG ) && !defined( DX_NON_PRINTF_DX )
-	TerminateLog() ;			// ���O�����̌�n��
+	TerminateLog() ;			// ログ処理の後始末
 #endif
 
 #ifndef DX_NON_NETWORK
-	TerminateNetWork() ;		// �v�����r�������������֌W�̏I��
+	TerminateNetWork() ;		// ＷｉｎＳｏｃｋｅｔｓ関係の終了
 #endif
 
 #ifndef DX_NON_LIVE2D_CUBISM4
-	// Live2D Cubism4 �֘A�̌�n��
+	// Live2D Cubism4 関連の後始末
 	Live2DCubism4_Terminate() ;
 #endif // DX_NON_LIVE2D_CUBISM4
 
 #ifndef DX_NON_SOUND
-	NS_StopMusic() ;			// �l�h�c�h�����t����Ă����Ԃ̏ꍇ������~�߂�
+	NS_StopMusic() ;			// ＭＩＤＩが演奏されている状態の場合それを止める
 #endif // DX_NON_SOUND
 
 #ifndef DX_NON_MODEL
-	MV1Terminate() ;			// ���f���o�[�W�����P�̌�n��
+	MV1Terminate() ;			// モデルバージョン１の後始末
 #endif
 
 #ifndef DX_NON_GRAPHICS
@@ -313,53 +313,53 @@ extern int NS_DxLib_End( void )
 #endif
 
 #ifndef DX_NON_INPUT
-	TerminateInputSystem() ;	// ���̓V�X�e���̏I��
+	TerminateInputSystem() ;	// 入力システムの終了
 #endif // DX_NON_INPUT
 
 #ifndef DX_NON_SOUND
-	TerminateSoundSystem() ;	// �T�E���h�V�X�e���̌�n��
-	TerminateSoundConvert() ;	// �T�E���h�ϊ������̏I��
+	TerminateSoundSystem() ;	// サウンドシステムの後始末
+	TerminateSoundConvert() ;	// サウンド変換処理の終了
 #endif // DX_NON_SOUND
 
-	// �c�w���C�u���������������t���O��|��
+	// ＤＸライブラリ初期化完了フラグを倒す
 	DxSysData.DxLib_InitializeFlag = FALSE ;
 
-	// �A�[�J�C�u�t�@�C���A�N�Z�X�p�̃f�[�^�̌�n��
+	// アーカイブファイルアクセス用のデータの後始末
 #ifndef DX_NON_DXA
 	DXA_DIR_Terminate() ;
 #endif
 
 #ifndef DX_NON_ASYNCLOAD
-	// �񓯊��ǂݍ��ݏ����p�̃X���b�h�����
+	// 非同期読み込み処理用のスレッドを閉じる
 	CloseASyncLoadThread() ;
 #endif // DX_NON_ASYNCLOAD
 
-	// �t�@�C���A�N�Z�X�����̌�n��
+	// ファイルアクセス処理の後始末
 	TerminateFile() ;
 
 #ifndef DX_NON_ASYNCLOAD
-	// �񓯊��ǂݍ��ݏ����̌�n��
+	// 非同期読み込み処理の後始末
 	TerminateASyncLoad() ;
 #endif // DX_NON_ASYNCLOAD
 
 #ifdef DX_USE_DXLIB_MEM_DUMP
-	// �������_���v���s��
+	// メモリダンプを行う
 	NS_DxDumpAlloc() ;
 #endif
 
 #ifndef DX_NON_LOG
-	// ���O�t�@�C���̌�n��
+	// ログファイルの後始末
 	LogFileTerminate() ;
 #endif
 
-	// �������̌�n�����s��
+	// メモリの後始末を行う
 	MemoryTerminate() ;
 
-	// �I��
+	// 終了
 	return 0 ;
 }
 
-// ���C�u�����̓����Ŏg�p���Ă���\���̂��[�����������āADxLib_Init �̑O�ɍs�����ݒ�𖳌�������( DxLib_Init �̑O�ł̂ݗL�� )
+// ライブラリの内部で使用している構造体をゼロ初期化して、DxLib_Init の前に行った設定を無効化する( DxLib_Init の前でのみ有効 )
 extern int NS_DxLib_GlobalStructInitialize( void )
 {
 //	_MEMSET( &GRA2, 0, sizeof( GRA2 ) ) ;
@@ -386,16 +386,16 @@ extern int NS_DxLib_GlobalStructInitialize( void )
 
 
 
-// �G���[�����֐�
+// エラー処理関数
 
-// �G���[����
+// エラー処理
 extern int DxLib_Error( const wchar_t *ErrorStr )
 {
-	// �G���[���O�̔r�o
+	// エラーログの排出
 	DXST_LOGFILE_ADDW( ErrorStr ) ;
 	DXST_LOGFILE_ADDW( L"\n" ) ;
 
-	// �e�����n�̏I��
+	// 各処理系の終了
 	NS_DxLib_End() ;
 
 	exit( -1 ) ;
@@ -403,7 +403,7 @@ extern int DxLib_Error( const wchar_t *ErrorStr )
 	return -1 ;
 }
 
-// ���C�u�����̃G���[�������s��( UTF16LE�� )
+// ライブラリのエラー処理を行う( UTF16LE版 )
 extern int DxLib_ErrorUTF16LE( const char *ErrorStr )
 {
 	int Result ;
@@ -444,9 +444,9 @@ extern int DxLib_ErrorUTF16LE( const char *ErrorStr )
 
 
 
-// �J�E���^�y�ю����擾�n�֐�
+// カウンタ及び時刻取得系関数
 
-// �~���b�P�ʂ̐��x�����J�E���^�̌��ݒl�𓾂�
+// ミリ秒単位の精度を持つカウンタの現在値を得る
 extern int NS_GetNowCount( int /*UseRDTSCFlag*/ )
 {
 	LONGLONG ResultLL ;
@@ -459,7 +459,7 @@ extern int NS_GetNowCount( int /*UseRDTSCFlag*/ )
 	return Result ;
 }
 
-// GetNowTime�̍����x�o�[�W����
+// GetNowTimeの高精度バージョン
 extern LONGLONG NS_GetNowHiPerformanceCount( int /*UseRDTSCFlag*/ )
 {
 	LONGLONG NowTime ;
@@ -472,67 +472,67 @@ extern LONGLONG NS_GetNowHiPerformanceCount( int /*UseRDTSCFlag*/ )
 	return NowTime ;
 }
 
-// OS���񋟂��鍂���x�J�E���^�̌��݂̒l�𓾂�
+// OSが提供する高精度カウンタの現在の値を得る
 extern ULONGLONG NS_GetNowSysPerformanceCount( void )
 {
 	return ( ULONGLONG )NS_GetNowHiPerformanceCount() ;
 }
 
-// OS���񋟂��鍂���x�J�E���^�̎��g��( 1�b�ӂ�̃J�E���g�� )�𓾂�
+// OSが提供する高精度カウンタの周波数( 1秒辺りのカウント数 )を得る
 extern ULONGLONG NS_GetSysPerformanceFrequency( void )
 {
 	return 1000000 ;
 }
 
-// OS���񋟂��鍂���x�J�E���^�̒l��b�̒l�ɕϊ�����
+// OSが提供する高精度カウンタの値を秒の値に変換する
 extern ULONGLONG NS_ConvSysPerformanceCountToSeconds( ULONGLONG Count )
 {
 	return Count / 1000000 ;
 }
 
-// OS���񋟂��鍂���x�J�E���^�̒l���~���b�̒l�ɕϊ�����
+// OSが提供する高精度カウンタの値をミリ秒の値に変換する
 extern ULONGLONG NS_ConvSysPerformanceCountToMilliSeconds( ULONGLONG Count )
 {
 	return Count / 1000 ;
 }
 
-// OS���񋟂��鍂���x�J�E���^�̒l���}�C�N���b�̒l�ɕϊ�����
+// OSが提供する高精度カウンタの値をマイクロ秒の値に変換する
 extern ULONGLONG NS_ConvSysPerformanceCountToMicroSeconds( ULONGLONG Count )
 {
 	return Count ;
 }
 
-// OS���񋟂��鍂���x�J�E���^�̒l���i�m�b�̒l�ɕϊ�����
+// OSが提供する高精度カウンタの値をナノ秒の値に変換する
 extern ULONGLONG NS_ConvSysPerformanceCountToNanoSeconds( ULONGLONG Count )
 {
 	return Count * 1000 ;
 }
 
-// �b�̒l��OS���񋟂��鍂���x�J�E���^�̒l�ɕϊ�����
+// 秒の値をOSが提供する高精度カウンタの値に変換する
 extern ULONGLONG NS_ConvSecondsToSysPerformanceCount( ULONGLONG Seconds )
 {
 	return Seconds * 1000000 ;
 }
 
-// �~���b�̒l��OS���񋟂��鍂���x�J�E���^�̒l�ɕϊ�����
+// ミリ秒の値をOSが提供する高精度カウンタの値に変換する
 extern ULONGLONG NS_ConvMilliSecondsToSysPerformanceCount( ULONGLONG MilliSeconds )
 {
 	return MilliSeconds * 1000 ;
 }
 
-// �}�C�N���b�̒l��OS���񋟂��鍂���x�J�E���^�̒l�ɕϊ�����
+// マイクロ秒の値をOSが提供する高精度カウンタの値に変換する
 extern ULONGLONG NS_ConvMicroSecondsToSysPerformanceCount( ULONGLONG MicroSeconds )
 {
 	return MicroSeconds ;
 }
 
-// �i�m�b�̒l��OS���񋟂��鍂���x�J�E���^�̒l�ɕϊ�����
+// ナノ秒の値をOSが提供する高精度カウンタの値に変換する
 extern ULONGLONG NS_ConvNanoSecondsToSysPerformanceCount( ULONGLONG NanoSeconds )
 {
 	return NanoSeconds / 1000 ;
 }
 
-// ���ݎ������擾����
+// 現在時刻を取得する
 extern int NS_GetDateTime( DATEDATA *DateBuf )
 {
 	time_t nowtime ;
@@ -542,7 +542,7 @@ extern int NS_GetDateTime( DATEDATA *DateBuf )
 
 	datetime = localtime( &nowtime ) ;
 
-	// ���[�J�������f�[�^�����ɐ�p�̃f�[�^�^�f�[�^�Ɏ�����ɉh������
+	// ローカル時刻データを元に専用のデータ型データに時刻を繁栄させる
 	DateBuf->Year	= datetime->tm_year + 1900 ;
 	DateBuf->Mon	= datetime->tm_mon + 1 ;
 	DateBuf->Day	= datetime->tm_mday ;
@@ -550,27 +550,27 @@ extern int NS_GetDateTime( DATEDATA *DateBuf )
 	DateBuf->Min	= datetime->tm_min ;
 	DateBuf->Sec	= datetime->tm_sec ;
 
-	// �I��
+	// 終了
 	return 0 ;
 }
 
 
 
-// �����擾
+// 乱数取得
 
 #ifndef DX_NON_MERSENNE_TWISTER
 
-// �����̏����l��ݒ肷��
+// 乱数の初期値を設定する
 extern int NS_SRand( int Seed )
 {
-	// �����l�Z�b�g
+	// 初期値セット
 	srandMT( ( unsigned int )Seed ) ;
 
-	// �I��
+	// 終了
 	return 0 ;
 }
 
-// �������擾����( RandMax : �Ԃ��ė���l�̍ő�l )
+// 乱数を取得する( RandMax : 返って来る値の最大値 )
 extern int NS_GetRand( int RandMax )
 {
 	int Result ;
@@ -585,17 +585,17 @@ extern int NS_GetRand( int RandMax )
 
 #else // DX_NON_MERSENNE_TWISTER
 
-// �����̏����l��ݒ肷��
+// 乱数の初期値を設定する
 extern int NS_SRand( int Seed )
 {
-	// �����l�Z�b�g
+	// 初期値セット
 	srand( Seed ) ;
 
-	// �I��
+	// 終了
 	return 0 ;
 }
 
-// �������擾����( RandMax : �Ԃ��ė���l�̍ő�l )
+// 乱数を取得する( RandMax : 返って来る値の最大値 )
 extern int NS_GetRand( int RandMax )
 {
 	int Result ;
@@ -610,12 +610,12 @@ extern int NS_GetRand( int RandMax )
 
 #endif // DX_NON_MERSENNE_TWISTER
 
-// �o�b�e���[�֘A
+// バッテリー関連
 
-// �d�r�̎c�ʂ� % �Ŏ擾����( �߂�l�F 100=�t���[�d���  0=�[�d�c�ʖ��� )
+// 電池の残量を % で取得する( 戻り値： 100=フル充電状態  0=充電残量無し )
 extern int NS_GetBatteryLifePercent( void )
 {
-	// ������
+	// 未実装
 	return -1 ;
 }
 
@@ -625,26 +625,26 @@ extern int NS_GetBatteryLifePercent( void )
 
 
 
-// �N���b�v�{�[�h�֌W
+// クリップボード関係
 
-// �N���b�v�{�[�h�Ɋi�[����Ă���e�L�X�g�f�[�^��ǂݏo���A-1 �̏ꍇ�̓N���b�v�{�[�h�Ƀe�L�X�g�f�[�^�͖����Ƃ�������( DestBuffer �� NULL ��n���Ɗi�[�ɕK�v�ȃf�[�^�T�C�Y���Ԃ��Ă��� )
+// クリップボードに格納されているテキストデータを読み出す、-1 の場合はクリップボードにテキストデータは無いということ( DestBuffer に NULL を渡すと格納に必要なデータサイズが返ってくる )
 extern int GetClipboardText_PF( TCHAR *DestBuffer )
 {
-	// ������
+	// 未実装
 	return -1 ;
 }
 
-// �N���b�v�{�[�h�Ɋi�[����Ă���e�L�X�g�f�[�^��ǂݏo���A-1 �̏ꍇ�̓N���b�v�{�[�h�Ƀe�L�X�g�f�[�^�͖����Ƃ�������( DestBuffer �� NULL ��n���Ɗi�[�ɕK�v�ȃf�[�^�T�C�Y���Ԃ��Ă��� )
+// クリップボードに格納されているテキストデータを読み出す、-1 の場合はクリップボードにテキストデータは無いということ( DestBuffer に NULL を渡すと格納に必要なデータサイズが返ってくる )
 extern int GetClipboardText_WCHAR_T_PF( wchar_t *DestBuffer )
 {
-	// ������
+	// 未実装
 	return -1 ;
 }
 
-// �N���b�v�{�[�h�Ƀe�L�X�g�f�[�^���i�[����
+// クリップボードにテキストデータを格納する
 extern int SetClipboardText_WCHAR_T_PF( const wchar_t *Text )
 {
-	// ������
+	// 未実装
 	return -1 ;
 }
 
@@ -657,12 +657,12 @@ extern int SetClipboardText_WCHAR_T_PF( const wchar_t *Text )
 
 
 
-// ���[���A�v���𑗐M���[���ҏW��ԂŋN������
-// MailAddr    : ����( NULL �Ŗ��� )�A���[���A�h���X����������ꍇ�̓J���}�w,�x�ŋ�؂��Ă�������
-// MainCCAddr  : CC �̈���( NULL �Ŗ��� )�A���[���A�h���X����������ꍇ�̓J���}�w,�x�ŋ�؂��Ă�������
-// MainBCCAddr : BCC �̈���( NULL �Ŗ��� )�A���[���A�h���X����������ꍇ�̓J���}�w,�x�ŋ�؂��Ă�������
-// Subject     : �^�C�g��( NULL �Ŗ��� )�A���[���A�h���X����������ꍇ�̓J���}�w,�x�ŋ�؂��Ă�������
-// Text        : �{��( NULL �Ŗ��� )�A���[���A�h���X����������ꍇ�̓J���}�w,�x�ŋ�؂��Ă�������
+// メールアプリを送信メール編集状態で起動する
+// MailAddr    : 宛先( NULL で無効 )、メールアドレスが複数ある場合はカンマ『,』で区切ってください
+// MainCCAddr  : CC の宛先( NULL で無効 )、メールアドレスが複数ある場合はカンマ『,』で区切ってください
+// MainBCCAddr : BCC の宛先( NULL で無効 )、メールアドレスが複数ある場合はカンマ『,』で区切ってください
+// Subject     : タイトル( NULL で無効 )、メールアドレスが複数ある場合はカンマ『,』で区切ってください
+// Text        : 本文( NULL で無効 )、メールアドレスが複数ある場合はカンマ『,』で区切ってください
 extern int MailApp_Send_WCHAR_T_PF( const wchar_t *MailAddr, const wchar_t *MailCCAddr, const wchar_t *MailBCCAddr, const wchar_t *Subject, const wchar_t *Text )
 {
 	int Result = -1 ;
@@ -761,7 +761,7 @@ END :
 		TextUTF8 = NULL ;
 	}
 
-	// �߂�l��Ԃ�
+	// 戻り値を返す
 	return Result ;
 }
 
@@ -817,23 +817,23 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// �E�C���h�E�Y�̃��b�Z�[�W���[�v�ɑ��鏈�����s��
+// ウインドウズのメッセージループに代わる処理を行う
 extern int NS_ProcessMessage( void )
 {
 	static int EndFlag = FALSE ;
 
-	// �����t���O�������Ă�����Ȃɂ������I��
+	// もしフラグがたっていたらなにもせず終了
 	if( EndFlag )
 	{
 		return 0 ;
 	}
 
-	// �t�@�C�������̎����I�������s��
+	// ファイル処理の周期的処理を行う
 //	ReadOnlyFileAccessProcessAll() ;
 
 #ifndef DX_NON_SOUND
 	{
-		// �T�E���h�̎����I�������s��
+		// サウンドの周期的処理を行う
 //		NS_ProcessStreamSoundMemAll() ;
 //		ST_SoftSoundPlayerProcessAll() ;
 		ProcessPlayFinishDeleteSoundMemAll() ;
@@ -844,67 +844,67 @@ extern int NS_ProcessMessage( void )
 #endif // DX_NON_SOUND
 
 #ifndef DX_NON_ASYNCLOAD
-	// ���C���X���b�h����������񓯊��ǂݍ��݂̏������s��
+	// メインスレッドが処理する非同期読み込みの処理を行う
 	ProcessASyncLoadRequestMainThread() ;
 #endif // DX_NON_ASYNCLOAD
 
-	// ���t�̎����I�������s��
+	// 演奏の周期的処理を行う
 #ifndef DX_NON_SOUND
 	NS_ProcessMusicMem() ;
 #endif // DX_NON_SOUND
 
 #ifndef DX_NON_INPUT
-	// �L�[�{�[�h���͂̍X�V�������s��
+	// キーボード入力の更新処理を行う
 	UpdateKeyboardInputState( FALSE ) ;
 
-	// �p�b�h�̎����I�������s��
+	// パッドの周期的処理を行う
 	JoypadEffectProcess() ;
 #endif // DX_NON_INPUT
 
 #ifndef DX_NON_NETWORK
-	// �ʐM�֌W�̃��b�Z�[�W�������s��
+	// 通信関係のメッセージ処理を行う
 	NS_ProcessNetMessage( TRUE ) ;
 #endif
 
-	// �������֌W�̎����I�������s��
+	// メモリ関係の周期的処理を行う
 	MemoryProcess() ;
 
 #ifndef DX_NON_GRAPHICS
-	// ��ʊ֌W�̎����������s��
+	// 画面関係の周期処理を行う
 	Graphics_iOS_FrontScreenProcess() ;
 #endif // DX_NON_GRAPHICS
 
 #ifndef DX_NON_KEYEX
-	// �L�[���͏������s��
+	// キー入力処理を行う
 	{
-		// �t���O�����Ă�
+		// フラグをたてる
 		EndFlag = TRUE ;
 
 		NS_ProcessActKeyInput() ;
 
-		// �t���O��|��
+		// フラグを倒す
 		EndFlag = FALSE ;
 	}
 #endif
 
-	// �C�x���g�������[�v
-	ProcessInputEvent();
+	// イベント処理ループ
+	ProcessInputEvent();	
 
-	// �ʏ�I��
+	// 通常終了
 	return 0 ;
 }
 
-// �A�v�����A�N�e�B�u�ł͂Ȃ���Ԃł������𑱍s���邩�A�t���O���Z�b�g����
+// アプリがアクティブではない状態でも処理を続行するか、フラグをセットする
 extern int NS_SetAlwaysRunFlag( int Flag )
 {
-	// �t���O���Z�b�g
+	// フラグをセット
 	g_iOSSys.NonActiveRunFlag = Flag ;
 	
-	// �I��
+	// 終了
 	return 0 ;
 }
 
-// �\�t�g����A�N�e�B�u�ɂȂ����ۂɌĂ΂��R�[���o�b�N�֐���o�^����
+// ソフトが非アクティブになった際に呼ばれるコールバック関数を登録する
 extern int SetiOSLostFocusCallbackFunction( void (* Callback )( void *Data ), void *CallbackData )
 {
 	g_iOSSys.LostFocusCallbackFunction     = ( volatile void ( * )( void * ) )Callback ;
@@ -913,7 +913,7 @@ extern int SetiOSLostFocusCallbackFunction( void (* Callback )( void *Data ), vo
 	return 0 ;
 }
 
-// �\�t�g���A�N�e�B�u�ɂȂ����ۂɌĂ΂��R�[���o�b�N�֐���o�^����
+// ソフトがアクティブになった際に呼ばれるコールバック関数を登録する
 extern int SetiOSGainedFocusCallbackFunction( void (* Callback )( void *Data ), void *CallbackData )
 {
 	g_iOSSys.GainedFocusCallbackFunction     = ( volatile void ( * )( void * ) )Callback ;
@@ -922,7 +922,7 @@ extern int SetiOSGainedFocusCallbackFunction( void (* Callback )( void *Data ), 
 	return 0 ;
 }
 
-// �X�N���[�����W���c�w���C�u������ʍ��W�ɕϊ�����
+// スクリーン座標をＤＸライブラリ画面座標に変換する
 extern int ConvScreenPositionToDxScreenPosition( int ScreenX, int ScreenY, int *DxScreenX, int *DxScreenY )
 {
 #ifdef DX_NON_GRAPHICS
@@ -974,11 +974,11 @@ extern int ConvScreenPositionToDxScreenPosition( int ScreenX, int ScreenY, int *
 
 #endif // DX_NON_GRAPHICS
 
-	// �I��
+	// 終了
 	return 0 ;
 }
 
-// �A�N�e�B�u�ɂȂ�܂ŉ������Ȃ�
+// アクティブになるまで何もしない
 extern void DxActiveWait_iOS( void )
 {
 //	while(
@@ -1002,7 +1002,7 @@ static const char *GetTmpDirectory() {
 	return "/tmp/";
 }
 
-// �f�B���N�g���p�X��Ԃ��֐��̋��ʏ����p�̊֐�
+// ディレクトリパスを返す関数の共通処理用の関数
 static int DirPathCommonFunction( const char *AddPath, TCHAR *PathBuffer, int PathBufferBytes )
 {
 	const char *HomeDir = GetHomeDirectory() ;
@@ -1038,29 +1038,29 @@ static int DirPathCommonFunction( const char *AddPath, TCHAR *PathBuffer, int Pa
 		Result = ConvString( DirPath, -1, DX_CHARCODEFORMAT_UTF8, PathBuffer, PathBufferBytes, _TCHARCODEFORMAT ) ;
 	}
 
-	// �I��
+	// 終了
 	return Result ;
 }
 
-// �\�t�g�̊O���f�[�^�ۑ��p�̃f�B���N�g���p�X���擾����
+// ソフトの外部データ保存用のディレクトリパスを取得する
 extern int GetDocumentsDirPath( TCHAR *PathBuffer, size_t PathBufferBytes )
 {
 	return DirPathCommonFunction( "/Documents", PathBuffer, PathBufferBytes ) ;
 }
 
-// �\�t�g�̃f�[�^�ۑ��p�̃f�B���N�g���p�X���擾����
+// ソフトのデータ保存用のディレクトリパスを取得する
 extern int GetLibraryPreferencesDirPath( TCHAR *PathBuffer, size_t PathBufferBytes )
 {
 	return DirPathCommonFunction( "/Library/Preferences", PathBuffer, PathBufferBytes ) ;
 }
 
-// �\�t�g�̃L���b�V���t�@�C���ۑ��p�̃f�B���N�g���p�X���擾����
+// ソフトのキャッシュファイル保存用のディレクトリパスを取得する
 extern int GetLibraryCachesDirPath( TCHAR *PathBuffer, size_t PathBufferBytes )
 {
 	return DirPathCommonFunction( "/Library/Caches", PathBuffer, PathBufferBytes ) ;
 }
 
-// �f�B���N�g���p�X��Ԃ��֐��̋��ʏ����p�̊֐�
+// ディレクトリパスを返す関数の共通処理用の関数
 static int DirPathCommonFunctionForChar( const char *AddPath, char *PathBuffer, int PathBufferBytes )
 {
 	const char *HomeDir = GetHomeDirectory() ;
@@ -1077,29 +1077,29 @@ static int DirPathCommonFunctionForChar( const char *AddPath, char *PathBuffer, 
 		CL_strcat( DX_CHARCODEFORMAT_UTF8, PathBuffer, AddPath ) ;
 	}
 
-	// �I��
+	// 終了
 	return Length + 1 ;
 }
 
-// �\�t�g�̊O���f�[�^�ۑ��p�̃f�B���N�g���p�X���擾����
+// ソフトの外部データ保存用のディレクトリパスを取得する
 extern int GetDocumentsDirPathForChar( char *PathBuffer, size_t PathBufferBytes )
 {
 	return DirPathCommonFunctionForChar( "/Documents", PathBuffer, PathBufferBytes ) ;
 }
 
-// �\�t�g�̃f�[�^�ۑ��p�̃f�B���N�g���p�X���擾����
+// ソフトのデータ保存用のディレクトリパスを取得する
 extern int GetLibraryPreferencesDirPathForChar( char *PathBuffer, size_t PathBufferBytes )
 {
 	return DirPathCommonFunctionForChar( "/Library/Preferences", PathBuffer, PathBufferBytes ) ;
 }
 
-// �\�t�g�̃L���b�V���t�@�C���ۑ��p�̃f�B���N�g���p�X���擾����
+// ソフトのキャッシュファイル保存用のディレクトリパスを取得する
 extern int GetLibraryCachesDirPathForChar( char *PathBuffer, size_t PathBufferBytes )
 {
 	return DirPathCommonFunctionForChar( "/Library/Caches", PathBuffer, PathBufferBytes ) ;
 }
 
-// �\�t�g�̈ꎞ�t�@�C���ۑ��p�̃f�B���N�g���p�X���擾����
+// ソフトの一時ファイル保存用のディレクトリパスを取得する
 extern int GetTmpDirPathForChar( char *PathBuffer, size_t PathBufferBytes )
 {
 	const char *TmpDirPath = GetTmpDirectory() ;
@@ -1115,7 +1115,7 @@ extern int GetTmpDirPathForChar( char *PathBuffer, size_t PathBufferBytes )
 		CL_strcpy_s( DX_CHARCODEFORMAT_UTF8, PathBuffer, PathBufferBytes, TmpDirPath ) ;
 	}
 
-	// �I��
+	// 終了
 	return Length + 1 ;
 }
 

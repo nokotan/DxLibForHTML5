@@ -1,6 +1,6 @@
 // -------------------------------------------------------------------------------
 // 
-// 		�c�w���C�u����		Android�p���͏��v���O�����w�b�_�t�@�C��
+// 		ＤＸライブラリ		Android用入力情報プログラムヘッダファイル
 // 
 // 				Ver 3.21d
 // 
@@ -13,7 +13,7 @@
 
 #ifndef DX_NON_INPUT
 
-// �C���N���[�h ------------------------------------------------------------------
+// インクルード ------------------------------------------------------------------
 #include "../DxLib.h"
 
 #ifndef DX_NON_NAMESPACE
@@ -23,7 +23,7 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// �}�N����` --------------------------------------------------------------------
+// マクロ定義 --------------------------------------------------------------------
 
 #define ANDR_INPUT_LOG_NUM					(64)
 #define ANDR_DEVICE_MAX_NUM					(64)
@@ -31,7 +31,7 @@ namespace DxLib
 #define ANDR_POINTER_MAX_NUM				(256)
 #define ANDR_KEYCODE_MAX					(320)
 
-// ���̓\�[�X
+// 入力ソース
 #define HTML5_INPUT_SOURCE_UNKNOWN			(0)
 #define HTML5_INPUT_SOURCE_KEYBOARD			(1)
 #define HTML5_INPUT_SOURCE_TOUCHSCREEN		(2)
@@ -40,21 +40,21 @@ namespace DxLib
 
 
 
-// �\���̒�` --------------------------------------------------------------------
+// 構造体定義 --------------------------------------------------------------------
 
-// �U���̊��ˑ����
+// 振動の環境依存情報
 struct INPUTVIBRATIONDATA_PF
 {
 	int						Dummy ;
 } ;
 
-// �Q�[���p�b�h�̊��ˑ����
+// ゲームパッドの環境依存情報
 struct INPUTPADDATA_PF
 {
 	int						Dummy ;
 } ;
 
-// ��̓��̓f�o�C�X�̓��͏��
+// 一つの入力デバイスの入力情報
 struct INPUT_ANDROID_DEVICE_INFO
 {
 	int32_t					Source ;
@@ -78,7 +78,7 @@ struct INPUT_ANDROID_DEVICE_INFO
 	float					HScroll ;
 } ;
 
-// ���̓V�X�e���p���ˑ��f�[�^�\���̌^
+// 入力システム用環境依存データ構造体型
 struct INPUTSYSTEMDATA_PF
 {
 	LONGLONG					UpdateCount ;
@@ -86,19 +86,19 @@ struct INPUTSYSTEMDATA_PF
 	INPUT_ANDROID_DEVICE_INFO	InputInfo[ ANDR_DEVICE_MAX_NUM ] ;
 	int							SourceNum[ ANDR_INPUT_SOURCE_NUM ] ;
 	int							SourceNoToInputInfoTable[ ANDR_INPUT_SOURCE_NUM ][ ANDR_DEVICE_MAX_NUM ] ;
-	int							GamePadSourceNum ;											// �Q�[���p�b�h�̐�
-	int							GamePadSourceNoToInputInfoTable[ ANDR_DEVICE_MAX_NUM ] ;	// �Q�[���p�b�h�̃i���o�[�� InputInfoTable �̑Ή��e�[�u�� 
+	int							GamePadSourceNum ;											// ゲームパッドの数
+	int							GamePadSourceNoToInputInfoTable[ ANDR_DEVICE_MAX_NUM ] ;	// ゲームパッドのナンバーと InputInfoTable の対応テーブル 
 	TOUCHINPUTDATA				TouchInputData ;
 } ;
 
-// �������ϐ��錾 --------------------------------------------------------------
+// 内部大域変数宣言 --------------------------------------------------------------
 
-// �֐��v���g�^�C�v�錾-----------------------------------------------------------
+// 関数プロトタイプ宣言-----------------------------------------------------------
 
-extern	int GetAndroidDeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId ) ;	// �f�o�C�X�h�c����l�������ׂ����͏��ԍ����擾����
-extern	int RefreshAndroidSourceNoToInputInfoTable( int32_t Source ) ;				// ���̓\�[�X�ԍ��Ɠ��͏��Ƃ̑Ή��e�[�u�����X�V����
-extern	int RefreshAndroidGamePadSourceNoToInputInfoTable( void ) ;					// �Q�[���p�b�h�̔ԍ��Ɠ��͏��Ƃ̑Ή��e�[�u�����X�V����
-extern	int32_t ProcessInputEvent( ) ;												// ���̓C�x���g����������
+extern	int GetAndroidDeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId ) ;	// デバイスＩＤから値を代入すべき入力情報番号を取得する
+extern	int RefreshAndroidSourceNoToInputInfoTable( int32_t Source ) ;				// 入力ソース番号と入力情報との対応テーブルを更新する
+extern	int RefreshAndroidGamePadSourceNoToInputInfoTable( void ) ;					// ゲームパッドの番号と入力情報との対応テーブルを更新する
+extern	int32_t ProcessInputEvent( ) ;												// 入力イベントを処理する
 
 #ifndef DX_NON_NAMESPACE
 
