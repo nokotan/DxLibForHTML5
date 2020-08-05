@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字コード関係プログラムヘッダファイル
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -103,6 +103,7 @@ extern	int				ConvString(				const char *Src, int SrcStrLength, int SrcCharCodeF
 extern	int				GetStringCharNum(		const char *String, int CharCodeFormat ) ;										// 文字列に含まれる文字数を取得する
 extern	const char *	GetStringCharAddress(	const char *String, int CharCodeFormat, int Index ) ;							// 指定番号の文字のアドレスを取得する
 extern	DWORD			GetStringCharCode(		const char *String, int CharCodeFormat, int Index ) ;							// 指定番号の文字のコードを取得する
+extern	DWORD			CheckCharCodeFormat(	const char *String, int CharCodeFormat, int *IsAllSuccess ) ;					// 指定の文字コードに適合する文字の数を取得する
 
 extern	void			CL_strcpy(            int CharCodeFormat, char *Dest,                     const char *Src ) ;
 extern	void			CL_strcpy_s(          int CharCodeFormat, char *Dest, size_t BufferBytes, const char *Src ) ;
@@ -148,6 +149,7 @@ extern	int				CL_strchr2(           int CharCodeFormat, const char *Str, DWORD C
 extern	const char *	CL_strrchr(           int CharCodeFormat, const char *Str, DWORD CharCode ) ;
 extern	int				CL_strrchr2(          int CharCodeFormat, const char *Str, DWORD CharCode ) ;
 extern	char *			CL_strupr(            int CharCodeFormat, char *Str ) ;
+extern	char *			CL_strlwr(            int CharCodeFormat, char *Str ) ;
 extern	int				CL_vsprintf(          int CharCodeFormat, int IsWChar, int CharCharCodeFormat, int WCharCharCodeFormat, char *Buffer,                    const char *FormatString, va_list Arg ) ;
 extern	int				CL_vsnprintf(         int CharCodeFormat, int IsWChar, int CharCharCodeFormat, int WCharCharCodeFormat, char *Buffer, size_t BufferSize, const char *FormatString, va_list Arg ) ;
 extern	int				CL_sprintf(           int CharCodeFormat, int IsWChar, int CharCharCodeFormat, int WCharCharCodeFormat, char *Buffer,                    const char *FormatString, ... ) ;

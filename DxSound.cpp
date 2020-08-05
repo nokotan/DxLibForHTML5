@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＳｏｕｎｄ制御プログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -302,6 +302,8 @@ extern int TerminateSoundSystem( void )
 {
 	int i ;
 
+	DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xa6\x30\xf3\x30\xc9\x30\xa2\x95\x23\x90\x6e\x30\x42\x7d\x86\x4e\xe6\x51\x06\x74\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"サウンド関連の終了処理... " @*/ ) ;
+
 	// 環境依存処理
 	TerminateSoundSystem_PF_Timing0() ;
 
@@ -343,9 +345,12 @@ extern int TerminateSoundSystem( void )
 	TerminateHandleManage( DX_HANDLETYPE_MUSIC ) ;
 
 	// クリティカルセクションの削除
-	CriticalSection_Delete( &SoundSysData._3DSoundListCriticalSection ) ;
-	CriticalSection_Delete( &SoundSysData.Play3DSoundListCriticalSection ) ;
-	CriticalSection_Delete( &SoundSysData.StreamSoundListCriticalSection ) ;
+	if( SoundSysData.InitializeFlag )
+	{
+		CriticalSection_Delete( &SoundSysData._3DSoundListCriticalSection ) ;
+		CriticalSection_Delete( &SoundSysData.Play3DSoundListCriticalSection ) ;
+		CriticalSection_Delete( &SoundSysData.StreamSoundListCriticalSection ) ;
+	}
 
 	// 環境依存処理
 	if( TerminateSoundSystem_PF_Timing1() < 0 )
@@ -362,6 +367,8 @@ extern int TerminateSoundSystem( void )
 
 	// 初期化フラグを倒す
 	SoundSysData.InitializeFlag = FALSE ;
+
+	DXST_LOGFILE_ADDUTF16LE( "\x8c\x5b\x86\x4e\x0a\x00\x00"/*@ L"完了\n" @*/ ) ;
 
 	// 終了
 	return 0 ;
@@ -8417,6 +8424,23 @@ extern int NS_SetUseOldVolumeCalcFlag( int Flag )
 	return 0 ;
 }
 
+// GetSoundCurrentTime などを使用した場合に取得できる再生時間のタイプを設定する
+extern int NS_SetSoundCurrentTimeType( int Type /* DX_SOUNDCURRENTTIME_TYPE_LOW_LEVEL など */ )
+{
+	// タイプを保存
+	SoundSysData.CurrentTimeType = Type ;
+	
+	// 正常終了
+	return 0 ;
+}
+
+// GetSoundCurrentTime などを使用した場合に取得できる再生時間のタイプを取得する
+extern int NS_GetSoundCurrentTimeType( void )
+{
+	// タイプを返す
+	return SoundSysData.CurrentTimeType ;
+}
+
 // 次に作成するサウンドを３Ｄサウンド用にするかどうかを設定する( TRUE:３Ｄサウンド用にする  FALSE:３Ｄサウンド用にしない( デフォルト ) )
 extern int NS_SetCreate3DSoundFlag( int Flag )
 {
@@ -8753,6 +8777,7 @@ extern int SoundBuffer_Initialize( SOUNDBUFFER *Buffer, DWORD Bytes, WAVEFORMATE
 	Buffer->CalcVolume      = 1.0f ;
 	Buffer->EnableTopPos	= FALSE ;
 	Buffer->TopPos_TotalWriteSamples = 0 ;
+	Buffer->ChangeFrequency	= FALSE ;
 
 	if( Src != NULL )
 	{
@@ -8890,13 +8915,17 @@ extern int SoundBuffer_Play( SOUNDBUFFER *Buffer, int Loop )
 			AddSimpleList( &SoundSysData.PlaySoundBufferListFirst, ( SIMPLELIST * )&Buffer->PlaySoundBufferList, Buffer ) ;
 
 			// サウンドデータの追加を始めるサンプル位置を算出
+#if defined( _MSC_VER ) && _MSC_VER == 1200
+			Buffer->TopPos_TotalWriteSamples = ( ULONGLONG )_DTOL64( ( double )( LONGLONG )SoundSysData.SelfMixingTotalWriteSamples * Buffer->Format.nSamplesPerSec / SoundSysData.SelfMixingFormat.nSamplesPerSec ) - Buffer->CompPos ;
+#else
 			Buffer->TopPos_TotalWriteSamples = ( ULONGLONG )_DTOL64( ( double )SoundSysData.SelfMixingTotalWriteSamples * Buffer->Format.nSamplesPerSec / SoundSysData.SelfMixingFormat.nSamplesPerSec ) - Buffer->CompPos ;
+#endif
 			Buffer->EnableTopPos = TRUE ;
 		}
 
 		// 再生遅延サンプル数をセット
-		Buffer->OutputDelaySamples = SoundSysData.SelfMixingOutputDelaySamples ;
-		SoundSysData.SelfMixingOutputDelaySamples += SoundSysData.SelfMixingOutputDelaySamplesUnit + NS_GetRand( 16 ) ;
+		Buffer->OutputDelaySamples = 0 /* SoundSysData.SelfMixingOutputDelaySamples */ ;
+		SoundSysData.SelfMixingOutputDelaySamples += SoundSysData.SelfMixingOutputDelaySamplesUnit ;
 
 		Buffer->State = TRUE ;
 
@@ -9037,7 +9066,7 @@ extern int SoundBuffer_Unlock( SOUNDBUFFER *Buffer, void *LockPos1, DWORD LockSi
 extern int SoundBuffer_SetFrequency( SOUNDBUFFER *Buffer, DWORD Frequency )
 {
 	if( Buffer->Valid == FALSE ) return -1 ;
-	
+
 	if( Frequency == 0 )
 	{
 		Buffer->Frequency = -1 ;
@@ -9057,6 +9086,8 @@ extern int SoundBuffer_SetFrequency( SOUNDBUFFER *Buffer, DWORD Frequency )
 	{
 		Buffer->EnableComPosF = FALSE ;
 	}
+
+	Buffer->ChangeFrequency = TRUE ;
 
 	if( SoundSysData.EnableSoundCaptureFlag || SoundSysData.EnableSelfMixingFlag )
 	{
@@ -9143,43 +9174,160 @@ extern int SoundBuffer_RefreshVolume( SOUNDBUFFER *Buffer )
 
 	if( SoundSysData.EnableSoundCaptureFlag || SoundSysData.EnableSelfMixingFlag )
 	{
-		if( Buffer->Volume[ 0 ] <= -10000 )
+		if( Buffer->Is3DSound )
 		{
-			Buffer->CalcVolume = 0.0f ;
-		}
-//		else
-//		if( Buffer->Volume[ 0 ] >= 0 )
-//		{
-//			Buffer->CalcVolume = 1.0f ;
-//		}
-		else
-		{
-			Buffer->CalcVolume = _POW( 10.0f, Buffer->Volume[ 0 ] / 100.0f / 20.0f ) ;
-		}
+			LONG CalcVolume[ 2 ] ;
+			LONG TempVolume[ 2 ] ;
+			float OrigVolume[ 2 ] ;
+			LONG Volume ;
+			LONG Pan ;
 
-		if( Buffer->Pan == -10000 )
-		{
-			Buffer->CalcPan = -1.0f ;
-		}
-		else
-		if( Buffer->Pan == 10000 ) 
-		{
-			Buffer->CalcPan = 1.0f ;
-		}
-		else
-		if( Buffer->Pan == 0 )
-		{
-			Buffer->CalcPan = 0.0f ;
-		}
-		else
-		{
-			if( Buffer->Pan < 0.0f )
+			OrigVolume[ 0 ] = D_XAudio2DecibelsToAmplitudeRatio( Buffer->Volume[ 0 ] / 100.0f ) ;
+			OrigVolume[ 1 ] = D_XAudio2DecibelsToAmplitudeRatio( Buffer->Volume[ 1 ] / 100.0f ) ;
+
+			if( Buffer->DSound_Calc3DPan < 0.0f )
 			{
-				Buffer->CalcPan = -( 1.0f - _POW( 10.0f, -_ABS( Buffer->Pan ) / 100.0f / 20.0f ) ) ;
+				OrigVolume[ 0 ] *= 1.0f + Buffer->DSound_Calc3DPan ;
+			}
+			else
+			if( Buffer->DSound_Calc3DPan > 0.0f )
+			{
+				OrigVolume[ 1 ] *= 1.0f - Buffer->DSound_Calc3DPan ;
+			}
+
+			TempVolume[ 0 ] = ( LONG )_DTOL( D_XAudio2AmplitudeRatioToDecibels( OrigVolume[ 0 ] * Buffer->DSound_Calc3DVolume ) * 100.0f ) ;
+			TempVolume[ 1 ] = ( LONG )_DTOL( D_XAudio2AmplitudeRatioToDecibels( OrigVolume[ 1 ] * Buffer->DSound_Calc3DVolume ) * 100.0f ) ;
+
+			if( Buffer->Pan < 0 )
+			{
+				CalcVolume[ 0 ] = 10000 ;
+				CalcVolume[ 1 ] = 10000 + Buffer->Pan ;
 			}
 			else
 			{
-				Buffer->CalcPan =    1.0f - _POW( 10.0f, -_ABS( Buffer->Pan ) / 100.0f / 20.0f ) ;
+				CalcVolume[ 0 ] = 10000 - Buffer->Pan ;
+				CalcVolume[ 1 ] = 10000 ;
+			}
+
+			if( TempVolume[ 0 ] > 0 )
+			{
+				TempVolume[ 0 ] = 0 ;
+			}
+			else
+			if( TempVolume[ 0 ] < -10000 )
+			{
+				TempVolume[ 0 ] = -10000 ;
+			}
+			if( TempVolume[ 1 ] > 0 )
+			{
+				TempVolume[ 1 ] = 0 ;
+			}
+			else
+			if( TempVolume[ 1 ] < -10000 )
+			{
+				TempVolume[ 1 ] = -10000 ;
+			}
+
+			CalcVolume[ 0 ] = CalcVolume[ 0 ] * ( TempVolume[ 0 ] + 10000 ) / 10000 ;
+			CalcVolume[ 1 ] = CalcVolume[ 1 ] * ( TempVolume[ 0 ] + 10000 ) / 10000 ;
+
+			if( CalcVolume[ 0 ] > CalcVolume[ 1 ] )
+			{
+				Volume = CalcVolume[ 0 ] - 10000 ;
+				Pan =    _FTOL( CalcVolume[ 1 ] * ( 10000.0f / CalcVolume[ 0 ] ) ) - 10000 ;
+			}
+			else
+			if( CalcVolume[ 0 ] < CalcVolume[ 1 ] )
+			{
+				Volume = CalcVolume[ 1 ] - 10000 ;
+				Pan = -( _FTOL( CalcVolume[ 0 ] * ( 10000.0f / CalcVolume[ 1 ] ) ) - 10000 ) ;
+			}
+			else
+			{
+				Volume = CalcVolume[ 0 ] - 10000 ;
+				Pan = 0 ;
+			}
+
+			if( Volume <= -10000 )
+			{
+				Buffer->CalcVolume = 0.0f ;
+			}
+	//		else
+	//		if( Volume >= 0 )
+	//		{
+	//			Buffer->CalcVolume = 1.0f ;
+	//		}
+			else
+			{
+				Buffer->CalcVolume = _POW( 10.0f, Volume / 100.0f / 20.0f ) ;
+			}
+
+			if( Pan == -10000 )
+			{
+				Buffer->CalcPan = -1.0f ;
+			}
+			else
+			if( Pan == 10000 ) 
+			{
+				Buffer->CalcPan = 1.0f ;
+			}
+			else
+			if( Pan == 0 )
+			{
+				Buffer->CalcPan = 0.0f ;
+			}
+			else
+			{
+				if( Pan < 0.0f )
+				{
+					Buffer->CalcPan = -( 1.0f - _POW( 10.0f, -_ABS( Pan ) / 100.0f / 20.0f ) ) ;
+				}
+				else
+				{
+					Buffer->CalcPan =    1.0f - _POW( 10.0f, -_ABS( Pan ) / 100.0f / 20.0f ) ;
+				}
+			}
+		}
+		else
+		{
+			if( Buffer->Volume[ 0 ] <= -10000 )
+			{
+				Buffer->CalcVolume = 0.0f ;
+			}
+	//		else
+	//		if( Buffer->Volume[ 0 ] >= 0 )
+	//		{
+	//			Buffer->CalcVolume = 1.0f ;
+	//		}
+			else
+			{
+				Buffer->CalcVolume = _POW( 10.0f, Buffer->Volume[ 0 ] / 100.0f / 20.0f ) ;
+			}
+
+			if( Buffer->Pan == -10000 )
+			{
+				Buffer->CalcPan = -1.0f ;
+			}
+			else
+			if( Buffer->Pan == 10000 ) 
+			{
+				Buffer->CalcPan = 1.0f ;
+			}
+			else
+			if( Buffer->Pan == 0 )
+			{
+				Buffer->CalcPan = 0.0f ;
+			}
+			else
+			{
+				if( Buffer->Pan < 0.0f )
+				{
+					Buffer->CalcPan = -( 1.0f - _POW( 10.0f, -_ABS( Buffer->Pan ) / 100.0f / 20.0f ) ) ;
+				}
+				else
+				{
+					Buffer->CalcPan =    1.0f - _POW( 10.0f, -_ABS( Buffer->Pan ) / 100.0f / 20.0f ) ;
+				}
 			}
 		}
 	}
@@ -9242,7 +9390,9 @@ extern int SoundBuffer_GetCurrentPosition( SOUNDBUFFER *Buffer, DWORD *PlayPos, 
 	{
 		if( PlayPos )
 		{
-			if( Buffer->EnableTopPos && ( Buffer->Frequency <= 0 || ( DWORD )Buffer->Frequency == Buffer->Format.nSamplesPerSec ) /* && SoundSysData.SelfMixingInitlizeTotalPlayTimeBaseCountFlag */ )
+			if( SoundSysData.CurrentTimeType == DX_SOUNDCURRENTTIME_TYPE_LOW_LEVEL &&
+				Buffer->State && Buffer->EnableTopPos && Buffer->ChangeFrequency == FALSE &&
+				( Buffer->Frequency <= 0 || ( DWORD )Buffer->Frequency == Buffer->Format.nSamplesPerSec ) /* && SoundSysData.SelfMixingInitlizeTotalPlayTimeBaseCountFlag */ )
 			{
 //				ULONGLONG TotalPlayTime ;
 				ULONGLONG TotalPlaySamples ;
@@ -9253,7 +9403,11 @@ extern int SoundBuffer_GetCurrentPosition( SOUNDBUFFER *Buffer, DWORD *PlayPos, 
 
 				if( GetSoundSystemTotalPlaySamples_PF( &TotalPlaySamples, &Frequency ) >= 0 )
 				{
+#if defined( _MSC_VER ) && _MSC_VER == 1200
+					ULONGLONG BufferFormatTotalPlaySamples = ( ULONGLONG )_DTOL64( ( double )( LONGLONG )TotalPlaySamples * ( LONGLONG )Buffer->Format.nSamplesPerSec / ( LONGLONG )Frequency ) ;
+#else
 					ULONGLONG BufferFormatTotalPlaySamples = ( ULONGLONG )_DTOL64( ( double )TotalPlaySamples * Buffer->Format.nSamplesPerSec / Frequency ) ;
+#endif
 
 					if( Buffer->TopPos_TotalWriteSamples > BufferFormatTotalPlaySamples )
 					{
@@ -11187,6 +11341,166 @@ extern int SetupSelfMixingWorkBuffer( int IsFloat, int Samples )
 		}\
 	}
 
+#define HZ_CHANGE_SRC_1CH_S24_PARTS0\
+	{\
+		BYTE *SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer + CompPos * 3 ;\
+\
+		Src1_P = ( short )( SrcBuf[ 1 ] | ( SrcBuf[ 2 ] << 8 ) ) ;\
+		if( CompPos == SoundBuf->SampleNum - 1 )\
+		{\
+			if( SoundBuf->Loop == TRUE )\
+			{\
+				Src1_N = ( short )( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 1 ] | ( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 2 ] << 8 ) ) ;\
+			}\
+			else\
+			{\
+				Src1_N = 0 ;\
+			}\
+		}\
+		else\
+		{\
+			Src1_N = ( short )( SrcBuf[ 4 ] | ( SrcBuf[ 5 ] << 8 ) ) ;\
+		}\
+\
+		while( OutputSampleNum > 0 )\
+		{
+
+#define HZ_CHANGE_SRC_1CH_S24_PARTS1\
+			OutputSampleNum -- ;\
+\
+			Ratio += SampleAdd ;\
+			while( Ratio >= 1.0 )\
+			{\
+				Ratio -= 1.0 ;\
+				CompPos ++ ;\
+				SrcBuf += 3 ;\
+				Src1_P = Src1_N ;\
+				if( CompPos >= SoundBuf->SampleNum )\
+				{\
+					if( SoundBuf->Loop == TRUE )\
+					{\
+						CompPos = 0 ;\
+						SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer ;\
+						Src1_N = ( short )( SrcBuf[ 4 ] | ( SrcBuf[ 5 ] << 8 ) ) ;\
+					}\
+					else\
+					{\
+						Ratio = 0.0 ;\
+						SoundBuf->CompPos = SoundBuf->SampleNum ;\
+						SoundBuf->PlayPos = SoundBuf->CompPos ;\
+						SoundBuf->State = FALSE ;\
+						SoundBuf->AddPlaySoundBufferList = FALSE ;\
+						SubSimpleList( ( SIMPLELIST * )&SoundBuf->PlaySoundBufferList ) ;\
+						OutputSampleNum = 0 ;\
+						break ;\
+					}\
+				}\
+				else\
+				{\
+					if( CompPos == SoundBuf->SampleNum - 1 )\
+					{\
+						if( SoundBuf->Loop == TRUE )\
+						{\
+							Src1_N = ( short )( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 1 ] | ( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 2 ] << 8 ) ) ;\
+						}\
+						else\
+						{\
+							Src1_N = 0 ;\
+						}\
+					}\
+					else\
+					{\
+						Src1_N = ( short )( SrcBuf[ 4 ] | ( SrcBuf[ 5 ] << 8 ) ) ;\
+					}\
+				}\
+			}\
+		}\
+	}
+
+#define HZ_CHANGE_SRC_2CH_S24_PARTS0\
+	{\
+		BYTE *SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer + CompPos * 6 ;\
+\
+		Src1_P = ( short )( SrcBuf[ 1 ] | ( SrcBuf[ 2 ] << 8 ) ) ;\
+		Src2_P = ( short )( SrcBuf[ 4 ] | ( SrcBuf[ 5 ] << 8 ) ) ;\
+		if( CompPos == SoundBuf->SampleNum - 1 )\
+		{\
+			if( SoundBuf->Loop == TRUE )\
+			{\
+				Src1_N = ( short )( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 1 ] | ( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 2 ] << 8 ) ) ;\
+				Src2_N = ( short )( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 4 ] | ( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 5 ] << 8 ) ) ;\
+			}\
+			else\
+			{\
+				Src1_N = 0 ;\
+				Src2_N = 0 ;\
+			}\
+		}\
+		else\
+		{\
+			Src1_N = ( short )( SrcBuf[  7 ] | ( SrcBuf[  8 ] << 8 ) ) ;\
+			Src2_N = ( short )( SrcBuf[ 10 ] | ( SrcBuf[ 11 ] << 8 ) ) ;\
+		}\
+\
+		while( OutputSampleNum > 0 )\
+		{
+
+#define HZ_CHANGE_SRC_2CH_S24_PARTS1\
+			OutputSampleNum -- ;\
+\
+			Ratio += SampleAdd ;\
+			while( Ratio >= 1.0 )\
+			{\
+				Ratio -= 1.0 ;\
+				CompPos ++ ;\
+				SrcBuf += 6 ;\
+				Src1_P = Src1_N ;\
+				Src2_P = Src2_N ;\
+				if( CompPos >= SoundBuf->SampleNum )\
+				{\
+					if( SoundBuf->Loop == TRUE )\
+					{\
+						CompPos = 0 ;\
+						SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer ;\
+						Src1_N = ( short )( SrcBuf[  7 ] | ( SrcBuf[  8 ] << 8 ) ) ;\
+						Src2_N = ( short )( SrcBuf[ 10 ] | ( SrcBuf[ 11 ] << 8 ) ) ;\
+					}\
+					else\
+					{\
+						Ratio = 0.0 ;\
+						SoundBuf->CompPos = SoundBuf->SampleNum ;\
+						SoundBuf->PlayPos = SoundBuf->CompPos ;\
+						SoundBuf->State = FALSE ;\
+						SoundBuf->AddPlaySoundBufferList = FALSE ;\
+						SubSimpleList( ( SIMPLELIST * )&SoundBuf->PlaySoundBufferList ) ;\
+						OutputSampleNum = 0 ;\
+						break ;\
+					}\
+				}\
+				else\
+				{\
+					if( CompPos == SoundBuf->SampleNum - 1 )\
+					{\
+						if( SoundBuf->Loop == TRUE )\
+						{\
+							Src1_N = ( short )( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 1 ] | ( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 2 ] << 8 ) ) ;\
+							Src2_N = ( short )( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 4 ] | ( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 5 ] << 8 ) ) ;\
+						}\
+						else\
+						{\
+							Src1_N = 0 ;\
+							Src2_N = 0 ;\
+						}\
+					}\
+					else\
+					{\
+						Src1_N = ( short )( SrcBuf[  7 ] | ( SrcBuf[  8 ] << 8 ) ) ;\
+						Src2_N = ( short )( SrcBuf[ 10 ] | ( SrcBuf[ 11 ] << 8 ) ) ;\
+					}\
+				}\
+			}\
+		}\
+	}
 
 #define DESTADD_FLOAT_1CH\
 	DestBufF[ 0 ] += ( float )Output0 * Scale0 ;\
@@ -11230,13 +11544,13 @@ extern int SetupSelfMixingWorkBuffer( int IsFloat, int Samples )
 		if( IsScale )\
 		{\
 			INT_SRC_PARTS0\
-			DEST_INT_ADD\
+			DEST_INT_ADD_SCALE\
 			INT_SRC_PARTS1( TYPE, CH_NUM )\
 		}\
 		else\
 		{\
 			INT_SRC_PARTS0\
-			DEST_INT_ADD_SCALE\
+			DEST_INT_ADD\
 			INT_SRC_PARTS1( TYPE, CH_NUM )\
 		}\
 	}
@@ -11276,6 +11590,24 @@ extern int SetupSelfMixingWorkBuffer( int IsFloat, int Samples )
 		{\
 			Output0 = SrcBuf[ 0 ] ;\
 			Output1 = SrcBuf[ 1 ] ;
+
+#define INT_SRC_1CH_S24_PARTS0\
+	{\
+		BYTE *SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer + CompPos * 3 ;\
+\
+		while( OutputSampleNum > 0 )\
+		{\
+			Output0 = ( short )( SrcBuf[ 1 ] | ( SrcBuf[ 2 ] << 8 ) ) ;\
+			Output1 = Output0 ;
+
+#define INT_SRC_2CH_S24_PARTS0\
+	{\
+		BYTE *SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer + CompPos * 6 ;\
+\
+		while( OutputSampleNum > 0 )\
+		{\
+			Output0 = ( short )( SrcBuf[ 1 ] | ( SrcBuf[ 2 ] << 8 ) ) ;\
+			Output1 = ( short )( SrcBuf[ 4 ] | ( SrcBuf[ 5 ] << 8 ) ) ;
 
 #define INT_SRC_PARTS1( TYPE, CH_NUM )\
 			SrcBuf  += CH_NUM ;\
@@ -11418,6 +11750,11 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 					DEST_HZ_CHANGE_CODE( HZ_CHANGE_SRC_2CH_S16_PARTS0, HZ_CHANGE_SRC_2CH_S16_PARTS1, DEST_INT_HZ_CHANGE_2CH_ADD_SCALE_PARTS, DEST_INT_HZ_CHANGE_2CH_ADD_PARTS, DEST_FLOAT_HZ_CHANGE_2CH_ADD_PARTS )
 				}
 				else
+				if( SoundBuf->Format.wBitsPerSample == 24 )
+				{
+					DEST_HZ_CHANGE_CODE( HZ_CHANGE_SRC_2CH_S24_PARTS0, HZ_CHANGE_SRC_2CH_S24_PARTS1, DEST_INT_HZ_CHANGE_2CH_ADD_SCALE_PARTS, DEST_INT_HZ_CHANGE_2CH_ADD_PARTS, DEST_FLOAT_HZ_CHANGE_2CH_ADD_PARTS )
+				}
+				else
 				{
 					DEST_HZ_CHANGE_CODE( HZ_CHANGE_SRC_2CH_U8_PARTS0, HZ_CHANGE_SRC_2CH_U8_PARTS1, DEST_INT_HZ_CHANGE_2CH_ADD_SCALE_PARTS, DEST_INT_HZ_CHANGE_2CH_ADD_PARTS, DEST_FLOAT_HZ_CHANGE_2CH_ADD_PARTS )
 				}
@@ -11427,6 +11764,11 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 				if( SoundBuf->Format.wBitsPerSample == 16 )
 				{
 					DEST_HZ_CHANGE_CODE( HZ_CHANGE_SRC_1CH_S16_PARTS0, HZ_CHANGE_SRC_1CH_S16_PARTS1, DEST_INT_HZ_CHANGE_1CH_ADD_SCALE_PARTS, DEST_INT_HZ_CHANGE_1CH_ADD_PARTS, DEST_FLOAT_HZ_CHANGE_1CH_ADD_PARTS )
+				}
+				else
+				if( SoundBuf->Format.wBitsPerSample == 24 )
+				{
+					DEST_HZ_CHANGE_CODE( HZ_CHANGE_SRC_1CH_S24_PARTS0, HZ_CHANGE_SRC_1CH_S24_PARTS1, DEST_INT_HZ_CHANGE_1CH_ADD_SCALE_PARTS, DEST_INT_HZ_CHANGE_1CH_ADD_PARTS, DEST_FLOAT_HZ_CHANGE_1CH_ADD_PARTS )
 				}
 				else
 				{
@@ -11447,6 +11789,11 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 					INT_CONVCODE( INT_SRC_2CH_S16_PARTS0, short, 2, DESTADD_INT_2CH_SCALE, DESTADD_INT_2CH, DESTADD_FLOAT_2CH )
 				}
 				else
+				if( SoundBuf->Format.wBitsPerSample == 24 )
+				{
+					INT_CONVCODE( INT_SRC_2CH_S24_PARTS0, BYTE, 6, DESTADD_INT_2CH_SCALE, DESTADD_INT_2CH, DESTADD_FLOAT_2CH )
+				}
+				else
 				{
 					INT_CONVCODE( INT_SRC_2CH_U8_PARTS0, BYTE, 2, DESTADD_INT_2CH_SCALE, DESTADD_INT_2CH, DESTADD_FLOAT_2CH )
 				}
@@ -11456,6 +11803,11 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 				if( SoundBuf->Format.wBitsPerSample == 16 )
 				{
 					INT_CONVCODE( INT_SRC_1CH_S16_PARTS0, short, 1, DESTADD_INT_1CH_SCALE, DESTADD_INT_1CH, DESTADD_FLOAT_1CH )
+				}
+				else
+				if( SoundBuf->Format.wBitsPerSample == 24 )
+				{
+					INT_CONVCODE( INT_SRC_1CH_S24_PARTS0, BYTE, 3, DESTADD_INT_1CH_SCALE, DESTADD_INT_1CH, DESTADD_FLOAT_1CH )
 				}
 				else
 				{
@@ -11761,12 +12113,12 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 			 				DWORD Dest1D ;
 			 				Dest0D = ( DWORD )BufferI[ 0 ] ;
 			 				Dest1D = ( DWORD )BufferI[ 1 ] ;
-			 				Buffer0[ 0 ] = ( BYTE )Dest0D ;
-			 				Buffer0[ 1 ] = ( BYTE )( Dest0D >> 8  ) ;
-			 				Buffer0[ 2 ] = ( BYTE )( Dest0D >> 16 ) ;
-			 				Buffer1[ 0 ] = ( BYTE )Dest1D ;
-			 				Buffer1[ 1 ] = ( BYTE )( Dest1D >> 8  ) ;
-			 				Buffer1[ 2 ] = ( BYTE )( Dest1D >> 16 ) ;
+			 				Buffer0[ 0 ] = ( BYTE )0 ;
+			 				Buffer0[ 1 ] = ( BYTE )Dest0D ;
+			 				Buffer0[ 2 ] = ( BYTE )( Dest0D >> 8 ) ;
+			 				Buffer1[ 0 ] = ( BYTE )0 ;
+			 				Buffer1[ 1 ] = ( BYTE )Dest1D ;
+			 				Buffer1[ 2 ] = ( BYTE )( Dest1D >> 8 ) ;
 							Buffer0 += Stride ;
 							Buffer1 += Stride ;
 						}

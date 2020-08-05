@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ファイルアクセスプログラムヘッダファイル
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -237,6 +237,7 @@ extern	int			MemStreamClose( DWORD_PTR StreamDataPoint ) ;
 // ( CurrentDir はフルパスである必要がある(語尾に『\』があっても無くても良い) )
 // ( CurrentDir が NULL の場合は現在のカレントディレクトリを使用する )
 //extern int			ConvertFullPath_( const char *Src, char *Dest, const char *CurrentDir = NULL ) ; 
+extern int			ConvertFullPathA_( const char    *Src, char    *Dest, size_t BufferBytes, const char    *CurrentDir = NULL ) ; 
 extern int			ConvertFullPathW_( const wchar_t *Src, wchar_t *Dest, size_t BufferBytes, const wchar_t *CurrentDir = NULL ) ; 
 extern int			ConvertFullPathT_( const TCHAR   *Src, TCHAR   *Dest, size_t BufferBytes, const TCHAR   *CurrentDir = NULL ) ; 
 

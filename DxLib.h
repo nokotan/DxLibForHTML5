@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		ƒwƒbƒ_ƒtƒ@ƒCƒ‹
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -12,9 +12,9 @@
 #include "DxCompileConfig.h"
 
 // ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Ìƒo[ƒWƒ‡ƒ“
-#define DXLIB_VERSION 0x321d
-#define DXLIB_VERSION_STR_T _T( "3.21d" )
-#define DXLIB_VERSION_STR_W    L"3.21d"
+#define DXLIB_VERSION 0x321f
+#define DXLIB_VERSION_STR_T _T( "3.21f" )
+#define DXLIB_VERSION_STR_W    L"3.21f"
 
 // Ý’è -----------------------------------------------------------------------
 
@@ -61,7 +61,7 @@
 #define MAX_SOCKET_NUM								(8192)				// “¯Žž‚ÉŽ‚Ä‚é’ÊMƒnƒ“ƒhƒ‹‚ÌÅ‘å”
 #define MAX_LIGHT_NUM								(4096)				// “¯Žž‚ÉŽ‚Ä‚éƒ‰ƒCƒgƒnƒ“ƒhƒ‹‚ÌÅ‘å”
 #define MAX_SHADER_NUM								(4096)				// “¯Žž‚ÉŽ‚Ä‚éƒVƒF[ƒ_[ƒnƒ“ƒhƒ‹‚ÌÅ‘å”
-#define MAX_CONSTANT_BUFFER_NUM						(8192)				// “¯Žž‚ÉŽ‚Ä‚é’è”ƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚ÌÅ‘å”
+#define MAX_CONSTANT_BUFFER_NUM						(32768)				// “¯Žž‚ÉŽ‚Ä‚é’è”ƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚ÌÅ‘å”
 #define MAX_MODEL_BASE_NUM							(32768)				// “¯Žž‚ÉŽ‚Ä‚é‚R‚cƒ‚ƒfƒ‹Šî–{ƒf[ƒ^ƒnƒ“ƒhƒ‹‚ÌÅ‘å”
 #define MAX_MODEL_NUM								(32768)				// “¯Žž‚ÉŽ‚Ä‚é‚R‚cƒ‚ƒfƒ‹ƒf[ƒ^ƒnƒ“ƒhƒ‹‚ÌÅ‘å”
 #define MAX_VERTEX_BUFFER_NUM						(16384)				// “¯Žž‚ÉŽ‚Ä‚é’¸“_ƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚ÌÅ‘å”
@@ -427,6 +427,10 @@
 #define DX_SOUNDDATATYPE_MEMNOPRESS_PLUS			(1)				// ˆ³k‚³‚ê‚½‘Sƒf[ƒ^‚ÍƒVƒXƒeƒ€ƒƒ‚ƒŠ‚ÉŠi”[‚³‚êAÄ¶‚µ‚È‚ª‚ç’€ŽŸ‰ð“€‚³‚êAÅI“I‚É‚·‚×‚ÄƒTƒEƒ“ƒhƒƒ‚ƒŠ‚ÉŠi”[‚³‚ê‚é(‚»‚ÌŒãƒVƒXƒeƒ€ƒƒ‚ƒŠ‚É‘¶Ý‚·‚éˆ³kƒf[ƒ^‚Í”jŠü‚³‚ê‚é)
 #define DX_SOUNDDATATYPE_MEMPRESS					(2)				// ˆ³k‚³‚ê‚½‘Sƒf[ƒ^‚ÍƒVƒXƒeƒ€ƒƒ‚ƒŠ‚ÉŠi”[‚³‚êAÄ¶‚·‚é•”•ª‚¾‚¯’€ŽŸ‰ð“€‚µ‚È‚ª‚çƒTƒEƒ“ƒhƒƒ‚ƒŠ‚ÉŠi”[‚·‚é(–Â‚ç‚µI‚í‚é‚Æ‰ð“€‚µ‚½ƒf[ƒ^‚Í”jŠü‚³‚ê‚é‚Ì‚Å‰½“x‚à‰ð“€ˆ—‚ªs‚í‚ê‚é)
 #define DX_SOUNDDATATYPE_FILE						(3)				// ˆ³k‚³‚ê‚½ƒf[ƒ^‚ÌÄ¶‚·‚é•”•ª‚¾‚¯ƒtƒ@ƒCƒ‹‚©‚ç’€ŽŸ“Ç‚Ýž‚Ý‰ð“€‚³‚êAƒTƒEƒ“ƒhƒƒ‚ƒŠ‚ÉŠi”[‚³‚ê‚é(–Â‚ç‚µI‚í‚é‚Æ‰ð“€‚µ‚½ƒf[ƒ^‚Í”jŠü‚³‚ê‚é‚Ì‚Å‰½“x‚à‰ð“€ˆ—‚ªs‚í‚ê‚é)
+
+// ƒTƒEƒ“ƒh‚ÌŽæ“¾‚·‚éÄ¶ŽžŠÔƒ^ƒCƒv
+#define DX_SOUNDCURRENTTIME_TYPE_LOW_LEVEL			(0)				// ’áƒŒƒxƒ‹API‚ðŽg—p‚µ‚Ä‚æ‚è³Šm‚ÈÄ¶ŽžŠÔ‚ðŽæ“¾‚·‚é
+#define DX_SOUNDCURRENTTIME_TYPE_SOFT				(1)				// API‚ÍŽg—p‚¹‚¸Aƒ\ƒtƒgƒEƒFƒAˆ—ƒŒƒxƒ‹‚Å‚ÌÄ¶ŽžŠÔ‚ðŽæ“¾‚·‚é
 
 // “Ç‚Ýž‚Ýˆ—‚Ìƒ^ƒCƒv
 #define DX_READSOUNDFUNCTION_PCM					(1 << 0)		// PCM ‚Ì“Ç‚Ýž‚Ýˆ—
@@ -1699,6 +1703,15 @@ typedef struct tagPOINTDATA
 	int						pal ;							// ƒpƒ‰ƒ[ƒ^
 } POINTDATA, *LPPOINTDATA ;
 
+// —§•û‘Ìƒf[ƒ^Œ^
+typedef struct tagCUBEDATA
+{
+	VECTOR					Pos1 ;							// À•W1
+	VECTOR					Pos2 ;							// À•W2
+	COLOR_U8				DifColor ;						// ƒfƒBƒtƒ…[ƒYƒJƒ‰[
+	COLOR_U8				SpcColor ;						// ƒXƒyƒLƒ…ƒ‰ƒJƒ‰[
+} CUBEDATA, *LPCUBEDATA ;
+
 #ifndef DX_NOTUSE_DRAWFUNCTION
 
 // ƒCƒ[ƒWƒtƒH[ƒ}ƒbƒgƒf[ƒ^
@@ -2716,6 +2729,7 @@ extern DXLIBAPI	int			DrawTriangle3D(  VECTOR   Pos1,   VECTOR   Pos2, VECTOR   
 extern DXLIBAPI	int			DrawTriangle3DD( VECTOR_D Pos1,   VECTOR_D Pos2, VECTOR_D Pos3,                                unsigned int Color, int FillFlag ) ;				// ‚R‚c‚ÌŽOŠpŒ`‚ð•`‰æ‚·‚é
 extern DXLIBAPI	int			DrawCube3D(      VECTOR   Pos1,   VECTOR   Pos2,                            unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì—§•û‘Ì‚ð•`‰æ‚·‚é
 extern DXLIBAPI	int			DrawCube3DD(     VECTOR_D Pos1,   VECTOR_D Pos2,                            unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì—§•û‘Ì‚ð•`‰æ‚·‚é
+extern DXLIBAPI	int			DrawCubeSet3D(   CUBEDATA *CubeDataArray, int Num, int FillFlag ) ;																				// ‚R‚c‚Ì—§•û‘Ì‚ÌW‡‚ð•`‰æ‚·‚é
 extern DXLIBAPI	int			DrawSphere3D(    VECTOR   CenterPos,                  float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‹…‘Ì‚ð•`‰æ‚·‚é
 extern DXLIBAPI	int			DrawSphere3DD(   VECTOR_D CenterPos,                  double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‹…‘Ì‚ð•`‰æ‚·‚é
 extern DXLIBAPI	int			DrawCapsule3D(   VECTOR   Pos1,   VECTOR   Pos2,      float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚ÌƒJƒvƒZƒ‹‚ð•`‰æ‚·‚é
@@ -2778,7 +2792,8 @@ extern DXLIBAPI	int			DrawRectModiGraphF(       float x1, float y1, float x2, fl
 extern DXLIBAPI	int			DrawBlendGraph(           int x, int y, int GrHandle, int TransFlag,                 int BlendGraph, int BorderParam, int BorderRange ) ;									// ƒuƒŒƒ“ƒh‰æ‘œ‚Æ‡¬‚µ‚Ä‰æ‘œ‚ð“™”{•`‰æ‚·‚é
 extern DXLIBAPI	int			DrawBlendGraphPos(        int x, int y, int GrHandle, int TransFlag, int bx, int by, int BlendGraph, int BorderParam, int BorderRange ) ;									// ƒuƒŒƒ“ƒh‰æ‘œ‚Æ‡¬‚µ‚Ä‰æ‘œ‚ð“™”{•`‰æ‚·‚é( ƒuƒŒƒ“ƒh‰æ‘œ‚Ì‹N“_À•W‚ðŽw’è‚·‚éˆø”•t‚« )
 
-extern DXLIBAPI	int			DrawCircleGauge(          int CenterX, int CenterY, double Percent, int GrHandle, double StartPercent = 0.0 , double Scale = 1.0 , int ReverseX = FALSE , int ReverseY = FALSE ) ;										// ‰~ƒOƒ‰ƒt“I‚È•`‰æ‚ðs‚¤( GrHandle ‚Ì‰æ‘œ‚Ìã‰º¶‰E‚Ì’[‚Í“§‰ßF‚É‚µ‚Ä‚¨‚­•K—v‚ª‚ ‚è‚Ü‚· )
+extern DXLIBAPI	int			DrawCircleGauge(          int   CenterX, int   CenterY, double Percent, int GrHandle, double StartPercent = 0.0 , double Scale = 1.0 , int ReverseX = FALSE , int ReverseY = FALSE ) ;										// ‰~ƒOƒ‰ƒt“I‚È•`‰æ‚ðs‚¤( GrHandle ‚Ì‰æ‘œ‚Ìã‰º¶‰E‚Ì’[‚Í“§‰ßF‚É‚µ‚Ä‚¨‚­•K—v‚ª‚ ‚è‚Ü‚· )
+extern DXLIBAPI	int			DrawCircleGaugeF(         float CenterX, float CenterY, double Percent, int GrHandle, double StartPercent = 0.0 , double Scale = 1.0 , int ReverseX = FALSE , int ReverseY = FALSE ) ;										// ‰~ƒOƒ‰ƒt“I‚È•`‰æ‚ðs‚¤( GrHandle ‚Ì‰æ‘œ‚Ìã‰º¶‰E‚Ì’[‚Í“§‰ßF‚É‚µ‚Ä‚¨‚­•K—v‚ª‚ ‚è‚Ü‚· )( À•WŽw’è‚ª float ”Å )
 
 extern DXLIBAPI	int			DrawGraphToZBuffer(       int X, int Y,                                                                 int GrHandle, int WriteZMode /* DX_ZWRITE_MASK “™ */ ) ;														// ‚yƒoƒbƒtƒ@‚É‘Î‚µ‚Ä‰æ‘œ‚Ì“™”{•`‰æ
 extern DXLIBAPI	int			DrawTurnGraphToZBuffer(   int x, int y,                                                                 int GrHandle, int WriteZMode /* DX_ZWRITE_MASK “™ */ ) ;														// ‚yƒoƒbƒtƒ@‚É‘Î‚µ‚Ä‰æ‘œ‚Ì¶‰E”½“]•`‰æ
@@ -2848,6 +2863,7 @@ extern DXLIBAPI	int			GetWriteAlphaChannelFlag(			void ) ;														// •`‰æ
 extern DXLIBAPI	int			CheckSeparateAlphaBlendEnable(		void ) ;														// •`‰ææ‚ÌƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹‚Ì“à—e‚ð‘‚«Š·‚¦‚È‚¢‚±‚Æ‚ª‚Å‚«‚é‚©‚Ç‚¤‚©‚ðŽæ“¾‚·‚é( TRUE:‘‚«Š·‚¦‚È‚¢‚±‚Æ‚ª‚Å‚«‚é  FALSE:‘‚«Š·‚¦‚È‚¢‚±‚Æ‚ª‚Å‚«‚È‚¢ )
 extern DXLIBAPI	int			SetIgnoreDrawGraphColor(			int EnableFlag ) ;												// •`‰æ‚·‚é‰æ‘œ‚Ì‚q‚f‚a¬•ª‚ð–³Ž‹‚·‚é‚©‚Ç‚¤‚©‚ðŽw’è‚·‚é( EnableFlag:‚±‚Ì‹@”\‚ðŽg‚¤‚©‚Ç‚¤‚©( TRUE:Žg‚¤  FALSE:Žg‚í‚È‚¢( ƒfƒtƒHƒ‹ƒg ) ) )
 extern DXLIBAPI	int			SetMaxAnisotropy(					int MaxAnisotropy ) ;											// Å‘åˆÙ•û«’l‚ðÝ’è‚·‚é
+extern DXLIBAPI	int			GetMaxAnisotropy(					void ) ;														// Å‘åˆÙ•û«’l‚ðŽæ“¾‚·‚é
 extern DXLIBAPI	int			SetUseLarge3DPositionSupport(		int UseFlag ) ;													// ‚R‚cˆ—‚ÅŽg—p‚·‚éÀ•W’l‚ª 10000000.0f ‚È‚Ç‚Ì‘å‚«‚È’l‚É‚È‚Á‚Ä‚à•`‰æ‚Ì•ö‚ê‚ð¬‚³‚­—}‚¦‚éˆ—‚ðŽg—p‚·‚é‚©‚Ç‚¤‚©‚ðÝ’è‚·‚éADxLib_Init ‚ÌŒÄ‚Ño‚µ‘O‚Å‚Ì‚ÝŽg—p‰Â”\( TRUE:•`‰æ‚Ì•ö‚ê‚ð—}‚¦‚éˆ—‚ðŽg—p‚·‚é( CPU•‰‰×‚ªã‚ª‚è‚Ü‚· )@@FALSE:•`‰æ‚Ì•ö‚ê‚ð—}‚¦‚éˆ—‚ÍŽg—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
 
 extern DXLIBAPI	int			SetUseZBufferFlag(					int Flag ) ;													// ‚yƒoƒbƒtƒ@‚ðŽg—p‚·‚é‚©‚Ç‚¤‚©‚ðÝ’è‚·‚é( ‚Q‚c‚Æ‚R‚c•`‰æ‚É‰e‹¿ )( TRUE:‚yƒoƒbƒtƒ@‚ðŽg—p‚·‚é  FALSE:‚yƒoƒbƒtƒ@‚ðŽg—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
@@ -4674,6 +4690,8 @@ extern DXLIBAPI	int			SetDisableReadSoundFunctionMask(     int Mask ) ;									
 extern DXLIBAPI	int			GetDisableReadSoundFunctionMask(     void ) ;																					// Žg—p‚µ‚È‚¢ƒTƒEƒ“ƒhƒf[ƒ^“Ç‚Ýž‚Ýˆ—‚Ìƒ}ƒXƒN‚ðŽæ“¾‚·‚é( DX_READSOUNDFUNCTION_PCM “™ )
 extern DXLIBAPI	int			SetEnableSoundCaptureFlag(           int Flag ) ;																				// ƒTƒEƒ“ƒhƒLƒƒƒvƒ`ƒƒ‚ð‘O’ñ‚Æ‚µ‚½“®ì‚ð‚·‚é‚©‚Ç‚¤‚©‚ðÝ’è‚·‚é
 extern DXLIBAPI	int			SetUseOldVolumeCalcFlag(             int Flag ) ;																				// ChangeVolumeSoundMem, ChangeNextPlayVolumeSoundMem, ChangeMovieVolumeToGraph ‚Ì‰¹—ÊŒvŽZŽ®‚ð Ver3.10cˆÈ‘O‚Ì‚à‚Ì‚ðŽg—p‚·‚é‚©‚Ç‚¤‚©‚ðÝ’è‚·‚é( TRUE:Ver3.10cˆÈ‘O‚ÌŒvŽZŽ®‚ðŽg—p  FALSE:3.10dˆÈ~‚ÌŒvŽZŽ®‚ðŽg—p( ƒfƒtƒHƒ‹ƒg ) )
+extern DXLIBAPI	int			SetSoundCurrentTimeType(             int Type /* DX_SOUNDCURRENTTIME_TYPE_LOW_LEVEL ‚È‚Ç */ ) ;									// GetSoundCurrentTime ‚È‚Ç‚ðŽg—p‚µ‚½ê‡‚ÉŽæ“¾‚Å‚«‚éÄ¶ŽžŠÔ‚Ìƒ^ƒCƒv‚ðÝ’è‚·‚é
+extern DXLIBAPI	int			GetSoundCurrentTimeType(             void ) ;																					// GetSoundCurrentTime ‚È‚Ç‚ðŽg—p‚µ‚½ê‡‚ÉŽæ“¾‚Å‚«‚éÄ¶ŽžŠÔ‚Ìƒ^ƒCƒv‚ðŽæ“¾‚·‚é
 
 extern DXLIBAPI	int			SetCreate3DSoundFlag(                     int Flag ) ;																			// ŽŸ‚Éì¬‚·‚éƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ð‚R‚cƒTƒEƒ“ƒh—p‚É‚·‚é‚©‚Ç‚¤‚©‚ðÝ’è‚·‚é( TRUE:‚R‚cƒTƒEƒ“ƒh—p‚É‚·‚é  FALSE:‚R‚cƒTƒEƒ“ƒh—p‚É‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
 extern DXLIBAPI	int			Set3DSoundOneMetre(                       float Distance ) ;																	// ‚R‚c‹óŠÔ‚Ì‚Pƒ[ƒgƒ‹‚É‘Š“–‚·‚é‹——£‚ðÝ’è‚·‚éADxLib_Init ‚ðŒÄ‚Ño‚·‘O‚Å‚Ì‚ÝŒÄ‚Ño‚µ‰Â”\( ƒfƒtƒHƒ‹ƒg:1.0f )
@@ -5277,7 +5295,7 @@ extern DXLIBAPI	const TCHAR *Live2D_Model_GetHitAreaName(						int Live2DModelHa
 extern DXLIBAPI	const TCHAR *Live2D_Model_GetPhysicsFileName(					int Live2DModelHandle ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚Ì•¨—‰‰ŽZÝ’èƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ðŽæ“¾‚·‚é
 extern DXLIBAPI	const TCHAR *Live2D_Model_GetPoseFileName(						int Live2DModelHandle ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìƒp[ƒcØ‚è‘Ö‚¦Ý’èƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ðŽæ“¾‚·‚é
 extern DXLIBAPI	int			Live2D_Model_GetExpressionCount(					int Live2DModelHandle ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚Ì•\îÝ’èƒtƒ@ƒCƒ‹‚Ì”‚ðŽæ“¾‚·‚é
-extern DXLIBAPI	const TCHAR *Live2D_Model_GetExpressionName(					int Live2DModelHandle, int index ) ;													// Live2D ‚Ìƒ‚ƒfƒ‹‚Ì•\îÝ’èƒtƒ@ƒCƒ‹‚ðŽ¯•Ê‚·‚é–¼‘Oi•Ê–¼j‚ðŽæ“¾‚·‚é
+extern DXLIBAPI	const TCHAR *Live2D_Model_GetExpressionName(					int Live2DModelHandle, int index ) ;													// Live2D ‚Ìƒ‚ƒfƒ‹‚Ì•\îÝ’èƒtƒ@ƒCƒ‹‚ðŽ¯•Ê‚·‚éID‚ðŽæ“¾‚·‚é
 extern DXLIBAPI	const TCHAR *Live2D_Model_GetExpressionFileName(				int Live2DModelHandle, int index ) ;													// Live2D ‚Ìƒ‚ƒfƒ‹‚Ì•\îÝ’èƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ðŽæ“¾‚·‚é
 extern DXLIBAPI	int			Live2D_Model_GetMotionGroupCount(					int Live2DModelHandle ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìƒ‚[ƒVƒ‡ƒ“ƒOƒ‹[ƒv‚Ì”‚ðŽæ“¾‚·‚é
 extern DXLIBAPI	const TCHAR *Live2D_Model_GetMotionGroupName(					int Live2DModelHandle, int index ) ;													// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìƒ‚[ƒVƒ‡ƒ“ƒOƒ‹[ƒv‚Ì–¼‘O‚ðŽæ“¾‚·‚é

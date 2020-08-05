@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		内部との出入り口プログラムファイル
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -1270,11 +1270,19 @@ extern int GetWindowModeFlag( void )
 	DXFUNC_END
 	return Result ;
 }
-extern int GetDefaultState( int *SizeX, int *SizeY, int *ColorBitDepth, int *RefreshRate , int *LeftTopX, int *LeftTopY, int *PixelSizeX, int *PixelSizeY )
+extern int GetDefaultState( int *SizeX, int *SizeY, int *ColorBitDepth, int *RefreshRate , int *LeftTopX, int *LeftTopY, int *PixelSizeX, int *PixelSizeY, int *XDpi, int *YDpi )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_GetDefaultState( SizeX, SizeY, ColorBitDepth, RefreshRate , LeftTopX , LeftTopY, PixelSizeX, PixelSizeY ) ;
+	Result = NS_GetDefaultState( SizeX, SizeY, ColorBitDepth, RefreshRate , LeftTopX , LeftTopY, PixelSizeX, PixelSizeY, XDpi, YDpi ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetMonitorDpi( int *XDpi, int *YDpi, int MonitorIndex )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetMonitorDpi( XDpi, YDpi, MonitorIndex ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -2032,6 +2040,15 @@ extern int SetUseDxLibWM_PAINTProcess( int Flag )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetWindows10_WM_CHAR_CancelTime( int MilliSecond )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetWindows10_WM_CHAR_CancelTime( MilliSecond ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 #ifndef DX_NON_ASYNCLOAD
 extern int SetUseASyncLoadFlag( int Flag )
 {
@@ -4409,6 +4426,15 @@ extern int SetUseDirectInputFlag( int Flag )
 	return Result ;
 }
 
+extern int SetDirectInputMouseMode( int Mode )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetDirectInputMouseMode( Mode ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 extern int SetUseXInputFlag( int Flag )
 {
 	int Result ;
@@ -5760,6 +5786,14 @@ extern int DrawCircleGauge( int CenterX, int CenterY, double Percent, int GrHand
 	DXFUNC_END
 	return Result ;
 }
+extern int DrawCircleGaugeF( float CenterX, float CenterY, double Percent, int GrHandle, double StartPercent, double Scale, int ReverseX, int ReverseY )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawCircleGaugeF(  CenterX,  CenterY, Percent,  GrHandle, StartPercent, Scale, ReverseX, ReverseY ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int DrawGraphToZBuffer( int X, int Y, int GrHandle, int WriteZMode )
 {
 	int Result ;
@@ -6349,6 +6383,14 @@ extern int DrawCube3DD( VECTOR_D Pos1, VECTOR_D Pos2, unsigned int DifColor, uns
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_DrawCube3DD(  Pos1,  Pos2, DifColor, SpcColor, FillFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawCubeSet3D( CUBEDATA *CubeDataArray, int Num, int FillFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawCubeSet3D( CubeDataArray, Num, FillFlag ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -8498,6 +8540,14 @@ extern int SetMaxAnisotropy( int MaxAnisotropy )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_SetMaxAnisotropy( MaxAnisotropy ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetMaxAnisotropy( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetMaxAnisotropy() ;
 	DXFUNC_END
 	return Result ;
 }
@@ -15928,7 +15978,6 @@ extern LONGLONG GetSoundTotalTime( int SoundHandle )
 	DXFUNC_END
 	return Result ;
 }
-
 extern int SetLoopPosSoundMem( LONGLONG LoopTime, int SoundHandle )
 {
 	int Result ;
@@ -16333,6 +16382,22 @@ extern	int SetUseOldVolumeCalcFlag( int Flag )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_SetUseOldVolumeCalcFlag( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetSoundCurrentTimeType( int Type /* DX_SOUNDCURRENTTIME_TYPE_LOW_LEVEL など */ )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetSoundCurrentTimeType( Type ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetSoundCurrentTimeType( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetSoundCurrentTimeType() ;
 	DXFUNC_END
 	return Result ;
 }

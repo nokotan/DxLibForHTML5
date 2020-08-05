@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		アーカイブ制御プログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -200,7 +200,7 @@ BYTE BitStream_GetBitNum( ULONGLONG Data )
 	DWORD i ;
 	for( i = 1 ; i < 64 ; i ++ )
 	{
-		if( Data < ( 1ULL << i ) )
+		if( Data < ( ULL_NUM( 1 ) << i ) )
 		{
 			return ( BYTE )i ;
 		}

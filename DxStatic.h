@@ -2,7 +2,7 @@
 //
 //		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ@“à•”g—pŠÖ˜A—pƒwƒbƒ_ƒtƒ@ƒCƒ‹
 //
-//				Ver 3.21d
+//				Ver 3.21f
 //
 // ----------------------------------------------------------------------------
 
@@ -463,7 +463,8 @@ extern	int			NS_GetWindowMinSizeFlag(			void ) ;												// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚
 extern	int			NS_GetWindowMaxSizeFlag(			void ) ;												// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚ªÅ‘å‰»‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( –ß‚è’l  TRUE:Å‘å‰»‚³‚ê‚Ä‚¢‚é  FALSE:Å‘å‰»‚³‚ê‚Ä‚¢‚È‚¢ )
 extern	HWND		NS_GetMainWindowHandle(			void ) ;												// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹‚ğæ“¾‚·‚é
 extern	int			NS_GetWindowModeFlag(				void ) ;												// ƒEƒCƒ“ƒhƒEƒ‚[ƒh‚Å‹N“®‚µ‚Ä‚¢‚é‚©A‚Ìƒtƒ‰ƒO‚ğæ“¾‚·‚é
-extern	int			NS_GetDefaultState(				int *SizeX , int *SizeY , int *ColorBitDepth, int *RefreshRate = NULL , int *LeftTopX = NULL , int *LeftTopY = NULL, int *PixelSizeX = NULL , int *PixelSizeY = NULL ) ;		// ‹N“®‚ÌƒfƒXƒNƒgƒbƒv‚Ì‰æ–Êƒ‚[ƒh‚ğæ“¾‚·‚é
+extern	int			NS_GetDefaultState(				int *SizeX , int *SizeY , int *ColorBitDepth, int *RefreshRate = NULL , int *LeftTopX = NULL , int *LeftTopY = NULL, int *PixelSizeX = NULL , int *PixelSizeY = NULL , int *XDpi = NULL , int *YDpi = NULL ) ;		// ‹N“®‚ÌƒfƒXƒNƒgƒbƒv‚Ì‰æ–Êƒ‚[ƒh‚ğæ“¾‚·‚é
+extern	int			NS_GetMonitorDpi(					int *XDpi, int *YDpi, int MonitorIndex = -1 ) ;			// ƒ‚ƒjƒ^[‚ÌDPI‚ğæ“¾‚·‚é
 extern	int			NS_GetActiveFlag(					void ) ;												// ƒ\ƒtƒg‚ªƒAƒNƒeƒBƒu‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é
 extern	int			NS_GetNoActiveState(				int ResetFlag = TRUE ) ;								// ”ñƒAƒNƒeƒBƒu‚É‚È‚èAˆ—‚ªˆê’â~‚µ‚Ä‚¢‚½‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é(ˆø” ResetFlag=TRUE:ó‘Ô‚ğƒŠƒZƒbƒg FALSE:ó‘Ô‚ğƒŠƒZƒbƒg‚µ‚È‚¢    –ß‚è’l: 0=ˆê’â~‚Í‚µ‚Ä‚¢‚È‚¢  1=ˆê’â~‚µ‚Ä‚¢‚½ )
 extern	int			NS_GetMouseDispFlag(				void ) ;												// ƒ}ƒEƒX‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğæ“¾‚·‚é
@@ -541,6 +542,7 @@ extern	int			NS_SetUseBackBufferTransColorFlag(			int Flag ) ;																		
 extern	int			NS_SetUseUpdateLayerdWindowFlag(			int Flag ) ;																		// UpdateLayerdWindowForBaseImage ‚â UpdateLayerdWindowForSoftImage ‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:g—p‚·‚é  FALSE:g—p‚µ‚È‚¢ )
 extern	int			NS_SetResourceModule(						HMODULE ResourceModule ) ;															// ƒŠƒ\[ƒX‚ğ“Ç‚İ‚ŞÛ‚Ég—p‚·‚éƒ‚ƒWƒ…[ƒ‹‚ğİ’è‚·‚é( NULL ‚ğw’è‚·‚é‚Æ‰Šúó‘Ô‚É–ß‚è‚Ü‚·AƒfƒtƒHƒ‹ƒg‚Å‚Í NULL )
 extern	int			NS_SetUseDxLibWM_PAINTProcess(				int Flag ) ;																		// WM_PAINT ƒƒbƒZ[ƒW‚ª—ˆ‚½Û‚Éw‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Ì WM_PAINTƒƒbƒZ[ƒW‚ª—ˆ‚½Û‚Ìˆ—x‚ğs‚¤‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( •ÊƒXƒŒƒbƒh‚Å•`‰æˆ—‚ğs‚¤ê‡‚È‚Ç‚Åg—p )
+extern	int			NS_SetWindows10_WM_CHAR_CancelTime(		int MilliSecond ) ;																	// Windows10 ‚Å WM_CHAR ‚Å’ZŠÔ‚É˜A‘±‚µ‚Ä“¯‚¶•¶š‚ª“ü—Í‚³‚ê‚½ê‡‚Ì–³Œøˆµ‚¢‚É‚·‚éŠÔ‚ğİ’è‚·‚é( MilliSecond ‚Ìƒ~ƒŠ•bˆÈ“à‚É˜A‘±‚µ‚Ä“¯‚¶•¶š‚ª“ü—Í‚³‚ê‚½ê‡‚É–³Œø‚É‚·‚éAMilliSecond ‚Ì’l‚ğƒ}ƒCƒiƒX‚É‚·‚é‚ÆƒfƒtƒHƒ‹ƒg‚Ìİ’è‚É–ß‚é )
 
 // ƒhƒ‰ƒbƒO•ƒhƒƒbƒv‚³‚ê‚½ƒtƒ@ƒCƒ‹ŠÖŒW
 extern	int			NS_SetDragFileValidFlag(		int Flag ) ;											// ƒtƒ@ƒCƒ‹‚Ìƒhƒ‰ƒbƒO•ƒhƒƒbƒv‹@”\‚ğ—LŒø‚É‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
@@ -1013,6 +1015,7 @@ extern	int			NS_SetUseJoypadVibrationFlag(				int Flag ) ;															// ƒWƒ‡
 extern	int			NS_SetKeyExclusiveCooperativeLevelFlag(	int Flag ) ;															// DirectInput ‚ÌƒL[ƒ{[ƒh‚Ì‹¦’²ƒŒƒxƒ‹‚ğ”r‘¼ƒŒƒxƒ‹‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:”r‘¼ƒŒƒxƒ‹‚É‚·‚é  FALSE:•W€ƒŒƒxƒ‹‚É‚·‚é( ƒfƒtƒHƒ‹ƒg ) )ADxLib_Init ‚ÌŒÄ‚Ño‚µ‘O‚Å‚Ì‚İÀs‰Â”\@
 extern	int			NS_SetKeyboardNotDirectInputFlag(			int Flag ) ;															// ƒL[ƒ{[ƒh‚Ì“ü—Íˆ—‚É DirectInput ‚ğg‚í‚È‚¢‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:DirectInput ‚ğg‚í‚¸AWindows•W€‹@”\‚ğg—p‚·‚é@@FALSE:DirectInput ‚ğg—p‚·‚é )
 extern	int			NS_SetUseDirectInputFlag(					int Flag ) ;															// “ü—Íˆ—‚É DirectInput ‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:DirectInput ‚ğg—p‚·‚é@@FALSE:DirectInput ‚ğg‚í‚¸AWindows•W€‹@”\‚ğg—p‚·‚é )
+extern	int			NS_SetDirectInputMouseMode(				int Mode ) ;															// ƒ}ƒEƒX‚Ì“ü—Íˆ—‚É DirectInput ‚ğg—p‚·‚éê‡‚Ì“®ìƒ‚[ƒh‚ğİ’è‚·‚é( 0:ƒEƒBƒ“ƒhƒE‚ªƒAƒNƒeƒBƒu‚Èê‡‚Ì‚İ DirectInput ‚ğg—p‚·‚é  1:ƒEƒBƒ“ƒhƒE‚ÌƒAƒNƒeƒBƒuó‘Ô‚ÉŠÖŒW‚È‚­ DirectInput ‚ğg—p‚·‚é )
 extern	int			NS_SetUseXInputFlag(						int Flag ) ;															// Xbox360ƒRƒ“ƒgƒ[ƒ‰‚Ì“ü—Íˆ—‚É XInput ‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:XInput ‚ğg—p‚·‚é( ƒfƒtƒHƒ‹ƒg )@@FALSE:XInput ‚ğg—p‚µ‚È‚¢ )
 extern	int			NS_SetUseXboxControllerDirectInputFlag(	int Flag ) ;															// Xbox360ƒRƒ“ƒgƒ[ƒ‰‚â Xbox OneƒRƒ“ƒgƒ[ƒ‰‚ğ DirectInputƒRƒ“ƒgƒ[ƒ‰‚Æ‚µ‚Ä‚àŒŸo‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:DirectInputƒRƒ“ƒgƒ[ƒ‰‚Æ‚µ‚Ä‚àŒŸo‚·‚é  FALSE:DirectInputƒRƒ“ƒgƒ[ƒ‰‚Æ‚µ‚Ä‚ÍŒŸo‚µ‚È‚¢(ƒfƒtƒHƒ‹ƒg) )
 extern	int			NS_GetJoypadGUID(							int PadIndex, GUID *GuidInstanceBuffer, GUID *GuidProductBuffer ) ;		// ƒWƒ‡ƒCƒpƒbƒh‚Ì‚f‚tI‚c‚ğ“¾‚é
@@ -1301,6 +1304,7 @@ extern	int			NS_DrawTriangle3D(  VECTOR   Pos1,   VECTOR   Pos2, VECTOR   Pos3, 
 extern	int			NS_DrawTriangle3DD( VECTOR_D Pos1,   VECTOR_D Pos2, VECTOR_D Pos3,                                unsigned int Color, int FillFlag ) ;		// ‚R‚c‚ÌOŠpŒ`‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawCube3D(      VECTOR   Pos1,   VECTOR   Pos2,                            unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì—§•û‘Ì‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawCube3DD(     VECTOR_D Pos1,   VECTOR_D Pos2,                            unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì—§•û‘Ì‚ğ•`‰æ‚·‚é
+extern	int			NS_DrawCubeSet3D(   CUBEDATA *CubeDataArray, int Num, int FillFlag ) ;																				// ‚R‚c‚Ì—§•û‘Ì‚ÌW‡‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawSphere3D(    VECTOR   CenterPos,                  float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‹…‘Ì‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawSphere3DD(   VECTOR_D CenterPos,                  double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‹…‘Ì‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawCapsule3D(   VECTOR   Pos1,   VECTOR   Pos2,      float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚ÌƒJƒvƒZƒ‹‚ğ•`‰æ‚·‚é
@@ -1364,6 +1368,7 @@ extern	int			NS_DrawBlendGraph(           int x, int y, int GrHandle, int TransF
 extern	int			NS_DrawBlendGraphPos(        int x, int y, int GrHandle, int TransFlag, int bx, int by, int BlendGraph, int BorderParam, int BorderRange ) ;									// ƒuƒŒƒ“ƒh‰æ‘œ‚Æ‡¬‚µ‚Ä‰æ‘œ‚ğ•`‰æ‚·‚é( ƒuƒŒƒ“ƒh‰æ‘œ‚Ì‹N“_À•W‚ğw’è‚·‚é”Å )
 
 extern	int			NS_DrawCircleGauge(          int CenterX, int CenterY, double Percent, int GrHandle, double StartPercent = 0.0 , double Scale = 1.0 , int ReverseX = FALSE , int ReverseY = FALSE ) ;														// ‰~ƒOƒ‰ƒt“I‚È•`‰æ‚ğs‚¤( GrHandle ‚Ì‰æ‘œ‚Ìã‰º¶‰E‚Ì’[‚Í“§‰ßF‚É‚µ‚Ä‚¨‚­•K—v‚ª‚ ‚è‚Ü‚· )
+extern	int			NS_DrawCircleGaugeF(         float CenterX, float CenterY, double Percent, int GrHandle, double StartPercent = 0.0 , double Scale = 1.0 , int ReverseX = FALSE , int ReverseY = FALSE ) ;										// ‰~ƒOƒ‰ƒt“I‚È•`‰æ‚ğs‚¤( GrHandle ‚Ì‰æ‘œ‚Ìã‰º¶‰E‚Ì’[‚Í“§‰ßF‚É‚µ‚Ä‚¨‚­•K—v‚ª‚ ‚è‚Ü‚· )( À•Ww’è‚ª float ”Å )
 
 extern	int			NS_DrawGraphToZBuffer(       int X, int Y,                                                                 int GrHandle, int WriteZMode /* DX_ZWRITE_MASK “™ */ ) ;							// ‚yƒoƒbƒtƒ@‚É‘Î‚µ‚Ä‰æ‘œ‚Ì•`‰æ‚ğs‚¤
 extern	int			NS_DrawTurnGraphToZBuffer(   int x, int y,                                                                 int GrHandle, int WriteZMode /* DX_ZWRITE_MASK “™ */ ) ;							// ‚yƒoƒbƒtƒ@‚É‘Î‚µ‚Ä‰æ‘œ‚Ì¶‰E”½“]•`‰æ
@@ -1432,6 +1437,7 @@ extern	int			NS_GetWriteAlphaChannelFlag(			void ) ;														// •`‰ææ‚ÌƒAƒ
 extern	int			NS_CheckSeparateAlphaBlendEnable(		void ) ;														// •`‰ææ‚ÌƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹‚Ì“à—e‚ğ‘‚«Š·‚¦‚È‚¢‚±‚Æ‚ª‚Å‚«‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( TRUE:‘‚«Š·‚¦‚È‚¢‚±‚Æ‚ª‚Å‚«‚é  FALSE:‘‚«Š·‚¦‚È‚¢‚±‚Æ‚ª‚Å‚«‚È‚¢ )
 extern	int			NS_SetIgnoreDrawGraphColor(			int EnableFlag ) ;												// •`‰æ‚·‚é‰æ‘œ‚ÌF¬•ª‚ğ–³‹‚·‚é‚©‚Ç‚¤‚©‚ğw’è‚·‚é( EnableFlag:‚±‚Ì‹@”\‚ğg‚¤‚©‚Ç‚¤‚©( TRUE:g‚¤  FALSE:g‚í‚È‚¢ ) )
 extern	int			NS_SetMaxAnisotropy(					int MaxAnisotropy ) ;											// Å‘åˆÙ•û«‚Ì’l‚ğƒZƒbƒg‚·‚é
+extern	int			NS_GetMaxAnisotropy(					void ) ;														// Å‘åˆÙ•û«’l‚ğæ“¾‚·‚é
 extern	int			NS_SetUseLarge3DPositionSupport(		int UseFlag ) ;													// ‚R‚cˆ—‚Åg—p‚·‚éÀ•W’l‚ª 10000000.0f ‚È‚Ç‚Ì‘å‚«‚È’l‚É‚È‚Á‚Ä‚à•`‰æ‚Ì•ö‚ê‚ğ¬‚³‚­—}‚¦‚éˆ—‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚éADxLib_Init ‚ÌŒÄ‚Ño‚µ‘O‚Å‚Ì‚İg—p‰Â”\( TRUE:•`‰æ‚Ì•ö‚ê‚ğ—}‚¦‚éˆ—‚ğg—p‚·‚é( CPU•‰‰×‚ªã‚ª‚è‚Ü‚· )@@FALSE:•`‰æ‚Ì•ö‚ê‚ğ—}‚¦‚éˆ—‚Íg—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
 
 extern	int			NS_SetUseZBufferFlag(					int Flag ) ;													// ‚yƒoƒbƒtƒ@‚ğ—LŒø‚É‚·‚é‚©Aƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é( ‚Q‚c‚Æ‚R‚c•`‰æ‚É‰e‹¿ )
@@ -2773,6 +2779,8 @@ extern	int			NS_SetEnableWASAPIFlag(                 int Flag, int IsExclusive =
 extern	int			NS_SetEnableASIOFlag(                   int Flag, int BufferSize = -1 , int SamplePerSec = 44100 ) ;																					// ƒTƒEƒ“ƒh‚ÌÄ¶‚ÉASIO‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( Flag  TRUE:g—p‚·‚é  FALSE:g—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ), BufferSize Ä¶ƒoƒbƒtƒ@‚ÌƒTƒCƒYA¬‚³‚¢‚Ù‚Ç’x‰„‚ª­‚È‚­‚È‚è‚Ü‚·‚ªAˆ—‚ªŠÔ‚É‡‚í‚¸‚ÉƒuƒcƒuƒcƒmƒCƒY‚ª”­¶‚·‚é‰Â”\«‚à‚‚­‚È‚è‚Ü‚·( -1 ‚ÅƒfƒtƒHƒ‹ƒg’l ), SamplePerSec ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg )
 #endif // DX_NON_ASIO
 extern	int			NS_SetUseOldVolumeCalcFlag(             int Flag ) ;																				// ChangeVolumeSoundMem, ChangeNextPlayVolumeSoundMem, ChangeMovieVolumeToGraph ‚Ì‰¹—ÊŒvZ®‚ğ Ver3.10cˆÈ‘O‚Ì‚à‚Ì‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:Ver3.10cˆÈ‘O‚ÌŒvZ®‚ğg—p  FALSE:3.10dˆÈ~‚ÌŒvZ®‚ğg—p( ƒfƒtƒHƒ‹ƒg ) )
+extern	int			NS_SetSoundCurrentTimeType(             int Type /* DX_SOUNDCURRENTTIME_TYPE_LOW_LEVEL ‚È‚Ç */ ) ;									// GetSoundCurrentTime ‚È‚Ç‚ğg—p‚µ‚½ê‡‚Éæ“¾‚Å‚«‚éÄ¶ŠÔ‚Ìƒ^ƒCƒv‚ğİ’è‚·‚é
+extern	int			NS_GetSoundCurrentTimeType(             void ) ;																					// GetSoundCurrentTime ‚È‚Ç‚ğg—p‚µ‚½ê‡‚Éæ“¾‚Å‚«‚éÄ¶ŠÔ‚Ìƒ^ƒCƒv‚ğæ“¾‚·‚é
 
 extern	int			NS_SetCreate3DSoundFlag(                     int Flag ) ;																			// Ÿ‚Éì¬‚·‚éƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ğ‚R‚cƒTƒEƒ“ƒh—p‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:‚R‚cƒTƒEƒ“ƒh—p‚É‚·‚é  FALSE:‚R‚cƒTƒEƒ“ƒh—p‚É‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
 extern	int			NS_Set3DSoundOneMetre(                       float Distance ) ;																		// ‚R‚c‹óŠÔ‚Ì‚Pƒ[ƒgƒ‹‚É‘Š“–‚·‚é‹——£‚ğİ’è‚·‚éADxLib_Init ‚ğŒÄ‚Ño‚·‘O‚Å‚Ì‚İŒÄ‚Ño‚µ‰Â”\( ƒfƒtƒHƒ‹ƒg:1.0f )
@@ -2982,7 +2990,7 @@ extern	const TCHAR *NS_Live2D_Model_GetHitAreaName(						int Live2DModelHandle, 
 extern	const TCHAR *NS_Live2D_Model_GetPhysicsFileName(					int Live2DModelHandle ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚Ì•¨—‰‰Zİ’èƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğæ“¾‚·‚é
 extern	const TCHAR *NS_Live2D_Model_GetPoseFileName(						int Live2DModelHandle ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìƒp[ƒcØ‚è‘Ö‚¦İ’èƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğæ“¾‚·‚é
 extern	int			NS_Live2D_Model_GetExpressionCount(					int Live2DModelHandle ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚Ì•\îİ’èƒtƒ@ƒCƒ‹‚Ì”‚ğæ“¾‚·‚é
-extern	const TCHAR *NS_Live2D_Model_GetExpressionName(					int Live2DModelHandle, int index ) ;													// Live2D ‚Ìƒ‚ƒfƒ‹‚Ì•\îİ’èƒtƒ@ƒCƒ‹‚ğ¯•Ê‚·‚é–¼‘Oi•Ê–¼j‚ğæ“¾‚·‚é
+extern	const TCHAR *NS_Live2D_Model_GetExpressionName(					int Live2DModelHandle, int index ) ;													// Live2D ‚Ìƒ‚ƒfƒ‹‚Ì•\îİ’èƒtƒ@ƒCƒ‹‚ğ¯•Ê‚·‚éID‚ğæ“¾‚·‚é
 extern	const TCHAR *NS_Live2D_Model_GetExpressionFileName(				int Live2DModelHandle, int index ) ;													// Live2D ‚Ìƒ‚ƒfƒ‹‚Ì•\îİ’èƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğæ“¾‚·‚é
 extern	int			NS_Live2D_Model_GetMotionGroupCount(					int Live2DModelHandle ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìƒ‚[ƒVƒ‡ƒ“ƒOƒ‹[ƒv‚Ì”‚ğæ“¾‚·‚é
 extern	const TCHAR *NS_Live2D_Model_GetMotionGroupName(					int Live2DModelHandle, int index ) ;													// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìƒ‚[ƒVƒ‡ƒ“ƒOƒ‹[ƒv‚Ì–¼‘O‚ğæ“¾‚·‚é
@@ -3206,6 +3214,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_GetMainWindowHandle					GetMainWindowHandle
 #define NS_GetWindowModeFlag					GetWindowModeFlag
 #define NS_GetDefaultState						GetDefaultState
+#define NS_GetMonitorDpi						GetMonitorDpi
 #define NS_GetActiveFlag						GetActiveFlag
 #define NS_GetNoActiveState						GetNoActiveState
 #define NS_GetMouseDispFlag						GetMouseDispFlag
@@ -3283,6 +3292,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetUseUpdateLayerdWindowFlag			SetUseUpdateLayerdWindowFlag
 #define NS_SetResourceModule					SetResourceModule
 #define NS_SetUseDxLibWM_PAINTProcess			SetUseDxLibWM_PAINTProcess
+#define NS_SetWindows10_WM_CHAR_CancelTime		SetWindows10_WM_CHAR_CancelTime
 
 // ƒhƒ‰ƒbƒO•ƒhƒƒbƒv‚³‚ê‚½ƒtƒ@ƒCƒ‹ŠÖŒW
 #define NS_SetDragFileValidFlag					SetDragFileValidFlag
@@ -3732,6 +3742,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 
 #define NS_SetKeyboardNotDirectInputFlag		SetKeyboardNotDirectInputFlag
 #define NS_SetUseDirectInputFlag				SetUseDirectInputFlag
+#define NS_SetDirectInputMouseMode				SetDirectInputMouseMode
 #define NS_SetUseXInputFlag						SetUseXInputFlag
 #define NS_SetUseXboxControllerDirectInputFlag	SetUseXboxControllerDirectInputFlag
 #define NS_SetUseJoypadVibrationFlag			SetUseJoypadVibrationFlag
@@ -4009,6 +4020,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawTriangle3DD								DrawTriangle3DD
 #define NS_DrawCube3D									DrawCube3D
 #define NS_DrawCube3DD									DrawCube3DD
+#define NS_DrawCubeSet3D								DrawCubeSet3D
 #define NS_DrawSphere3D									DrawSphere3D
 #define NS_DrawSphere3DD								DrawSphere3DD
 #define NS_DrawCapsule3D								DrawCapsule3D
@@ -4071,6 +4083,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawBlendGraphPos							DrawBlendGraphPos
 
 #define NS_DrawCircleGauge								DrawCircleGauge
+#define NS_DrawCircleGaugeF								DrawCircleGaugeF
 
 #define NS_DrawGraphToZBuffer							DrawGraphToZBuffer
 #define NS_DrawTurnGraphToZBuffer						DrawTurnGraphToZBuffer
@@ -4136,6 +4149,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_CheckSeparateAlphaBlendEnable		CheckSeparateAlphaBlendEnable
 #define NS_SetIgnoreDrawGraphColor				SetIgnoreDrawGraphColor
 #define NS_SetMaxAnisotropy						SetMaxAnisotropy
+#define NS_GetMaxAnisotropy						GetMaxAnisotropy
 #define NS_SetUseLarge3DPositionSupport			SetUseLarge3DPositionSupport
 
 #define NS_SetUseZBufferFlag					SetUseZBufferFlag
@@ -5438,6 +5452,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetEnableASIOFlag					SetEnableASIOFlag
 #endif // DX_NON_ASIO
 #define NS_SetUseOldVolumeCalcFlag				SetUseOldVolumeCalcFlag
+#define NS_SetSoundCurrentTimeType				SetSoundCurrentTimeType
+#define NS_GetSoundCurrentTimeType				GetSoundCurrentTimeType
 
 #define NS_SetCreate3DSoundFlag					SetCreate3DSoundFlag
 #define NS_Set3DSoundOneMetre					Set3DSoundOneMetre

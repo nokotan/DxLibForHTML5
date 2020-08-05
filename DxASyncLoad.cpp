@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		非同期読み込み処理プログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -789,6 +789,41 @@ extern int ResumeASyncLoadThread( int AddMaxThreadNum )
 	// クリティカルセクションの取得
 	CRITICALSECTION_LOCK( &GASyncLoadData.CriticalSection ) ;
 
+	// メインスレッドによる処理完了待ちでスレッドを止めていて、且つメインスレッドによる処理が完了しているスレッドを一つ起こす
+	AInfo = GASyncLoadData.Thread ;
+	for( i = 0 ; i < GASyncLoadData.ThreadNum ; i ++, AInfo ++ )
+	{
+		if( AInfo->ExitFlag == TRUE ||
+			AInfo->SuspendFlag == FALSE ||
+			AInfo->JobFlag == FALSE )
+			continue ;
+
+		if( AInfo->MainThreadRequestSuspend == TRUE && AInfo->MainThreadRequest == FALSE )
+		{
+			// 起こす
+			AInfo = &GASyncLoadData.Thread[ i ] ;
+			if( Thread_Resume( &AInfo->ThreadInfo ) == 0 )
+			{
+				// 既に起きていたら何もせず次のループへ
+				continue ;
+			}
+
+			// メインスレッドによる処理完了待ちでスレッドを止めているフラグを倒す
+			if( AInfo->MainThreadRequestSuspend )
+			{
+				AInfo->MainThreadRequestSuspend = FALSE ;
+				GASyncLoadData.MainThreadRequestSuspendThreadNum -- ;
+			}
+
+			// 寝ているフラグを倒す
+			AInfo->SuspendFlag = FALSE ;
+			GASyncLoadData.ThreadResumeNum ++ ;
+
+			// 起こすのは一つだけなのでここでループを抜ける
+			break ;
+		}
+	}
+
 	// 起きているスレッドが一定数以上だったら起こさない
 	if( GASyncLoadData.ThreadResumeNum >= GASyncLoadData.ThreadMaxResumeNum + AddMaxThreadNum )
 	{
@@ -1015,6 +1050,12 @@ extern int AddASyncLoadRequestMainThreadInfo( ASYNCLOAD_MAINTHREAD_REQUESTINFO *
 	AInfo->SuspendFlag = TRUE ;
 	AInfo->SuspendStartTime = NS_GetNowCount() ;
 	GASyncLoadData.ThreadResumeNum -- ;
+
+	// メインスレッドへのリクエストを行うからスレッドを止めているかのフラグを立てる
+	AInfo->MainThreadRequestSuspend = TRUE ;
+
+	// メインスレッドへのリクエストを行うから止めているスレッドの数をインクリメント
+	GASyncLoadData.MainThreadRequestSuspendThreadNum ++ ;
 
 	// クリティカルセクションの解放
 	CriticalSection_Unlock( &GASyncLoadData.CriticalSection ) ;

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -1825,12 +1825,14 @@ static void MV1SetupMatrix( MV1_MODEL *Model )
 			MAnim2 = MAnim ;
 			BlendFlag = 0 ;
 			mcon = 0 ;
+			BlendRate = 0.0f ;
 			for( j = 0 ; j < Model->AnimSetMaxNum ; j ++, MAnim2 ++ )
 			{
 				if( MAnim2->Use == false || MAnim2->BlendRate == 0.0f )
 					continue ;
 				mcon ++ ;
 				MAnim3 = MAnim2 ;
+				BlendRate += MAnim2->BlendRate ;
 
 				BlendFlag |= MAnim2->Anim->ValidFlag ;
 			}
@@ -1870,8 +1872,8 @@ static void MV1SetupMatrix( MV1_MODEL *Model )
 				}
 			}
 			else
-			// アニメーションが一つだけ再生されている場合は別処理
-			if( mcon == 1 )
+			// アニメーションが一つだけ再生されていて且つブレンドレートも1.0の場合は別処理
+			if( mcon == 1 && BlendRate == 1.0f )
 			{
 				// 行列のセットアップ
 				if( BlendFlag & MV1_ANIMVALUE_MATRIX )
@@ -29849,7 +29851,8 @@ extern MV1_COLL_RESULT_POLY NS_MV1CollCheck_Line( int MHandle, int FrameIndex, V
 									PolyList->Vertexs[ Poly->VIndex[ 2 ] ].Position,
 									&pos1w,
 									&pos2w,
-									&pos3w ) ;
+									&pos3w,
+									TRUE ) ;
 					if( LineRes.HitFlag )
 					{
 						VectorSub( &Sa, &LineRes.Position, ( VECTOR * )&PosStart ) ;
@@ -30071,7 +30074,8 @@ extern MV1_COLL_RESULT_POLY NS_MV1CollCheck_Line( int MHandle, int FrameIndex, V
 //											PolyList->Vertexs[ Poly->VIndex[ 2 ] ].Position,
 //											&pos1w,
 //											&pos2w,
-//											&pos3w ) ;
+//											&pos3w,
+//											TRUE ) ;
 //							if( LineRes.HitFlag )
 //							{
 //								VectorSub( &Sa, &LineRes.Position, ( VECTOR * )&PosStart ) ;

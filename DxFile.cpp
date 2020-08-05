@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ファイルアクセスプログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -1377,7 +1377,79 @@ static int FileRead_CheckFormat( FILEACCESSINFO *FileInfo )
 		}
 		else
 		{
+			char *Buffer = NULL ;
+			DWORD BufferSize ;
+			LONGLONG FileSize ;
+			int CharCodeFormat[][ 2 ] =
+			{
+				{ DX_CHARCODEFORMAT_UTF32LE, 0 },
+				{ DX_CHARCODEFORMAT_UTF32BE, 0 },
+				{ DX_CHARCODEFORMAT_UTF16LE, 0 },
+				{ DX_CHARCODEFORMAT_UTF16BE, 0 },
+				{ DX_CHARCODEFORMAT_SHIFTJIS, 0 },
+				{ DX_CHARCODEFORMAT_UTF8, 0 },
+				{ DX_CHARCODEFORMAT_GB2312, 0 },
+				{ DX_CHARCODEFORMAT_UHC, 0 },
+				{ DX_CHARCODEFORMAT_BIG5, 0 },
+				{ -1, 0 },
+			} ;
+			int IsAllSuccess = FALSE ;
+			int i ;
+
+			// 自動判定のためファイルを読み込む( 最大1MB )
+			FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, 0, SEEK_END ) ;
+			STREAM_FSYNC( &FileInfo->StreamData )
+			FileSize = FileInfo->StreamData.ReadShred.Tell( FileInfo->StreamData.DataPoint ) ;
 			FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, 0, SEEK_SET ) ;
+			STREAM_FSYNC( &FileInfo->StreamData )
+
+			BufferSize = ( DWORD )( FileSize > 1024 * 1024 ? 1024 * 1024 : FileSize ) ;
+
+			Buffer = ( char * )DXALLOC( BufferSize + 4 ) ;
+			if( Buffer != NULL )
+			{
+				_MEMSET( Buffer, 0, BufferSize + 4 ) ;
+
+				FileInfo->StreamData.ReadShred.Read( Buffer, BufferSize, 1, FileInfo->StreamData.DataPoint ) ;
+				STREAM_FSYNC( &FileInfo->StreamData )
+				FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, 0, SEEK_SET ) ;
+
+				// 各文字コードで一致している文字の数を取得
+				for( i = 0 ; CharCodeFormat[ i ][ 0 ] >= 0 ; i ++ )
+				{
+					CharCodeFormat[ i ][ 1 ] = CheckCharCodeFormat( Buffer, CharCodeFormat[ i ][ 0 ], &IsAllSuccess ) ;
+
+					// 完全一致していたらループを抜ける
+					if( IsAllSuccess )
+					{
+						break ;
+					}
+				}
+
+				// 完全一致した文字コードがあったら、完全一致した文字コードをファイルのフォーマットとする
+				if( IsAllSuccess )
+				{
+					FileInfo->CharCodeFormat = CharCodeFormat[ i ][ 0 ] ;
+				}
+				else
+				{
+					int MaxSuccessIndex = 0 ;
+
+					// 完全一致した文字コードが無い場合は一番一致した文字数が多い文字コードをファイルのフォーマットとする
+					for( i = 1 ; CharCodeFormat[ i ][ 0 ] >= 0 ; i ++ )
+					{
+						if( CharCodeFormat[ MaxSuccessIndex ][ 1 ] < CharCodeFormat[ i ][ 1 ] )
+						{
+							MaxSuccessIndex = i ;
+						}
+					}
+
+					FileInfo->CharCodeFormat = CharCodeFormat[ MaxSuccessIndex ][ 0 ] ;
+				}
+
+				DXFREE( Buffer ) ;
+				Buffer = NULL ;
+			}
 		}
 	}
 
@@ -5312,6 +5384,362 @@ static int StreamTCHAR_FindClose( DWORD_PTR FindHandle )
 //	// 正常終了
 //	return 0 ;
 //}
+
+// フルパスではないパス文字列をフルパスに変換する
+// ( CurrentDir はフルパスである必要がある(語尾に『\』があっても無くても良い) )
+// ( CurrentDir が NULL の場合は現在のカレントディレクトリを使用する )
+extern	int ConvertFullPathA_( const char *Src, char *Dest, size_t BufferBytes, const char *CurrentDir )
+{
+	int i, j, k ;
+	char     iden[ FILEPATH_MAX ] ;
+	char     cur[ FILEPATH_MAX ] ;
+	int      CharNum ;
+	char    *LastCharAddress ;
+	DWORD    LastCharCode ;
+	int      LastCharBytes ;
+	int      FirstCheckEnd = FALSE ;
+//	size_t   DestSize ;
+	int      RootFolder = FALSE ;
+
+//	DestSize = 0 ;
+
+	if( CurrentDir == NULL )
+	{
+		wchar_t curW[ FILEPATH_MAX ] ;
+		DX_FGETDIR( curW, sizeof( curW ) ) ;
+		ConvString( ( char * )curW, -1, WCHAR_T_CHARCODEFORMAT, cur, sizeof( cur ), CHAR_CHARCODEFORMAT ) ;
+		CurrentDir = cur ;
+	}
+
+	if( Src == NULL )
+	{
+		_STRCPY_S( Dest, BufferBytes, CurrentDir ) ;
+		goto END ;
+	}
+
+	i = 0 ;
+	j = 0 ;
+	k = 0 ;
+	
+	// 最初に『\』又は『/』が２回連続で続いている場合はネットワークを介していると判断
+	if( ( Src[0] == '\\' && Src[1] == '\\' ) ||
+		( Src[0] == '/'  && Src[1] == '/'  ) )
+	{
+		Dest[0] = '\\';
+		Dest[1] = '\0';
+
+		i += 2;
+		j ++ ;
+
+		FirstCheckEnd = TRUE ;
+	}
+
+	// ドライブ名が書かれていたらそのドライブへ
+	if( FirstCheckEnd == FALSE )
+	{
+		int l ;
+		int m, n = 0 ;
+
+		// 追加のドライブ名か調べる
+		for( m = 0 ; m < g_AddDriveNameNum ; m ++ )
+		{
+			for( n = 0 ; ; n ++ )
+			{
+				if( Src[ n ] == '\0' || g_AddDriveName[ m ][ n ] == '\0' )
+				{
+					break ;
+				}
+
+				char SrcC ;
+				char CheckC ;
+
+				if( Src[ n ] == '\\' || Src[ n ] == '/' )
+				{
+					SrcC = '\\' ;
+				}
+				else
+				{
+					SrcC = Src[ n ] ;
+				}
+
+				if( g_AddDriveName[ m ][ n ] == '\\' || g_AddDriveName[ m ][ n ] == '/' )
+				{
+					CheckC = '\\' ;
+				}
+				else
+				{
+					CheckC = ( char )g_AddDriveName[ m ][ n ] ;
+				}
+
+				if( SrcC != CheckC )
+				{
+					break ;
+				}
+			}
+
+			if( g_AddDriveName[ m ][ n ] == '\0' )
+			{
+				break ;
+			}
+		}
+		if( g_AddDriveNameNum != 0 && m != g_AddDriveNameNum )
+		{
+			// 落ちない場合は適合した文字列をそのまま残す
+			_MEMCPY( Dest, Src, sizeof( char ) * n ) ;
+			Dest[ n ] = '\0' ;
+
+			j = n ;
+			i = n ;
+
+			FirstCheckEnd = TRUE ;
+		}
+		else
+		{
+			// 通常のドライブ名のチェック
+			l = 0 ;
+			for(;;)
+			{
+				if( Src[ l ] == '\0' )
+				{
+					break ;
+				}
+
+				if( CHECK_SHIFTJIS_2BYTE( Src[ l ] ) )
+				{
+					l += 2 ;
+				}
+				else
+				{
+					if( Src[ l ] == ':' )
+					{
+						break ;
+					}
+
+					if( ( Src[ l ] < 'a' || Src[ l ] > 'z' ) &&
+						( Src[ l ] < 'A' || Src[ l ] > 'Z' ) &&
+						( Src[ l ] < '0' || Src[ l ] > '9' ) )
+					{
+						break ;
+					}
+
+					l ++ ;
+				}
+			}
+			if( Src[ l ] == ':' )
+			{
+				_MEMCPY( Dest, Src, sizeof( char ) * ( l + 1 ) ) ;
+				Dest[ l + 1 ] = '\0' ;
+
+				i = l + 1 ;
+				j = l + 1 ;
+
+				if( Src[ i ] == '\\' || Src[ i ] == '/' )
+				{
+					i ++ ;
+				}
+
+				FirstCheckEnd = TRUE ;
+			}
+		}
+	}
+
+	// 最初が『\』又は『/』の場合はカレントドライブのルートディレクトリまで落ちる
+	if( g_EnableRootDirName == 1 && FirstCheckEnd == FALSE && ( Src[0] == '\\' || Src[0] == '/' ) )
+	{
+//		int m, n ;
+//
+//		// カレントドライブのルートディレクトリに落とさない文字列かどうかを判定
+//		for( m = 0 ; m < g_CancelCurrentDirNameNum ; m ++ )
+//		{
+//			for( n = 0 ; ; n ++ )
+//			{
+//				if( Src[ n ] == '\0' || g_CancelCurrentDirName[ m ][ n ] == '\0' )
+//				{
+//					break ;
+//				}
+//
+//				char SrcC ;
+//				char CheckC ;
+//
+//				if( Src[ n ] == '\\' || Src[ n ] == '/' )
+//				{
+//					SrcC = '\\' ;
+//				}
+//				else
+//				{
+//					SrcC = Src[ n ] ;
+//				}
+//
+//				if( g_CancelCurrentDirName[ m ][ n ] == '\\' || g_CancelCurrentDirName[ m ][ n ] == '/' )
+//				{
+//					CheckC = '\\' ;
+//				}
+//				else
+//				{
+//					CheckC = ( char )g_CancelCurrentDirName[ m ][ n ] ;
+//				}
+//
+//				if( SrcC != CheckC )
+//				{
+//					break ;
+//				}
+//			}
+//
+//			if( g_CancelCurrentDirName[ m ][ n ] == '\0' )
+//			{
+//				break ;
+//			}
+//		}
+//
+//		if( g_CancelCurrentDirNameNum != 0 && m != g_CancelCurrentDirNameNum )
+//		{
+//			// 落ちない場合は適合した文字列をそのまま残す
+//			_MEMCPY( Dest, Src, sizeof( char ) * n ) ;
+//			Dest[ n ] = '\0' ;
+//
+//			j = n ;
+//			i = j ;
+//
+//			FirstCheckEnd = TRUE ;
+//		}
+//		else
+		{
+			Dest[0] = CurrentDir[0] ;
+			Dest[1] = CurrentDir[1] ;
+			Dest[2] = '\0' ;
+
+			i ++ ;
+			j = 2 ;
+
+			FirstCheckEnd = TRUE ;
+		}
+
+		RootFolder = TRUE ;
+	}
+
+	// それ以外の場合はカレントディレクトリ
+	if( FirstCheckEnd == FALSE )
+	{
+		_STRCPY_S( Dest, BufferBytes, CurrentDir ) ;
+		j = ( int )_STRLEN( Dest ) ;
+
+		CharNum         = GetStringCharNum( ( const char * )CurrentDir, WCHAR_T_CHARCODEFORMAT ) ;
+		if( CharNum != 0 )
+		{
+			LastCharAddress = ( char * )GetStringCharAddress( ( const char * )CurrentDir, WCHAR_T_CHARCODEFORMAT, CharNum - 1 ) ;
+			LastCharCode    = GetCharCode( ( const char * )LastCharAddress, WCHAR_T_CHARCODEFORMAT, &LastCharBytes ) ;
+			if( LastCharCode == '\\' || LastCharCode == '/' )
+			{
+				*LastCharAddress = '\0' ;
+				j -- ;
+			}
+		}
+
+		FirstCheckEnd = TRUE ;
+	}
+
+	for(;;)
+	{
+		switch( Src[i] )
+		{
+		case '\0' :
+			if( k != 0 )
+			{
+				if( j != 0 )
+				{
+					Dest[j] = '\\' ;
+					j ++ ;
+				}
+				_STRCPY_S( &Dest[j], BufferBytes - j * sizeof( char ), iden ) ;
+				j = ( int )_STRLEN( Dest ) ;
+				k = 0 ;
+			}
+			goto END ;
+
+		case '\\' :
+		case '/' :
+			// 文字列が無かったらスキップ
+			if( k == 0 )
+			{
+				i ++ ;
+				break ;
+			}
+		
+			if( _STRCMP( iden, "." ) == 0 )
+			{
+				// なにもしない
+			}
+			else
+			if( _STRCMP( iden, ".." ) == 0 )
+			{
+				// 一つ浅いディレクトリへ
+				Dest[ j ] = '\0' ;
+				CharNum         = GetStringCharNum(  ( const char * )Dest, WCHAR_T_CHARCODEFORMAT ) ;
+				LastCharAddress = ( char * )GetStringCharAddress( ( const char * )Dest, WCHAR_T_CHARCODEFORMAT, CharNum - 1 ) ;
+				LastCharCode    = GetCharCode( ( const char * )LastCharAddress, WCHAR_T_CHARCODEFORMAT, &LastCharBytes ) ;
+				j -= LastCharBytes / sizeof( char ) ;
+				for(;;)
+				{
+					if( Dest[j] == '\\' || Dest[j] == '/' || Dest[j] == ':' )
+					{
+						break ;
+					}
+
+					Dest[ j ] = '\0' ;
+					CharNum -- ;
+					LastCharAddress = ( char * )GetStringCharAddress( ( const char * )Dest, WCHAR_T_CHARCODEFORMAT, CharNum - 1 ) ;
+					LastCharCode    = GetCharCode( ( const char * )LastCharAddress, WCHAR_T_CHARCODEFORMAT, &LastCharBytes ) ;
+					j -= LastCharBytes / sizeof( char ) ;
+				}
+				if( Dest[j] != ':' )
+				{
+					Dest[j] = '\0' ;
+				}
+				else
+				{
+					j ++ ;
+				}
+			}
+			else
+			{
+				if( ( RootFolder == FALSE && ( Src[ 0 ] == '\\' || Src[ 0 ] == '/' ) ) || j != 0 )
+				{
+					Dest[ j ] = '\\' ;
+					j ++ ;
+				}
+
+				_STRCPY_S( &Dest[j], BufferBytes - j * sizeof( char ), iden ) ;
+				j = ( int )_STRLEN( Dest ) ;
+			}
+
+			k = 0 ;
+			i ++ ;
+			break ;
+		
+		default :
+			if( CHECK_SHIFTJIS_2BYTE( Src[i] ) == FALSE )
+			{
+				iden[k] = Src[i] ;
+				iden[k+1] = 0 ; 
+				k ++ ;
+				i ++ ;
+			}
+			else
+			{
+				iden[k]   = Src[i] ;
+				iden[k+1] = Src[i+1] ;
+				iden[k+2] = '\0' ;
+				k += 2 ;
+				i += 2 ;
+			}
+			break ;
+		}
+	}
+	
+END :
+	// 正常終了
+	return 0 ;
+}
 
 // フルパスではないパス文字列をフルパスに変換する
 // ( CurrentDir はフルパスである必要がある(語尾に『\』があっても無くても良い) )

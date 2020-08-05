@@ -3,9 +3,96 @@
 //　ＤＸライブラリ　非公式ログ
 //
 //　Creator : 山田　巧
-//  Last Access : 2019/1/5
+//  Last Access : 2020/5/10
 // ============================================================================
 
+Ver 3.21f	　正式公開のためにバージョン番号を変更。
+Ver 3.21e	　符号付き24bitの WAVファイルが正常に再生できないバグを修正。
+			　同じサウンドハンドルを連続して PlaySoundMem を呼び続けると
+			PlaySoundMem を呼んでいるにも関わらず音が再生されないバグを修正。
+			　Windows版：ＤＸライブラリ内のサウンド処理で GetRand を呼んで
+			しまっていたバグを修正。
+			　Windows版：GetPcInfo でグラフィックスデバイス名と使用している
+			DirectX の名前が取得できるようにプログラムを修正。
+			　SetCreate3DSoundFlag などを使用した３Ｄサウンドの効果が無くなって
+			しまっていたバグを修正。
+			　Windows版：KeyInputString などの文字列入力機能で、IME入力の
+			ON/OFF を切り替えると2秒間アプリが応答無しになるバグを修正。
+			　関数 GetFPS が、起動直後は０に近い値が返るバグを修正。
+			　Windows版：DxLib_Init の呼び出し後に SetWindowSizeExtendRate を
+			使用すると正常に動作しないバグを修正。
+			　Live2D の読み込み処理にエラー出力処理を追加。
+			　Windows版：サウンドの出力に WASAPI や ASIO を使用した場合、
+			ChangeVolumeSoundMem などの音量変更機能が正常に動作しない
+			ことがあるバグを修正。
+			　自前ミキシングによるサウンド再生の場合、StopSoundMem を実行して
+			音の再生を止めても GetCurrentPositionSoundMem などの再生位置取得
+			関数で取得できる値が変化し続けるバグを修正。
+			　テキストファイルを FileRead_gets や FileRead_scanf で読み込んだ
+			際のテキストファイルの文字コード形式の自動判別処理を追加。
+			　Windows版：SetGraphMode や SetWindowSizeExtendRate などの関数で
+			ウィンドウのサイズの変更が正常に行われないことがあるバグを修正。
+			　Windows版：タスクバーが隠れている状態でウィンドウモードで
+			起動するとウィンドウがデスクトップ画面の左上端に表示されてしまう
+			バグを修正。
+			　Windows版：CubismSdkForNative-4-r.1 に含まれる 32bit版
+			Live2DCubismCore.dll を使用するとクラッシュするバグを修正。
+			　Live2D_LoadModel で必要なファイルが存在しなかった場合にメモリの
+			不正なアクセスが発生するバグを修正。
+			　SetUseASyncLoadFlag( TRUE ) ; を実行した非同期読み込み設定で
+			Live2D_LoadModel で Live2D モデルを複数同時に読み込むと
+			メモリの不正なアクセスが発生してしまうことがあるバグを修正。
+			　Live2D 用の Live2D_Model_GetExpressionName などの文字列を
+			取得する関数で、取得できる文字列に全角文字が含まれていると
+			取得する文字列が文字化けしてしまうバグを修正。
+			　Windows版：Direct3D 11 を使用する場合、Live2D のマスク処理が
+			正常に行われないことがあるバグを修正。
+			　SetUseASyncLoadFlag( TRUE ) ; を実行した非同期読み込み設定で
+			LoadGraph などの読み込み関数で大量のファイルを同時に非同期
+			読み込みすると、偶に読み込みが途中で止まってしまい、どれだけ
+			待っても読み込みが終了しないことがあるバグを修正。
+			　定数バッファハンドルの最大数を 8192個から 32768個に変更。
+			　DrawCircleGauge の引数 CenterX, CenterY の型が float になった
+			関数 DrawCircleGaugeF を追加。
+			　最大異方性値を取得するための関数 GetMaxAnisotropy を追加。
+			　Live2D のモデル描画で異方性フィルタリングが有効になって
+			いなかったバグを修正。
+			　Android版：oggファイルを読み込もうとするとクラッシュする
+			ことがある不具合を修正。
+			　Live2D の Cubism Sdk For Native 4-r.1 の変更内容を反映。
+			　GetSoundCurrentTime などの再生時間取得関数を使用した場合に
+			取得できる再生時間のタイプを設定するための関数
+			SetSoundCurrentTimeType を追加。
+			　PlaySoundMem で再生中のサウンドハンドルに対して
+			SetFrequencySoundMem で再生周波数を変更すると、GetSoundCurrentTime等
+			で取得できる再生時間が正しくなくなることがあるバグを修正。
+			　Windows版：有効ビット深度24bitのWASAPI対応のサウンドデバイス
+			で排他モードで音を再生すると、音量が異様に小さくなってしまう
+			バグを修正。
+			　立方体を一度に複数描画するための関数 DrawCubeSet3D を追加。
+			　Graphics_Hardware_D3D11_GetUseDirect3D11BackBufferTexture2D
+			を使用した際に、取得できる Texture2D に直前に行った描画結果が反映
+			されないバグを修正。
+			　GetDesktopScreenGraph などのデスクトップの画像を取得する
+			関数を高速化。
+			　Windows版：Windows10 以降で行っている『短時間に連続して
+			同じ文字がキー入力された場合には無視する』処理の判定に使用する
+			時間を設定するための関数 SetWindows10_WM_CHAR_CancelTime を追加。
+			　３Ｄモデルにアタッチしているアニメーションが１つだけの場合は
+			MV1SetAttachAnimBlendRate でブレンド率を 0.5f など 1.0f 以外に
+			しても 1.0f を指定した場合と同じ描画結果になってしまうバグを修正。
+			　Windows版：モニタが高DPI設定になっていた場合も従来のDPI96を
+			前提としたサイズでウィンドウが表示されるように処理を変更。
+			　Windows版：モニタのDPIを取得する為の関数 GetMonitorDpi を追加。
+			　Windows版：FileRead_open の第二引数を TRUE にすると
+			FileRead_close を実行しても確保したメモリが解放されないバグを修正。
+			　Segment_Triangle_Analyse で三角形と線分が接触していないのに
+			線分と三角形の距離が 0 という結果が出力されることがあるバグを修正。
+			　HitCheck_Line_Triangle で三角形と同一平面上にある線分との
+			当たり判定が正常に行われないバグを修正。
+			　Windows版：SetUseDirectInputFlag( TRUE ); を実行した場合に
+			ウィンドウが非アクティブな状態でもマウスの入力に DirectInput を
+			使用するかどうかを設定するための関数 SetDirectInputMouseMode を追加。
 Ver 3.21d	　正式公開のためにバージョン番号を変更。
 Ver 3.21c	　Windows版：GetDesktopScreenGraphMemImage にカラービット深度を
 			指定するための引数 ColorBitDepth を追加。
