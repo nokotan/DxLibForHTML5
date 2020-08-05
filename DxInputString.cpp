@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字列入力プログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -964,7 +964,7 @@ extern LRESULT IMEProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 	// ＩＭＥ無視状態だった場合はなにもせず終了
 /*	if( CharBuf.IMEUseFlag == FALSE )
 	{
-//		WinAPIData.Win32Func.DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
+//		DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
 		return 0;
 	}
 */
@@ -1074,7 +1074,7 @@ extern LRESULT IMEProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 		}
 		else
 		{
-			WinAPIData.Win32Func.DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
+			DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
 		}
 		break ;
 
@@ -1082,7 +1082,7 @@ extern LRESULT IMEProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 	case WM_IME_SETCONTEXT :
 //		lParam &= ~ISC_SHOWUICANDIDATEWINDOW ;
 		lParam = 0;
-		return WinAPIData.Win32Func.DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
+		return DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
 
 	// ＩＭＥ入力開始メッセージ
 	case WM_IME_STARTCOMPOSITION :
@@ -1206,13 +1206,13 @@ extern LRESULT IMEProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 
 			Flag = TRUE ;
 
-			WinAPIData.Win32Func.DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
+			DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
 
 			// キーが押されている間ここで止まる
 			{
 				ULONGLONG Time = NS_GetNowSysPerformanceCount() ;
 
-				while( NS_ProcessMessage() == 0 && NS_ConvSysPerformanceCountToMilliSeconds( NS_GetNowSysPerformanceCount() - Time ) < 2000 ){}
+				while( NS_ProcessMessage() == 0 && NS_ConvSysPerformanceCountToMicroSeconds( NS_GetNowSysPerformanceCount() - Time ) < 2000 ){}
 			}
 
 			Flag = FALSE ;
@@ -1309,7 +1309,7 @@ extern LRESULT IMEProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 
 		default :
 //			return 0;
-			return WinAPIData.Win32Func.DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
+			return DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
 		}
 		break;
 	}

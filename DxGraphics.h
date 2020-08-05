@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画プログラムヘッダファイル
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -1006,6 +1006,11 @@ struct GRAPHICSSYS_CREATEIMAGEDATA
 struct GRAPHICSSYS_DISPLAYINFO
 {
 	int						IsPrimary ;								// プライマリモニタかどうか( TRUE:プライマリモニタ  FALSE:サブモニタ )
+
+	void *					MonitorHandle ;							// モニターハンドル
+	DWORD					XDpi ;									// x軸のDPI
+	DWORD					YDpi ;									// y軸のDPI
+
 	RECT					DesktopRect ;							// デスクトップ上でのモニタ領域
 	int						DesktopSizeX ;							// デスクトップ上での幅
 	int						DesktopSizeY ;							// デスクトップ上での高さ
@@ -1087,6 +1092,12 @@ struct GRAPHICSSYS_SETTINGDATA
 // 処理実行用リソース関係の構造体
 struct GRAPHICSSYS_RESOURCE
 {
+	int						DrawCubeSet3DWorkVertexBufferSize[ 2 ] ;// DrawCubeSet3D用の頂点バッファのサイズ( 0:ライティング無し  1:ライティングあり )
+	VERTEX3D				*DrawCubeSet3DWorkVertexBuffer[ 2 ] ;	// DrawCubeSet3D用の頂点バッファ( 0:ライティング無し  1:ライティングあり )
+
+	int						DrawCubeSet3DWorkIndexBufferSize[ 3 ] ;	// DrawCubeSet3D用のインデックスバッファのサイズ( 0:ライティング無し+ライン  1:ライティング無し+塗りつぶし  2:ライティングあり+塗りつぶし )
+	WORD					*DrawCubeSet3DWorkIndexBuffer[ 3 ] ;	// DrawCubeSet3D用のインデックスバッファのサイズ( 0:ライティング無し+ライン  1:ライティング無し+塗りつぶし  2:ライティングあり+塗りつぶし )
+
 	int						TempVertexBufferSize ;					// 一時的に頂点データを格納するためのバッファのサイズ
 	void					*TempVertexBuffer ;						// 一時的に頂点データを格納するためのバッファ
 

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		演算プログラムヘッダファイル
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -30,11 +30,14 @@ namespace DxLib
 
 // 関数プロトタイプ宣言-----------------------------------------------------------
 
-extern	void	HitCheck_Line_Triangle_Base(  HITRESULT_LINE *Result,   VECTOR   LinePos1, VECTOR   LinePos2, VECTOR   TrianglePos1, VECTOR   TrianglePos2, VECTOR   TrianglePos3, float  *TrianglePos1Weight, float  *TrianglePos2Weight, float  *TrianglePos3Weight ) ;		// 三角形と線の当たり判定
-extern	void	HitCheck_Line_TriangleD_Base( HITRESULT_LINE_D *Result, VECTOR_D LinePos1, VECTOR_D LinePos2, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3, double *TrianglePos1Weight, double *TrianglePos2Weight, double *TrianglePos3Weight ) ;		// 三角形と線の当たり判定
+extern	void	HitCheck_Line_Triangle_Base(  HITRESULT_LINE *Result,   VECTOR   LinePos1, VECTOR   LinePos2, VECTOR   TrianglePos1, VECTOR   TrianglePos2, VECTOR   TrianglePos3, float  *TrianglePos1Weight, float  *TrianglePos2Weight, float  *TrianglePos3Weight, int IsSimpleCheck ) ;		// 三角形と線の当たり判定
+extern	void	HitCheck_Line_TriangleD_Base( HITRESULT_LINE_D *Result, VECTOR_D LinePos1, VECTOR_D LinePos2, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3, double *TrianglePos1Weight, double *TrianglePos2Weight, double *TrianglePos3Weight, int IsSimpleCheck ) ;		// 三角形と線の当たり判定
 
 extern	void	TriangleBarycenter_Base(  const VECTOR   *TrianglePos1, const VECTOR   *TrianglePos2, const VECTOR   *TrianglePos3, const VECTOR   *Position, float  *TrianglePos1Weight, float  *TrianglePos2Weight, float  *TrianglePos3Weight ) ;	// 指定の座標から三角形の重心を求める
 extern	void	TriangleBarycenter_BaseD( const VECTOR_D *TrianglePos1, const VECTOR_D *TrianglePos2, const VECTOR_D *TrianglePos3, const VECTOR_D *Position, double *TrianglePos1Weight, double *TrianglePos2Weight, double *TrianglePos3Weight ) ;	// 指定の座標から三角形の重心を求める
+
+extern	float	Segment_Triangle_MinLength_Square_Base(  VECTOR   SegmentPos1, VECTOR   SegmentPos2, VECTOR   TrianglePos1, VECTOR   TrianglePos2, VECTOR   TrianglePos3, int *IsZeroLength ) ;		// 線分と三角形の最近点間の距離の二乗を得る
+extern	double	Segment_Triangle_MinLength_SquareD_Base( VECTOR_D SegmentPos1, VECTOR_D SegmentPos2, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3, int *IsZeroLength ) ;		// 線分と三角形の最近点間の距離の二乗を得る
 
 extern VECTOR	Get_Triangle_Point_MinPosition(  VECTOR   Point, VECTOR   TrianglePos1, VECTOR   TrianglePos2, VECTOR   TrianglePos3 ) ;			// 点に一番近い三角形上の座標を得る
 extern VECTOR_D	Get_Triangle_Point_MinPositionD( VECTOR_D Point, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3 ) ;			// 点に一番近い三角形上の座標を得る

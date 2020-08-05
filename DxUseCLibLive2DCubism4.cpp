@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Live2D Cubism4 関係
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -28,6 +28,7 @@
 #include "DxMemory.h"
 #include "DxBaseFunc.h"
 #include "DxFile.h"
+#include "DxLog.h"
 #include <float.h>
 #include <math.h>
 #include <new>
@@ -821,10 +822,16 @@ D_csmString::D_csmString()
     , _hashcode( -1 )
     , _ptrW( NULL )
     , _lengthW( 0 )
+    , _ptrA( NULL )
+    , _lengthA( 0 )
 {
 	_small[ 0 ] = '\0' ;
 	_hashcode = CalcHashcode( WritePointer(), _length ) ;
 	( ( wchar_t * )_smallW )[ 0 ] = L'\0' ;
+	_smallA[ 0 ] = '\0' ;
+	_smallA[ 1 ] = '\0' ;
+	_smallA[ 2 ] = '\0' ;
+	_smallA[ 3 ] = '\0' ;
 }
 
 D_csmString::D_csmString( const D_csmString& s )
@@ -833,6 +840,14 @@ D_csmString::D_csmString( const D_csmString& s )
 	_ptrW = NULL ;
 	_lengthW = 0 ;
 	( ( wchar_t * )_smallW )[ 0 ] = L'\0' ;
+
+	_enableA = false ;
+	_ptrA = NULL ;
+	_lengthA = 0 ;
+	_smallA[ 0 ] = '\0' ;
+	_smallA[ 1 ] = '\0' ;
+	_smallA[ 2 ] = '\0' ;
+	_smallA[ 3 ] = '\0' ;
 
 	if( !s.IsEmpty() )
 	{
@@ -854,6 +869,14 @@ D_csmString::D_csmString( const BYTE/*wchar_t*/ * c )
 	_lengthW = 0 ;
 	( ( wchar_t * )_smallW )[ 0 ] = L'\0' ;
 
+	_enableA = false ;
+	_ptrA = NULL ;
+	_lengthA = 0 ;
+	_smallA[ 0 ] = '\0' ;
+	_smallA[ 1 ] = '\0' ;
+	_smallA[ 2 ] = '\0' ;
+	_smallA[ 3 ] = '\0' ;
+
 	if( count )
 	{
 		Copy( c, count );
@@ -874,6 +897,14 @@ D_csmString::D_csmString( const char* c )
 	_lengthW = 0 ;
 	( ( wchar_t * )_smallW )[ 0 ] = L'\0' ;
 
+	_enableA = false ;
+	_ptrA = NULL ;
+	_lengthA = 0 ;
+	_smallA[ 0 ] = '\0' ;
+	_smallA[ 1 ] = '\0' ;
+	_smallA[ 2 ] = '\0' ;
+	_smallA[ 3 ] = '\0' ;
+
 	if( count )
 	{
 		Copy( c, count );
@@ -892,6 +923,14 @@ D_csmString::D_csmString( const char* s, int length )
 	_lengthW = 0 ;
 	( ( wchar_t * )_smallW )[ 0 ] = L'\0' ;
 
+	_enableA = false ;
+	_ptrA = NULL ;
+	_lengthA = 0 ;
+	_smallA[ 0 ] = '\0' ;
+	_smallA[ 1 ] = '\0' ;
+	_smallA[ 2 ] = '\0' ;
+	_smallA[ 3 ] = '\0' ;
+
 	if( length )
 	{
 		Copy( s, length );
@@ -909,6 +948,14 @@ D_csmString::D_csmString( const char* c, int length, bool useptr )
 	_ptrW = NULL ;
 	_lengthW = 0 ;
 	( ( wchar_t * )_smallW )[ 0 ] = L'\0' ;
+
+	_enableA = false ;
+	_ptrA = NULL ;
+	_lengthA = 0 ;
+	_smallA[ 0 ] = '\0' ;
+	_smallA[ 1 ] = '\0' ;
+	_smallA[ 2 ] = '\0' ;
+	_smallA[ 3 ] = '\0' ;
 
 	Initialize( c, length, useptr ) ;
 }
@@ -931,6 +978,12 @@ D_csmString::~D_csmString()
 	{
 		DXFREE( _ptrW );
 		_ptrW = NULL ;
+	}
+
+	if( _ptrA ) 
+	{
+		DXFREE( _ptrA );
+		_ptrA = NULL ;
 	}
 }
 
@@ -1139,6 +1192,18 @@ void D_csmString::Clear()
 	_lengthW = 0 ;
 	( ( wchar_t * )_smallW )[ 0 ] = L'\0' ;
 
+	_enableA = false ;
+	if( _ptrA != NULL )
+	{
+		DXFREE( _ptrA ) ;
+		_ptrA = NULL ;
+	}
+	_lengthA = 0 ;
+	_smallA[ 0 ] = '\0' ;
+	_smallA[ 1 ] = '\0' ;
+	_smallA[ 2 ] = '\0' ;
+	_smallA[ 3 ] = '\0' ;
+
 	SetEmpty() ;
 }
 
@@ -1153,6 +1218,18 @@ void D_csmString::Initialize( const char* c, int length, bool usePtr )
 	}
 	_lengthW = 0 ;
 	( ( wchar_t * )_smallW )[ 0 ] = L'\0' ;
+
+	_enableA = false ;
+	if( _ptrA != NULL )
+	{
+		DXFREE( _ptrA ) ;
+		_ptrA = NULL ;
+	}
+	_lengthA = 0 ;
+	_smallA[ 0 ] = '\0' ;
+	_smallA[ 1 ] = '\0' ;
+	_smallA[ 2 ] = '\0' ;
+	_smallA[ 3 ] = '\0' ;
 
 	if( !length )
 	{
@@ -1210,6 +1287,18 @@ int D_csmString::Copy( const BYTE* c, int length )
 	_lengthW = 0 ;
 	( ( wchar_t * )_smallW )[ 0 ] = L'\0' ;
 
+	_enableA = false ;
+	if( _ptrA != NULL )
+	{
+		DXFREE( _ptrA ) ;
+		_ptrA = NULL ;
+	}
+	_lengthA = 0 ;
+	_smallA[ 0 ] = '\0' ;
+	_smallA[ 1 ] = '\0' ;
+	_smallA[ 2 ] = '\0' ;
+	_smallA[ 3 ] = '\0' ;
+
 	return 0 ;
 }
 
@@ -1251,6 +1340,18 @@ int D_csmString::Copy( const char* c, int length )
 	_lengthW = 0 ;
 	( ( wchar_t * )_smallW )[ 0 ] = L'\0' ;
 
+	_enableA = false ;
+	if( _ptrA != NULL )
+	{
+		DXFREE( _ptrA ) ;
+		_ptrA = NULL ;
+	}
+	_lengthA = 0 ;
+	_smallA[ 0 ] = '\0' ;
+	_smallA[ 1 ] = '\0' ;
+	_smallA[ 2 ] = '\0' ;
+	_smallA[ 3 ] = '\0' ;
+
 	return 0 ;
 }
 
@@ -1289,6 +1390,14 @@ void D_csmString::SetEmpty( void )
 	_ptrW = NULL ;
 	( ( wchar_t * )_smallW )[ 0 ] = L'\0' ;
 	_lengthW = 0 ;
+
+	_enableA = false ;
+	_ptrA = NULL ;
+	_smallA[ 0 ] = '\0' ;
+	_smallA[ 1 ] = '\0' ;
+	_smallA[ 2 ] = '\0' ;
+	_smallA[ 3 ] = '\0' ;
+	_lengthA = 0 ;
 }
 
 
@@ -1363,6 +1472,36 @@ const char *D_csmString::GetRawString( void ) const
 	else
 	{
 		return _ptr ;
+	}
+}
+
+// C言語文字列としてのポインタを取得する( ＤＸライブラリの戻り値用 )
+const char *D_csmString::GetRawStringA( void )
+{
+	if( _enableA == false )
+	{
+		this->_lengthA = ( int )( ConvString( ( const char * )GetRawString(), -1, DX_CHARCODEFORMAT_UTF8, NULL, 0, CHAR_CHARCODEFORMAT ) - 1 ) ;
+		if( _lengthA < ( int )( sizeof( _smallA ) / sizeof( char ) - 1 ) )
+		{
+			this->_ptrA = NULL ;
+			ConvString( GetRawString(), -1, DX_CHARCODEFORMAT_UTF8, this->_smallA, sizeof( this->_smallA ),  CHAR_CHARCODEFORMAT ) ;
+		}
+		else
+		{
+			this->_ptrA = ( char * )DXALLOC( sizeof( char ) * ( this->_lengthA + 1 ) ) ;
+			ConvString( GetRawString(), -1, DX_CHARCODEFORMAT_UTF8, this->_ptrA, sizeof( char ) * ( this->_lengthA + 1 ), CHAR_CHARCODEFORMAT ) ;
+		}
+
+		_enableA = true ;
+	}
+	
+	if( _lengthA < ( int )( sizeof( _smallA ) / sizeof( char ) - 1 ) )
+	{
+		return _smallA ;
+	}
+	else
+	{
+		return _ptrA ;
 	}
 }
 
@@ -1963,13 +2102,25 @@ BYTE* D_csmStringW::WritePointer()
 
 
 
+D_CubismIdManager::D_CubismIdManager()
+{
+	// クリティカルセクションの初期化
+	CriticalSection_Initialize( &_criticalSection ) ;
+
+	_MEMSET( _ids, 0, sizeof( _ids ) ) ;
+	_idNum = 0 ;
+}
 
 D_CubismIdManager::~D_CubismIdManager()
 {
-	for( unsigned int i = 0; i < _ids.GetSize(); ++i )
+	// クリティカルセクションの削除
+	CriticalSection_Delete( &_criticalSection ) ;
+
+	for( int i = 0; i < _idNum; ++i )
 	{
 		D_CSM_DELETE_SELF( D_CubismId, _ids[ i ] );
 	}
+	_idNum = 0 ;
 }
 
 void D_CubismIdManager::RegisterIds( const char** ids, int count )
@@ -2017,8 +2168,23 @@ D_CubismId* D_CubismIdManager::RegisterId( const char* id )
 		return result;
 	}
 
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &_criticalSection ) ;
+
+	if( _idNum >= CSM_IDMANAGER_MAX_ID_NUM )
+	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &_criticalSection ) ;
+
+		return NULL ;
+	}
+
 	result = D_CSM_NEW D_CubismId( id );
-	_ids.PushBack( result );
+	_ids[ _idNum ] = result;
+	_idNum ++ ;
+
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &_criticalSection ) ;
 
 	return result;
 }
@@ -2030,7 +2196,8 @@ D_CubismId* D_CubismIdManager::RegisterId( const D_csmString& id )
 
 D_CubismId* D_CubismIdManager::FindId( const char* id ) const
 {
-	for( unsigned int i = 0; i < _ids.GetSize(); ++i )
+	int idNumTemp = _idNum ;
+	for( int i = 0; i < idNumTemp; ++i )
 	{
 		if( _ids[ i ]->GetString() == id )
 		{
@@ -2068,6 +2235,11 @@ D_csmVector<D_csmString>* D_JsonValue::s_dummyKeys = NULL;
 const char* D_JsonValue::GetRawString( const D_csmString& defaultValue, const D_csmString& indent )
 {
 	return this->GetString( defaultValue, indent ).GetRawString();
+}
+
+const char* D_JsonValue::GetRawStringA( const D_csmString& defaultValue, const D_csmString& indent )
+{
+	return this->GetString( defaultValue, indent ).GetRawStringA();
 }
 
 const BYTE* D_JsonValue::GetRawStringW( const D_csmString& defaultValue, const D_csmString& indent )
@@ -7436,6 +7608,12 @@ void D_CubismClippingManager_DxLib::SetupClippingContext( D_CubismModel& model, 
 				{
 					const int clipDrawIndex = clipContext->_clippingIdList[ i ];
 
+                    // 頂点情報が更新されておらず、信頼性がない場合は描画をパスする
+					if( !model.GetDrawableDynamicFlagVertexPositionsDidChange( clipDrawIndex ) )
+					{
+						continue;
+					}
+
 					renderer->IsCulling( model.GetDrawableCulling( clipDrawIndex ) != 0 );
 
 					// 今回専用の変換を適用して描く
@@ -8062,6 +8240,12 @@ void D_CubismRenderer_DxLib::DoDrawModel()
 	{
 		const int drawableIndex = _sortedDrawableIndexList[ i ];
 
+        // Drawableが表示状態でなければ処理をパスする
+		if( !GetModel()->GetDrawableDynamicFlagIsVisible( drawableIndex ) )
+		{
+			continue;
+		}
+
 		// クリッピングマスクをセットする
 		D_CubismClippingContext* clipContext = ( _clippingManager != NULL )
 			? ( *_clippingManager->GetClippingContextListForDraw() )[ drawableIndex ]
@@ -8086,6 +8270,12 @@ void D_CubismRenderer_DxLib::DoDrawModel()
 				for( int ctx = 0; ctx < clipDrawCount; ctx++ )
 				{
 					const int clipDrawIndex = clipContext->_clippingIdList[ ctx ];
+
+                    // 頂点情報が更新されておらず、信頼性がない場合は描画をパスする
+					if( !GetModel()->GetDrawableDynamicFlagVertexPositionsDidChange( clipDrawIndex ) )
+					{
+						continue;
+					}
 
 					IsCulling( GetModel()->GetDrawableCulling( clipDrawIndex ) != 0 );
 
@@ -8264,6 +8454,7 @@ void D_CubismRenderer_DxLib::ExecuteDraw( int vertexBuffer, int indexBuffer, int
 				SetUseTextureToShader( 1, _clippingManager->_colorBuffer->GetTextureView() ) ;
 			}
 			SetDrawMode( DX_DRAWMODE_ANISOTROPIC ) ;
+			SetMaxAnisotropy( 16 ) ;
 			SetTextureAddressMode( DX_TEXADDRESS_WRAP, 0 ) ;
 			SetTextureAddressMode( DX_TEXADDRESS_WRAP, 1 ) ;
 
@@ -8962,6 +9153,7 @@ void D_CubismRenderState_DxLib::SaveCurrentNativeState()
 	GetDrawAlphaTest( &backupDrawAlphaTestMode, &backupDrawAlphaTestParam ) ;
 	backupCullMode = GetUseBackCulling() ;
 	backupUseZBuffer = FALSE ;
+	backupMaxAnisotropy = GetMaxAnisotropy() ;
 	backupDrawMode = GetDrawMode() ;
 	GetDrawArea( &backupDrawArea ) ;
 	SetDrawAlphaTest( DX_CMP_ALWAYS, 0 ) ;
@@ -8978,6 +9170,7 @@ void D_CubismRenderState_DxLib::RestoreNativeState()
 	SetDrawBlendMode( backupBlendMode, backupBlendParam );
 	SetUseBackCulling( backupCullMode ) ;
 	SetUseZBufferFlag( backupUseZBuffer ) ;
+	SetMaxAnisotropy( backupMaxAnisotropy ) ;
 	SetDrawMode( backupDrawMode ) ;
 	SetDrawAlphaTest( backupDrawAlphaTestMode, backupDrawAlphaTestParam ) ;
 	SetDrawArea( backupDrawArea.left, backupDrawArea.top, backupDrawArea.right, backupDrawArea.bottom ) ;
@@ -9239,7 +9432,10 @@ D_CubismUserModel::~D_CubismUserModel()
 {
     D_CSM_DELETE(_motionManager);
     D_CSM_DELETE(_expressionManager);
-    _moc->DeleteModel(_model);
+	if( _moc != NULL )
+	{
+		_moc->DeleteModel( _model );
+	}
     D_CubismMoc::Delete(_moc);
     D_CSM_DELETE(_modelMatrix);
     D_CubismPose::Delete(_pose);
@@ -9627,6 +9823,12 @@ const char* D_CubismModelSettingJson::GetModelFileName()
     return (*_jsonValue[FrequentNode_Moc]).GetRawString();
 }
 
+const char* D_CubismModelSettingJson::GetModelFileNameA()
+{
+    if (!IsExistModelFile())return "";
+    return (*_jsonValue[FrequentNode_Moc]).GetRawStringA();
+}
+
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetModelFileNameW()
 {
     if (!IsExistModelFile())return ( BYTE * )L"";
@@ -9645,6 +9847,11 @@ const char* D_CubismModelSettingJson::GetTextureDirectory()
     return (*_jsonValue[FrequentNode_Textures]).GetRawString();
 }
 
+const char* D_CubismModelSettingJson::GetTextureDirectoryA()
+{
+    return (*_jsonValue[FrequentNode_Textures]).GetRawStringA();
+}
+
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetTextureDirectoryW()
 {
     return (*_jsonValue[FrequentNode_Textures]).GetRawStringW();
@@ -9653,6 +9860,11 @@ const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetTextureDirectoryW()
 const char* D_CubismModelSettingJson::GetTextureFileName(int index)
 {
     return (*_jsonValue[FrequentNode_Textures])[index].GetRawString();
+}
+
+const char* D_CubismModelSettingJson::GetTextureFileNameA(int index)
+{
+    return (*_jsonValue[FrequentNode_Textures])[index].GetRawStringA();
 }
 
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetTextureFileNameW(int index)
@@ -9677,6 +9889,11 @@ const char* D_CubismModelSettingJson::GetHitAreaName(int index)
     return (*_jsonValue[FrequentNode_HitAreas])[index][STR_Name].GetRawString();
 }
 
+const char* D_CubismModelSettingJson::GetHitAreaNameA(int index)
+{
+    return (*_jsonValue[FrequentNode_HitAreas])[index][STR_Name].GetRawStringA();
+}
+
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetHitAreaNameW( int index )
 {
     return (*_jsonValue[FrequentNode_HitAreas])[index][STR_Name].GetRawStringW();
@@ -9689,6 +9906,12 @@ const char* D_CubismModelSettingJson::GetPhysicsFileName()
     return (*_jsonValue[FrequentNode_Physics]).GetRawString();
 }
 
+const char* D_CubismModelSettingJson::GetPhysicsFileNameA()
+{
+    if (!IsExistPhysicsFile())return "";
+    return (*_jsonValue[FrequentNode_Physics]).GetRawStringA();
+}
+
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetPhysicsFileNameW()
 {
     if (!IsExistPhysicsFile())return ( BYTE * )L"";
@@ -9699,6 +9922,12 @@ const char* D_CubismModelSettingJson::GetPoseFileName()
 {
     if (!IsExistPoseFile())return "";
     return (*_jsonValue[FrequentNode_Pose]).GetRawString();
+}
+
+const char* D_CubismModelSettingJson::GetPoseFileNameA()
+{
+    if (!IsExistPoseFile())return "";
+    return (*_jsonValue[FrequentNode_Pose]).GetRawStringA();
 }
 
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetPoseFileNameW()
@@ -9718,6 +9947,11 @@ const char* D_CubismModelSettingJson::GetExpressionName(int index)
     return (*_jsonValue[FrequentNode_Expressions])[index][STR_Name].GetRawString();
 }
 
+const char* D_CubismModelSettingJson::GetExpressionNameA(int index)
+{
+    return (*_jsonValue[FrequentNode_Expressions])[index][STR_Name].GetRawStringA();
+}
+
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetExpressionNameW(int index)
 {
     return (*_jsonValue[FrequentNode_Expressions])[index][STR_Name].GetRawStringW();
@@ -9726,6 +9960,11 @@ const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetExpressionNameW(int index)
 const char* D_CubismModelSettingJson::GetExpressionFileName(int index)
 {
     return (*_jsonValue[FrequentNode_Expressions])[index][STR_FilePath].GetRawString();
+}
+
+const char* D_CubismModelSettingJson::GetExpressionFileNameA(int index)
+{
+    return (*_jsonValue[FrequentNode_Expressions])[index][STR_FilePath].GetRawStringA();
 }
 
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetExpressionFileNameW(int index)
@@ -9752,6 +9991,15 @@ const char* D_CubismModelSettingJson::GetMotionGroupName(int index)
     return (*_jsonValue[FrequentNode_Motions]).GetKeys()[index].GetRawString();
 }
 
+const char* D_CubismModelSettingJson::GetMotionGroupNameA(int index)
+{
+    if (!IsExistMotionGroups())
+    {
+        return NULL;
+    }
+    return (*_jsonValue[FrequentNode_Motions]).GetKeys()[index].GetRawStringA();
+}
+
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetMotionGroupNameW(int index)
 {
     if (!IsExistMotionGroups())
@@ -9773,6 +10021,12 @@ const char* D_CubismModelSettingJson::GetMotionFileName(const char* groupName, i
     return (*_jsonValue[FrequentNode_Motions])[groupName][index][STR_FilePath].GetRawString();
 }
 
+const char* D_CubismModelSettingJson::GetMotionFileNameA(const char* groupName, int index)
+{
+    if (!IsExistMotionGroupName(groupName))return "";
+    return (*_jsonValue[FrequentNode_Motions])[groupName][index][STR_FilePath].GetRawStringA();
+}
+
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetMotionFileNameW(const char* groupName, int index)
 {
     if (!IsExistMotionGroupName(groupName))return ( BYTE * )L"";
@@ -9783,6 +10037,12 @@ const char* D_CubismModelSettingJson::GetMotionSoundFileName(const char* groupNa
 {
     if (!IsExistMotionSoundFile(groupName, index))return "";
     return (*_jsonValue[FrequentNode_Motions])[groupName][index][STR_SoundPath].GetRawString();
+}
+
+const char* D_CubismModelSettingJson::GetMotionSoundFileNameA(const char* groupName, int index)
+{
+    if (!IsExistMotionSoundFile(groupName, index))return "";
+    return (*_jsonValue[FrequentNode_Motions])[groupName][index][STR_SoundPath].GetRawStringA();
 }
 
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetMotionSoundFileNameW(const char* groupName, int index)
@@ -9811,6 +10071,15 @@ const char* D_CubismModelSettingJson::GetUserDataFile()
         return "";
     }
     return _json->GetRoot()[STR_FileReferences][STR_UserData].GetRawString();
+}
+
+const char* D_CubismModelSettingJson::GetUserDataFileA()
+{
+    if (!IsExistUserDataFile())
+    {
+        return "";
+    }
+    return _json->GetRoot()[STR_FileReferences][STR_UserData].GetRawStringA();
 }
 
 const BYTE/*wchar_t*/ * D_CubismModelSettingJson::GetUserDataFileW()
@@ -10196,6 +10465,7 @@ const char* HitAreaNameBody = "Body";
 
 BYTE* CreateBuffer( const BYTE/*wchar_t*/ * path, size_t* size )
 {
+	static char pathA[ 2048 ] ;
 	void *Buffer ;
 	LONGLONG fileSize ;
 	DWORD_PTR fp ;
@@ -10203,6 +10473,8 @@ BYTE* CreateBuffer( const BYTE/*wchar_t*/ * path, size_t* size )
 	fp = DX_FOPENW( ( char * )path ) ;
 	if( fp == 0 )
 	{
+		ConvString( ( char * )path, -1, WCHAR_T_CHARCODEFORMAT, pathA, sizeof( pathA ), CHAR_CHARCODEFORMAT ) ;
+		DXST_LOGFILEFMT_ADDA(( "Live2D Error : file open failed : %s", pathA )) ;
 		return NULL ;
 	}
 
@@ -10213,6 +10485,8 @@ BYTE* CreateBuffer( const BYTE/*wchar_t*/ * path, size_t* size )
 	Buffer = DXALLOC( ( size_t )fileSize ) ;
 	if( Buffer == NULL )
 	{
+		ConvString( ( char * )path, -1, WCHAR_T_CHARCODEFORMAT, pathA, sizeof( pathA ), CHAR_CHARCODEFORMAT ) ;
+		DXST_LOGFILEFMT_ADDA(( "Live2D Error : alloc memory failed : %s", pathA )) ;
 		return NULL ;
 	}
 
@@ -10253,10 +10527,15 @@ D_LAppModel::~D_LAppModel()
 	ReleaseMotions();
 	ReleaseExpressions();
 
-	for( int i = 0; i < _modelSetting->GetMotionGroupCount(); i++ )
+	if( _modelSetting != NULL )
 	{
-		const char* group = _modelSetting->GetMotionGroupName( i );
-		ReleaseMotionGroup( group );
+		for( int i = 0; i < _modelSetting->GetMotionGroupCount(); i++ )
+		{
+			const char* group = _modelSetting->GetMotionGroupName( i );
+			ReleaseMotionGroup( group );
+		}
+
+		D_CSM_DELETE( _modelSetting );
 	}
 
 	// テクスチャの開放 
@@ -10265,8 +10544,6 @@ D_LAppModel::~D_LAppModel()
 		DeleteGraph( _bindTextureId[ d ] );
 	}
 	_bindTextureId.Clear();
-
-	D_CSM_DELETE( _modelSetting );
 }
 
 bool D_LAppModel::LoadAssets( const BYTE/*wchar_t*/ * dir, const BYTE/*wchar_t*/ * fileName, int ASyncThread )
@@ -10289,7 +10566,10 @@ bool D_LAppModel::LoadAssets( const BYTE/*wchar_t*/ * dir, const BYTE/*wchar_t*/
 	D_ICubismModelSetting* setting = D_CSM_NEW D_CubismModelSettingJson( buffer, size );
 	DeleteBuffer( buffer, path.GetRawString() );
 
-	SetupModel( setting );
+	if( SetupModel( setting ) == false )
+	{
+		return false ;
+	}
 
 	CreateRenderer( ASyncThread );
 
@@ -10299,7 +10579,7 @@ bool D_LAppModel::LoadAssets( const BYTE/*wchar_t*/ * dir, const BYTE/*wchar_t*/
 }
 
 
-void D_LAppModel::SetupModel( D_ICubismModelSetting* setting )
+bool D_LAppModel::SetupModel( D_ICubismModelSetting* setting )
 {
 	_updating = true;
 	_initialized = false;
@@ -10321,6 +10601,10 @@ void D_LAppModel::SetupModel( D_ICubismModelSetting* setting )
 		//		}
 
 		buffer = CreateBuffer( path.GetRawString(), &size );
+		if( buffer == NULL )
+		{
+			return false ;
+		}
 		LoadModel( buffer, size );
 		DeleteBuffer( buffer, path.GetRawString() );
 	}
@@ -10336,6 +10620,10 @@ void D_LAppModel::SetupModel( D_ICubismModelSetting* setting )
 			path = _modelHomeDir + path;
 
 			buffer = CreateBuffer( path.GetRawString(), &size );
+			if( buffer == NULL )
+			{
+				return false ;
+			}
 			D_ACubismMotion* motion = LoadExpression( buffer, size, name.GetRawString() );
 
 			if( _expressions.IsExist( name ) && _expressions[ name ] != NULL )
@@ -10356,6 +10644,10 @@ void D_LAppModel::SetupModel( D_ICubismModelSetting* setting )
 		path = _modelHomeDir + path;
 
 		buffer = CreateBuffer( path.GetRawString(), &size );
+		if( buffer == NULL )
+		{
+			return false ;
+		}
 		LoadPhysics( buffer, size );
 		DeleteBuffer( buffer, path.GetRawString() );
 	}
@@ -10367,6 +10659,10 @@ void D_LAppModel::SetupModel( D_ICubismModelSetting* setting )
 		path = _modelHomeDir + path;
 
 		buffer = CreateBuffer( path.GetRawString(), &size );
+		if( buffer == NULL )
+		{
+			return false ;
+		}
 		LoadPose( buffer, size );
 		DeleteBuffer( buffer, path.GetRawString() );
 	}
@@ -10397,6 +10693,10 @@ void D_LAppModel::SetupModel( D_ICubismModelSetting* setting )
 		D_csmStringW path = _modelSetting->GetUserDataFile();
 		path = _modelHomeDir + path;
 		buffer = CreateBuffer( path.GetRawString(), &size );
+		if( buffer == NULL )
+		{
+			return false ;
+		}
 		LoadUserData( buffer, size );
 		DeleteBuffer( buffer, path.GetRawString() );
 	}
@@ -10436,6 +10736,8 @@ void D_LAppModel::SetupModel( D_ICubismModelSetting* setting )
 
 	_updating = false;
 	_initialized = true;
+
+	return true ;
 }
 
 void D_LAppModel::PreloadMotionGroup( const char* group )
@@ -10457,6 +10759,10 @@ void D_LAppModel::PreloadMotionGroup( const char* group )
 		BYTE* buffer;
 		size_t size;
 		buffer = CreateBuffer( path.GetRawString(), &size );
+		if( buffer == NULL )
+		{
+			return ;
+		}
 		D_CubismMotion* tmpMotion = ( D_CubismMotion* )( LoadMotion( buffer, size, name.GetRawString() ) );
 
 		float fadeTime = _modelSetting->GetMotionFadeInTimeValue( group, i );
@@ -10648,6 +10954,10 @@ D_CubismMotionQueueEntryHandle D_LAppModel::StartMotion( const char* group, int 
 			BYTE* buffer;
 			size_t size;
 			buffer = CreateBuffer( path.GetRawString(), &size );
+			if( buffer == NULL )
+			{
+				return InvalidMotionQueueEntryHandleValue;
+			}
 			motion = ( D_CubismMotion* )LoadMotion( buffer, size, NULL );
 			float fadeTime = _modelSetting->GetMotionFadeInTimeValue( group, no );
 			if( fadeTime >= 0.0f )

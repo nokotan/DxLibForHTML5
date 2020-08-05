@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		演算プログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // ----------------------------------------------------------------------------
 
@@ -3723,16 +3723,14 @@ extern int Segment_Triangle_Analyse( const VECTOR *SegmentPos1, const VECTOR *Se
 	VECTOR Tri1_2, Tri1_3 ;
 	float Seg1_TriProSeg1_Dist = 0.0f ;
 	float Seg2_TriProSeg2_Dist = 0.0f ;
+	float Seg1_TriProSeg1_DistBase = 0.0f ;
+	float Seg2_TriProSeg2_DistBase = 0.0f ;
 	int MinType ;
 	float MinLen ;
+	int ZeroLenCount ;
 	SEGMENT_SEGMENT_RESULT Seg_Tri1_2_Res ;
 	SEGMENT_SEGMENT_RESULT Seg_Tri2_3_Res ;
 	SEGMENT_SEGMENT_RESULT Seg_Tri3_1_Res ;
-	float TriPos_SegPos1_2_t ;
-	VECTOR Seg_TriPos ;
-	float Seg_TriPos_TriPos1_w ;
-	float Seg_TriPos_TriPos2_w ;
-	float Seg_TriPos_TriPos3_w ;
 
 	VectorSub( &Seg1_2, SegmentPos2, SegmentPos1 ) ;
 	VectorSub( &Tri1_2, TrianglePos2, TrianglePos1 ) ;
@@ -3742,10 +3740,10 @@ extern int Segment_Triangle_Analyse( const VECTOR *SegmentPos1, const VECTOR *Se
 
 	// 三角形が示す平面状に頂点を投影する
 	VectorSub( &Tri1_Seg1, SegmentPos1, TrianglePos1 ) ;
-	Seg1_TriProSeg1_Dist = VectorInnerProduct( &Tri1_Seg1, &TriNorm ) ;
-	VectorScale( &tv, &TriNorm, Seg1_TriProSeg1_Dist ) ;
+	Seg1_TriProSeg1_DistBase = VectorInnerProduct( &Tri1_Seg1, &TriNorm ) ;
+	VectorScale( &tv, &TriNorm, Seg1_TriProSeg1_DistBase ) ;
 	VectorSub( &Seg1_TriPro, SegmentPos1, &tv ) ;
-	if( Seg1_TriProSeg1_Dist < 0.0f ) Seg1_TriProSeg1_Dist = -Seg1_TriProSeg1_Dist ;
+	Seg1_TriProSeg1_Dist = Seg1_TriProSeg1_DistBase < 0.0f ? -Seg1_TriProSeg1_DistBase : Seg1_TriProSeg1_DistBase ;
 	
 
 //	NS_DrawCube3D( Seg1_TriPro.x - 10.0f, Seg1_TriPro.y - 10.0f, Seg1_TriPro.z - 10.0f, 
@@ -3757,48 +3755,62 @@ extern int Segment_Triangle_Analyse( const VECTOR *SegmentPos1, const VECTOR *Se
 
 	// 三角形が示す平面状に頂点を投影する
 	VectorSub( &Tri1_Seg2, SegmentPos2, TrianglePos1 ) ;
-	Seg2_TriProSeg2_Dist = VectorInnerProduct( &Tri1_Seg2, &TriNorm ) ;
-	VectorScale( &tv, &TriNorm, Seg2_TriProSeg2_Dist ) ;
+	Seg2_TriProSeg2_DistBase = VectorInnerProduct( &Tri1_Seg2, &TriNorm ) ;
+	VectorScale( &tv, &TriNorm, Seg2_TriProSeg2_DistBase ) ;
 	VectorSub( &Seg2_TriPro, SegmentPos2, &tv ) ;
-	if( Seg2_TriProSeg2_Dist < 0.0f ) Seg2_TriProSeg2_Dist = -Seg2_TriProSeg2_Dist ;
+	Seg2_TriProSeg2_Dist = Seg2_TriProSeg2_DistBase < 0.0f ? -Seg2_TriProSeg2_DistBase : Seg2_TriProSeg2_DistBase ;
 
 	// 三角形内に頂点が存在するかどうかを調べる
 	TriangleBarycenter_Base( TrianglePos1, TrianglePos2, TrianglePos3, &Seg2_TriPro, &Seg2_TriPro_w1, &Seg2_TriPro_w2, &Seg2_TriPro_w3 ) ;
 	Project2 = Seg2_TriPro_w1 >= 0.0f && Seg2_TriPro_w1 <= 1.0f && Seg2_TriPro_w2 >= 0.0f && Seg2_TriPro_w2 <= 1.0f && Seg2_TriPro_w3 >= 0.0f && Seg2_TriPro_w3 <= 1.0f ;
 
 
-	// 三角形が表す平面と線分との接点と重心を算出する
-	TriPos_SegPos1_2_t = Seg1_TriProSeg1_Dist / ( Seg1_TriProSeg1_Dist + Seg2_TriProSeg2_Dist ) ;
-	VectorScale( &Seg_TriPos, &Seg1_2, TriPos_SegPos1_2_t ) ;
-	VectorAdd( &Seg_TriPos, &Seg_TriPos, SegmentPos1 ) ;
-
-	TriangleBarycenter_Base( TrianglePos1, TrianglePos2, TrianglePos3, &Seg_TriPos,
-		&Seg_TriPos_TriPos1_w, &Seg_TriPos_TriPos2_w, &Seg_TriPos_TriPos3_w ) ;
-
-
-	// 線分と三角形が接しているかチェック
-	if( Seg_TriPos_TriPos1_w >= 0.0f && Seg_TriPos_TriPos1_w <= 1.0f &&
-		Seg_TriPos_TriPos2_w >= 0.0f && Seg_TriPos_TriPos2_w <= 1.0f &&
-		Seg_TriPos_TriPos3_w >= 0.0f && Seg_TriPos_TriPos3_w <= 1.0f )
+	// 三角形と線分が交差又は接している可能性がある場合は分岐
+	if( ( Seg1_TriProSeg1_Dist >= 0.00000001f || Seg2_TriProSeg2_Dist >= 0.00000001f ) &&
+		( Seg1_TriProSeg1_Dist < 0.00000001f || Seg2_TriProSeg2_Dist < 0.00000001f ||
+		  ( Seg1_TriProSeg1_DistBase > 0.0f && Seg2_TriProSeg2_DistBase < 0.0f ) ||
+		  ( Seg1_TriProSeg1_DistBase < 0.0f && Seg2_TriProSeg2_DistBase > 0.0f ) ) )
 	{
-		Result->Seg_Tri_MinDist_Square = 0.0f ;
+		float Seg_TriPos_TriPos1_w ;
+		float Seg_TriPos_TriPos2_w ;
+		float Seg_TriPos_TriPos3_w ;
+		VECTOR Seg_TriPos ;
+		float TriPos_SegPos1_2_t ;
 
-		Result->Seg_MinDist_Pos1_Pos2_t = TriPos_SegPos1_2_t ;
-		Result->Seg_MinDist_Pos = Seg_TriPos ;
+		// 三角形が表す平面と線分との接点と重心を算出する
+		TriPos_SegPos1_2_t = Seg1_TriProSeg1_Dist / ( Seg1_TriProSeg1_Dist + Seg2_TriProSeg2_Dist ) ;
+		VectorScale( &Seg_TriPos, &Seg1_2, TriPos_SegPos1_2_t ) ;
+		VectorAdd( &Seg_TriPos, &Seg_TriPos, SegmentPos1 ) ;
 
-		Result->Tri_MinDist_Pos1_w = Seg_TriPos_TriPos1_w ;
-		Result->Tri_MinDist_Pos2_w = Seg_TriPos_TriPos2_w ;
-		Result->Tri_MinDist_Pos3_w = Seg_TriPos_TriPos3_w ;
+		TriangleBarycenter_Base( TrianglePos1, TrianglePos2, TrianglePos3, &Seg_TriPos,
+			&Seg_TriPos_TriPos1_w, &Seg_TriPos_TriPos2_w, &Seg_TriPos_TriPos3_w ) ;
 
-		Result->Tri_MinDist_Pos = Result->Seg_MinDist_Pos ;
-		return 0 ;
+
+		// 線分と三角形が接しているかチェック
+		if( Seg_TriPos_TriPos1_w >= 0.0f && Seg_TriPos_TriPos1_w <= 1.0f &&
+			Seg_TriPos_TriPos2_w >= 0.0f && Seg_TriPos_TriPos2_w <= 1.0f &&
+			Seg_TriPos_TriPos3_w >= 0.0f && Seg_TriPos_TriPos3_w <= 1.0f )
+		{
+			Result->Seg_Tri_MinDist_Square = 0.0f ;
+
+			Result->Seg_MinDist_Pos1_Pos2_t = TriPos_SegPos1_2_t ;
+			Result->Seg_MinDist_Pos = Seg_TriPos ;
+
+			Result->Tri_MinDist_Pos1_w = Seg_TriPos_TriPos1_w ;
+			Result->Tri_MinDist_Pos2_w = Seg_TriPos_TriPos2_w ;
+			Result->Tri_MinDist_Pos3_w = Seg_TriPos_TriPos3_w ;
+
+			Result->Tri_MinDist_Pos = Result->Seg_MinDist_Pos ;
+			return 0 ;
+		}
 	}
 
 	// どちらも三角形の範囲にあった場合
 	if( Project1 && Project2 )
 	{
 		// 片方の側にどちらの頂点もある場合は、より近いほうの頂点と平面との距離を結果にする
-		if( Seg1_TriProSeg1_Dist < Seg2_TriProSeg2_Dist )
+		if( Seg1_TriProSeg1_Dist < Seg2_TriProSeg2_Dist ||
+			Seg1_TriProSeg1_Dist == Seg2_TriProSeg2_Dist )
 		{
 			Result->Seg_Tri_MinDist_Square = Seg1_TriProSeg1_Dist * Seg1_TriProSeg1_Dist ;
 			Result->Seg_MinDist_Pos1_Pos2_t = 0.0f ;
@@ -3821,32 +3833,85 @@ extern int Segment_Triangle_Analyse( const VECTOR *SegmentPos1, const VECTOR *Se
 		return 0 ;
 	}
 
+	// 線分が三角形と同一平面上にあった場合で、且つ線分の始点が三角形の範囲にある場合は始点を接触点とする
+	if( Seg1_TriProSeg1_Dist < 0.00000001f && Seg2_TriProSeg2_Dist < 0.00000001f && Project1 )
+	{
+		Result->Seg_Tri_MinDist_Square = 0.0f ;
+		Result->Seg_MinDist_Pos1_Pos2_t = 0.0f ;
+		Result->Seg_MinDist_Pos = *SegmentPos1 ;
+		Result->Tri_MinDist_Pos1_w = Seg1_TriPro_w1 ;
+		Result->Tri_MinDist_Pos2_w = Seg1_TriPro_w2 ;
+		Result->Tri_MinDist_Pos3_w = Seg1_TriPro_w3 ;
+		Result->Tri_MinDist_Pos = Seg1_TriPro ;
+		return 0 ;
+	}
+
 	// そうではない場合は三角形の３辺と線分の距離を測り、一番距離が短い辺を探す
 	Segment_Segment_Analyse( SegmentPos1, SegmentPos2, TrianglePos1, TrianglePos2, &Seg_Tri1_2_Res ) ;
 	Segment_Segment_Analyse( SegmentPos1, SegmentPos2, TrianglePos2, TrianglePos3, &Seg_Tri2_3_Res ) ;
 	Segment_Segment_Analyse( SegmentPos1, SegmentPos2, TrianglePos3, TrianglePos1, &Seg_Tri3_1_Res ) ;
 
-	MinLen = Seg_Tri1_2_Res.SegA_SegB_MinDist_Square ;
-	MinType = 0 ;
-	if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < MinLen )
+	ZeroLenCount = 0 ;
+	if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < 0.00000001f )
 	{
-		MinType = 1 ;
-		MinLen = Seg_Tri2_3_Res.SegA_SegB_MinDist_Square ;
+		ZeroLenCount ++ ;
 	}
-	if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < MinLen )
+	if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < 0.00000001f )
 	{
-		MinType = 2 ;
-		MinLen = Seg_Tri3_1_Res.SegA_SegB_MinDist_Square ;
+		ZeroLenCount ++ ;
 	}
-	if( Project1 && Seg1_TriProSeg1_Dist * Seg1_TriProSeg1_Dist < MinLen )
+	if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < 0.00000001f )
 	{
-		MinType = 3 ;
-		MinLen = Seg1_TriProSeg1_Dist * Seg1_TriProSeg1_Dist ;
+		ZeroLenCount ++ ;
 	}
-	if( Project2 && Seg2_TriProSeg2_Dist * Seg2_TriProSeg2_Dist < MinLen )
+	if( ZeroLenCount >= 1 )
 	{
-		MinType = 4 ;
-		MinLen = Seg2_TriProSeg2_Dist * Seg2_TriProSeg2_Dist ;
+		MinLen = 0.0f ;
+		MinType = -1 ;
+		if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
+			( MinType < 0 || MinLen > Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ) )
+		{
+			MinLen = Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ;
+			MinType = 0 ;
+		}
+		if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
+			( MinType < 0 || MinLen > Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ) )
+		{
+			MinLen = Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ;
+			MinType = 1 ;
+		}
+		if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
+			( MinType < 0 || MinLen > Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ) )
+		{
+			MinLen = Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ;
+			MinType = 2 ;
+		}
+		MinLen = 0.0f ;
+	}
+	else
+	{
+		MinLen = Seg_Tri1_2_Res.SegA_SegB_MinDist_Square ;
+		MinType = 0 ;
+		if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < MinLen )
+		{
+			MinType = 1 ;
+			MinLen = Seg_Tri2_3_Res.SegA_SegB_MinDist_Square ;
+		}
+		if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < MinLen )
+		{
+			MinType = 2 ;
+			MinLen = Seg_Tri3_1_Res.SegA_SegB_MinDist_Square ;
+		}
+		if( Project1 && Seg1_TriProSeg1_Dist * Seg1_TriProSeg1_Dist < MinLen )
+		{
+			MinType = 3 ;
+			MinLen = Seg1_TriProSeg1_Dist * Seg1_TriProSeg1_Dist ;
+		}
+		if( Project2 && Seg2_TriProSeg2_Dist * Seg2_TriProSeg2_Dist < MinLen )
+		{
+			MinType = 4 ;
+			MinLen = Seg2_TriProSeg2_Dist * Seg2_TriProSeg2_Dist ;
+		}
 	}
 
 	Result->Seg_Tri_MinDist_Square = MinLen ;
@@ -3921,16 +3986,14 @@ extern int Segment_Triangle_AnalyseD( const VECTOR_D *SegmentPos1, const VECTOR_
 	VECTOR_D Tri1_2, Tri1_3 ;
 	double Seg1_TriProSeg1_Dist = 0.0 ;
 	double Seg2_TriProSeg2_Dist = 0.0 ;
+	double Seg1_TriProSeg1_DistBase = 0.0 ;
+	double Seg2_TriProSeg2_DistBase = 0.0 ;
 	int MinType ;
 	double MinLen ;
+	int ZeroLenCount ;
 	SEGMENT_SEGMENT_RESULT_D Seg_Tri1_2_Res ;
 	SEGMENT_SEGMENT_RESULT_D Seg_Tri2_3_Res ;
 	SEGMENT_SEGMENT_RESULT_D Seg_Tri3_1_Res ;
-	double TriPos_SegPos1_2_t ;
-	VECTOR_D Seg_TriPos ;
-	double Seg_TriPos_TriPos1_w ;
-	double Seg_TriPos_TriPos2_w ;
-	double Seg_TriPos_TriPos3_w ;
 
 	VectorSubD( &Seg1_2, SegmentPos2, SegmentPos1 ) ;
 	VectorSubD( &Tri1_2, TrianglePos2, TrianglePos1 ) ;
@@ -3940,10 +4003,10 @@ extern int Segment_Triangle_AnalyseD( const VECTOR_D *SegmentPos1, const VECTOR_
 
 	// 三角形が示す平面状に頂点を投影する
 	VectorSubD( &Tri1_Seg1, SegmentPos1, TrianglePos1 ) ;
-	Seg1_TriProSeg1_Dist = VectorInnerProductD( &Tri1_Seg1, &TriNorm ) ;
-	VectorScaleD( &tv, &TriNorm, Seg1_TriProSeg1_Dist ) ;
+	Seg1_TriProSeg1_DistBase = VectorInnerProductD( &Tri1_Seg1, &TriNorm ) ;
+	VectorScaleD( &tv, &TriNorm, Seg1_TriProSeg1_DistBase ) ;
 	VectorSubD( &Seg1_TriPro, SegmentPos1, &tv ) ;
-	if( Seg1_TriProSeg1_Dist < 0.0 ) Seg1_TriProSeg1_Dist = -Seg1_TriProSeg1_Dist ;
+	Seg1_TriProSeg1_Dist = Seg1_TriProSeg1_DistBase < 0.0 ? -Seg1_TriProSeg1_DistBase : Seg1_TriProSeg1_DistBase ;
 	
 
 	// 三角形内に頂点が存在するかどうかを調べる
@@ -3952,41 +4015,54 @@ extern int Segment_Triangle_AnalyseD( const VECTOR_D *SegmentPos1, const VECTOR_
 
 	// 三角形が示す平面状に頂点を投影する
 	VectorSubD( &Tri1_Seg2, SegmentPos2, TrianglePos1 ) ;
-	Seg2_TriProSeg2_Dist = VectorInnerProductD( &Tri1_Seg2, &TriNorm ) ;
-	VectorScaleD( &tv, &TriNorm, Seg2_TriProSeg2_Dist ) ;
+	Seg2_TriProSeg2_DistBase = VectorInnerProductD( &Tri1_Seg2, &TriNorm ) ;
+	VectorScaleD( &tv, &TriNorm, Seg2_TriProSeg2_DistBase ) ;
 	VectorSubD( &Seg2_TriPro, SegmentPos2, &tv ) ;
-	if( Seg2_TriProSeg2_Dist < 0.0 ) Seg2_TriProSeg2_Dist = -Seg2_TriProSeg2_Dist ;
+	Seg2_TriProSeg2_Dist = Seg2_TriProSeg2_DistBase < 0.0 ? -Seg2_TriProSeg2_DistBase : Seg2_TriProSeg2_DistBase ;
 
 	// 三角形内に頂点が存在するかどうかを調べる
 	TriangleBarycenter_BaseD( TrianglePos1, TrianglePos2, TrianglePos3, &Seg2_TriPro, &Seg2_TriPro_w1, &Seg2_TriPro_w2, &Seg2_TriPro_w3 ) ;
 	Project2 = Seg2_TriPro_w1 >= 0.0 && Seg2_TriPro_w1 <= 1.0 && Seg2_TriPro_w2 >= 0.0 && Seg2_TriPro_w2 <= 1.0 && Seg2_TriPro_w3 >= 0.0 && Seg2_TriPro_w3 <= 1.0 ;
 
 
-	// 三角形が表す平面と線分との接点と重心を算出する
-	TriPos_SegPos1_2_t = Seg1_TriProSeg1_Dist / ( Seg1_TriProSeg1_Dist + Seg2_TriProSeg2_Dist ) ;
-	VectorScaleD( &Seg_TriPos, &Seg1_2, TriPos_SegPos1_2_t ) ;
-	VectorAddD( &Seg_TriPos, &Seg_TriPos, SegmentPos1 ) ;
-
-	TriangleBarycenter_BaseD( TrianglePos1, TrianglePos2, TrianglePos3, &Seg_TriPos,
-		&Seg_TriPos_TriPos1_w, &Seg_TriPos_TriPos2_w, &Seg_TriPos_TriPos3_w ) ;
-
-
-	// 線分と三角形が接しているかチェック
-	if( Seg_TriPos_TriPos1_w >= 0.0 && Seg_TriPos_TriPos1_w <= 1.0 &&
-		Seg_TriPos_TriPos2_w >= 0.0 && Seg_TriPos_TriPos2_w <= 1.0 &&
-		Seg_TriPos_TriPos3_w >= 0.0 && Seg_TriPos_TriPos3_w <= 1.0 )
+	// 三角形と線分が交差又は接している可能性がある場合は分岐
+	if( ( Seg1_TriProSeg1_Dist >= 0.00000001 || Seg2_TriProSeg2_Dist >= 0.00000001 ) &&
+		( Seg1_TriProSeg1_Dist < 0.00000001 || Seg2_TriProSeg2_Dist < 0.00000001 ||
+		  ( Seg1_TriProSeg1_DistBase > 0.0 && Seg2_TriProSeg2_DistBase < 0.0 ) ||
+		  ( Seg1_TriProSeg1_DistBase < 0.0 && Seg2_TriProSeg2_DistBase > 0.0 ) ) )
 	{
-		Result->Seg_Tri_MinDist_Square = 0.0 ;
+		double Seg_TriPos_TriPos1_w ;
+		double Seg_TriPos_TriPos2_w ;
+		double Seg_TriPos_TriPos3_w ;
+		VECTOR_D Seg_TriPos ;
+		double TriPos_SegPos1_2_t ;
 
-		Result->Seg_MinDist_Pos1_Pos2_t = TriPos_SegPos1_2_t ;
-		Result->Seg_MinDist_Pos = Seg_TriPos ;
+		// 三角形が表す平面と線分との接点と重心を算出する
+		TriPos_SegPos1_2_t = Seg1_TriProSeg1_Dist / ( Seg1_TriProSeg1_Dist + Seg2_TriProSeg2_Dist ) ;
+		VectorScaleD( &Seg_TriPos, &Seg1_2, TriPos_SegPos1_2_t ) ;
+		VectorAddD( &Seg_TriPos, &Seg_TriPos, SegmentPos1 ) ;
 
-		Result->Tri_MinDist_Pos1_w = Seg_TriPos_TriPos1_w ;
-		Result->Tri_MinDist_Pos2_w = Seg_TriPos_TriPos2_w ;
-		Result->Tri_MinDist_Pos3_w = Seg_TriPos_TriPos3_w ;
+		TriangleBarycenter_BaseD( TrianglePos1, TrianglePos2, TrianglePos3, &Seg_TriPos,
+			&Seg_TriPos_TriPos1_w, &Seg_TriPos_TriPos2_w, &Seg_TriPos_TriPos3_w ) ;
 
-		Result->Tri_MinDist_Pos = Result->Seg_MinDist_Pos ;
-		return 0 ;
+
+		// 線分と三角形が接しているかチェック
+		if( Seg_TriPos_TriPos1_w >= 0.0 && Seg_TriPos_TriPos1_w <= 1.0 &&
+			Seg_TriPos_TriPos2_w >= 0.0 && Seg_TriPos_TriPos2_w <= 1.0 &&
+			Seg_TriPos_TriPos3_w >= 0.0 && Seg_TriPos_TriPos3_w <= 1.0 )
+		{
+			Result->Seg_Tri_MinDist_Square = 0.0 ;
+
+			Result->Seg_MinDist_Pos1_Pos2_t = TriPos_SegPos1_2_t ;
+			Result->Seg_MinDist_Pos = Seg_TriPos ;
+
+			Result->Tri_MinDist_Pos1_w = Seg_TriPos_TriPos1_w ;
+			Result->Tri_MinDist_Pos2_w = Seg_TriPos_TriPos2_w ;
+			Result->Tri_MinDist_Pos3_w = Seg_TriPos_TriPos3_w ;
+
+			Result->Tri_MinDist_Pos = Result->Seg_MinDist_Pos ;
+			return 0 ;
+		}
 	}
 
 	// どちらも三角形の範囲にあった場合
@@ -4016,32 +4092,85 @@ extern int Segment_Triangle_AnalyseD( const VECTOR_D *SegmentPos1, const VECTOR_
 		return 0 ;
 	}
 
+	// 線分が三角形と同一平面上にあった場合で、且つ線分の始点が三角形の範囲にある場合は始点を接触点とする
+	if( Seg1_TriProSeg1_Dist < 0.00000001 && Seg2_TriProSeg2_Dist < 0.00000001 && Project1 )
+	{
+		Result->Seg_Tri_MinDist_Square = 0.0f ;
+		Result->Seg_MinDist_Pos1_Pos2_t = 0.0f ;
+		Result->Seg_MinDist_Pos = *SegmentPos1 ;
+		Result->Tri_MinDist_Pos1_w = Seg1_TriPro_w1 ;
+		Result->Tri_MinDist_Pos2_w = Seg1_TriPro_w2 ;
+		Result->Tri_MinDist_Pos3_w = Seg1_TriPro_w3 ;
+		Result->Tri_MinDist_Pos = Seg1_TriPro ;
+		return 0 ;
+	}
+
 	// そうではない場合は三角形の３辺と線分の距離を測り、一番距離が短い辺を探す
 	Segment_Segment_AnalyseD( SegmentPos1, SegmentPos2, TrianglePos1, TrianglePos2, &Seg_Tri1_2_Res ) ;
 	Segment_Segment_AnalyseD( SegmentPos1, SegmentPos2, TrianglePos2, TrianglePos3, &Seg_Tri2_3_Res ) ;
 	Segment_Segment_AnalyseD( SegmentPos1, SegmentPos2, TrianglePos3, TrianglePos1, &Seg_Tri3_1_Res ) ;
 
-	MinLen = Seg_Tri1_2_Res.SegA_SegB_MinDist_Square ;
-	MinType = 0 ;
-	if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < MinLen )
+	ZeroLenCount = 0 ;
+	if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < 0.00000001 )
 	{
-		MinType = 1 ;
-		MinLen = Seg_Tri2_3_Res.SegA_SegB_MinDist_Square ;
+		ZeroLenCount ++ ;
 	}
-	if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < MinLen )
+	if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < 0.00000001 )
 	{
-		MinType = 2 ;
-		MinLen = Seg_Tri3_1_Res.SegA_SegB_MinDist_Square ;
+		ZeroLenCount ++ ;
 	}
-	if( Project1 && Seg1_TriProSeg1_Dist * Seg1_TriProSeg1_Dist < MinLen )
+	if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < 0.00000001 )
 	{
-		MinType = 3 ;
-		MinLen = Seg1_TriProSeg1_Dist * Seg1_TriProSeg1_Dist ;
+		ZeroLenCount ++ ;
 	}
-	if( Project2 && Seg2_TriProSeg2_Dist * Seg2_TriProSeg2_Dist < MinLen )
+	if( ZeroLenCount >= 1 )
 	{
-		MinType = 4 ;
-		MinLen = Seg2_TriProSeg2_Dist * Seg2_TriProSeg2_Dist ;
+		MinLen = 0.0f ;
+		MinType = -1 ;
+		if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
+			( MinType < 0 || MinLen > Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ) )
+		{
+			MinLen = Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ;
+			MinType = 0 ;
+		}
+		if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
+			( MinType < 0 || MinLen > Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ) )
+		{
+			MinLen = Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ;
+			MinType = 1 ;
+		}
+		if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
+			( MinType < 0 || MinLen > Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ) )
+		{
+			MinLen = Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ;
+			MinType = 2 ;
+		}
+		MinLen = 0.0f ;
+	}
+	else
+	{
+		MinLen = Seg_Tri1_2_Res.SegA_SegB_MinDist_Square ;
+		MinType = 0 ;
+		if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < MinLen )
+		{
+			MinType = 1 ;
+			MinLen = Seg_Tri2_3_Res.SegA_SegB_MinDist_Square ;
+		}
+		if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < MinLen )
+		{
+			MinType = 2 ;
+			MinLen = Seg_Tri3_1_Res.SegA_SegB_MinDist_Square ;
+		}
+		if( Project1 && Seg1_TriProSeg1_Dist * Seg1_TriProSeg1_Dist < MinLen )
+		{
+			MinType = 3 ;
+			MinLen = Seg1_TriProSeg1_Dist * Seg1_TriProSeg1_Dist ;
+		}
+		if( Project2 && Seg2_TriProSeg2_Dist * Seg2_TriProSeg2_Dist < MinLen )
+		{
+			MinType = 4 ;
+			MinLen = Seg2_TriProSeg2_Dist * Seg2_TriProSeg2_Dist ;
+		}
 	}
 
 	Result->Seg_Tri_MinDist_Square = MinLen ;
@@ -4688,7 +4817,7 @@ extern double Segment_Triangle_MinLengthD( VECTOR_D SegmentPos1, VECTOR_D Segmen
 }
 
 // 線分と三角形の最近点間の距離の二乗を得る 
-extern float Segment_Triangle_MinLength_Square( VECTOR SegmentPos1, VECTOR SegmentPos2, VECTOR TrianglePos1, VECTOR TrianglePos2, VECTOR TrianglePos3 )
+extern float Segment_Triangle_MinLength_Square_Base( VECTOR SegmentPos1, VECTOR SegmentPos2, VECTOR TrianglePos1, VECTOR TrianglePos2, VECTOR TrianglePos3, int *IsZeroLength )
 {
 	bool Touei1, Touei2 ;
 	VECTOR st1, st2 ;
@@ -4702,10 +4831,19 @@ extern float Segment_Triangle_MinLength_Square( VECTOR SegmentPos1, VECTOR Segme
 	float MinLen ;
 	HITRESULT_LINE HitResult ;
 
+	if( IsZeroLength != NULL )
+	{
+		*IsZeroLength = FALSE ;
+	}
+
 	// 線分が三角形を貫いていたら距離は０
-	HitResult = HitCheck_Line_Triangle( SegmentPos1, SegmentPos2, TrianglePos1, TrianglePos2, TrianglePos3 ) ;
+	HitCheck_Line_Triangle_Base( &HitResult, SegmentPos1, SegmentPos2, TrianglePos1, TrianglePos2, TrianglePos3, NULL, NULL, NULL, TRUE ) ;
 	if( HitResult.HitFlag )
 	{
+		if( IsZeroLength != NULL )
+		{
+			*IsZeroLength = TRUE ;
+		}
 		return 0.0f ;
 	}
 
@@ -4770,6 +4908,10 @@ extern float Segment_Triangle_MinLength_Square( VECTOR SegmentPos1, VECTOR Segme
 		else
 		{
 			// 各頂点が前後にある場合は接しているということ
+			if( IsZeroLength != NULL )
+			{
+				*IsZeroLength = TRUE ;
+			}
 			return 0.0f ;
 		}
 	}
@@ -4801,7 +4943,13 @@ extern float Segment_Triangle_MinLength_Square( VECTOR SegmentPos1, VECTOR Segme
 }
 
 // 線分と三角形の最近点間の距離の二乗を得る 
-extern double Segment_Triangle_MinLength_SquareD( VECTOR_D SegmentPos1, VECTOR_D SegmentPos2, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3 )
+extern float Segment_Triangle_MinLength_Square( VECTOR SegmentPos1, VECTOR SegmentPos2, VECTOR TrianglePos1, VECTOR TrianglePos2, VECTOR TrianglePos3 )
+{
+	return Segment_Triangle_MinLength_Square_Base( SegmentPos1, SegmentPos2, TrianglePos1, TrianglePos2, TrianglePos3, NULL ) ;
+}
+
+// 線分と三角形の最近点間の距離の二乗を得る 
+extern double Segment_Triangle_MinLength_SquareD_Base( VECTOR_D SegmentPos1, VECTOR_D SegmentPos2, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3, int *IsZeroLength )
 {
 	bool Touei1, Touei2 ;
 	VECTOR_D st1, st2 ;
@@ -4815,10 +4963,19 @@ extern double Segment_Triangle_MinLength_SquareD( VECTOR_D SegmentPos1, VECTOR_D
 	double MinLen ;
 	HITRESULT_LINE_D HitResult ;
 
+	if( IsZeroLength != NULL )
+	{
+		*IsZeroLength = FALSE ;
+	}
+
 	// 線分が三角形を貫いていたら距離は０
-	HitResult = HitCheck_Line_TriangleD( SegmentPos1, SegmentPos2, TrianglePos1, TrianglePos2, TrianglePos3 ) ;
+	HitCheck_Line_TriangleD_Base( &HitResult, SegmentPos1, SegmentPos2, TrianglePos1, TrianglePos2, TrianglePos3, NULL, NULL, NULL, TRUE ) ;
 	if( HitResult.HitFlag )
 	{
+		if( IsZeroLength != NULL )
+		{
+			*IsZeroLength = TRUE ;
+		}
 		return 0.0 ;
 	}
 
@@ -4880,6 +5037,10 @@ extern double Segment_Triangle_MinLength_SquareD( VECTOR_D SegmentPos1, VECTOR_D
 		else
 		{
 			// 各頂点が前後にある場合は接しているということ
+			if( IsZeroLength != NULL )
+			{
+				*IsZeroLength = TRUE ;
+			}
 			return 0.0 ;
 		}
 	}
@@ -4908,6 +5069,12 @@ extern double Segment_Triangle_MinLength_SquareD( VECTOR_D SegmentPos1, VECTOR_D
 	}
 
 	return MinLen ;
+}
+
+// 線分と三角形の最近点間の距離の二乗を得る 
+extern double Segment_Triangle_MinLength_SquareD( VECTOR_D SegmentPos1, VECTOR_D SegmentPos2, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3 )
+{
+	return Segment_Triangle_MinLength_SquareD_Base( SegmentPos1, SegmentPos2, TrianglePos1, TrianglePos2, TrianglePos3, NULL ) ;
 }
 
 // 線分と点の一番近い距離を得る
@@ -5179,11 +5346,12 @@ extern double Triangle_Triangle_MinLength_SquareD( VECTOR_D Triangle1Pos1, VECTO
 // 三角形と線の当たり判定
 extern void HitCheck_Line_Triangle_Base(
 	HITRESULT_LINE *Result, VECTOR LinePos1, VECTOR LinePos2, VECTOR TrianglePos1, VECTOR TrianglePos2, VECTOR TrianglePos3,
-	float *TrianglePos1Weight, float *TrianglePos2Weight, float *TrianglePos3Weight )
+	float *TrianglePos1Weight, float *TrianglePos2Weight, float *TrianglePos3Weight, int IsSimpleCheck )
 {
 	VECTOR LineL1L2, LineL1T1, LineL1T2, LineL1T3, OP ;
 	VECTOR LineL1C, LineL2C ;
 	float u, v, w, totalr ;
+	int Process = 0 ;
 
 	Result->HitFlag = 0 ;
 
@@ -5201,122 +5369,228 @@ extern void HitCheck_Line_Triangle_Base(
 	VectorOuterProduct( &OP, &LineL1L2, &LineL1T1 ) ;
 	w = VectorInnerProduct( &OP, &LineL1T2 ) ;
 
-	if( ( ( u < 0.0f || v < 0.0f || w < 0.0f ) &&
-		  ( u > 0.0f || v > 0.0f || w > 0.0f ) ) ||
-		( u < 0.0000001f && u > -0.0000001f &&
-		  v < 0.0000001f && v > -0.0000001f &&
-		  w < 0.0000001f && w > -0.0000001f ) )
-		return ;
-
-	totalr = 1.0f / ( u + v + w ) ;
-	u *= totalr ;
-	v *= totalr ;
-	w *= totalr ;
-	Result->Position.x = TrianglePos1.x * u + TrianglePos2.x * v + TrianglePos3.x * w ;
-	Result->Position.y = TrianglePos1.y * u + TrianglePos2.y * v + TrianglePos3.y * w ;
-	Result->Position.z = TrianglePos1.z * u + TrianglePos2.z * v + TrianglePos3.z * w ;
-
-	VectorSub( &LineL1C, &LinePos1, &Result->Position ) ;
-	VectorSub( &LineL2C, &LinePos2, &Result->Position ) ;
-	if( VectorInnerProduct( &LineL1C, &LineL2C ) <= 0.0f )
+	if( !( ( ( u < 0.0f || v < 0.0f || w < 0.0f ) &&
+		     ( u > 0.0f || v > 0.0f || w > 0.0f ) ) ||
+		   ( u < 0.0000001f && u > -0.0000001f &&
+		     v < 0.0000001f && v > -0.0000001f &&
+		     w < 0.0000001f && w > -0.0000001f ) ) )
 	{
-		Result->HitFlag = 1 ;
+		totalr = 1.0f / ( u + v + w ) ;
+		u *= totalr ;
+		v *= totalr ;
+		w *= totalr ;
+		Result->Position.x = TrianglePos1.x * u + TrianglePos2.x * v + TrianglePos3.x * w ;
+		Result->Position.y = TrianglePos1.y * u + TrianglePos2.y * v + TrianglePos3.y * w ;
+		Result->Position.z = TrianglePos1.z * u + TrianglePos2.z * v + TrianglePos3.z * w ;
+
+		VectorSub( &LineL1C, &LinePos1, &Result->Position ) ;
+		VectorSub( &LineL2C, &LinePos2, &Result->Position ) ;
+		if( VectorInnerProduct( &LineL1C, &LineL2C ) <= 0.0f )
+		{
+			Process = 1 ;
+			Result->HitFlag = 1 ;
+		}
 	}
 
 	if( TrianglePos1Weight ) *TrianglePos1Weight = u ;
 	if( TrianglePos2Weight ) *TrianglePos2Weight = v ;
 	if( TrianglePos3Weight ) *TrianglePos3Weight = w ;
+
+	if( Process == 0 && IsSimpleCheck == FALSE )
+	{
+		bool Project1, Project2 ;
+		VECTOR Seg1_TriPro ;
+		VECTOR Seg2_TriPro ;
+		float Seg1_TriPro_w1 ;
+		float Seg1_TriPro_w2 ;
+		float Seg1_TriPro_w3 ;
+		float Seg2_TriPro_w1 ;
+		float Seg2_TriPro_w2 ;
+		float Seg2_TriPro_w3 ;
+		VECTOR Seg1_2 ;
+		VECTOR Tri1_Seg1 ;
+		VECTOR Tri1_Seg2 ;
+		VECTOR TriNorm ;
+		VECTOR tv ;
+		VECTOR Tri1_2, Tri1_3 ;
+		float Seg1_TriProSeg1_Dist = 0.0f ;
+		float Seg2_TriProSeg2_Dist = 0.0f ;
+		float Seg1_TriProSeg1_DistBase = 0.0f ;
+		float Seg2_TriProSeg2_DistBase = 0.0f ;
+		float MinLen ;
+		SEGMENT_SEGMENT_RESULT Seg_Tri1_2_Res ;
+		SEGMENT_SEGMENT_RESULT Seg_Tri2_3_Res ;
+		SEGMENT_SEGMENT_RESULT Seg_Tri3_1_Res ;
+
+		VectorSub( &Seg1_2, &LinePos2, &LinePos1 ) ;
+		VectorSub( &Tri1_2, &TrianglePos2, &TrianglePos1 ) ;
+		VectorSub( &Tri1_3, &TrianglePos3, &TrianglePos1 ) ;
+		VectorOuterProduct( &TriNorm, &Tri1_2, &Tri1_3 ) ;
+		VectorNormalize( &TriNorm, &TriNorm ) ;
+
+		// 三角形が示す平面状に頂点を投影する
+		VectorSub( &Tri1_Seg1, &LinePos1, &TrianglePos1 ) ;
+		Seg1_TriProSeg1_DistBase = VectorInnerProduct( &Tri1_Seg1, &TriNorm ) ;
+		VectorScale( &tv, &TriNorm, Seg1_TriProSeg1_DistBase ) ;
+		VectorSub( &Seg1_TriPro, &LinePos1, &tv ) ;
+		Seg1_TriProSeg1_Dist = Seg1_TriProSeg1_DistBase < 0.0f ? -Seg1_TriProSeg1_DistBase : Seg1_TriProSeg1_DistBase ;
+	
+
+		// 三角形内に頂点が存在するかどうかを調べる
+		TriangleBarycenter_Base( &TrianglePos1, &TrianglePos2, &TrianglePos3, &Seg1_TriPro, &Seg1_TriPro_w1, &Seg1_TriPro_w2, &Seg1_TriPro_w3 ) ;
+		Project1 = Seg1_TriPro_w1 >= 0.0f && Seg1_TriPro_w1 <= 1.0f && Seg1_TriPro_w2 >= 0.0f && Seg1_TriPro_w2 <= 1.0f && Seg1_TriPro_w3 >= 0.0f && Seg1_TriPro_w3 <= 1.0f ;
+
+		// 三角形が示す平面状に頂点を投影する
+		VectorSub( &Tri1_Seg2, &LinePos2, &TrianglePos1 ) ;
+		Seg2_TriProSeg2_DistBase = VectorInnerProduct( &Tri1_Seg2, &TriNorm ) ;
+		VectorScale( &tv, &TriNorm, Seg2_TriProSeg2_DistBase ) ;
+		VectorSub( &Seg2_TriPro, &LinePos2, &tv ) ;
+		Seg2_TriProSeg2_Dist = Seg2_TriProSeg2_DistBase < 0.0f ? -Seg2_TriProSeg2_DistBase : Seg2_TriProSeg2_DistBase ;
+
+		// 三角形内に頂点が存在するかどうかを調べる
+		TriangleBarycenter_Base( &TrianglePos1, &TrianglePos2, &TrianglePos3, &Seg2_TriPro, &Seg2_TriPro_w1, &Seg2_TriPro_w2, &Seg2_TriPro_w3 ) ;
+		Project2 = Seg2_TriPro_w1 >= 0.0f && Seg2_TriPro_w1 <= 1.0f && Seg2_TriPro_w2 >= 0.0f && Seg2_TriPro_w2 <= 1.0f && Seg2_TriPro_w3 >= 0.0f && Seg2_TriPro_w3 <= 1.0f ;
+
+
+		// 三角形と線分が交差又は接している可能性がある場合は分岐
+		if( ( Seg1_TriProSeg1_Dist >= 0.00000001f || Seg2_TriProSeg2_Dist >= 0.00000001f ) &&
+			( Seg1_TriProSeg1_Dist <  0.00000001f || Seg2_TriProSeg2_Dist <  0.00000001f ||
+			  ( Seg1_TriProSeg1_DistBase > 0.0f && Seg2_TriProSeg2_DistBase < 0.0f ) ||
+			  ( Seg1_TriProSeg1_DistBase < 0.0f && Seg2_TriProSeg2_DistBase > 0.0f ) ) )
+		{
+			float Seg_TriPos_TriPos1_w ;
+			float Seg_TriPos_TriPos2_w ;
+			float Seg_TriPos_TriPos3_w ;
+			VECTOR Seg_TriPos ;
+			float TriPos_SegPos1_2_t ;
+
+			// 三角形が表す平面と線分との接点と重心を算出する
+			TriPos_SegPos1_2_t = Seg1_TriProSeg1_Dist / ( Seg1_TriProSeg1_Dist + Seg2_TriProSeg2_Dist ) ;
+			VectorScale( &Seg_TriPos, &Seg1_2, TriPos_SegPos1_2_t ) ;
+			VectorAdd( &Seg_TriPos, &Seg_TriPos, &LinePos1 ) ;
+
+			TriangleBarycenter_Base( &TrianglePos1, &TrianglePos2, &TrianglePos3, &Seg_TriPos,
+				&Seg_TriPos_TriPos1_w, &Seg_TriPos_TriPos2_w, &Seg_TriPos_TriPos3_w ) ;
+
+
+			// 線分と三角形が接しているかチェック
+			if( Seg_TriPos_TriPos1_w >= 0.0f && Seg_TriPos_TriPos1_w <= 1.0f &&
+				Seg_TriPos_TriPos2_w >= 0.0f && Seg_TriPos_TriPos2_w <= 1.0f &&
+				Seg_TriPos_TriPos3_w >= 0.0f && Seg_TriPos_TriPos3_w <= 1.0f )
+			{
+				Result->HitFlag = 1 ;
+				Result->Position = Seg_TriPos ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_TriPos_TriPos1_w ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg_TriPos_TriPos2_w ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg_TriPos_TriPos3_w ;
+				return ;
+			}
+		}
+
+		// どちらも三角形の範囲にあった場合
+		if( Project1 && Project2 )
+		{
+			// 片方の側にどちらの頂点もある場合は、より近いほうの頂点と平面との距離を結果にする
+			if( Seg1_TriProSeg1_Dist < Seg2_TriProSeg2_Dist ||
+				Seg1_TriProSeg1_Dist == Seg2_TriProSeg2_Dist )
+			{
+				Result->HitFlag = Seg1_TriProSeg1_Dist * Seg1_TriProSeg1_Dist < 0.0000001f ? 1 : 0 ;
+				Result->Position = Seg1_TriPro ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg1_TriPro_w1 ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg1_TriPro_w2 ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg1_TriPro_w3 ;
+			}
+			else
+			{
+				Result->HitFlag = Seg2_TriProSeg2_Dist * Seg2_TriProSeg2_Dist < 0.0000001f ? 1 : 0 ;
+				Result->Position = Seg2_TriPro ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg2_TriPro_w1 ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg2_TriPro_w2 ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg2_TriPro_w3 ;
+			}
+			return ;
+		}
+
+		// 線分が三角形と同一平面上にある場合のみ三角形に横から当たっているかどうかの判定を行う
+		if( Seg1_TriProSeg1_Dist < 0.00000001f && Seg2_TriProSeg2_Dist < 0.00000001f )
+		{
+			// 線分の始点が三角形の範囲にある場合は始点を接触点とする
+			if( Project1 )
+			{
+				Result->HitFlag = 1 ;
+				Result->Position = LinePos1 ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg1_TriPro_w1 ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg1_TriPro_w2 ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg1_TriPro_w3 ;
+				return ;
+			}
+
+			// そうではない場合は三角形の３辺と線分の距離を測り、一番距離が短い辺を探す
+			Segment_Segment_Analyse( &LinePos1, &LinePos2, &TrianglePos1, &TrianglePos2, &Seg_Tri1_2_Res ) ;
+			Segment_Segment_Analyse( &LinePos1, &LinePos2, &TrianglePos2, &TrianglePos3, &Seg_Tri2_3_Res ) ;
+			Segment_Segment_Analyse( &LinePos1, &LinePos2, &TrianglePos3, &TrianglePos1, &Seg_Tri3_1_Res ) ;
+
+			MinLen = 0.0f ;
+			if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
+				( Result->HitFlag == 0 || MinLen > Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ) )
+			{
+				MinLen = Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ;
+				Result->HitFlag = 1 ;
+				Result->Position = Seg_Tri1_2_Res.SegB_MinDist_Pos ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = 1.0f - Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = 0.0f ;
+			}
+			if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
+				( Result->HitFlag == 0 || MinLen > Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ) )
+			{
+				MinLen = Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ;
+				Result->HitFlag = 1 ;
+				Result->Position = Seg_Tri2_3_Res.SegB_MinDist_Pos ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = 0.0f ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = 1.0f - Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+			}
+			if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
+				( Result->HitFlag == 0 || MinLen > Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ) )
+			{
+				MinLen = Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ;
+				Result->HitFlag = 1 ;
+				Result->Position = Seg_Tri3_1_Res.SegB_MinDist_Pos ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = 0.0f ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = 1.0f - Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+			}
+		}
+	}
 }
 
 // 三角形と線の当たり判定
 extern HITRESULT_LINE HitCheck_Line_Triangle( VECTOR LinePos1, VECTOR LinePos2, VECTOR TrianglePos1, VECTOR TrianglePos2, VECTOR TrianglePos3 )
 {
-	HITRESULT_LINE Result ;
+	HITRESULT_LINE HitResult ;
 
-	HitCheck_Line_Triangle_Base( &Result, LinePos1, LinePos2, TrianglePos1, TrianglePos2, TrianglePos3, NULL, NULL, NULL ) ;
+	HitCheck_Line_Triangle_Base( &HitResult, LinePos1, LinePos2, TrianglePos1, TrianglePos2, TrianglePos3, NULL, NULL, NULL, FALSE ) ;
 
-/*
-	if( TriangleHit1_2T || TriangleHit1_3T )
-	{
-		VECTOR LineT1T2 ;
-		VECTOR LineT1T3 ;
-		VECTOR normLineT1T2X ;
-		VECTOR normLineT1T2Y ;
-		VECTOR normLineT1T2Z ;
-		VECTOR ResPosS ;
-		VECTOR DLineT1T2 ;
-		VECTOR DLineT1T3 ;
-		VECTOR DResPos ;
-		float tempF ;
-		float LineT1T2T ;
-		float LineT1T3T ;
-
-		VectorSub( &LineT1T2, &TrianglePos2, &TrianglePos1 ) ;
-		VectorSub( &LineT1T3, &TrianglePos3, &TrianglePos1 ) ;
-		VectorNormalize( &normLineT1T2X, &LineT1T2 ) ; 
-
-		VectorOuterProduct( &normLineT1T2Z, &normLineT1T2X, &LineT1T3 ) ;
-		VectorOuterProduct( &normLineT1T2Y, &normLineT1T2X, &normLineT1T2Z ) ;
-		VectorNormalize( &normLineT1T2Y, &normLineT1T2Y ) ; 
-		VectorNormalize( &normLineT1T2Z, &normLineT1T2Z ) ; 
-
-		VectorSub( &ResPosS, &Result.Position, &TrianglePos1 ) ; 
-		DResPos.x = normLineT1T2X.x * ResPosS.x + normLineT1T2X.y * ResPosS.y + normLineT1T2X.z * ResPosS.z ;
-		DResPos.y = normLineT1T2Y.x * ResPosS.x + normLineT1T2Y.y * ResPosS.y + normLineT1T2Y.z * ResPosS.z ;
-		DResPos.z = normLineT1T2Z.x * ResPosS.x + normLineT1T2Z.y * ResPosS.y + normLineT1T2Z.z * ResPosS.z ;
-
-		DLineT1T2.x = normLineT1T2X.x * LineT1T2.x + normLineT1T2X.y * LineT1T2.y + normLineT1T2X.z * LineT1T2.z ;
-		DLineT1T2.y = normLineT1T2Y.x * LineT1T2.x + normLineT1T2Y.y * LineT1T2.y + normLineT1T2Y.z * LineT1T2.z ;
-		DLineT1T2.z = normLineT1T2Z.x * LineT1T2.x + normLineT1T2Z.y * LineT1T2.y + normLineT1T2Z.z * LineT1T2.z ;
-
-		DLineT1T3.x = normLineT1T2X.x * LineT1T3.x + normLineT1T2X.y * LineT1T3.y + normLineT1T2X.z * LineT1T3.z ;
-		DLineT1T3.y = normLineT1T2Y.x * LineT1T3.x + normLineT1T2Y.y * LineT1T3.y + normLineT1T2Y.z * LineT1T3.z ;
-		DLineT1T3.z = normLineT1T2Z.x * LineT1T3.x + normLineT1T2Z.y * LineT1T3.y + normLineT1T2Z.z * LineT1T3.z ;
-
-		tempF = DLineT1T3.x * DLineT1T2.y - DLineT1T3.y * DLineT1T2.x ;
-		if( _FABS( tempF ) > 0.000001f )
-		{
-			LineT1T3T = ( DResPos.x * DLineT1T2.y - DResPos.y * DLineT1T2.x ) / tempF ;
-			if( _FABS( DLineT1T2.x ) > 0.0001f )
-			{
-				LineT1T2T = ( DResPos.x - DLineT1T3.x * LineT1T3T ) / DLineT1T2.x ;
-			}
-			else
-			{
-				LineT1T2T = ( DResPos.y - DLineT1T3.y * LineT1T3T ) / DLineT1T2.y ;
-			}
-		}
-		else
-		{
-			tempF = DLineT1T2.x * DLineT1T3.y - DLineT1T2.y * DLineT1T3.x ;
-			LineT1T2T = ( DResPos.x * DLineT1T3.y - DResPos.y * DLineT1T3.x ) / tempF ;
-			if( _FABS( DLineT1T3.x ) > 0.0001f )
-			{
-				LineT1T3T = ( DResPos.x - DLineT1T2.x * LineT1T2T ) / DLineT1T3.x ;
-			}
-			else
-			{
-				LineT1T3T = ( DResPos.y - DLineT1T2.y * LineT1T2T ) / DLineT1T3.y ;
-			}
-		}
-
-		if( TriangleHit1_2T ) *TriangleHit1_2T = LineT1T2T ;
-		if( TriangleHit1_3T ) *TriangleHit1_3T = LineT1T3T ;
-	}
-*/
-
-	// 終了
-	return Result ;
+	return HitResult ;
 }
 
 // 三角形と線の当たり判定
 extern void HitCheck_Line_TriangleD_Base(
 	HITRESULT_LINE_D *Result, VECTOR_D LinePos1, VECTOR_D LinePos2, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3,
-	double *TrianglePos1Weight, double *TrianglePos2Weight, double *TrianglePos3Weight )
+	double *TrianglePos1Weight, double *TrianglePos2Weight, double *TrianglePos3Weight, int IsSimpleCheck )
 {
 	VECTOR_D LineL1L2, LineL1T1, LineL1T2, LineL1T3, OP ;
 	VECTOR_D LineL1C, LineL2C ;
 	double u, v, w, totalr ;
+	int Process = 0 ;
 
 	Result->HitFlag = 0 ;
 
@@ -5334,44 +5608,219 @@ extern void HitCheck_Line_TriangleD_Base(
 	VectorOuterProductD( &OP, &LineL1L2, &LineL1T1 ) ;
 	w = VectorInnerProductD( &OP, &LineL1T2 ) ;
 
-	if( ( ( u < 0.0 || v < 0.0 || w < 0.0 ) &&
-		  ( u > 0.0 || v > 0.0 || w > 0.0 ) ) ||
-		( u < 0.0000001 && u > -0.0000001 &&
-		  v < 0.0000001 && v > -0.0000001 &&
-		  w < 0.0000001 && w > -0.0000001 ) )
-		return ;
-
-	totalr = 1.0 / ( u + v + w ) ;
-	u *= totalr ;
-	v *= totalr ;
-	w *= totalr ;
-	Result->Position.x = TrianglePos1.x * u + TrianglePos2.x * v + TrianglePos3.x * w ;
-	Result->Position.y = TrianglePos1.y * u + TrianglePos2.y * v + TrianglePos3.y * w ;
-	Result->Position.z = TrianglePos1.z * u + TrianglePos2.z * v + TrianglePos3.z * w ;
-
-	VectorSubD( &LineL1C, &LinePos1, &Result->Position ) ;
-	VectorSubD( &LineL2C, &LinePos2, &Result->Position ) ;
-	if( VectorInnerProductD( &LineL1C, &LineL2C ) <= 0.0 )
+	if( !( ( ( u < 0.0 || v < 0.0 || w < 0.0 ) &&
+		     ( u > 0.0 || v > 0.0 || w > 0.0 ) ) ||
+		   ( u < 0.0000001 && u > -0.0000001 &&
+		     v < 0.0000001 && v > -0.0000001 &&
+		     w < 0.0000001 && w > -0.0000001 ) ) )
 	{
-		Result->HitFlag = 1 ;
+		totalr = 1.0 / ( u + v + w ) ;
+		u *= totalr ;
+		v *= totalr ;
+		w *= totalr ;
+		Result->Position.x = TrianglePos1.x * u + TrianglePos2.x * v + TrianglePos3.x * w ;
+		Result->Position.y = TrianglePos1.y * u + TrianglePos2.y * v + TrianglePos3.y * w ;
+		Result->Position.z = TrianglePos1.z * u + TrianglePos2.z * v + TrianglePos3.z * w ;
+
+		VectorSubD( &LineL1C, &LinePos1, &Result->Position ) ;
+		VectorSubD( &LineL2C, &LinePos2, &Result->Position ) ;
+		if( VectorInnerProductD( &LineL1C, &LineL2C ) <= 0.0 )
+		{
+			Process = 1 ;
+			Result->HitFlag = 1 ;
+		}
 	}
 
 	if( TrianglePos1Weight ) *TrianglePos1Weight = u ;
 	if( TrianglePos2Weight ) *TrianglePos2Weight = v ;
 	if( TrianglePos3Weight ) *TrianglePos3Weight = w ;
+
+	if( Process == 0 && IsSimpleCheck == FALSE )
+	{
+		bool Project1, Project2 ;
+		VECTOR_D Seg1_TriPro ;
+		VECTOR_D Seg2_TriPro ;
+		double Seg1_TriPro_w1 ;
+		double Seg1_TriPro_w2 ;
+		double Seg1_TriPro_w3 ;
+		double Seg2_TriPro_w1 ;
+		double Seg2_TriPro_w2 ;
+		double Seg2_TriPro_w3 ;
+		VECTOR_D Seg1_2 ;
+		VECTOR_D Tri1_Seg1 ;
+		VECTOR_D Tri1_Seg2 ;
+		VECTOR_D TriNorm ;
+		VECTOR_D tv ;
+		VECTOR_D Tri1_2, Tri1_3 ;
+		double Seg1_TriProSeg1_Dist = 0.0 ;
+		double Seg2_TriProSeg2_Dist = 0.0 ;
+		double Seg1_TriProSeg1_DistBase = 0.0 ;
+		double Seg2_TriProSeg2_DistBase = 0.0 ;
+		double MinLen ;
+		SEGMENT_SEGMENT_RESULT_D Seg_Tri1_2_Res ;
+		SEGMENT_SEGMENT_RESULT_D Seg_Tri2_3_Res ;
+		SEGMENT_SEGMENT_RESULT_D Seg_Tri3_1_Res ;
+
+		VectorSubD( &Seg1_2, &LinePos2, &LinePos1 ) ;
+		VectorSubD( &Tri1_2, &TrianglePos2, &TrianglePos1 ) ;
+		VectorSubD( &Tri1_3, &TrianglePos3, &TrianglePos1 ) ;
+		VectorOuterProductD( &TriNorm, &Tri1_2, &Tri1_3 ) ;
+		VectorNormalizeD( &TriNorm, &TriNorm ) ;
+
+		// 三角形が示す平面状に頂点を投影する
+		VectorSubD( &Tri1_Seg1, &LinePos1, &TrianglePos1 ) ;
+		Seg1_TriProSeg1_DistBase = VectorInnerProductD( &Tri1_Seg1, &TriNorm ) ;
+		VectorScaleD( &tv, &TriNorm, Seg1_TriProSeg1_DistBase ) ;
+		VectorSubD( &Seg1_TriPro, &LinePos1, &tv ) ;
+		Seg1_TriProSeg1_Dist = Seg1_TriProSeg1_DistBase < 0.0 ? -Seg1_TriProSeg1_DistBase : Seg1_TriProSeg1_DistBase ;
+	
+
+		// 三角形内に頂点が存在するかどうかを調べる
+		TriangleBarycenter_BaseD( &TrianglePos1, &TrianglePos2, &TrianglePos3, &Seg1_TriPro, &Seg1_TriPro_w1, &Seg1_TriPro_w2, &Seg1_TriPro_w3 ) ;
+		Project1 = Seg1_TriPro_w1 >= 0.0 && Seg1_TriPro_w1 <= 1.0 && Seg1_TriPro_w2 >= 0.0 && Seg1_TriPro_w2 <= 1.0 && Seg1_TriPro_w3 >= 0.0 && Seg1_TriPro_w3 <= 1.0 ;
+
+		// 三角形が示す平面状に頂点を投影する
+		VectorSubD( &Tri1_Seg2, &LinePos2, &TrianglePos1 ) ;
+		Seg2_TriProSeg2_DistBase = VectorInnerProductD( &Tri1_Seg2, &TriNorm ) ;
+		VectorScaleD( &tv, &TriNorm, Seg2_TriProSeg2_DistBase ) ;
+		VectorSubD( &Seg2_TriPro, &LinePos2, &tv ) ;
+		Seg2_TriProSeg2_Dist = Seg2_TriProSeg2_DistBase < 0.0 ? -Seg2_TriProSeg2_DistBase : Seg2_TriProSeg2_DistBase ;
+
+		// 三角形内に頂点が存在するかどうかを調べる
+		TriangleBarycenter_BaseD( &TrianglePos1, &TrianglePos2, &TrianglePos3, &Seg2_TriPro, &Seg2_TriPro_w1, &Seg2_TriPro_w2, &Seg2_TriPro_w3 ) ;
+		Project2 = Seg2_TriPro_w1 >= 0.0 && Seg2_TriPro_w1 <= 1.0 && Seg2_TriPro_w2 >= 0.0 && Seg2_TriPro_w2 <= 1.0 && Seg2_TriPro_w3 >= 0.0 && Seg2_TriPro_w3 <= 1.0 ;
+
+
+		// 三角形と線分が交差又は接している可能性がある場合は分岐
+		if( ( Seg1_TriProSeg1_Dist >= 0.00000001 || Seg2_TriProSeg2_Dist >= 0.00000001 ) &&
+			( Seg1_TriProSeg1_Dist <  0.00000001 || Seg2_TriProSeg2_Dist <  0.00000001 ||
+			  ( Seg1_TriProSeg1_DistBase > 0.0 && Seg2_TriProSeg2_DistBase < 0.0 ) ||
+			  ( Seg1_TriProSeg1_DistBase < 0.0 && Seg2_TriProSeg2_DistBase > 0.0 ) ) )
+		{
+			double Seg_TriPos_TriPos1_w ;
+			double Seg_TriPos_TriPos2_w ;
+			double Seg_TriPos_TriPos3_w ;
+			VECTOR_D Seg_TriPos ;
+			double TriPos_SegPos1_2_t ;
+
+			// 三角形が表す平面と線分との接点と重心を算出する
+			TriPos_SegPos1_2_t = Seg1_TriProSeg1_Dist / ( Seg1_TriProSeg1_Dist + Seg2_TriProSeg2_Dist ) ;
+			VectorScaleD( &Seg_TriPos, &Seg1_2, TriPos_SegPos1_2_t ) ;
+			VectorAddD( &Seg_TriPos, &Seg_TriPos, &LinePos1 ) ;
+
+			TriangleBarycenter_BaseD( &TrianglePos1, &TrianglePos2, &TrianglePos3, &Seg_TriPos,
+				&Seg_TriPos_TriPos1_w, &Seg_TriPos_TriPos2_w, &Seg_TriPos_TriPos3_w ) ;
+
+
+			// 線分と三角形が接しているかチェック
+			if( Seg_TriPos_TriPos1_w >= 0.0 && Seg_TriPos_TriPos1_w <= 1.0 &&
+				Seg_TriPos_TriPos2_w >= 0.0 && Seg_TriPos_TriPos2_w <= 1.0 &&
+				Seg_TriPos_TriPos3_w >= 0.0 && Seg_TriPos_TriPos3_w <= 1.0 )
+			{
+				Result->HitFlag = 1 ;
+				Result->Position = Seg_TriPos ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_TriPos_TriPos1_w ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg_TriPos_TriPos2_w ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg_TriPos_TriPos3_w ;
+				return ;
+			}
+		}
+
+		// どちらも三角形の範囲にあった場合
+		if( Project1 && Project2 )
+		{
+			// 片方の側にどちらの頂点もある場合は、より近いほうの頂点と平面との距離を結果にする
+			if( Seg1_TriProSeg1_Dist < Seg2_TriProSeg2_Dist ||
+				Seg1_TriProSeg1_Dist == Seg2_TriProSeg2_Dist )
+			{
+				Result->HitFlag = Seg1_TriProSeg1_Dist * Seg1_TriProSeg1_Dist < 0.0000001 ? 1 : 0 ;
+				Result->Position = Seg1_TriPro ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg1_TriPro_w1 ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg1_TriPro_w2 ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg1_TriPro_w3 ;
+			}
+			else
+			{
+				Result->HitFlag = Seg2_TriProSeg2_Dist * Seg2_TriProSeg2_Dist < 0.0000001 ? 1 : 0 ;
+				Result->Position = Seg2_TriPro ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg2_TriPro_w1 ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg2_TriPro_w2 ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg2_TriPro_w3 ;
+			}
+			return ;
+		}
+
+		// 線分が三角形と同一平面上にある場合のみ三角形に横から当たっているかどうかの判定を行う
+		if( Seg1_TriProSeg1_Dist < 0.00000001 && Seg2_TriProSeg2_Dist < 0.00000001 )
+		{
+			// 線分の始点が三角形の範囲にある場合は始点を接触点とする
+			if( Project1 )
+			{
+				Result->HitFlag = 1 ;
+				Result->Position = LinePos1 ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg1_TriPro_w1 ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg1_TriPro_w2 ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg1_TriPro_w3 ;
+				return ;
+			}
+
+			// そうではない場合は三角形の３辺と線分の距離を測り、一番距離が短い辺を探す
+			Segment_Segment_AnalyseD( &LinePos1, &LinePos2, &TrianglePos1, &TrianglePos2, &Seg_Tri1_2_Res ) ;
+			Segment_Segment_AnalyseD( &LinePos1, &LinePos2, &TrianglePos2, &TrianglePos3, &Seg_Tri2_3_Res ) ;
+			Segment_Segment_AnalyseD( &LinePos1, &LinePos2, &TrianglePos3, &TrianglePos1, &Seg_Tri3_1_Res ) ;
+
+			MinLen = 0.0f ;
+			if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
+				( Result->HitFlag == 0 || MinLen > Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ) )
+			{
+				MinLen = Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ;
+				Result->HitFlag = 1 ;
+				Result->Position = Seg_Tri1_2_Res.SegB_MinDist_Pos ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = 1.0 - Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = 0.0 ;
+			}
+			if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
+				( Result->HitFlag == 0 || MinLen > Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ) )
+			{
+				MinLen = Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ;
+				Result->HitFlag = 1 ;
+				Result->Position = Seg_Tri2_3_Res.SegB_MinDist_Pos ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = 0.0 ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = 1.0 - Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+			}
+			if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
+				( Result->HitFlag == 0 || MinLen > Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ) )
+			{
+				MinLen = Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ;
+				Result->HitFlag = 1 ;
+				Result->Position = Seg_Tri3_1_Res.SegB_MinDist_Pos ;
+
+				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+				if( TrianglePos2Weight ) *TrianglePos2Weight = 0.0 ;
+				if( TrianglePos3Weight ) *TrianglePos3Weight = 1.0 - Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+			}
+		}
+	}
 }
 
 // 三角形と線の当たり判定
 extern HITRESULT_LINE_D HitCheck_Line_TriangleD( VECTOR_D LinePos1, VECTOR_D LinePos2, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3 )
 {
-	HITRESULT_LINE_D Result ;
+	HITRESULT_LINE_D HitResult ;
 
-	HitCheck_Line_TriangleD_Base( &Result, LinePos1, LinePos2, TrianglePos1, TrianglePos2, TrianglePos3, NULL, NULL, NULL ) ;
+	HitCheck_Line_TriangleD_Base( &HitResult, LinePos1, LinePos2, TrianglePos1, TrianglePos2, TrianglePos3, NULL, NULL, NULL, FALSE ) ;
 
 	// 終了
-	return Result ;
+	return HitResult ;
 }
-
 
 // 三角形と三角形の当たり判定( TRUE:当たっている  FALSE:当たっていない )
 extern int HitCheck_Triangle_Triangle( VECTOR Triangle1Pos1, VECTOR Triangle1Pos2, VECTOR Triangle1Pos3, 

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画プログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // ----------------------------------------------------------------------------
 
@@ -357,6 +357,7 @@ __inline static int		Graphics_Image_CheckBlendGraphSize( IMAGEDATA *GraphData ) 
 
 // 画面関係関数
 static int Graphics_Screen_CheckDisplaySetting( int ScreenSizeX, int ScreenSizeY, int ColorBitDepth ) ;		// 指定の解像度が対応しているかどうかを調べる関数
+static void Graphics_Screen_UpdateFlipTime( void ) ;														// ScreenFlipTimeの更新
 
 
 
@@ -10739,6 +10740,432 @@ extern int NS_DrawCube3DD( VECTOR_D Pos1, VECTOR_D Pos2, unsigned int DifColor, 
 	return 0 ;
 }
 
+// ３Ｄの立方体の集合を描画する
+extern int NS_DrawCubeSet3D( CUBEDATA *CubeDataArray, int Num, int FillFlag )
+{
+	int i, j, k ;
+	VERTEX3D *Vertex ;
+	WORD *Index ;
+
+	if( GSYS.Light.ProcessDisable == FALSE && FillFlag == TRUE )
+	{
+		// 指定の数の頂点を収められるバッファが確保されていなかったら確保
+		if( GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 1 ] < Num &&
+			GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 1 ] < 2730 )
+		{
+			GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 1 ] = Num * 3 / 2 ;
+			if( GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 1 ] > 2730 )
+			{
+				GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 1 ] = 2730 ;
+			}
+
+			if( GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 1 ] == NULL )
+			{
+				GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 1 ] = ( VERTEX3D * )DXALLOC( GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 1 ] * sizeof( VERTEX3D ) * 24 ) ;
+			}
+			else
+			{
+				GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 1 ] = ( VERTEX3D * )DXREALLOC( GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 1 ], GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 1 ] * sizeof( VERTEX3D ) * 24 ) ;
+			}
+
+			// 頂点データの固定値をセット
+			Vertex = GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 1 ] ;
+			for( i = 0 ; i < GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 1 ] ; i ++ )
+			{
+				Vertex[ 0 ].norm.x = 0.0f ;
+				Vertex[ 0 ].norm.y = 0.0f ;
+				Vertex[ 0 ].norm.z = -1.0f ;
+				Vertex[ 1 ].norm = Vertex[ 0 ].norm ;
+				Vertex[ 2 ].norm = Vertex[ 0 ].norm ;
+				Vertex[ 3 ].norm = Vertex[ 0 ].norm ;
+				Vertex[ 0 ].u = 0.0f ;		Vertex[ 0 ].v = 0.0f ;		Vertex[ 0 ].su = 0.0f ;		Vertex[ 0 ].sv = 0.0f ;
+				Vertex[ 1 ].u = 0.0f ;		Vertex[ 1 ].v = 0.0f ;		Vertex[ 1 ].su = 0.0f ;		Vertex[ 1 ].sv = 0.0f ;
+				Vertex[ 2 ].u = 0.0f ;		Vertex[ 2 ].v = 0.0f ;		Vertex[ 2 ].su = 0.0f ;		Vertex[ 2 ].sv = 0.0f ;
+				Vertex[ 3 ].u = 0.0f ;		Vertex[ 3 ].v = 0.0f ;		Vertex[ 3 ].su = 0.0f ;		Vertex[ 3 ].sv = 0.0f ;
+
+				Vertex[ 4 + 0 ].norm.x = 0.0f ;
+				Vertex[ 4 + 0 ].norm.y = 0.0f ;
+				Vertex[ 4 + 0 ].norm.z = 1.0f ;
+				Vertex[ 4 + 1 ].norm = Vertex[ 4 ].norm ;
+				Vertex[ 4 + 2 ].norm = Vertex[ 4 ].norm ;
+				Vertex[ 4 + 3 ].norm = Vertex[ 4 ].norm ;
+				Vertex[ 4 + 0 ].u = 0.0f ;	Vertex[ 4 + 0 ].v = 0.0f ;	Vertex[ 4 + 0 ].su = 0.0f ;	Vertex[ 4 + 0 ].sv = 0.0f ;
+				Vertex[ 4 + 1 ].u = 0.0f ;	Vertex[ 4 + 1 ].v = 0.0f ;	Vertex[ 4 + 1 ].su = 0.0f ;	Vertex[ 4 + 1 ].sv = 0.0f ;
+				Vertex[ 4 + 2 ].u = 0.0f ;	Vertex[ 4 + 2 ].v = 0.0f ;	Vertex[ 4 + 2 ].su = 0.0f ;	Vertex[ 4 + 2 ].sv = 0.0f ;
+				Vertex[ 4 + 3 ].u = 0.0f ;	Vertex[ 4 + 3 ].v = 0.0f ;	Vertex[ 4 + 3 ].su = 0.0f ;	Vertex[ 4 + 3 ].sv = 0.0f ;
+
+				Vertex[ 8 + 0 ].norm.x = -1.0f ;
+				Vertex[ 8 + 0 ].norm.y = 0.0f ;
+				Vertex[ 8 + 0 ].norm.z = 0.0f ;
+				Vertex[ 8 + 1 ].norm = Vertex[ 8 ].norm ;
+				Vertex[ 8 + 2 ].norm = Vertex[ 8 ].norm ;
+				Vertex[ 8 + 3 ].norm = Vertex[ 8 ].norm ;
+				Vertex[ 8 + 0 ].u = 0.0f ;	Vertex[ 8 + 0 ].v = 0.0f ;	Vertex[ 8 + 0 ].su = 0.0f ;	Vertex[ 8 + 0 ].sv = 0.0f ;
+				Vertex[ 8 + 1 ].u = 0.0f ;	Vertex[ 8 + 1 ].v = 0.0f ;	Vertex[ 8 + 1 ].su = 0.0f ;	Vertex[ 8 + 1 ].sv = 0.0f ;
+				Vertex[ 8 + 2 ].u = 0.0f ;	Vertex[ 8 + 2 ].v = 0.0f ;	Vertex[ 8 + 2 ].su = 0.0f ;	Vertex[ 8 + 2 ].sv = 0.0f ;
+				Vertex[ 8 + 3 ].u = 0.0f ;	Vertex[ 8 + 3 ].v = 0.0f ;	Vertex[ 8 + 3 ].su = 0.0f ;	Vertex[ 8 + 3 ].sv = 0.0f ;
+
+				Vertex[ 12 + 0 ].norm.x = 1.0f ;
+				Vertex[ 12 + 0 ].norm.y = 0.0f ;
+				Vertex[ 12 + 0 ].norm.z = 0.0f ;
+				Vertex[ 12 + 1 ].norm = Vertex[ 12 ].norm ;
+				Vertex[ 12 + 2 ].norm = Vertex[ 12 ].norm ;
+				Vertex[ 12 + 3 ].norm = Vertex[ 12 ].norm ;
+				Vertex[ 12 + 0 ].u = 0.0f ;	Vertex[ 12 + 0 ].v = 0.0f ;	Vertex[ 12 + 0 ].su = 0.0f ;Vertex[ 12 + 0 ].sv = 0.0f ;
+				Vertex[ 12 + 1 ].u = 0.0f ;	Vertex[ 12 + 1 ].v = 0.0f ;	Vertex[ 12 + 1 ].su = 0.0f ;Vertex[ 12 + 1 ].sv = 0.0f ;
+				Vertex[ 12 + 2 ].u = 0.0f ;	Vertex[ 12 + 2 ].v = 0.0f ;	Vertex[ 12 + 2 ].su = 0.0f ;Vertex[ 12 + 2 ].sv = 0.0f ;
+				Vertex[ 12 + 3 ].u = 0.0f ;	Vertex[ 12 + 3 ].v = 0.0f ;	Vertex[ 12 + 3 ].su = 0.0f ;Vertex[ 12 + 3 ].sv = 0.0f ;
+
+				Vertex[ 16 + 0 ].norm.x = 0.0f ;
+				Vertex[ 16 + 0 ].norm.y = 1.0f ;
+				Vertex[ 16 + 0 ].norm.z = 0.0f ;
+				Vertex[ 16 + 1 ].norm = Vertex[ 16 ].norm ;
+				Vertex[ 16 + 2 ].norm = Vertex[ 16 ].norm ;
+				Vertex[ 16 + 3 ].norm = Vertex[ 16 ].norm ;
+				Vertex[ 16 + 0 ].u = 0.0f ;	Vertex[ 16 + 0 ].v = 0.0f ;	Vertex[ 16 + 0 ].su = 0.0f ;Vertex[ 16 + 0 ].sv = 0.0f ;
+				Vertex[ 16 + 1 ].u = 0.0f ;	Vertex[ 16 + 1 ].v = 0.0f ;	Vertex[ 16 + 1 ].su = 0.0f ;Vertex[ 16 + 1 ].sv = 0.0f ;
+				Vertex[ 16 + 2 ].u = 0.0f ;	Vertex[ 16 + 2 ].v = 0.0f ;	Vertex[ 16 + 2 ].su = 0.0f ;Vertex[ 16 + 2 ].sv = 0.0f ;
+				Vertex[ 16 + 3 ].u = 0.0f ;	Vertex[ 16 + 3 ].v = 0.0f ;	Vertex[ 16 + 3 ].su = 0.0f ;Vertex[ 16 + 3 ].sv = 0.0f ;
+
+				Vertex[ 20 + 0 ].norm.x = 0.0f ;
+				Vertex[ 20 + 0 ].norm.y = -1.0f ;
+				Vertex[ 20 + 0 ].norm.z = 0.0f ;
+				Vertex[ 20 + 1 ].norm = Vertex[ 20 ].norm ;
+				Vertex[ 20 + 2 ].norm = Vertex[ 20 ].norm ;
+				Vertex[ 20 + 3 ].norm = Vertex[ 20 ].norm ;
+				Vertex[ 20 + 0 ].u = 0.0f ;	Vertex[ 20 + 0 ].v = 0.0f ;	Vertex[ 20 + 0 ].su = 0.0f ;Vertex[ 20 + 0 ].sv = 0.0f ;
+				Vertex[ 20 + 1 ].u = 0.0f ;	Vertex[ 20 + 1 ].v = 0.0f ;	Vertex[ 20 + 1 ].su = 0.0f ;Vertex[ 20 + 1 ].sv = 0.0f ;
+				Vertex[ 20 + 2 ].u = 0.0f ;	Vertex[ 20 + 2 ].v = 0.0f ;	Vertex[ 20 + 2 ].su = 0.0f ;Vertex[ 20 + 2 ].sv = 0.0f ;
+				Vertex[ 20 + 3 ].u = 0.0f ;	Vertex[ 20 + 3 ].v = 0.0f ;	Vertex[ 20 + 3 ].su = 0.0f ;Vertex[ 20 + 3 ].sv = 0.0f ;
+
+				Vertex += 24 ;
+			}
+		}
+
+		// 指定の数のインデックスを収められるバッファが確保されていなかったら確保
+		if( GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] < Num &&
+			GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] < 2730 )
+		{
+			GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] = Num * 3 / 2 ;
+			if( GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] > 2730 )
+			{
+				GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] = 2730 ;
+			}
+
+			if( GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ] == NULL )
+			{
+				GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ] = ( WORD * )DXALLOC( GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] * sizeof( WORD ) * 36 ) ;
+			}
+			else
+			{
+				GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ] = ( WORD * )DXREALLOC( GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ], GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] * sizeof( WORD ) * 36 ) ;
+			}
+
+			// インデックスの固定値をセット
+			Index = GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ] ;
+			j = 0 ;
+			for( i = 0 ; i < GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] ; i ++ )
+			{
+				Index[  0 ] = ( WORD )( j +  0 ) ;	Index[  1 ] = ( WORD )( j +  1 ) ;		Index[  2 ] = ( WORD )( j +  2 ) ;
+				Index[  3 ] = ( WORD )( j +  3 ) ;	Index[  4 ] = ( WORD )( j +  2 ) ;		Index[  5 ] = ( WORD )( j +  1 ) ;
+				Index[  6 ] = ( WORD )( j +  4 ) ;	Index[  7 ] = ( WORD )( j +  5 ) ;		Index[  8 ] = ( WORD )( j +  6 ) ;
+				Index[  9 ] = ( WORD )( j +  7 ) ;	Index[ 10 ] = ( WORD )( j +  6 ) ;		Index[ 11 ] = ( WORD )( j +  5 ) ;
+				Index[ 12 ] = ( WORD )( j +  8 ) ;	Index[ 13 ] = ( WORD )( j +  9 ) ;		Index[ 14 ] = ( WORD )( j + 10 ) ;
+				Index[ 15 ] = ( WORD )( j + 11 ) ;	Index[ 16 ] = ( WORD )( j + 10 ) ;		Index[ 17 ] = ( WORD )( j +  9 ) ;
+				Index[ 18 ] = ( WORD )( j + 12 ) ;	Index[ 19 ] = ( WORD )( j + 13 ) ;		Index[ 20 ] = ( WORD )( j + 14 ) ;
+				Index[ 21 ] = ( WORD )( j + 15 ) ;	Index[ 22 ] = ( WORD )( j + 14 ) ;		Index[ 23 ] = ( WORD )( j + 13 ) ;
+				Index[ 24 ] = ( WORD )( j + 16 ) ;	Index[ 25 ] = ( WORD )( j + 17 ) ;		Index[ 26 ] = ( WORD )( j + 18 ) ;
+				Index[ 27 ] = ( WORD )( j + 19 ) ;	Index[ 28 ] = ( WORD )( j + 18 ) ;		Index[ 29 ] = ( WORD )( j + 17 ) ;
+				Index[ 30 ] = ( WORD )( j + 20 ) ;	Index[ 31 ] = ( WORD )( j + 21 ) ;		Index[ 32 ] = ( WORD )( j + 22 ) ;
+				Index[ 33 ] = ( WORD )( j + 23 ) ;	Index[ 34 ] = ( WORD )( j + 22 ) ;		Index[ 35 ] = ( WORD )( j + 21 ) ;
+
+				Index += 36 ;
+				j += 24 ;
+			}
+		}
+
+		// 立方体の数だけ繰り返し
+		Vertex = GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 1 ] ;
+		j = 0 ;
+		for( k = 0 ; k < Num ; k ++, CubeDataArray ++ )
+		{
+			// 頂点データの作成
+			Vertex[ 0 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 0 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 0 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 1 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 1 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 1 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 2 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 2 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 2 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 3 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 3 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 3 ].pos.z = CubeDataArray->Pos1.z ;
+
+			Vertex[ 4 + 0 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 4 + 0 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 4 + 0 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 4 + 1 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 4 + 1 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 4 + 1 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 4 + 2 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 4 + 2 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 4 + 2 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 4 + 3 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 4 + 3 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 4 + 3 ].pos.z = CubeDataArray->Pos2.z ;
+
+			Vertex[ 8 + 0 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 8 + 0 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 8 + 0 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 8 + 1 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 8 + 1 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 8 + 1 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 8 + 2 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 8 + 2 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 8 + 2 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 8 + 3 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 8 + 3 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 8 + 3 ].pos.z = CubeDataArray->Pos1.z ;
+
+			Vertex[ 12 + 0 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 12 + 0 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 12 + 0 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 12 + 1 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 12 + 1 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 12 + 1 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 12 + 2 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 12 + 2 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 12 + 2 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 12 + 3 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 12 + 3 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 12 + 3 ].pos.z = CubeDataArray->Pos2.z ;
+
+			Vertex[ 16 + 0 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 16 + 0 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 16 + 0 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 16 + 1 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 16 + 1 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 16 + 1 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 16 + 2 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 16 + 2 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 16 + 2 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 16 + 3 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 16 + 3 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 16 + 3 ].pos.z = CubeDataArray->Pos1.z ;
+
+			Vertex[ 20 + 0 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 20 + 0 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 20 + 0 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 20 + 1 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 20 + 1 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 20 + 1 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 20 + 2 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 20 + 2 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 20 + 2 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 20 + 3 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 20 + 3 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 20 + 3 ].pos.z = CubeDataArray->Pos2.z ;
+
+			for( i = 0 ; i < 24 ; i ++ )
+			{
+				Vertex[ i ].dif = CubeDataArray->DifColor ;
+				Vertex[ i ].spc = CubeDataArray->SpcColor ;
+			}
+
+			// 頂点データが一杯になったら描画
+			j ++ ;
+			if( j >= 2730 )
+			{
+				NS_DrawPrimitiveIndexed3D(
+					GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 1 ], 24 * j,
+					GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ], 36 * j,
+					DX_PRIMTYPE_TRIANGLELIST, DX_NONE_GRAPH, TRUE ) ;
+
+				Vertex = GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 1 ] ;
+				j = 0 ;
+			}
+			else
+			{
+				Vertex += 24 ;
+			}
+		}
+
+		// 頂点データが残っていたら描画
+		if( j > 0 )
+		{
+			NS_DrawPrimitiveIndexed3D(
+				GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 1 ], 24 * j,
+				GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ], 36 * j,
+				DX_PRIMTYPE_TRIANGLELIST, DX_NONE_GRAPH, TRUE ) ;
+		}
+	}
+	else
+	{
+		// 指定の数の頂点を収められるバッファが確保されていなかったら確保
+		if( GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 0 ] < Num &&
+			GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 0 ] < 8191 )
+		{
+			GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 0 ] = Num * 3 / 2 ;
+			if( GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 0 ] > 8191 )
+			{
+				GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 0 ] = 8191 ;
+			}
+
+			if( GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ] == NULL )
+			{
+				GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ] = ( VERTEX3D * )DXALLOC( GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 0 ] * sizeof( VERTEX3D ) * 8 ) ;
+			}
+			else
+			{
+				GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ] = ( VERTEX3D * )DXREALLOC( GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ], GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 0 ] * sizeof( VERTEX3D ) * 8 ) ;
+			}
+
+			// 頂点データの固定値をセット
+			Vertex = GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ] ;
+			for( i = 0 ; i < GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 0 ] ; i ++ )
+			{
+				Vertex[ 0 ].norm.x = 0.0f ;
+				Vertex[ 0 ].norm.y = 0.0f ;
+				Vertex[ 0 ].norm.z = 0.0f ;
+				Vertex[ 1 ].norm = Vertex[ 0 ].norm ;
+				Vertex[ 2 ].norm = Vertex[ 0 ].norm ;
+				Vertex[ 3 ].norm = Vertex[ 0 ].norm ;
+				Vertex[ 4 ].norm = Vertex[ 0 ].norm ;
+				Vertex[ 5 ].norm = Vertex[ 0 ].norm ;
+				Vertex[ 6 ].norm = Vertex[ 0 ].norm ;
+				Vertex[ 7 ].norm = Vertex[ 0 ].norm ;
+				Vertex[ 0 ].u = 0.0f ;		Vertex[ 0 ].v = 0.0f ;		Vertex[ 0 ].su = 0.0f ;		Vertex[ 0 ].sv = 0.0f ;
+				Vertex[ 1 ].u = 0.0f ;		Vertex[ 1 ].v = 0.0f ;		Vertex[ 1 ].su = 0.0f ;		Vertex[ 1 ].sv = 0.0f ;
+				Vertex[ 2 ].u = 0.0f ;		Vertex[ 2 ].v = 0.0f ;		Vertex[ 2 ].su = 0.0f ;		Vertex[ 2 ].sv = 0.0f ;
+				Vertex[ 3 ].u = 0.0f ;		Vertex[ 3 ].v = 0.0f ;		Vertex[ 3 ].su = 0.0f ;		Vertex[ 3 ].sv = 0.0f ;
+				Vertex[ 4 ].u = 0.0f ;		Vertex[ 4 ].v = 0.0f ;		Vertex[ 4 ].su = 0.0f ;		Vertex[ 4 ].sv = 0.0f ;
+				Vertex[ 5 ].u = 0.0f ;		Vertex[ 5 ].v = 0.0f ;		Vertex[ 5 ].su = 0.0f ;		Vertex[ 5 ].sv = 0.0f ;
+				Vertex[ 6 ].u = 0.0f ;		Vertex[ 6 ].v = 0.0f ;		Vertex[ 6 ].su = 0.0f ;		Vertex[ 6 ].sv = 0.0f ;
+				Vertex[ 7 ].u = 0.0f ;		Vertex[ 7 ].v = 0.0f ;		Vertex[ 7 ].su = 0.0f ;		Vertex[ 7 ].sv = 0.0f ;
+
+				Vertex += 8 ;
+			}
+		}
+
+		if( FillFlag == TRUE )
+		{
+			// 指定の数のインデックスを収められるバッファが確保されていなかったら確保
+			if( GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 1 ] < Num &&
+				GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 1 ] < 8191 )
+			{
+				GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 1 ] = Num * 3 / 2 ;
+				if( GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 1 ] > 8191 )
+				{
+					GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 1 ] = 8191 ;
+				}
+
+				if( GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 1 ] == NULL )
+				{
+					GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 1 ] = ( WORD * )DXALLOC( GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 1 ] * sizeof( WORD ) * 36 ) ;
+				}
+				else
+				{
+					GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 1 ] = ( WORD * )DXREALLOC( GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 1 ], GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 1 ] * sizeof( WORD ) * 36 ) ;
+				}
+
+				// インデックスの固定値をセット
+				Index = GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 1 ] ;
+				j = 0 ;
+				for( i = 0 ; i < GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 1 ] ; i ++ )
+				{
+					Index[  0 ] = ( WORD )( j + 0 ) ;	Index[  1 ] = ( WORD )( j + 1 ) ;	Index[  2 ] = ( WORD )( j + 3 ) ;
+					Index[  3 ] = ( WORD )( j + 3 ) ;	Index[  4 ] = ( WORD )( j + 1 ) ;	Index[  5 ] = ( WORD )( j + 2 ) ;
+					Index[  6 ] = ( WORD )( j + 3 ) ;	Index[  7 ] = ( WORD )( j + 2 ) ;	Index[  8 ] = ( WORD )( j + 7 ) ;
+					Index[  9 ] = ( WORD )( j + 7 ) ;	Index[ 10 ] = ( WORD )( j + 2 ) ;	Index[ 11 ] = ( WORD )( j + 6 ) ;
+					Index[ 12 ] = ( WORD )( j + 2 ) ;	Index[ 13 ] = ( WORD )( j + 1 ) ;	Index[ 14 ] = ( WORD )( j + 6 ) ;
+					Index[ 15 ] = ( WORD )( j + 6 ) ;	Index[ 16 ] = ( WORD )( j + 1 ) ;	Index[ 17 ] = ( WORD )( j + 5 ) ;
+					Index[ 18 ] = ( WORD )( j + 1 ) ;	Index[ 19 ] = ( WORD )( j + 0 ) ;	Index[ 20 ] = ( WORD )( j + 5 ) ;
+					Index[ 21 ] = ( WORD )( j + 5 ) ;	Index[ 22 ] = ( WORD )( j + 0 ) ;	Index[ 23 ] = ( WORD )( j + 4 ) ;
+					Index[ 24 ] = ( WORD )( j + 0 ) ;	Index[ 25 ] = ( WORD )( j + 3 ) ;	Index[ 26 ] = ( WORD )( j + 4 ) ;
+					Index[ 27 ] = ( WORD )( j + 4 ) ;	Index[ 28 ] = ( WORD )( j + 3 ) ;	Index[ 29 ] = ( WORD )( j + 7 ) ;
+					Index[ 30 ] = ( WORD )( j + 7 ) ;	Index[ 31 ] = ( WORD )( j + 6 ) ;	Index[ 32 ] = ( WORD )( j + 4 ) ;
+					Index[ 33 ] = ( WORD )( j + 4 ) ;	Index[ 34 ] = ( WORD )( j + 6 ) ;	Index[ 35 ] = ( WORD )( j + 5 ) ;
+
+					Index += 36 ;
+					j += 8 ;
+				}
+			}
+		}
+		else
+		{
+			// 指定の数のインデックスを収められるバッファが確保されていなかったら確保
+			if( GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] < Num &&
+				GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] < 8191 )
+			{
+				GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] = Num * 3 / 2 ;
+				if( GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] > 8191 )
+				{
+					GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] = 8191 ;
+				}
+
+				if( GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ] == NULL )
+				{
+					GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ] = ( WORD * )DXALLOC( GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] * sizeof( WORD ) * 24 ) ;
+				}
+				else
+				{
+					GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ] = ( WORD * )DXREALLOC( GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ], GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] * sizeof( WORD ) * 24 ) ;
+				}
+
+				// インデックスの固定値をセット
+				Index = GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ] ;
+				j = 0 ;
+				for( i = 0 ; i < GSYS.Resource.DrawCubeSet3DWorkIndexBufferSize[ 2 ] ; i ++ )
+				{
+					Index[  0 ] = ( WORD )( j + 0 ) ;	Index[  1 ] = ( WORD )( j + 1 ) ;
+					Index[  2 ] = ( WORD )( j + 1 ) ;	Index[  3 ] = ( WORD )( j + 2 ) ;
+					Index[  4 ] = ( WORD )( j + 2 ) ;	Index[  5 ] = ( WORD )( j + 3 ) ;
+					Index[  6 ] = ( WORD )( j + 3 ) ;	Index[  7 ] = ( WORD )( j + 0 ) ;
+					Index[  8 ] = ( WORD )( j + 0 ) ;	Index[  9 ] = ( WORD )( j + 4 ) ;
+					Index[ 10 ] = ( WORD )( j + 1 ) ;	Index[ 11 ] = ( WORD )( j + 5 ) ;
+					Index[ 12 ] = ( WORD )( j + 2 ) ;	Index[ 13 ] = ( WORD )( j + 6 ) ;
+					Index[ 14 ] = ( WORD )( j + 3 ) ;	Index[ 15 ] = ( WORD )( j + 7 ) ;
+					Index[ 16 ] = ( WORD )( j + 4 ) ;	Index[ 17 ] = ( WORD )( j + 5 ) ;
+					Index[ 18 ] = ( WORD )( j + 5 ) ;	Index[ 19 ] = ( WORD )( j + 6 ) ;
+					Index[ 20 ] = ( WORD )( j + 6 ) ;	Index[ 21 ] = ( WORD )( j + 7 ) ;
+					Index[ 22 ] = ( WORD )( j + 7 ) ;	Index[ 23 ] = ( WORD )( j + 4 ) ;
+
+					Index += 24 ;
+					j += 8 ;
+				}
+			}
+		}
+
+		// 立方体の数だけ繰り返し
+		Vertex = GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ] ;
+		j = 0 ;
+		for( k = 0 ; k < Num ; k ++, CubeDataArray ++ )
+		{
+			// 頂点データの作成
+			Vertex[ 0 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 0 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 0 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 1 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 1 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 1 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 2 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 2 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 2 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 3 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 3 ].pos.y = CubeDataArray->Pos2.y ; Vertex[ 3 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 4 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 4 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 4 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 5 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 5 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 5 ].pos.z = CubeDataArray->Pos2.z ;
+			Vertex[ 6 ].pos.x = CubeDataArray->Pos2.x ; Vertex[ 6 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 6 ].pos.z = CubeDataArray->Pos1.z ;
+			Vertex[ 7 ].pos.x = CubeDataArray->Pos1.x ; Vertex[ 7 ].pos.y = CubeDataArray->Pos1.y ; Vertex[ 7 ].pos.z = CubeDataArray->Pos1.z ;
+
+			Vertex[ 0 ].dif = CubeDataArray->DifColor ;	Vertex[ 0 ].spc = CubeDataArray->SpcColor ;
+			Vertex[ 1 ].dif = CubeDataArray->DifColor ;	Vertex[ 1 ].spc = CubeDataArray->SpcColor ;
+			Vertex[ 2 ].dif = CubeDataArray->DifColor ;	Vertex[ 2 ].spc = CubeDataArray->SpcColor ;
+			Vertex[ 3 ].dif = CubeDataArray->DifColor ;	Vertex[ 3 ].spc = CubeDataArray->SpcColor ;
+			Vertex[ 4 ].dif = CubeDataArray->DifColor ;	Vertex[ 4 ].spc = CubeDataArray->SpcColor ;
+			Vertex[ 5 ].dif = CubeDataArray->DifColor ;	Vertex[ 5 ].spc = CubeDataArray->SpcColor ;
+			Vertex[ 6 ].dif = CubeDataArray->DifColor ;	Vertex[ 6 ].spc = CubeDataArray->SpcColor ;
+			Vertex[ 7 ].dif = CubeDataArray->DifColor ;	Vertex[ 7 ].spc = CubeDataArray->SpcColor ;
+
+			// 頂点データが一杯になったら描画
+			j ++ ;
+			if( j >= 8191 )
+			{
+				if( FillFlag == TRUE )
+				{
+					NS_DrawPrimitiveIndexed3D(
+						GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ], 8 * j,
+						GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 1 ], 36 * j,
+						DX_PRIMTYPE_TRIANGLELIST, DX_NONE_GRAPH, TRUE ) ;
+				}
+				else
+				{
+					NS_DrawPrimitiveIndexed3D(
+						GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ], 8 * j,
+						GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 0 ], 24 * j,
+						DX_PRIMTYPE_LINELIST, DX_NONE_GRAPH, TRUE ) ;
+				}
+
+				Vertex = GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ] ;
+				j = 0 ;
+			}
+			else
+			{
+				Vertex += 8 ;
+			}
+		}
+
+		// 頂点データが残っていたら描画
+		if( j > 0 )
+		{
+			if( FillFlag == TRUE )
+			{
+				NS_DrawPrimitiveIndexed3D(
+					GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ], 8 * j,
+					GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 1 ], 36 * j,
+					DX_PRIMTYPE_TRIANGLELIST, DX_NONE_GRAPH, TRUE ) ;
+			}
+			else
+			{
+				NS_DrawPrimitiveIndexed3D(
+					GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ], 8 * j,
+					GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 0 ], 24 * j,
+					DX_PRIMTYPE_LINELIST, DX_NONE_GRAPH, TRUE ) ;
+			}
+		}
+	}
+
+	// 終了
+	return 0 ;
+}
+
 // ３Ｄの球体を描画する
 extern int NS_DrawSphere3D( VECTOR CenterPos, float r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag )
 {
@@ -13547,6 +13974,160 @@ int NS_DrawCircleGauge( int CenterX, int CenterY, double Percent, int GrHandle, 
 	return 0;
 }
 
+// 円グラフ的な描画を行う
+int NS_DrawCircleGaugeF( float CenterX, float CenterY, double Percent, int GrHandle, double StartPercent , double Scale, int ReverseX, int ReverseY )
+{
+	VECTOR vertex[3] ;
+	VECTOR position[4] ;
+	VECTOR positionR ;
+	VECTOR positionR2 ;
+	float radian ;
+	float radian2 ;
+	float length ;
+	float Sin ;
+	float Cos ;
+	float CenterXF ;
+	float CenterYF ;
+	float SizeR ;
+	int SizeX ;
+	int SizeY ;
+	int i ;
+	float StartRad ;
+	float EndRad ;
+	IMAGEDATA *Image ;
+	float UScale ;
+	float VScale ;
+	float UStart ;
+	float VStart ;
+	RECT DrawRect ;
+	RECT GaugeDrawRect ;
+
+	Image = Graphics_Image_GetData( GrHandle ) ;
+	if( Image == NULL )
+	{
+		return -1 ;
+	}
+
+	if( Image->Orig->FormatDesc.TextureFlag )
+	{
+		UStart = ( float )Image->Hard.Draw[ 0 ].UsePosXF / Image->Hard.Draw[ 0 ].Tex->TexWidth ;
+		VStart = ( float )Image->Hard.Draw[ 0 ].UsePosYF / Image->Hard.Draw[ 0 ].Tex->TexHeight ;
+		UScale = ( float )Image->WidthF                  / Image->Hard.Draw[ 0 ].Tex->TexWidth ;
+		VScale = ( float )Image->HeightF                 / Image->Hard.Draw[ 0 ].Tex->TexHeight ;
+	}
+	else
+	{
+		UScale = 1.0f ;
+		VScale = 1.0f ;
+		UStart = 0.0f ;
+		VStart = 0.0f ;
+	}
+
+	if( StartPercent > 200.0 )
+	{
+		StartPercent = 200.0 ;
+	}
+	else
+	if( StartPercent < -100.0 )
+	{
+		StartPercent = -100.0 ;
+	}
+
+	if( Percent > 200.0 )
+	{
+		Percent = 200.0 ;
+	}
+	else
+	if( Percent < -100.0 )
+	{
+		Percent = -100.0 ;
+	}
+
+	if( Percent - StartPercent > 100.0 )
+	{
+		StartPercent = 0.0 ;
+		Percent = 100.0 ;
+	}
+
+	if( StartPercent == Percent ||
+		StartPercent > Percent )
+	{
+		return 0 ;
+	}
+
+	NS_GetGraphSize( GrHandle, &SizeX, &SizeY );
+
+	radian   = ( float )( Percent      * 2 * DX_PI / 100.0 );
+	radian2  = ( float )( StartPercent * 2 * DX_PI / 100.0 );
+	length   = ( float )( SizeX * Scale * 0.75f ) ;
+	CenterXF = ( float )CenterX;
+	CenterYF = ( float )CenterY;
+	SizeR    = ( float )( 1.0f / ( SizeX * Scale ) ) ;
+
+	vertex[0].x = 0.0f;
+	vertex[0].y = 0.0f;
+	vertex[1] = vertex[0];
+	vertex[2] = vertex[0];
+
+	position[0].x = 0.0f;
+	position[0].y = -length;
+
+	position[1].x = length;
+	position[1].y = 0.0f;
+
+	position[2].x = 0.0f;
+	position[2].y = length;
+
+	position[3].x = -length;
+	position[3].y = 0.0f;
+
+	_SINCOS_PLATFORM( radian2 - DX_PI_F * 0.5f, &Sin, &Cos ) ;
+	positionR2.x = Cos * length;
+	positionR2.y = Sin * length;
+
+	_SINCOS_PLATFORM( radian - DX_PI_F * 0.5f, &Sin, &Cos ) ;
+	positionR.x = Cos * length;
+	positionR.y = Sin * length;
+
+	DrawRect = GSYS.DrawSetting.DrawArea ;
+	if( Scale != 1.0 )
+	{
+		GaugeDrawRect.left   = _FTOL( CenterX ) - _DTOL( SizeX * Scale ) / 2 - 2 ;
+		GaugeDrawRect.top    = _FTOL( CenterY ) - _DTOL( SizeY * Scale ) / 2 - 2 ;
+		GaugeDrawRect.right  = _FTOL( CenterX ) + _DTOL( SizeX * Scale ) / 2 + 2 ;
+		GaugeDrawRect.bottom = _FTOL( CenterY ) + _DTOL( SizeY * Scale ) / 2 + 2 ;
+	}
+	else
+	{
+		GaugeDrawRect.left   = _FTOL( CenterX ) - SizeX / 2 - 2 ;
+		GaugeDrawRect.top    = _FTOL( CenterY ) - SizeY / 2 - 2 ;
+		GaugeDrawRect.right  = _FTOL( CenterX ) + SizeX / 2 + 2 ;
+		GaugeDrawRect.bottom = _FTOL( CenterY ) + SizeY / 2 + 2 ;
+	}
+	RectClipping_Inline( &GaugeDrawRect, &DrawRect ) ;
+	NS_SetDrawArea( GaugeDrawRect.left, GaugeDrawRect.top, GaugeDrawRect.right, GaugeDrawRect.bottom ) ; 
+
+	// 90度分筒描画
+	for( i = 0 ; i < 12 ; i ++ )
+	{
+		StartRad = DX_PI_F * 0.5f * ( i - 4 ) ;
+		EndRad   = DX_PI_F * 0.5f * ( i - 4 + 1 ) ;
+
+		if( ( radian2 >= StartRad && radian2 <= EndRad ) || ( StartRad >= radian2 && StartRad <= radian ) )
+		{
+			vertex[1] = radian2 <= StartRad ? position[ i         % 4 ] : positionR2;
+			vertex[2] = radian  >= EndRad   ? position[ ( i + 1 ) % 4 ] : positionR;
+			DrawCircleGaugePolygon( GrHandle, CenterXF, CenterYF, vertex, SizeR, UScale, VScale, UStart, VStart, ReverseX, ReverseY );
+		}
+	}
+
+	// 描画可能範囲を元に戻す
+	NS_SetDrawArea( DrawRect.left, DrawRect.top, DrawRect.right, DrawRect.bottom ) ;
+
+	// 終了
+	return 0;
+}
+
 static struct
 {
 	float DrawZ;
@@ -15780,6 +16361,13 @@ extern int NS_SetMaxAnisotropy( int MaxAnisotropy )
 
 	// 終了
 	return 0 ;
+}
+
+// 最大異方性値を取得する
+extern int NS_GetMaxAnisotropy( void )
+{
+	// 最大異方性値を返す
+	return GSYS.DrawSetting.MaxAnisotropy ;
 }
 
 // ３Ｄ処理で使用する座標値が 10000000.0f などの大きな値になっても描画の崩れを小さく抑える処理を使用するかどうかを設定する、DxLib_Init の呼び出し前でのみ使用可能( TRUE:描画の崩れを抑える処理を使用する( CPU負荷が上がります )　　FALSE:描画の崩れを抑える処理は使用しない( デフォルト ) )
@@ -18762,7 +19350,11 @@ extern int NS_GetDrawCallCount( void )
 // フレームレート( １秒間に呼ばれる ScreenFlip の回数 )を取得する
 extern float NS_GetFPS( void )
 {
+#if defined( _MSC_VER ) && _MSC_VER == 1200
+	return ( float )( ( double )( LONGLONG )NS_GetSysPerformanceFrequency() / ( LONGLONG )( GSYS.PerformanceInfo.ScreenFlipTime[ 0 ] - GSYS.PerformanceInfo.ScreenFlipTime[ 1 ] ) ) ;
+#else
 	return ( float )( ( double )NS_GetSysPerformanceFrequency() / ( GSYS.PerformanceInfo.ScreenFlipTime[ 0 ] - GSYS.PerformanceInfo.ScreenFlipTime[ 1 ] ) ) ;
+#endif
 }
 
 
@@ -24620,6 +25212,23 @@ extern int Graphics_Initialize( void )
 		goto ERR ;
 	}
 
+	// GetFPS の値の安定化の為にScreenFlipを6回ほど実行する
+	{
+		int i ;
+		for( i = 0 ; i < 6 ; i ++ )
+		{
+			NS_ClearDrawScreen() ;
+
+			// まだＤＸライブラリの初期化が終わっていないので環境依存関数を直接呼ぶ
+			GSYS.Screen.ScreenFlipFlag = TRUE ;
+			Graphics_ScreenFlipBase_PF() ;
+			GSYS.Screen.ScreenFlipFlag = FALSE ;
+
+			// ScreenFlip が呼ばれた時間を保存
+			Graphics_Screen_UpdateFlipTime() ;
+		}
+	}
+
 	// 終了
 	return 0 ;
 
@@ -24687,6 +25296,27 @@ extern int Graphics_Terminate( void )
 		DXFREE( GSYS.Resource.TempVertexBuffer ) ;
 		GSYS.Resource.TempVertexBuffer = NULL ;
 		GSYS.Resource.TempVertexBufferSize = 0 ;
+	}
+
+	// DrawCubeSet3D用の頂点を一時的に保存するメモリ領域の解放
+	{
+		int i ;
+		for( i = 0 ; i < 2 ; i ++ )
+		{
+			if( GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ i ] )
+			{
+				DXFREE( GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ i ] ) ;
+				GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ i ] = NULL ;
+			}
+		}
+		for( i = 0 ; i < 3 ; i ++ )
+		{
+			if( GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ i ] )
+			{
+				DXFREE( GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ i ] ) ;
+				GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ i ] = NULL ;
+			}
+		}
 	}
 
 	// シャドウマップハンドル管理情報の後始末
@@ -25609,6 +26239,14 @@ extern int Graphics_Screen_UnlockDrawScreen( void )
 	return 0 ;
 }
 
+// ScreenFlipTimeの更新
+static void Graphics_Screen_UpdateFlipTime( void )
+{
+	// ScreenFlip が呼ばれた時間を保存
+	GSYS.PerformanceInfo.ScreenFlipTime[ 1 ] = GSYS.PerformanceInfo.ScreenFlipTime[ 0 ] ;
+	GSYS.PerformanceInfo.ScreenFlipTime[ 0 ] = NS_GetNowSysPerformanceCount() ;
+}
+
 // 裏画面と表画面を交換する
 // 表画面が裏画面からのスケーリングの場合は、CopyRect はコピー先矩形 )
 extern int Graphics_Screen_FlipBase( void )
@@ -25675,8 +26313,7 @@ extern int Graphics_Screen_FlipBase( void )
 	Result = Graphics_ScreenFlipBase_PF() ;
 
 	// ScreenFlip が呼ばれた時間を保存
-	GSYS.PerformanceInfo.ScreenFlipTime[ 1 ] = GSYS.PerformanceInfo.ScreenFlipTime[ 0 ] ;
-	GSYS.PerformanceInfo.ScreenFlipTime[ 0 ] = NS_GetNowSysPerformanceCount() ;
+	Graphics_Screen_UpdateFlipTime() ;
 
 	// 描画コール回数の処理
 	GSYS.PerformanceInfo.PrevFrameDrawCallCount = GSYS.PerformanceInfo.NowFrameDrawCallCount ;

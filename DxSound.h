@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		サウンドプログラムヘッダファイル
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -20,6 +20,7 @@
 #include "DxSoundConvert.h"
 #include "DxHandle.h"
 #include "DxFile.h"
+#include "DxBaseFunc.h"
 
 #ifdef WINDOWS_DESKTOP_OS
 #include "Windows/DxSoundWin.h"
@@ -138,6 +139,7 @@ struct SOUNDBUFFER
 	int							Pan ;					// パン( 10000:左100%右0%  0:左右100%  -100000:右100% )
 	int							Volume[ SOUNDBUFFER_MAX_CHANNEL_NUM ] ;	// ボリューム( 10000:0%  0:100% )
 	int							Frequency ;				// 再生周波数( -1:デフォルト )
+	int							ChangeFrequency ;		// 一度でも再生周波数を変えたかどうか( TRUE:変えた  FALSE:変えていない )
 	int							SampleNum ;				// サンプルの数
 
 	WAVEFORMATEX				Format ;				// バッファのフォーマット
@@ -401,6 +403,7 @@ struct SOUNDSYSTEMDATA
 	int							Create3DSoundFlag ;				// 3Dサウンドを作成するかどうかのフラグ( TRUE:３Ｄサウンドを作成する  FALSE:３Ｄサウンドを作成しない )
 	int							OldVolumeTypeFlag ;				// Ver3.10c以前の音量計算式を使用するかどうかのフラグ( TRUE:古い計算式を使用する  FALSE:新しい計算式を使用する )
 	int							SoundMode ;						// 再生形式
+	int							CurrentTimeType ;				// GetSoundCurrentTime などを使用した場合に取得できる再生時間のタイプ
 
 	int							MaxVolume ;						// 最大音量
 
@@ -581,6 +584,22 @@ extern	int		PauseSoftSoundAll( int PauseFlag ) ;																	// 全てのソフト
 extern	int		CopySoftSound( int SrcSoftSoundHandle, int DestSoftSoundHandle ) ;										// サウンドデータを別のサウンドデータにコピーする
 extern	int		ConvertIntToFloatSoftSound( int SrcSoftSoundHandle, int DestSoftSoundHandle ) ;							// int型のサウンドデータから float型のサウンドデータをセットアップする
 extern	int		ConvertFloatToIntSoftSound( int SrcSoftSoundHandle, int DestSoftSoundHandle ) ;							// float型のサウンドデータから int型のサウンドデータをセットアップする
+
+// デシベル値から XAudio2 の率値に変換する関数
+__inline float D_XAudio2DecibelsToAmplitudeRatio( float Decibels )
+{
+    return _POW( 10.0f, Decibels / 20.0f ) ;
+}
+
+// XAudio2 の率値からデシベル値に変換する関数
+__inline float D_XAudio2AmplitudeRatioToDecibels( float Volume )
+{
+    if( Volume == 0 )
+    {
+        return -3.402823466e+38f ;
+    }
+    return 20.0f * ( float )_LOG10( Volume ) ;
+}
 
 
 

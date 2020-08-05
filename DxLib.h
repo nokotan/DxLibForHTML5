@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ヘッダファイル
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -12,9 +12,9 @@
 #include "DxCompileConfig.h"
 
 // ＤＸライブラリのバージョン
-#define DXLIB_VERSION 0x321d
-#define DXLIB_VERSION_STR_T _T( "3.21d" )
-#define DXLIB_VERSION_STR_W    L"3.21d"
+#define DXLIB_VERSION 0x321f
+#define DXLIB_VERSION_STR_T _T( "3.21f" )
+#define DXLIB_VERSION_STR_W    L"3.21f"
 
 // 設定 -----------------------------------------------------------------------
 
@@ -61,7 +61,7 @@
 #define MAX_SOCKET_NUM								(8192)				// 同時に持てる通信ハンドルの最大数
 #define MAX_LIGHT_NUM								(4096)				// 同時に持てるライトハンドルの最大数
 #define MAX_SHADER_NUM								(4096)				// 同時に持てるシェーダーハンドルの最大数
-#define MAX_CONSTANT_BUFFER_NUM						(8192)				// 同時に持てる定数バッファハンドルの最大数
+#define MAX_CONSTANT_BUFFER_NUM						(32768)				// 同時に持てる定数バッファハンドルの最大数
 #define MAX_MODEL_BASE_NUM							(32768)				// 同時に持てる３Ｄモデル基本データハンドルの最大数
 #define MAX_MODEL_NUM								(32768)				// 同時に持てる３Ｄモデルデータハンドルの最大数
 #define MAX_VERTEX_BUFFER_NUM						(16384)				// 同時に持てる頂点バッファハンドルの最大数
@@ -427,6 +427,10 @@
 #define DX_SOUNDDATATYPE_MEMNOPRESS_PLUS			(1)				// 圧縮された全データはシステムメモリに格納され、再生しながら逐次解凍され、最終的にすべてサウンドメモリに格納される(その後システムメモリに存在する圧縮データは破棄される)
 #define DX_SOUNDDATATYPE_MEMPRESS					(2)				// 圧縮された全データはシステムメモリに格納され、再生する部分だけ逐次解凍しながらサウンドメモリに格納する(鳴らし終わると解凍したデータは破棄されるので何度も解凍処理が行われる)
 #define DX_SOUNDDATATYPE_FILE						(3)				// 圧縮されたデータの再生する部分だけファイルから逐次読み込み解凍され、サウンドメモリに格納される(鳴らし終わると解凍したデータは破棄されるので何度も解凍処理が行われる)
+
+// サウンドの取得する再生時間タイプ
+#define DX_SOUNDCURRENTTIME_TYPE_LOW_LEVEL			(0)				// 低レベルAPIを使用してより正確な再生時間を取得する
+#define DX_SOUNDCURRENTTIME_TYPE_SOFT				(1)				// APIは使用せず、ソフトウェア処理レベルでの再生時間を取得する
 
 // 読み込み処理のタイプ
 #define DX_READSOUNDFUNCTION_PCM					(1 << 0)		// PCM の読み込み処理
@@ -1699,6 +1703,15 @@ typedef struct tagPOINTDATA
 	int						pal ;							// パラメータ
 } POINTDATA, *LPPOINTDATA ;
 
+// 立方体データ型
+typedef struct tagCUBEDATA
+{
+	VECTOR					Pos1 ;							// 座標1
+	VECTOR					Pos2 ;							// 座標2
+	COLOR_U8				DifColor ;						// ディフューズカラー
+	COLOR_U8				SpcColor ;						// スペキュラカラー
+} CUBEDATA, *LPCUBEDATA ;
+
 #ifndef DX_NOTUSE_DRAWFUNCTION
 
 // イメージフォーマットデータ
@@ -2713,6 +2726,7 @@ extern	int			DrawTriangle3D(  VECTOR   Pos1,   VECTOR   Pos2, VECTOR   Pos3,    
 extern	int			DrawTriangle3DD( VECTOR_D Pos1,   VECTOR_D Pos2, VECTOR_D Pos3,                                unsigned int Color, int FillFlag ) ;				// ３Ｄの三角形を描画する
 extern	int			DrawCube3D(      VECTOR   Pos1,   VECTOR   Pos2,                            unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの立方体を描画する
 extern	int			DrawCube3DD(     VECTOR_D Pos1,   VECTOR_D Pos2,                            unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの立方体を描画する
+extern	int			DrawCubeSet3D(   CUBEDATA *CubeDataArray, int Num, int FillFlag ) ;																				// ３Ｄの立方体の集合を描画する
 extern	int			DrawSphere3D(    VECTOR   CenterPos,                  float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの球体を描画する
 extern	int			DrawSphere3DD(   VECTOR_D CenterPos,                  double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの球体を描画する
 extern	int			DrawCapsule3D(   VECTOR   Pos1,   VECTOR   Pos2,      float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄのカプセルを描画する
@@ -2775,7 +2789,8 @@ extern	int			DrawRectModiGraphF(       float x1, float y1, float x2, float y2, f
 extern	int			DrawBlendGraph(           int x, int y, int GrHandle, int TransFlag,                 int BlendGraph, int BorderParam, int BorderRange ) ;									// ブレンド画像と合成して画像を等倍描画する
 extern	int			DrawBlendGraphPos(        int x, int y, int GrHandle, int TransFlag, int bx, int by, int BlendGraph, int BorderParam, int BorderRange ) ;									// ブレンド画像と合成して画像を等倍描画する( ブレンド画像の起点座標を指定する引数付き )
 
-extern	int			DrawCircleGauge(          int CenterX, int CenterY, double Percent, int GrHandle, double StartPercent = 0.0 , double Scale = 1.0 , int ReverseX = FALSE , int ReverseY = FALSE ) ;										// 円グラフ的な描画を行う( GrHandle の画像の上下左右の端は透過色にしておく必要があります )
+extern	int			DrawCircleGauge(          int   CenterX, int   CenterY, double Percent, int GrHandle, double StartPercent = 0.0 , double Scale = 1.0 , int ReverseX = FALSE , int ReverseY = FALSE ) ;										// 円グラフ的な描画を行う( GrHandle の画像の上下左右の端は透過色にしておく必要があります )
+extern	int			DrawCircleGaugeF(         float CenterX, float CenterY, double Percent, int GrHandle, double StartPercent = 0.0 , double Scale = 1.0 , int ReverseX = FALSE , int ReverseY = FALSE ) ;										// 円グラフ的な描画を行う( GrHandle の画像の上下左右の端は透過色にしておく必要があります )( 座標指定が float 版 )
 
 extern	int			DrawGraphToZBuffer(       int X, int Y,                                                                 int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */ ) ;														// Ｚバッファに対して画像の等倍描画
 extern	int			DrawTurnGraphToZBuffer(   int x, int y,                                                                 int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */ ) ;														// Ｚバッファに対して画像の左右反転描画
@@ -2845,6 +2860,7 @@ extern	int			GetWriteAlphaChannelFlag(			void ) ;														// 描画先のアルフ
 extern	int			CheckSeparateAlphaBlendEnable(		void ) ;														// 描画先のアルファチャンネルの内容を書き換えないことができるかどうかを取得する( TRUE:書き換えないことができる  FALSE:書き換えないことができない )
 extern	int			SetIgnoreDrawGraphColor(			int EnableFlag ) ;												// 描画する画像のＲＧＢ成分を無視するかどうかを指定する( EnableFlag:この機能を使うかどうか( TRUE:使う  FALSE:使わない( デフォルト ) ) )
 extern	int			SetMaxAnisotropy(					int MaxAnisotropy ) ;											// 最大異方性値を設定する
+extern	int			GetMaxAnisotropy(					void ) ;														// 最大異方性値を取得する
 extern	int			SetUseLarge3DPositionSupport(		int UseFlag ) ;													// ３Ｄ処理で使用する座標値が 10000000.0f などの大きな値になっても描画の崩れを小さく抑える処理を使用するかどうかを設定する、DxLib_Init の呼び出し前でのみ使用可能( TRUE:描画の崩れを抑える処理を使用する( CPU負荷が上がります )　　FALSE:描画の崩れを抑える処理は使用しない( デフォルト ) )
 
 extern	int			SetUseZBufferFlag(					int Flag ) ;													// Ｚバッファを使用するかどうかを設定する( ２Ｄと３Ｄ描画に影響 )( TRUE:Ｚバッファを使用する  FALSE:Ｚバッファを使用しない( デフォルト ) )
@@ -4671,6 +4687,8 @@ extern	int			SetDisableReadSoundFunctionMask(     int Mask ) ;																		
 extern	int			GetDisableReadSoundFunctionMask(     void ) ;																					// 使用しないサウンドデータ読み込み処理のマスクを取得する( DX_READSOUNDFUNCTION_PCM 等 )
 extern	int			SetEnableSoundCaptureFlag(           int Flag ) ;																				// サウンドキャプチャを前提とした動作をするかどうかを設定する
 extern	int			SetUseOldVolumeCalcFlag(             int Flag ) ;																				// ChangeVolumeSoundMem, ChangeNextPlayVolumeSoundMem, ChangeMovieVolumeToGraph の音量計算式を Ver3.10c以前のものを使用するかどうかを設定する( TRUE:Ver3.10c以前の計算式を使用  FALSE:3.10d以降の計算式を使用( デフォルト ) )
+extern	int			SetSoundCurrentTimeType(             int Type /* DX_SOUNDCURRENTTIME_TYPE_LOW_LEVEL など */ ) ;									// GetSoundCurrentTime などを使用した場合に取得できる再生時間のタイプを設定する
+extern	int			GetSoundCurrentTimeType(             void ) ;																					// GetSoundCurrentTime などを使用した場合に取得できる再生時間のタイプを取得する
 
 extern	int			SetCreate3DSoundFlag(                     int Flag ) ;																			// 次に作成するサウンドハンドルを３Ｄサウンド用にするかどうかを設定する( TRUE:３Ｄサウンド用にする  FALSE:３Ｄサウンド用にしない( デフォルト ) )
 extern	int			Set3DSoundOneMetre(                       float Distance ) ;																	// ３Ｄ空間の１メートルに相当する距離を設定する、DxLib_Init を呼び出す前でのみ呼び出し可能( デフォルト:1.0f )
@@ -5274,7 +5292,7 @@ extern	const TCHAR *Live2D_Model_GetHitAreaName(						int Live2DModelHandle, int
 extern	const TCHAR *Live2D_Model_GetPhysicsFileName(					int Live2DModelHandle ) ;																// Live2D のモデルの物理演算設定ファイルの名前を取得する
 extern	const TCHAR *Live2D_Model_GetPoseFileName(						int Live2DModelHandle ) ;																// Live2D のモデルのパーツ切り替え設定ファイルの名前を取得する
 extern	int			Live2D_Model_GetExpressionCount(					int Live2DModelHandle ) ;																// Live2D のモデルの表情設定ファイルの数を取得する
-extern	const TCHAR *Live2D_Model_GetExpressionName(					int Live2DModelHandle, int index ) ;													// Live2D のモデルの表情設定ファイルを識別する名前（別名）を取得する
+extern	const TCHAR *Live2D_Model_GetExpressionName(					int Live2DModelHandle, int index ) ;													// Live2D のモデルの表情設定ファイルを識別するIDを取得する
 extern	const TCHAR *Live2D_Model_GetExpressionFileName(				int Live2DModelHandle, int index ) ;													// Live2D のモデルの表情設定ファイルの名前を取得する
 extern	int			Live2D_Model_GetMotionGroupCount(					int Live2DModelHandle ) ;																// Live2D のモデルのモーショングループの数を取得する
 extern	const TCHAR *Live2D_Model_GetMotionGroupName(					int Live2DModelHandle, int index ) ;													// Live2D のモデルのモーショングループの名前を取得する

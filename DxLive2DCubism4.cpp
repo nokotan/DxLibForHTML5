@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Live2D Cubism4 関係プログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // ----------------------------------------------------------------------------
 
@@ -18,6 +18,7 @@
 #include "DxHandle.h"
 #include "DxLive2DCubism4.h"
 #include "DxSystem.h"
+#include "DxLog.h"
 #include "DxASyncLoad.h"
 #include "DxUseCLibLive2DCubism4.h"
 
@@ -453,6 +454,7 @@ extern int Live2DCubism4_LoadModel_Static(
 	SetEnMarkW_( DirPath, sizeof( DirPath ) ) ;
 	if( Model->AppModel->LoadAssets( ( BYTE * )DirPath, ( BYTE * )FileName, ASyncThread ) == false )
 	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x4c\x00\x69\x00\x76\x00\x65\x00\x32\x00\x44\x00\x20\x00\x45\x00\x72\x00\x72\x00\x6f\x00\x72\x00\x20\x00\x3a\x00\x20\x00\xe2\x30\xc7\x30\xeb\x30\xd5\x30\xa1\x30\xa4\x30\xeb\x30\x20\x00\x25\x00\x73\x00\x20\x00\x6e\x30\xad\x8a\x7f\x30\xbc\x8f\x7f\x30\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x00"/*@ L"Live2D Error : モデルファイル %s の読み込みに失敗しました" @*/, DirPath )) ;
 		return -1 ;
 	}
 
@@ -908,7 +910,7 @@ extern const TCHAR *NS_Live2D_Model_GetParameterId( int Live2DModelHandle, int i
 #ifdef UNICODE
 	return ( wchar_t * )( IdHandle != NULL ? IdHandle->GetString().GetRawStringW() : NULL ) ;
 #else
-	return IdHandle != NULL ? IdHandle->GetString().GetRawString() : NULL ;
+	return IdHandle != NULL ? IdHandle->GetString().GetRawStringA() : NULL ;
 #endif
 }
 
@@ -1082,7 +1084,7 @@ extern const TCHAR *NS_Live2D_Model_GetHitAreaName( int Live2DModelHandle, int i
 #ifdef UNICODE
 	return ( wchar_t * )Model->AppModel->_modelSetting->GetHitAreaNameW( index ) ;
 #else
-	return Model->AppModel->_modelSetting->GetHitAreaName( index ) ;
+	return Model->AppModel->_modelSetting->GetHitAreaNameA( index ) ;
 #endif 
 }
 
@@ -1098,7 +1100,7 @@ extern const TCHAR *NS_Live2D_Model_GetPhysicsFileName( int Live2DModelHandle )
 #ifdef UNICODE
 	return ( wchar_t * )Model->AppModel->_modelSetting->GetPhysicsFileNameW() ;
 #else
-	return Model->AppModel->_modelSetting->GetPhysicsFileName() ;
+	return Model->AppModel->_modelSetting->GetPhysicsFileNameA() ;
 #endif 
 }
 
@@ -1114,7 +1116,7 @@ extern const TCHAR *NS_Live2D_Model_GetPoseFileName( int Live2DModelHandle )
 #ifdef UNICODE
 	return ( wchar_t * )Model->AppModel->_modelSetting->GetPoseFileNameW() ;
 #else
-	return Model->AppModel->_modelSetting->GetPoseFileName() ;
+	return Model->AppModel->_modelSetting->GetPoseFileNameA() ;
 #endif 
 }
 
@@ -1131,7 +1133,7 @@ extern int NS_Live2D_Model_GetExpressionCount( int Live2DModelHandle )
 	return Model->AppModel->_modelSetting->GetExpressionCount() ;
 }
 
-// Live2D のモデルの表情設定ファイルを識別する名前（別名）を取得する
+// Live2D のモデルの表情設定ファイルを識別するIDを取得する
 extern const TCHAR *NS_Live2D_Model_GetExpressionName( int Live2DModelHandle, int index )
 {
 	LIVE2DCUBISM4MODEL * Model ;
@@ -1143,7 +1145,7 @@ extern const TCHAR *NS_Live2D_Model_GetExpressionName( int Live2DModelHandle, in
 #ifdef UNICODE
 	return ( wchar_t * )Model->AppModel->_modelSetting->GetExpressionNameW( index ) ;
 #else
-	return Model->AppModel->_modelSetting->GetExpressionName( index ) ;
+	return Model->AppModel->_modelSetting->GetExpressionNameA( index ) ;
 #endif 
 }
 
@@ -1159,7 +1161,7 @@ extern const TCHAR *NS_Live2D_Model_GetExpressionFileName( int Live2DModelHandle
 #ifdef UNICODE
 	return ( wchar_t * )Model->AppModel->_modelSetting->GetExpressionFileNameW( index ) ;
 #else
-	return Model->AppModel->_modelSetting->GetExpressionFileName( index ) ;
+	return Model->AppModel->_modelSetting->GetExpressionFileNameA( index ) ;
 #endif 
 }
 
@@ -1188,7 +1190,7 @@ extern const TCHAR *NS_Live2D_Model_GetMotionGroupName( int Live2DModelHandle, i
 #ifdef UNICODE
 	return ( wchar_t * )Model->AppModel->_modelSetting->GetMotionGroupNameW( index ) ;
 #else
-	return Model->AppModel->_modelSetting->GetMotionGroupName( index ) ;
+	return Model->AppModel->_modelSetting->GetMotionGroupNameA( index ) ;
 #endif 
 }
 
@@ -1298,7 +1300,7 @@ extern const TCHAR *Live2D_Model_GetMotionFileName_WCHAR_T( int Live2DModelHandl
 #ifdef UNICODE
 	Result = ( wchar_t * )Model->AppModel->_modelSetting->GetMotionFileNameW( UsegroupNameBuffer, index ) ;
 #else
-	Result = Model->AppModel->_modelSetting->GetMotionFileName( UsegroupNameBuffer, index ) ;
+	Result = Model->AppModel->_modelSetting->GetMotionFileNameA( UsegroupNameBuffer, index ) ;
 #endif 
 	WCHAR_T_TO_CHAR_STRING_END( groupName )
 
@@ -1356,7 +1358,7 @@ extern const TCHAR *Live2D_Model_GetMotionSoundFileName_WCHAR_T( int Live2DModel
 #ifdef UNICODE
 	Result = ( wchar_t * )Model->AppModel->_modelSetting->GetMotionSoundFileNameW( UsegroupNameBuffer, index ) ;
 #else
-	Result = Model->AppModel->_modelSetting->GetMotionSoundFileName( UsegroupNameBuffer, index ) ;
+	Result = Model->AppModel->_modelSetting->GetMotionSoundFileNameA( UsegroupNameBuffer, index ) ;
 #endif 
 	WCHAR_T_TO_CHAR_STRING_END( groupName )
 
@@ -1485,7 +1487,7 @@ extern const TCHAR *NS_Live2D_Model_GetUserDataFile( int Live2DModelHandle )
 #ifdef UNICODE
 	return ( wchar_t * )Model->AppModel->_modelSetting->GetUserDataFileW() ;
 #else
-	return Model->AppModel->_modelSetting->GetUserDataFile() ;
+	return Model->AppModel->_modelSetting->GetUserDataFileA() ;
 #endif 
 }
 
@@ -1514,7 +1516,7 @@ extern const TCHAR *NS_Live2D_Model_GetEyeBlinkParameterId( int Live2DModelHandl
 #ifdef UNICODE
 	return ( wchar_t * )Model->AppModel->_modelSetting->GetEyeBlinkParameterId( index )->GetString().GetRawStringW() ;
 #else
-	return Model->AppModel->_modelSetting->GetEyeBlinkParameterId( index )->GetString().GetRawString() ;
+	return Model->AppModel->_modelSetting->GetEyeBlinkParameterId( index )->GetString().GetRawStringA() ;
 #endif 
 }
 
@@ -1543,7 +1545,7 @@ extern const TCHAR *NS_Live2D_Model_GetLipSyncParameterId( int Live2DModelHandle
 #ifdef UNICODE
 	return ( wchar_t * )Model->AppModel->_modelSetting->GetLipSyncParameterId( index )->GetString().GetRawStringW() ;
 #else
-	return Model->AppModel->_modelSetting->GetLipSyncParameterId( index )->GetString().GetRawString() ;
+	return Model->AppModel->_modelSetting->GetLipSyncParameterId( index )->GetString().GetRawStringA() ;
 #endif 
 }
 

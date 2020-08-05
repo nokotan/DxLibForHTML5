@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字コード関係プログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // ----------------------------------------------------------------------------
 
@@ -19,7 +19,10 @@
 #include "DxChar.h"
 #include <float.h>
 #include <math.h>
-//#include "DxSystem.h"
+
+#ifdef WINDOWS_DESKTOP_OS
+#include "Windows/DxWinAPI.h"
+#endif // WINDOWS_DESKTOP_OS
 
 
 #ifndef DX_NON_NAMESPACE
@@ -3275,6 +3278,144 @@ extern DWORD GetStringCharCode( const char *String, int CharCodeFormat, int Inde
 	return CharCode ;
 }
 
+// 指定の文字コードに適合する文字の数を取得する
+extern DWORD CheckCharCodeFormat( const char *String, int CharCodeFormat, int *IsAllSuccess )
+{
+	size_t i ;
+	size_t j ;
+	int CharCount = 0 ;
+	int SuccessCount = 0 ;
+	int CharBytes ;
+	DWORD CharCode ;
+	DWORD UTFCode ;
+
+	switch( CharCodeFormat )
+	{
+	case DX_CHARCODEFORMAT_SHIFTJIS :
+	case DX_CHARCODEFORMAT_GB2312 :
+	case DX_CHARCODEFORMAT_UHC :
+	case DX_CHARCODEFORMAT_BIG5 :
+	case DX_CHARCODEFORMAT_WINDOWS_1252 :
+	case DX_CHARCODEFORMAT_ISO_IEC_8859_15 :
+	case DX_CHARCODEFORMAT_ASCII :
+		for( i = 0 ; ( ( BYTE * )String )[ i ] != 0 ; )
+		{
+			j = i ;
+			CharCode = GetCharCode_inline( &String[ i ], CharCodeFormat, &CharBytes, i ) ;
+			UTFCode = ConvCharCode_inline( CharCode, CharCodeFormat, DX_CHARCODEFORMAT_UTF32LE ) ;
+			if( UTFCode == 0 )
+			{
+				i = j + 1 ;
+			}
+			else
+			{
+				SuccessCount ++ ;
+			}
+			CharCount ++ ;
+		}
+		break ;
+
+	case DX_CHARCODEFORMAT_UTF8 :
+		for( i = 0 ; ( ( BYTE * )String )[ i ] != 0 ; )
+		{
+			j = i ;
+			UTFCode = GetCharCode_inline( &String[ i ], CharCodeFormat, &CharBytes, i ) ;
+			CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_SHIFTJIS ) ;
+			if( CharCode == 0 )
+			{
+				CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_GB2312 ) ;
+			}
+			if( CharCode == 0 )
+			{
+				CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_UHC ) ;
+			}
+			if( CharCode == 0 )
+			{
+				CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_BIG5 ) ;
+			}
+			if( CharCode == 0 )
+			{
+				i = j + 1 ;
+			}
+			else
+			{
+				SuccessCount ++ ;
+			}
+			CharCount ++ ;
+		}
+		break ;
+
+	case DX_CHARCODEFORMAT_UTF16LE :
+	case DX_CHARCODEFORMAT_UTF16BE :
+		for( i = 0 ; ( ( WORD * )String )[ i ] != 0 ; )
+		{
+			j = i ;
+			UTFCode = GetCharCode_inline( &String[ i * 2 ], CharCodeFormat, &CharBytes, i ) ;
+			CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_SHIFTJIS ) ;
+			if( CharCode == 0 )
+			{
+				CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_GB2312 ) ;
+			}
+			if( CharCode == 0 )
+			{
+				CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_UHC ) ;
+			}
+			if( CharCode == 0 )
+			{
+				CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_BIG5 ) ;
+			}
+			if( CharCode == 0 )
+			{
+				i = j + 1 ;
+			}
+			else
+			{
+				SuccessCount ++ ;
+			}
+			CharCount ++ ;
+		}
+		break ;
+
+	case DX_CHARCODEFORMAT_UTF32LE :
+	case DX_CHARCODEFORMAT_UTF32BE :
+		for( i = 0 ; ( ( DWORD * )String )[ i ] != 0 ; )
+		{
+			j = i ;
+			UTFCode = GetCharCode_inline( &String[ i * 4 ], CharCodeFormat, &CharBytes, i ) ;
+			CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_SHIFTJIS ) ;
+			if( CharCode == 0 )
+			{
+				CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_GB2312 ) ;
+			}
+			if( CharCode == 0 )
+			{
+				CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_UHC ) ;
+			}
+			if( CharCode == 0 )
+			{
+				CharCode = ConvCharCode_inline( UTFCode, CharCodeFormat, DX_CHARCODEFORMAT_BIG5 ) ;
+			}
+			if( CharCode == 0 )
+			{
+				i = j + 1 ;
+			}
+			else
+			{
+				SuccessCount ++ ;
+			}
+			CharCount ++ ;
+		}
+		break ;
+	}
+
+	if( IsAllSuccess != NULL )
+	{
+		*IsAllSuccess = CharCount == SuccessCount ? TRUE : FALSE ;
+	}
+
+	return SuccessCount ;
+}
+
 
 
 
@@ -4825,6 +4966,65 @@ extern char * CL_strupr( int CharCodeFormat, char *Str )
 			if( StrCharCode >= 0x61 && StrCharCode <= 0x7a )
 			{
 				StrCharCode = StrCharCode - 0x61 + 0x41 ;
+				PutCharCode_inline( StrCharCode, CharCodeFormat, ( char * )&( ( DWORD * )Str )[ i ] ) ;
+			}
+		}
+		break ;
+	}
+
+	return Str ;
+}
+
+extern char *CL_strlwr( int CharCodeFormat, char *Str )
+{
+	DWORD StrCharCode ;
+	int CodeBytes ;
+	int i ;
+	size_t j = 0 ;
+
+	switch( GetCharCodeFormatUnitSize_inline( CharCodeFormat ) )
+	{
+	case 1 :
+		for( i = 0 ; ( ( BYTE * )Str )[ i ] != 0 ; i ++ )
+		{
+			StrCharCode = GetCharCode_inline( ( const char * )&( ( BYTE * )Str )[ i ], CharCodeFormat, &CodeBytes, j ) ;
+			if( StrCharCode >= 0x41 && StrCharCode <= 0x5a )
+			{
+				StrCharCode = StrCharCode - 0x41 + 0x61 ;
+				PutCharCode_inline( StrCharCode, CharCodeFormat, ( char * )&( ( BYTE * )Str )[ i ] ) ;
+			}
+
+			if( CodeBytes > 1 )
+			{
+				i ++ ;
+			}
+		}
+		break ;
+
+	case 2 :
+		for( i = 0 ; ( ( WORD * )Str )[ i ] != 0 ; i ++ )
+		{
+			StrCharCode = GetCharCode_inline( ( const char * )&( ( WORD * )Str )[ i ], CharCodeFormat, &CodeBytes, j ) ;
+			if( StrCharCode >= 0x41 && StrCharCode <= 0x5a )
+			{
+				StrCharCode = StrCharCode - 0x41 + 0x61 ;
+				PutCharCode_inline( StrCharCode, CharCodeFormat, ( char * )&( ( WORD * )Str )[ i ] ) ;
+			}
+
+			if( CodeBytes > 2 )
+			{
+				i ++ ;
+			}
+		}
+		break ;
+
+	case 4 :
+		for( i = 0 ; ( ( DWORD * )Str )[ i ] != 0 ; i ++ )
+		{
+			StrCharCode = GetCharCode_inline( ( const char * )&( ( DWORD * )Str )[ i ], CharCodeFormat, &CodeBytes, j ) ;
+			if( StrCharCode >= 0x41 && StrCharCode <= 0x5a )
+			{
+				StrCharCode = StrCharCode - 0x41 + 0x61 ;
 				PutCharCode_inline( StrCharCode, CharCodeFormat, ( char * )&( ( DWORD * )Str )[ i ] ) ;
 			}
 		}

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		非同期読み込み処理プログラムヘッダファイル
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -66,6 +66,7 @@ struct ASYNCLOADTHREADINFO
 	DWORD					ExitFlag ;							// スレッドが終了時に立てるフラグ
 	int						JobFlag ;							// 現在仕事をしているかどうかのフラグ
 	int						MainThreadRequest ;					// メインスレッドへのリクエストを行っている最中かのフラグ
+	int						MainThreadRequestSuspend ;			// メインスレッドへのリクエストを行うためにスレッドが止まっているかのフラグ
 	int						SuspendFlag ;						// スレッドがとまっているかどうかのフラグ
 	int						SuspendStartTime ;					// スレッドがとまったときの時間
 	struct ASYNCLOADDATA_COMMON *Data ;							// 処理中のデータ
@@ -86,6 +87,7 @@ struct ASYNCLOADDATA
 
 	ASYNCLOAD_MAINTHREAD_REQUESTINFO	*MainThreadRequestInfo[ ASYNCLOADTHREAD_MAXNUM ] ;		// メインスレッドへの処理依頼
 	volatile int						MainThreadRequestInfoNum ;								// メインスレッドへの処理依頼の数
+	volatile int						MainThreadRequestSuspendThreadNum ;						// メインスレッドへの処理依頼をしているから止まっているスレッドの数
 
 	ASYNCLOADDATA_COMMON	*Data[ ASYNCLOADDATA_MAXNUM ] ;					// 非同期読み込みデータのポインタ配列へのポインタ
 	int						DataNum ;										// 非同期読み込みデータの数

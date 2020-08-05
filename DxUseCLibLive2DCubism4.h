@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Live2D Cubism4 関係ヘッダファイル
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -113,6 +113,7 @@ enum
 
 #define CSM_STRING_SMALL_LENGTH					64
 #define CSM_MAP_DEFAULT_SIZE					10
+#define CSM_IDMANAGER_MAX_ID_NUM				65536
 
 
 // 矩形形状(座標・長さはfloat値)を定義するクラス
@@ -214,6 +215,7 @@ public:
 	D_csmString&				Append( const char* c, int length ) ;						// 文字列を後方に追加する
 	D_csmString&				Append( int length, const char v ) ;						// 文字サイズを拡張して文字を埋める
 	const char *				GetRawString() const ;										// C言語文字列としてのポインタを取得する
+	const char *				GetRawStringA() ;											// C言語文字列としてのポインタを取得する( ＤＸライブラリの戻り値用 )
 	const BYTE/*wchar_t*/ *		GetRawStringW() ;											// C言語文字列としてのポインタを取得する( wchar_t用 )
 
 protected:
@@ -232,6 +234,11 @@ private:
 	int							_length ;					// 半角文字数（メモリ確保は最後に0が入るため_length+1）
 	int							_hashcode ;					// インスタンスに当てられたハッシュ値
 	char						_small[ 64 ] ;				// 文字列の長さが64-1未満の場合はこちらを使用
+
+	bool						_enableA ;					// ＤＸライブラリの戻り値用のデータが有効かどうか
+	char *						_ptrA ;						// 文字型配列のポインタ( ＤＸライブラリの戻り値用 )
+	int							_lengthA ;					// 半角文字数（メモリ確保は最後に0が入るため_length+1）( ＤＸライブラリの戻り値用 )
+	char						_smallA[ 64 ] ;				// 文字列の長さが64-1未満の場合はこちらを使用( ＤＸライブラリの戻り値用 )
 
 	bool						_enableW ;					// wchar_t 用のデータが有効かどうか
 	BYTE/*wchar_t*/ *			_ptrW ;						// 文字型配列のポインタ( wchar_t用 )
@@ -530,7 +537,7 @@ class D_CubismIdManager
 	friend struct D_CubismId ;
 
 public:
-	D_CubismIdManager(){}																	// コンストラクタ
+	D_CubismIdManager() ;																	// コンストラクタ
 	~D_CubismIdManager() ;																	// デストラクタ
 	void						RegisterIds( const char** ids, int count ) ;				// ID名をリストから登録
 	void						RegisterIds( const D_csmVector< D_csmString >& ids ) ;		// ID名をリストから登録
@@ -546,7 +553,9 @@ private:
 	D_CubismIdManager( const D_CubismIdManager& ) ;
 	D_CubismIdManager& operator=( const D_CubismIdManager& ) ;
 
-	D_csmVector< D_CubismId * >	_ids ;						// 登録されているIDのリスト
+	D_CubismId *				_ids[ CSM_IDMANAGER_MAX_ID_NUM ] ;							// 登録されているIDのリスト
+	volatile int				_idNum ;													// 登録されているIDの数
+	DX_CRITICAL_SECTION			_criticalSection ;											// クリティカルセクション
 } ;
 
 class D_JsonValue ;
@@ -568,6 +577,7 @@ public:
 	virtual ~D_JsonValue() {}																// デストラクタ
 	virtual D_csmString&		GetString( const D_csmString& defaultValue = "", const D_csmString& indent = "" ) = 0 ;// 要素を文字列で返す(D_csmString型)
 	virtual const char*			GetRawString( const D_csmString& defaultValue = "", const D_csmString& indent = "" ) ;// 要素を文字列で返す(char*)
+	virtual const char*			GetRawStringA( const D_csmString& defaultValue = "", const D_csmString& indent = "" ) ;// 要素を文字列で返す(ＤＸライブラリ用)
 	virtual const BYTE/*wchar_t*/ *	GetRawStringW( const D_csmString& defaultValue = "", const D_csmString& indent = "" ) ;// 要素を文字列で返す(wchar_t*)
 	virtual int					ToInt( int defaultValue = 0 ) { return defaultValue ; }			// 要素を数値型で返す( int)
 	virtual float				ToFloat( float defaultValue = 0.0f ) { return defaultValue ; }	// 要素を数値型で返す(float)
@@ -820,7 +830,7 @@ private:
 struct D_CubismMotionPoint
 {
 	float						Time ;						// 時間[秒]
-	float						Value ;				// 値
+	float						Value ;						// 値
 } ;
 
 // モーションカーブのセグメント
@@ -1217,36 +1227,48 @@ class D_ICubismModelSetting
 public:
 	virtual ~D_ICubismModelSetting() {}																// デストラクタ
 	virtual const char*					GetModelFileName() = 0 ;											// Mocファイルの名前を取得する
+	virtual const char*					GetModelFileNameA() = 0 ;											// Mocファイルの名前を取得する
 	virtual const BYTE/*wchar_t*/ *		GetModelFileNameW() = 0 ;											// Mocファイルの名前を取得する
 	virtual int							GetTextureCount() = 0 ;												// モデルが使用するテクスチャの数を取得する
 	virtual const char*					GetTextureDirectory() = 0 ;											// テクスチャが配置されたディレクトリの名前を取得する
+	virtual const char*					GetTextureDirectoryA() = 0 ;										// テクスチャが配置されたディレクトリの名前を取得する
 	virtual const BYTE/*wchar_t*/ *		GetTextureDirectoryW() = 0 ;										// テクスチャが配置されたディレクトリの名前を取得する
 	virtual const char*					GetTextureFileName( int index ) = 0 ;								// モデルが使用するテクスチャの名前を取得する
+	virtual const char*					GetTextureFileNameA( int index ) = 0 ;								// モデルが使用するテクスチャの名前を取得する
 	virtual const BYTE/*wchar_t*/ *		GetTextureFileNameW( int index ) = 0 ;								// モデルが使用するテクスチャの名前を取得する
 	virtual int							GetHitAreasCount() = 0 ;											// モデルに設定された当たり判定の数を取得する
 	virtual D_CubismIdHandle			GetHitAreaId( int index ) = 0 ;										// 当たり判定に設定されたIDを取得する
 	virtual const char*					GetHitAreaName( int index ) = 0 ;									// 当たり判定に設定された名前を取得する
+	virtual const char*					GetHitAreaNameA( int index ) = 0 ;									// 当たり判定に設定された名前を取得する
 	virtual const BYTE/*wchar_t*/ *		GetHitAreaNameW( int index ) = 0 ;									// 当たり判定に設定された名前を取得する
 	virtual const char*					GetPhysicsFileName() = 0 ;											// 物理演算設定ファイルの名前を取得する
+	virtual const char*					GetPhysicsFileNameA() = 0 ;											// 物理演算設定ファイルの名前を取得する
 	virtual const BYTE/*wchar_t*/ *		GetPhysicsFileNameW() = 0 ;											// 物理演算設定ファイルの名前を取得する
 	virtual const char*					GetPoseFileName() = 0 ;												// パーツ切り替え設定ファイルの名前を取得する
+	virtual const char*					GetPoseFileNameA() = 0 ;											// パーツ切り替え設定ファイルの名前を取得する
 	virtual const BYTE/*wchar_t*/ *		GetPoseFileNameW() = 0 ;											// パーツ切り替え設定ファイルの名前を取得する
 	virtual int							GetExpressionCount() = 0 ;											// 表情設定ファイルの数を取得する
 	virtual const char*					GetExpressionName( int index ) = 0 ;								// 表情設定ファイルを識別する名前（別名）を取得する
+	virtual const char*					GetExpressionNameA( int index ) = 0 ;								// 表情設定ファイルを識別する名前（別名）を取得する
 	virtual const BYTE/*wchar_t*/ *		GetExpressionNameW( int index ) = 0 ;								// 表情設定ファイルを識別する名前（別名）を取得する
 	virtual const char*					GetExpressionFileName( int index ) = 0 ;							// 表情設定ファイルの名前を取得する
+	virtual const char*					GetExpressionFileNameA( int index ) = 0 ;							// 表情設定ファイルの名前を取得する
 	virtual const BYTE/*wchar_t*/ *		GetExpressionFileNameW( int index ) = 0 ;							// 表情設定ファイルの名前を取得する
 	virtual int							GetMotionGroupCount() = 0 ;											// モーショングループの数を取得する
 	virtual const char*					GetMotionGroupName( int index ) = 0 ;								// モーショングループの名前を取得する
+	virtual const char*					GetMotionGroupNameA( int index ) = 0 ;								// モーショングループの名前を取得する
 	virtual const BYTE/*wchar_t*/ *		GetMotionGroupNameW( int index ) = 0 ;								// モーショングループの名前を取得する
 	virtual int							GetMotionCount( const char* groupName ) = 0 ;						// モーショングループに含まれるモーションの数を取得する
 	virtual const char*					GetMotionFileName( const char* groupName, int index ) = 0 ;			// グループ名とインデックス値からモーションファイルの名前を取得する
+	virtual const char*					GetMotionFileNameA( const char* groupName, int index ) = 0 ;		// グループ名とインデックス値からモーションファイルの名前を取得する
 	virtual const BYTE/*wchar_t*/ *		GetMotionFileNameW( const char* groupName, int index ) = 0 ;		// グループ名とインデックス値からモーションファイルの名前を取得する
 	virtual const char*					GetMotionSoundFileName( const char* groupName, int index ) = 0 ;	// モーションに対応するサウンドファイルの名前を取得する
+	virtual const char*					GetMotionSoundFileNameA( const char* groupName, int index ) = 0 ;	// モーションに対応するサウンドファイルの名前を取得する
 	virtual const BYTE/*wchar_t*/ *		GetMotionSoundFileNameW( const char* groupName, int index ) = 0 ;	// モーションに対応するサウンドファイルの名前を取得する
 	virtual float						GetMotionFadeInTimeValue( const char* groupName, int index ) = 0 ;	// モーション開始時のフェードイン処理時間を取得する
 	virtual float						GetMotionFadeOutTimeValue( const char* groupName, int index ) = 0 ;	// モーション終了時のフェードアウト処理時間を取得する
 	virtual const char*					GetUserDataFile() = 0 ;												// ユーザデータのファイル名を取得する
+	virtual const char*					GetUserDataFileA() = 0 ;											// ユーザデータのファイル名を取得する
 	virtual const BYTE/*wchar_t*/ *		GetUserDataFileW() = 0 ;											// ユーザデータのファイル名を取得する
 	virtual bool						GetLayoutMap( D_csmMap<D_csmString, float>& outLayoutMap ) = 0 ;	// レイアウト情報を取得する
 	virtual int							GetEyeBlinkParameterCount() = 0 ;									// 目パチに関連付けられたパラメータの数を取得する
@@ -1263,36 +1285,48 @@ public:
 	virtual ~D_CubismModelSettingJson() ;													// デストラクタ
 	D_CubismJson*				GetJsonPointer() const ;									// CubismJsonオブジェクトのポインタを取得する
 	const char*					GetModelFileName() ;
+	const char*					GetModelFileNameA() ;
 	const BYTE/*wchar_t*/ *		GetModelFileNameW() ;
 	int							GetTextureCount() ;
 	const char*					GetTextureDirectory() ;
+	const char*					GetTextureDirectoryA() ;
 	const BYTE/*wchar_t*/ *		GetTextureDirectoryW() ;
 	const char*					GetTextureFileName( int index ) ;
+	const char*					GetTextureFileNameA( int index ) ;
 	const BYTE/*wchar_t*/ *		GetTextureFileNameW( int index ) ;
 	int							GetHitAreasCount() ;
 	D_CubismIdHandle			GetHitAreaId( int index ) ;
 	const char*					GetHitAreaName( int index ) ;
+	const char*					GetHitAreaNameA( int index ) ;
 	const BYTE/*wchar_t*/ *		GetHitAreaNameW( int index ) ;
 	const char*					GetPhysicsFileName() ;
+	const char*					GetPhysicsFileNameA() ;
 	const BYTE/*wchar_t*/ *		GetPhysicsFileNameW() ;
 	const char*					GetPoseFileName() ;
+	const char*					GetPoseFileNameA() ;
 	const BYTE/*wchar_t*/ *		GetPoseFileNameW() ;
 	int							GetExpressionCount() ;
 	const char*					GetExpressionName( int index ) ;
+	const char*					GetExpressionNameA( int index ) ;
 	const BYTE/*wchar_t*/ *		GetExpressionNameW( int index ) ;
 	const char*					GetExpressionFileName( int index ) ;
+	const char*					GetExpressionFileNameA( int index ) ;
 	const BYTE/*wchar_t*/ *		GetExpressionFileNameW( int index ) ;
 	int							GetMotionGroupCount() ;
 	const char*					GetMotionGroupName( int index ) ;
+	const char*					GetMotionGroupNameA( int index ) ;
 	const BYTE/*wchar_t*/ *		GetMotionGroupNameW( int index ) ;
 	int							GetMotionCount( const char* groupName ) ;
 	const char*					GetMotionFileName( const char* groupName, int index ) ;
+	const char*					GetMotionFileNameA( const char* groupName, int index ) ;
 	const BYTE/*wchar_t*/ *		GetMotionFileNameW( const char* groupName, int index ) ;
 	const char*					GetMotionSoundFileName( const char* groupName, int index ) ;
+	const char*					GetMotionSoundFileNameA( const char* groupName, int index ) ;
 	const BYTE/*wchar_t*/ *		GetMotionSoundFileNameW( const char* groupName, int index ) ;
 	float						GetMotionFadeInTimeValue( const char* groupName, int index ) ;
 	float						GetMotionFadeOutTimeValue( const char* groupName, int index ) ;
 	const char*					GetUserDataFile() ;
+	const char*					GetUserDataFileA() ;
 	const BYTE/*wchar_t*/ *		GetUserDataFileW() ;
 	bool						GetLayoutMap( D_csmMap<D_csmString, float>& outLayoutMap ) ;
 	int							GetEyeBlinkParameterCount() ;
@@ -1966,6 +2000,7 @@ private:
 	int							backupBlendParam ;
 	int							backupCullMode ;
 	int							backupUseZBuffer ;
+	int							backupMaxAnisotropy ;
 	int							backupDrawMode ;
 	RECT						backupDrawArea ;
 	int							backupDrawAlphaTestMode ;
@@ -2201,7 +2236,7 @@ protected:
 	void						DoDraw() ;													// モデルを描画する処理。モデルを描画する空間のView-Projection行列を渡す。
 
 public:
-	void						SetupModel( D_ICubismModelSetting* setting ) ;				// model3.jsonからモデルを生成する。model3.jsonの記述に従ってモデル生成、モーション、物理演算などのコンポーネント生成を行う。
+	bool						SetupModel( D_ICubismModelSetting* setting ) ;				// model3.jsonからモデルを生成する。model3.jsonの記述に従ってモデル生成、モーション、物理演算などのコンポーネント生成を行う。
 	void						SetupTextures( int ASyncThread ) ;							// テクスチャをロードする
 	void						PreloadMotionGroup( const char* group ) ;					// モーションデータをグループ名から一括でロードする。モーションデータの名前は内部でModelSettingから取得する。
 	void						ReleaseMotionGroup( const char* group ) const ;				// モーションデータをグループ名から一括で解放する。モーションデータの名前は内部でModelSettingから取得する。

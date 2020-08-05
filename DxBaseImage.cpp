@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＢａｓｅＩｍａｇｅプログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // ----------------------------------------------------------------------------
 
@@ -25,6 +25,8 @@
 #ifdef WINDOWS_DESKTOP_OS
 #include "Windows/DxBaseImageWin.h"
 #include "Windows/DxWinAPI.h"
+#include "Windows/DxGraphicsWin.h"
+#include "Windows/DxGraphicsD3D11.h"
 #endif // WINDOWS_DESKTOP_OS
 
 #ifdef __ANDROID__
@@ -6639,6 +6641,17 @@ extern int NS_GetDesktopScreenBaseImage( int x1, int y1, int x2, int y2, BASEIMA
 	}
 
 	SETUP_WIN_API
+
+#ifndef DX_NON_DIRECT3D11
+	// Direct3D11 の場合は別処理
+	if( GRAWIN.Setting.UseGraphicsAPI == GRAPHICS_API_DIRECT3D11_WIN32 )
+	{
+		if( Graphics_Hardware_D3D11_GetDesktopScreenBaseImage_PF( x1, y1, x2, y2, BaseImage, DestX, DestY ) == 0 )
+		{
+			return 0 ;
+		}
+	}
+#endif // DX_NON_DIRECT3D11
 
 	// デスクトップウインドウハンドルを取得
 	DesktopHWND = WinAPIData.Win32Func.GetDesktopWindowFunc() ;

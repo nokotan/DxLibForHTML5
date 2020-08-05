@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		通信関連プログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -239,7 +239,7 @@ extern int NS_ProcessNetMessage( int RunReleaseProcess )
 		MSG msg;
 
 		// メッセージが何もないかあった場合はﾒｯｾｰｼﾞの処理が終わるまでループする（制限あり）
-		while( WinAPIData.Win32Func.PeekMessageWFunc( &msg, SockData.MessageWindow, 0, 0, PM_REMOVE ) )
+		while( PeekMessageWFunc( &msg, SockData.MessageWindow, 0, 0, PM_REMOVE ) )
 		{
 			WinAPIData.Win32Func.TranslateMessageFunc( &msg );
 			WinAPIData.Win32Func.DispatchMessageWFunc( &msg );
@@ -398,7 +398,7 @@ extern 	int InitializeNetWork( HWND WindowHandle )
 	{
 		WNDCLASSEXW wc ;
 		HWND ParentWindow ;
-		HINSTANCE hInst = WinAPIData.Win32Func.GetModuleHandleWFunc( NULL ) ;
+		HINSTANCE hInst = GetModuleHandleWFunc( NULL ) ;
 		const wchar_t *Name = L"WinSockProc" ;
 
 		// 子ウインドウのウインドウクラスを登録
@@ -410,14 +410,14 @@ extern 	int InitializeNetWork( HWND WindowHandle )
 			wc.cbWndExtra		= 0 ;
 			wc.hInstance		= hInst ;
 			wc.hIcon			= NULL ;
-			wc.hCursor			= WinAPIData.Win32Func.LoadCursorWFunc( NULL , ( LPCWSTR )IDC_ARROW ) ;
+			wc.hCursor			= LoadCursorWFunc( NULL , ( LPCWSTR )IDC_ARROW ) ;
 			wc.hbrBackground	= (HBRUSH)WinAPIData.Win32Func.GetStockObjectFunc(NULL_BRUSH);
 			wc.lpszMenuName		= NULL ;
 			wc.lpszClassName	= Name ;
 			wc.cbSize			= sizeof( WNDCLASSEX );
 			wc.hIconSm			= NULL ;
 
-			if( !WinAPIData.Win32Func.RegisterClassExWFunc( &wc ) )
+			if( !RegisterClassExWFunc( &wc ) )
 			{
 				DXST_LOGFILE_ADDUTF16LE( "\xcd\x30\xc3\x30\xc8\x30\xef\x30\xfc\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\x50\x5b\xa6\x30\xa4\x30\xf3\x30\xc9\x30\xa6\x30\xaf\x30\xe9\x30\xb9\x30\x6e\x30\x7b\x76\x32\x93\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ネットワーク処理用の子ウインドウクラスの登録に失敗しました\n" @*/ ) ;
 				return -1 ;
@@ -429,7 +429,7 @@ extern 	int InitializeNetWork( HWND WindowHandle )
 
 		// 子ウインドウを生成
 		SockData.MessageWindow = 
-			WinAPIData.Win32Func.CreateWindowExWFunc(
+			CreateWindowExWFunc(
 				WS_EX_TRANSPARENT,
 				Name,
 				Name ,
@@ -522,7 +522,7 @@ extern int TerminateNetWork( void )
 	// ウインドウを削除する
 	if( SockData.MessageWindow != NULL )
 	{
-		WinAPIData.Win32Func.PostMessageWFunc( SockData.MessageWindow, WM_CLOSE, 0, 0 );
+		PostMessageWFunc( SockData.MessageWindow, WM_CLOSE, 0, 0 );
 		while( SockData.DestroyFlag == FALSE )
 		{
 			if( NS_ProcessNetMessage() <= 0 ) break ;
@@ -686,7 +686,7 @@ extern LRESULT CALLBACK WinSockWindowProc( HWND hWnd, UINT message, WPARAM wPara
 	if( HandleManageArray[ DX_HANDLETYPE_NETWORK ].InitializeFlag != FALSE )
 		CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
 
-	return WinAPIData.Win32Func.DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
+	return DefWindowProcWFunc( hWnd , message , wParam , lParam ) ;
 }
 	
 
@@ -5281,8 +5281,8 @@ extern int NS_HTTP_StartFileDownload( const char *FileURL, const char *SavePath,
 	{
 		// ファイルに保存
 #ifdef UNICODE
-		WinAPIData.Win32Func.DeleteFileWFunc( http->FileName ) ;
-		http->FilePoint = WinAPIData.Win32Func.CreateFileWFunc( http->FileName, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL ) ;
+		DeleteFileWFunc( http->FileName ) ;
+		http->FilePoint = CreateFileWFunc( http->FileName, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL ) ;
 #else
 		WinAPIData.Win32Func.DeleteFileAFunc( http->FileName ) ;
 		http->FilePoint = WinAPIData.Win32Func.CreateFileAFunc( http->FileName, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL ) ;
