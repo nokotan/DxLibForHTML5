@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		Android—pJavaŠÖŒWƒwƒbƒ_ƒtƒ@ƒCƒ‹
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -55,6 +55,10 @@ struct DXLIB_JAVA_ANDROID_INFO
 	jclass					class_Runtime ;
 	jclass					class_Locale ;
 	jclass					class_Calendar ;
+	jclass					class_URLConnection ;
+	jclass					class_HttpURLConnection ;
+	jclass					class_URL ;
+	jclass					class_InputStream ;
 	jclass					class_File ;
 	jclass					class_CharSequence ;
 	jclass					class_ActivityManager ;
@@ -116,6 +120,9 @@ struct DXLIB_JAVA_ANDROID_INFO
 	jmethodID				methodID_VibrationEffect_createWaveform_withAmplitudes ;
 	jmethodID				methodID_Process_myPid ;
 	jmethodID				methodID_Process_killProcess ;
+	jmethodID				methodID_InputStream_read_0param ;
+	jmethodID				methodID_InputStream_read_1param ;
+	jmethodID				methodID_InputStream_close ;
 	jmethodID				methodID_File_getAbsolutePath ;
 	jmethodID				methodID_CharSequence_toString ;
 	jmethodID				methodID_Integer_parseInt ;
@@ -129,6 +136,16 @@ struct DXLIB_JAVA_ANDROID_INFO
 	jmethodID				methodID_Locale_getCountry ;
 	jmethodID				methodID_Calendar_getInstance ;
 	jmethodID				methodID_Calendar_get ;
+	jmethodID				methodID_URLConnection_setDoInput ;
+	jmethodID				methodID_URLConnection_setDoOutput ;
+	jmethodID				methodID_URLConnection_connect ;
+	jmethodID				methodID_URLConnection_getInputStream ;
+	jmethodID				methodID_HttpURLConnection_newHttpURLConnection ;
+	jmethodID				methodID_HttpURLConnection_setRequestMethod ;
+	jmethodID				methodID_HttpURLConnection_setInstanceFollowRedirects ;
+	jmethodID				methodID_HttpURLConnection_getResponseCode ;
+	jmethodID				methodID_URL_newURL ;
+	jmethodID				methodID_URL_openConnection ;
 	jmethodID				methodID_ActivityManager_getMemoryInfo ;
 	jmethodID				methodID_ActivityManager_getProcessMemoryInfo ;
 	jmethodID				methodID_ActivityManager_MemoryInfo_newActivityManager_MemoryInfo ;
@@ -353,6 +370,21 @@ struct DXLIB_JAVA_ANDROID_INFO
 	jfieldID				fieldID_Calendar_DAY_OF_WEEK ;
 	jfieldID				fieldID_Calendar_WEEK_OF_MONTH ;
 	jfieldID				fieldID_Calendar_DAY_OF_WEEK_IN_MONTH ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_OK ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_NO_CONTENT ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_NOT_FOUND ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_BAD_METHOD ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_NOT_ACCEPTABLE ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_BAD_GATEWAY ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_NOT_IMPLEMENTED ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_SERVER_ERROR ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_GATEWAY_TIMEOUT ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_UNAVAILABLE ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_UNSUPPORTED_TYPE ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_PRECON_FAILED ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_CONFLICT ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_UNAUTHORIZED ;
+	jfieldID				fieldID_HttpURLConnection_HTTP_BAD_REQUEST ;
 	jfieldID				fieldID_AudioManager_PROPERTY_OUTPUT_FRAMES_PER_BUFFER ;
 	jfieldID				fieldID_AudioManager_PROPERTY_OUTPUT_SAMPLE_RATE ;
 
@@ -436,6 +468,21 @@ struct DXLIB_JAVA_ANDROID_INFO
 	jint					fieldint_Calendar_DAY_OF_WEEK ;
 	jint					fieldint_Calendar_WEEK_OF_MONTH ;
 	jint					fieldint_Calendar_DAY_OF_WEEK_IN_MONTH ;
+	jint					fieldint_HttpURLConnection_HTTP_OK ;
+	jint					fieldint_HttpURLConnection_HTTP_NO_CONTENT ;
+	jint					fieldint_HttpURLConnection_HTTP_NOT_FOUND ;
+	jint					fieldint_HttpURLConnection_HTTP_BAD_METHOD ;
+	jint					fieldint_HttpURLConnection_HTTP_NOT_ACCEPTABLE ;
+	jint					fieldint_HttpURLConnection_HTTP_BAD_GATEWAY ;
+	jint					fieldint_HttpURLConnection_HTTP_NOT_IMPLEMENTED ;
+	jint					fieldint_HttpURLConnection_HTTP_SERVER_ERROR ;
+	jint					fieldint_HttpURLConnection_HTTP_GATEWAY_TIMEOUT ;
+	jint					fieldint_HttpURLConnection_HTTP_UNAVAILABLE ;
+	jint					fieldint_HttpURLConnection_HTTP_UNSUPPORTED_TYPE ;
+	jint					fieldint_HttpURLConnection_HTTP_PRECON_FAILED ;
+	jint					fieldint_HttpURLConnection_HTTP_CONFLICT ;
+	jint					fieldint_HttpURLConnection_HTTP_UNAUTHORIZED ;
+	jint					fieldint_HttpURLConnection_HTTP_BAD_REQUEST ;      
 	jstring					fieldstring_AudioManager_PROPERTY_OUTPUT_FRAMES_PER_BUFFER ;
 	jstring					fieldstring_AudioManager_PROPERTY_OUTPUT_SAMPLE_RATE ;
 } ;

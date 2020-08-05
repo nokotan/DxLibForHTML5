@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用システムプログラム
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -38,6 +38,7 @@
 #include "../DxASyncLoad.h"
 #include "../DxLive2DCubism4.h"
 #include "../DxUseCLib.h"
+#include "../DxHandle.h"
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -4919,6 +4920,17 @@ ERR :
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( BrowserAppClassName   )
 	return Result ;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 // メールアプリを送信メール編集状態で起動する

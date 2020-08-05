@@ -2,7 +2,7 @@
 // 
 // 		ÇcÇwÉâÉCÉuÉâÉä		AndroidópJavaä÷åWÉvÉçÉOÉâÉÄ
 // 
-// 				Ver 3.21d
+// 				Ver 3.21f
 // 
 // -------------------------------------------------------------------------------
 
@@ -659,6 +659,7 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	FINDCLASS( JAVAANDR.class_TextView,             "android/widget/TextView"            ) ;
 	FINDCLASS( JAVAANDR.class_TextView_BufferType,  "android/widget/TextView$BufferType" ) ;
 	FINDCLASS( JAVAANDR.class_EditText,             "android/widget/EditText"            ) ;
+	FINDCLASS( JAVAANDR.class_InputStream,          "java/io/InputStream"                ) ;
 	FINDCLASS( JAVAANDR.class_File,                 "java/io/File"                       ) ;
 	FINDCLASS( JAVAANDR.class_CharSequence,         "java/lang/CharSequence"             ) ;
 	FINDCLASS( JAVAANDR.class_Integer,              "java/lang/Integer"                  ) ;
@@ -666,6 +667,9 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	FINDCLASS( JAVAANDR.class_Runtime,              "java/lang/Runtime"                  ) ;
 	FINDCLASS( JAVAANDR.class_Locale,               "java/util/Locale"                   ) ;
 	FINDCLASS( JAVAANDR.class_Calendar,             "java/util/Calendar"                 ) ;
+	FINDCLASS( JAVAANDR.class_URLConnection,        "java/net/URLConnection"             ) ;
+	FINDCLASS( JAVAANDR.class_HttpURLConnection,    "java/net/HttpURLConnection"         ) ;
+	FINDCLASS( JAVAANDR.class_URL,                  "java/net/URL"                       ) ;
 	FINDCLASS( JAVAANDR.class_ActivityManager,      "android/app/ActivityManager" ) ;
 	FINDCLASS( JAVAANDR.class_ActivityManager_MemoryInfo,  "android/app/ActivityManager$MemoryInfo" ) ;
 	FINDCLASS( JAVAANDR.class_Dialog,               "android/app/Dialog"                 ) ;
@@ -733,6 +737,9 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	}
 	GETSTATICMETHOD( JAVAANDR.methodID_Process_myPid                              , JAVAANDR.class_Process,              "myPid",                 "()I" ) ;
 	GETSTATICMETHOD( JAVAANDR.methodID_Process_killProcess                        , JAVAANDR.class_Process,              "killProcess",           "(I)V" ) ;
+	GETMETHOD(       JAVAANDR.methodID_InputStream_read_0param                    , JAVAANDR.class_InputStream,          "read",                  "()I" ) ;
+	GETMETHOD(       JAVAANDR.methodID_InputStream_read_1param                    , JAVAANDR.class_InputStream,          "read",                  "([B)I" ) ;
+	GETMETHOD(       JAVAANDR.methodID_InputStream_close                          , JAVAANDR.class_InputStream,          "close",                 "()V" ) ;
 	GETMETHOD(       JAVAANDR.methodID_File_getAbsolutePath                       , JAVAANDR.class_File,                 "getAbsolutePath",       "()Ljava/lang/String;" ) ;
 	GETMETHOD(       JAVAANDR.methodID_CharSequence_toString                      , JAVAANDR.class_CharSequence,         "toString",              "()Ljava/lang/String;" ) ;
 	GETSTATICMETHOD( JAVAANDR.methodID_Integer_parseInt                           , JAVAANDR.class_Integer,              "parseInt",              "(Ljava/lang/String;)I" ) ;
@@ -746,6 +753,16 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	GETMETHOD(       JAVAANDR.methodID_Locale_getCountry                          , JAVAANDR.class_Locale,               "getCountry",            "()Ljava/lang/String;" ) ;
 	GETMETHOD(       JAVAANDR.methodID_Calendar_get                               , JAVAANDR.class_Calendar,             "get",                   "(I)I" ) ;
 	GETSTATICMETHOD( JAVAANDR.methodID_Calendar_getInstance                       , JAVAANDR.class_Calendar,             "getInstance",           "()Ljava/util/Calendar;" ) ;
+	GETMETHOD(       JAVAANDR.methodID_URLConnection_setDoInput                   , JAVAANDR.class_URLConnection,        "setDoInput",            "(Z)V" ) ;
+	GETMETHOD(       JAVAANDR.methodID_URLConnection_setDoOutput                  , JAVAANDR.class_URLConnection,        "setDoOutput",           "(Z)V" ) ;
+	GETMETHOD(       JAVAANDR.methodID_URLConnection_connect                      , JAVAANDR.class_URLConnection,        "connect",               "()V" ) ;
+	GETMETHOD(       JAVAANDR.methodID_URLConnection_getInputStream               , JAVAANDR.class_URLConnection,        "getInputStream",        "()Ljava/io/InputStream;" ) ;
+	GETMETHOD(       JAVAANDR.methodID_HttpURLConnection_newHttpURLConnection     , JAVAANDR.class_HttpURLConnection,    "<init>",                "(Ljava/net/URL;)V" ) ;
+	GETMETHOD(       JAVAANDR.methodID_HttpURLConnection_setRequestMethod         , JAVAANDR.class_HttpURLConnection,    "setRequestMethod",      "(Ljava/lang/String;)V" ) ;
+	GETMETHOD(       JAVAANDR.methodID_HttpURLConnection_setInstanceFollowRedirects, JAVAANDR.class_HttpURLConnection,   "setInstanceFollowRedirects", "(Z)V" ) ;
+	GETMETHOD(       JAVAANDR.methodID_HttpURLConnection_getResponseCode          , JAVAANDR.class_HttpURLConnection,    "getResponseCode",       "()I" ) ;
+	GETMETHOD(       JAVAANDR.methodID_URL_newURL                                 , JAVAANDR.class_URL,                  "<init>",                "(Ljava/lang/String;)V" ) ;
+	GETMETHOD(       JAVAANDR.methodID_URL_openConnection                         , JAVAANDR.class_URL,                  "openConnection",        "()Ljava/net/URLConnection;" ) ;
 	GETMETHOD(       JAVAANDR.methodID_ActivityManager_getMemoryInfo              , JAVAANDR.class_ActivityManager,      "getMemoryInfo",         "(Landroid/app/ActivityManager$MemoryInfo;)V" ) ;
 	GETMETHOD(       JAVAANDR.methodID_ActivityManager_getProcessMemoryInfo       , JAVAANDR.class_ActivityManager,      "getProcessMemoryInfo",  "([I)[Landroid/os/Debug$MemoryInfo;" ) ;
 	GETMETHOD(       JAVAANDR.methodID_ActivityManager_MemoryInfo_newActivityManager_MemoryInfo , JAVAANDR.class_ActivityManager_MemoryInfo, "<init>", "()V" ) ;
@@ -970,6 +987,21 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	GETSTATICFIELD( JAVAANDR.fieldID_Calendar_DAY_OF_WEEK                       , JAVAANDR.class_Calendar,                "DAY_OF_WEEK",                         "I" ) ;
 	GETSTATICFIELD( JAVAANDR.fieldID_Calendar_WEEK_OF_MONTH                     , JAVAANDR.class_Calendar,                "WEEK_OF_MONTH",                       "I" ) ;
 	GETSTATICFIELD( JAVAANDR.fieldID_Calendar_DAY_OF_WEEK_IN_MONTH              , JAVAANDR.class_Calendar,                "DAY_OF_WEEK_IN_MONTH",                "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_OK                  , JAVAANDR.class_HttpURLConnection,       "HTTP_OK",                             "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_NO_CONTENT          , JAVAANDR.class_HttpURLConnection,       "HTTP_NO_CONTENT",                     "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_NOT_FOUND           , JAVAANDR.class_HttpURLConnection,       "HTTP_NOT_FOUND",                      "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_BAD_METHOD          , JAVAANDR.class_HttpURLConnection,       "HTTP_BAD_METHOD",                     "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_NOT_ACCEPTABLE      , JAVAANDR.class_HttpURLConnection,       "HTTP_NOT_ACCEPTABLE",                 "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_BAD_GATEWAY         , JAVAANDR.class_HttpURLConnection,       "HTTP_BAD_GATEWAY",                    "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_NOT_IMPLEMENTED     , JAVAANDR.class_HttpURLConnection,       "HTTP_NOT_IMPLEMENTED",                "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_SERVER_ERROR        , JAVAANDR.class_HttpURLConnection,       "HTTP_SERVER_ERROR",                   "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_GATEWAY_TIMEOUT     , JAVAANDR.class_HttpURLConnection,       "HTTP_GATEWAY_TIMEOUT",                "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_UNAVAILABLE         , JAVAANDR.class_HttpURLConnection,       "HTTP_UNAVAILABLE",                    "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_UNSUPPORTED_TYPE    , JAVAANDR.class_HttpURLConnection,       "HTTP_UNSUPPORTED_TYPE",               "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_PRECON_FAILED       , JAVAANDR.class_HttpURLConnection,       "HTTP_PRECON_FAILED",                  "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_CONFLICT            , JAVAANDR.class_HttpURLConnection,       "HTTP_CONFLICT",                       "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_UNAUTHORIZED        , JAVAANDR.class_HttpURLConnection,       "HTTP_UNAUTHORIZED",                   "I" ) ;
+	GETSTATICFIELD( JAVAANDR.fieldID_HttpURLConnection_HTTP_BAD_REQUEST         , JAVAANDR.class_HttpURLConnection,       "HTTP_BAD_REQUEST",                    "I" ) ;
 	if( API_LV >= 17 )
 	{
 		GETSTATICFIELD( JAVAANDR.fieldID_AudioManager_PROPERTY_OUTPUT_FRAMES_PER_BUFFER , JAVAANDR.class_AudioManager,    "PROPERTY_OUTPUT_FRAMES_PER_BUFFER",   "Ljava/lang/String;" ) ;
@@ -1074,6 +1106,21 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	JAVAANDR.fieldint_Calendar_DAY_OF_WEEK                       = env->GetStaticIntField( JAVAANDR.class_Calendar,            JAVAANDR.fieldID_Calendar_DAY_OF_WEEK          ) ;
 	JAVAANDR.fieldint_Calendar_WEEK_OF_MONTH                     = env->GetStaticIntField( JAVAANDR.class_Calendar,            JAVAANDR.fieldID_Calendar_WEEK_OF_MONTH        ) ;
 	JAVAANDR.fieldint_Calendar_DAY_OF_WEEK_IN_MONTH              = env->GetStaticIntField( JAVAANDR.class_Calendar,            JAVAANDR.fieldID_Calendar_DAY_OF_WEEK_IN_MONTH ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_OK                  = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_OK               ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_NO_CONTENT          = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_NO_CONTENT       ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_NOT_FOUND           = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_NOT_FOUND        ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_BAD_METHOD          = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_BAD_METHOD       ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_NOT_ACCEPTABLE      = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_NOT_ACCEPTABLE   ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_BAD_GATEWAY         = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_BAD_GATEWAY      ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_NOT_IMPLEMENTED     = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_NOT_IMPLEMENTED  ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_SERVER_ERROR        = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_SERVER_ERROR     ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_GATEWAY_TIMEOUT     = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_GATEWAY_TIMEOUT  ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_UNAVAILABLE         = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_UNAVAILABLE      ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_UNSUPPORTED_TYPE    = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_UNSUPPORTED_TYPE ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_PRECON_FAILED       = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_PRECON_FAILED    ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_CONFLICT            = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_CONFLICT         ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_UNAUTHORIZED        = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_UNAUTHORIZED     ) ;
+	JAVAANDR.fieldint_HttpURLConnection_HTTP_BAD_REQUEST         = env->GetStaticIntField( JAVAANDR.class_HttpURLConnection,   JAVAANDR.fieldID_HttpURLConnection_HTTP_BAD_REQUEST      ) ;
 	if( API_LV >= 17 )
 	{
 		GETSTATICSTRINGFIELD( JAVAANDR.fieldstring_AudioManager_PROPERTY_OUTPUT_FRAMES_PER_BUFFER,JAVAANDR.class_AudioManager, JAVAANDR.fieldID_AudioManager_PROPERTY_OUTPUT_FRAMES_PER_BUFFER, "Ljava/lang/String;" ) ;
