@@ -66,7 +66,7 @@ extern int TerminateFile_PF( void )
 }
 
 // ファイルアクセス関数
-static int ANDR_wchar_t_to_utf8_Path( const wchar_t *Path, char *utf8_PathBuffer, size_t utf8_PathBufferBytes )
+static int HTML5_wchar_t_to_utf8_Path( const wchar_t *Path, char *utf8_PathBuffer, size_t utf8_PathBufferBytes )
 {
 	wchar_t DirPath[ 512 ], FullPath[ 512 ] ;
 
@@ -103,7 +103,7 @@ extern int ReadOnlyFileAccessOpen_PF( FILEACCESS *FileAccess, const wchar_t *Pat
 	char FullPathUTF8[ 1024 ] ;
 
 	// wchar_t から UTF-8 に変換
-	ANDR_wchar_t_to_utf8_Path( Path, FullPathUTF8, sizeof( FullPathUTF8 ) ) ;
+	HTML5_wchar_t_to_utf8_Path( Path, FullPathUTF8, sizeof( FullPathUTF8 ) ) ;
 
 	FileAccess->PF.FilePointer = fopen( FullPathUTF8, "rb" ) ;
 
@@ -179,7 +179,7 @@ extern int ReadOnlyFileAccessFindFirst_PF(	FINDINFO *FindInfo, const wchar_t *Fi
 	AnalysisFileNameAndDirPathW_( FilePath, FindInfo->PF.SearchFileName, sizeof( FindInfo->PF.SearchFileName ), DirPath, sizeof( DirPath ) ) ;
 
 	// ディレクトリパスを wchar_t から UTF-8 に変換
-	ANDR_wchar_t_to_utf8_Path( DirPath, DirPathUTF8, sizeof( DirPathUTF8 ) ) ;
+	HTML5_wchar_t_to_utf8_Path( DirPath, DirPathUTF8, sizeof( DirPathUTF8 ) ) ;
 
 	FindInfo->PF.Dir = NULL ;
 
@@ -265,7 +265,7 @@ extern	int			WriteOnlyFileAccessDelete_PF( const wchar_t *Path )
 	char FullPathUTF8[ 1024 ] ;
 
 	// wchar_t から UTF-8 に変換
-	ANDR_wchar_t_to_utf8_Path( Path, FullPathUTF8, sizeof( FullPathUTF8 ) ) ;
+	HTML5_wchar_t_to_utf8_Path( Path, FullPathUTF8, sizeof( FullPathUTF8 ) ) ;
 
 	remove( FullPathUTF8 ) ;
 
@@ -278,7 +278,7 @@ extern	DWORD_PTR	WriteOnlyFileAccessOpen_PF(  const wchar_t *Path )
 	FILE *fp ;
 
 	// wchar_t から UTF-8 に変換
-	ANDR_wchar_t_to_utf8_Path( Path, FullPathUTF8, sizeof( FullPathUTF8 ) ) ;
+	HTML5_wchar_t_to_utf8_Path( Path, FullPathUTF8, sizeof( FullPathUTF8 ) ) ;
 
 	// ファイルを開く
 	fp = fopen( FullPathUTF8, "wb" ) ;
