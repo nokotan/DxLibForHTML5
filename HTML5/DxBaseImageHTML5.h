@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_BASEIMAGEANDROID_H
-#define DX_BASEIMAGEANDROID_H
+#ifndef DX_BASEIMAGEHTML5_H
+#define DX_BASEIMAGEHTML5_H
 
 // インクルード ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
@@ -34,4 +34,4 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-#endif // DX_BASEIMAGEANDROID_H
+#endif // DX_BASEIMAGEHTML5_H

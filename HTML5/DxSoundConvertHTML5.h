@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_SOUNDCONVERTIOS_H
-#define DX_SOUNDCONVERTIOS_H
+#ifndef DX_SOUNDCONVERTHTML5_H
+#define DX_SOUNDCONVERTHTML5_H
 
 #include "../DxCompileConfig.h"
 
@@ -28,8 +28,8 @@ namespace DxLib
 
 // 構造体定義 --------------------------------------------------------------------
 
-// サウンド変換処理全体で使用するデータ構造体で IOS に依存している情報の構造体
-struct SOUNDCONVERTDATA_IOS
+// サウンド変換処理全体で使用するデータ構造体で HTML5 に依存している情報の構造体
+struct SOUNDCONVERTDATA_HTML5
 {
 	int							Dummy ;
 } ;
@@ -46,4 +46,4 @@ struct SOUNDCONVERTDATA_IOS
 
 #endif // DX_NON_SOUND
 
-#endif // DX_SOUNDCONVERTIOS_H
+#endif // DX_SOUNDCONVERTHTML5_H

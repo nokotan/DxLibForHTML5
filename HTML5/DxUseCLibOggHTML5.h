@@ -6,13 +6,13 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_USECLIBOGGANDROID_H
-#define DX_USECLIBOGGANDROID_H
+#ifndef DX_USECLIBOGGHTML5_H
+#define DX_USECLIBOGGHTML5_H
 
 // インクルード ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
 #include "../DxLib.h"
-#include "DxUseCLibOggAndroid.h"
+#include "DxUseCLibOggHTML5.h"
 //#include <alloca.h>
 
 #if !defined( DX_NON_OGGVORBIS ) && !defined( DX_NON_OGGTHEORA )
@@ -38,4 +38,4 @@ struct DECODE_THEORA_PF
 
 #endif // #if !defined( DX_NON_OGGVORBIS ) || !defined( DX_NON_OGGTHEORA )
 
-#endif // DX_USECLIBOGGANDROID_H
+#endif // DX_USECLIBOGGHTML5_H

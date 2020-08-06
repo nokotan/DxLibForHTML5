@@ -45,7 +45,7 @@ namespace DxLib
 
 // データ宣言------------------------------------------------------------------
 
-const static int32_t g_AndroidInputSourceTable[ ANDR_INPUT_SOURCE_NUM ] =
+const static int32_t g_HTML5InputSourceTable[ HTML5_INPUT_SOURCE_NUM ] =
 {
 	HTML5_INPUT_SOURCE_UNKNOWN,
 	HTML5_INPUT_SOURCE_KEYBOARD,
@@ -54,7 +54,7 @@ const static int32_t g_AndroidInputSourceTable[ ANDR_INPUT_SOURCE_NUM ] =
 	HTML5_INPUT_SOURCE_JOYSTICK
 } ;
 
-const static unsigned short g_AndroidKeyToDXInputKey[][ 2 /* 0:Androidキーコード  1:DirectInputキーコード  */ ] =
+const static unsigned short g_HTML5KeyToDXInputKey[][ 2 /* 0:HTML5キーコード  1:DirectInputキーコード  */ ] =
 {
 	{ HTML_KEYCODE_BACK,		KEY_INPUT_BACK },		// BackSpaceキー
 	{ HTML_KEYCODE_TAB,			KEY_INPUT_TAB },		// Tabキー
@@ -173,7 +173,7 @@ const static unsigned short g_AndroidKeyToDXInputKey[][ 2 /* 0:Androidキーコ�
 	{ HTML_KEYCODE_8,				KEY_INPUT_8 },			// ８キー
 	{ HTML_KEYCODE_9,				KEY_INPUT_9 },			// ９キー
 
-	{ HTML_KEYCODE_BACK,			KEY_INPUT_ESCAPE },		// Android の Backボタン
+	{ HTML_KEYCODE_BACK,			KEY_INPUT_ESCAPE },		// HTML5 の Backボタン
 
 	{ 0xffff,					0xffff },
 } ;
@@ -299,11 +299,11 @@ extern int UpdateKeyboardInputState_PF( int UseProcessMessage )
 
 		for( j = 0 ; j < InputSysData.PF.SourceNum[ HTML5_INPUT_SOURCE_KEYBOARD ] ; j ++ )
 		{
-			INPUT_ANDROID_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ HTML5_INPUT_SOURCE_KEYBOARD ][ j ] ] ;
+			INPUT_HTML5_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ HTML5_INPUT_SOURCE_KEYBOARD ][ j ] ] ;
 
-			for( i = 0 ; g_AndroidKeyToDXInputKey[i][0] != 0xffff ; i ++ )
+			for( i = 0 ; g_HTML5KeyToDXInputKey[i][0] != 0xffff ; i ++ )
 			{
-				InputSysData.KeyInputBuf[ g_AndroidKeyToDXInputKey[ i ][ 1 ] ] |= Info->KeyState[ g_AndroidKeyToDXInputKey[ i ][ 0 ] ] ? 0x80 : 0x00 ;
+				InputSysData.KeyInputBuf[ g_HTML5KeyToDXInputKey[ i ][ 1 ] ] |= Info->KeyState[ g_HTML5KeyToDXInputKey[ i ][ 0 ] ] ? 0x80 : 0x00 ;
 			}
 		}
 	}
@@ -315,11 +315,11 @@ extern int UpdateKeyboardInputState_PF( int UseProcessMessage )
 extern int UpdateJoypadInputState_PF( int PadNo )
 {
 	INPUTPADDATA *pad = &InputSysData.Pad[ PadNo ] ;
-//	INPUT_ANDROID_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ ANDR_INPUT_SOURCE_GAMEPAD ][ PadNo ] ] ;
-	INPUT_ANDROID_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.GamePadSourceNoToInputInfoTable[ PadNo ] ] ;
+//	INPUT_HTML5_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ HTML5_INPUT_SOURCE_GAMEPAD ][ PadNo ] ] ;
+	INPUT_HTML5_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.GamePadSourceNoToInputInfoTable[ PadNo ] ] ;
 	float DeadZone = pad->DeadZone / 65536.0f ;
 
-//	if( InputSysData.PF.SourceNum[ ANDR_INPUT_SOURCE_GAMEPAD ] <= 0 )
+//	if( InputSysData.PF.SourceNum[ HTML5_INPUT_SOURCE_GAMEPAD ] <= 0 )
 	if( InputSysData.PF.GamePadSourceNum <= 0 )
 	{
 		return 0 ;
@@ -518,7 +518,7 @@ extern int GetMouseInput_PF( void )
 
 	if( InputSysData.PF.SourceNum[ HTML5_INPUT_SOURCE_MOUSE ] > 0 )
 	{
-		INPUT_ANDROID_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ HTML5_INPUT_SOURCE_MOUSE ][ 0 ] ] ;
+		INPUT_HTML5_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ HTML5_INPUT_SOURCE_MOUSE ][ 0 ] ] ;
 
 		if( ( Info->ButtonState & 0x01 ) != 0 ) res |= MOUSE_INPUT_1 ;
 		if( ( Info->ButtonState & 0x02 ) != 0 ) res |= MOUSE_INPUT_2 ;
@@ -605,7 +605,7 @@ extern int GetMousePoint_PF( int *XBuf, int *YBuf )
 	if( InputSysData.PF.SourceNum[ HTML5_INPUT_SOURCE_MOUSE ] > 0 )
 	{
 		int ScreenX, ScreenY ;
-		INPUT_ANDROID_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ HTML5_INPUT_SOURCE_MOUSE ][ 0 ] ] ;
+		INPUT_HTML5_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ HTML5_INPUT_SOURCE_MOUSE ][ 0 ] ] ;
 
 		ScreenX = ( int )Info->AxisX ;
 		ScreenY = ( int )Info->AxisY ;
@@ -629,19 +629,19 @@ extern int SetJoypadDeadZone_PF( INPUTPADDATA *pad )
 }
 
 // デバイスＩＤから値を代入すべき入力情報番号を取得する
-extern int GetAndroidDeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId )
+extern int GetHTML5DeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId )
 {
 	int i ;
 //	int Src ;
 //
-//	for( Src = 0 ; Src < ANDR_INPUT_SOURCE_NUM ; Src ++ )
+//	for( Src = 0 ; Src < HTML5_INPUT_SOURCE_NUM ; Src ++ )
 //	{
-//		if( g_AndroidInputSourceTable[ Src ] == Source )
+//		if( g_HTML5InputSourceTable[ Src ] == Source )
 //		{
 //			break ;
 //		}
 //	}
-//	if( Src == ANDR_INPUT_SOURCE_NUM )
+//	if( Src == HTML5_INPUT_SOURCE_NUM )
 //	{
 //		return -1 ;
 //	}
@@ -664,14 +664,14 @@ extern int GetAndroidDeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId )
 
 			// if( UpdateFlag )
 			// {
-			// 	RefreshAndroidSourceNoToInputInfoTable( Source ) ;
-			// 	RefreshAndroidGamePadSourceNoToInputInfoTable() ;
+			// 	RefreshHTML5SourceNoToInputInfoTable( Source ) ;
+			// 	RefreshHTML5GamePadSourceNoToInputInfoTable() ;
 			// }
 			return i ;
 		}
 	}
 
-	if( InputSysData.PF.UseInputInfoNum == ANDR_DEVICE_MAX_NUM )
+	if( InputSysData.PF.UseInputInfoNum == HTML5_DEVICE_MAX_NUM )
 	{
 		int MinUpdateCountNo ;
 
@@ -690,8 +690,8 @@ extern int GetAndroidDeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId )
 		InputSysData.PF.InputInfo[ MinUpdateCountNo ].UpdateCount = InputSysData.PF.UpdateCount ;
 		InputSysData.PF.UpdateCount ++ ;
 
-		RefreshAndroidSourceNoToInputInfoTable( Source ) ;
-		RefreshAndroidGamePadSourceNoToInputInfoTable() ;
+		RefreshHTML5SourceNoToInputInfoTable( Source ) ;
+		RefreshHTML5GamePadSourceNoToInputInfoTable() ;
 
 		return MinUpdateCountNo ;
 	}
@@ -705,31 +705,31 @@ extern int GetAndroidDeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId )
 	InputSysData.PF.InputInfo[ i ].UpdateCount = InputSysData.PF.UpdateCount ;
 	InputSysData.PF.UpdateCount ++ ;
 
-	RefreshAndroidSourceNoToInputInfoTable( Source ) ;
-	RefreshAndroidGamePadSourceNoToInputInfoTable() ;
+	RefreshHTML5SourceNoToInputInfoTable( Source ) ;
+	RefreshHTML5GamePadSourceNoToInputInfoTable() ;
 	
 	return i ;
 }
 
 // 入力ソース番号と入力情報との対応テーブルを更新する
-extern int RefreshAndroidSourceNoToInputInfoTable( int32_t Source )
+extern int RefreshHTML5SourceNoToInputInfoTable( int32_t Source )
 {
-	INPUT_ANDROID_DEVICE_INFO *Info ;
+	INPUT_HTML5_DEVICE_INFO *Info ;
 	int *SourceNoTable ;
 	int i, j ;
 	int Num ;
-	int NoTable[ ANDR_DEVICE_MAX_NUM ] ;
-	INPUT_ANDROID_DEVICE_INFO *InfoTable[ ANDR_DEVICE_MAX_NUM ] ;
+	int NoTable[ HTML5_DEVICE_MAX_NUM ] ;
+	INPUT_HTML5_DEVICE_INFO *InfoTable[ HTML5_DEVICE_MAX_NUM ] ;
 	int Src ;
 
-	for( Src = 0 ; Src < ANDR_INPUT_SOURCE_NUM ; Src ++ )
+	for( Src = 0 ; Src < HTML5_INPUT_SOURCE_NUM ; Src ++ )
 	{
-		if( Source == g_AndroidInputSourceTable[ Src ] )
+		if( Source == g_HTML5InputSourceTable[ Src ] )
 		{
 			break ;
 		}
 	}
-	if( Src == ANDR_INPUT_SOURCE_NUM )
+	if( Src == HTML5_INPUT_SOURCE_NUM )
 	{
 		return -1 ;
 	}
@@ -780,14 +780,14 @@ extern int RefreshAndroidSourceNoToInputInfoTable( int32_t Source )
 }
 
 // ゲームパッドの番号と入力情報との対応テーブルを更新する
-extern int RefreshAndroidGamePadSourceNoToInputInfoTable( void )
+extern int RefreshHTML5GamePadSourceNoToInputInfoTable( void )
 {
-	INPUT_ANDROID_DEVICE_INFO *Info ;
+	INPUT_HTML5_DEVICE_INFO *Info ;
 	int *SourceNoTable ;
 	int i, j ;
 	int Num ;
-	int NoTable[ ANDR_DEVICE_MAX_NUM ] ;
-	INPUT_ANDROID_DEVICE_INFO *InfoTable[ ANDR_DEVICE_MAX_NUM ] ;
+	int NoTable[ HTML5_DEVICE_MAX_NUM ] ;
+	INPUT_HTML5_DEVICE_INFO *InfoTable[ HTML5_DEVICE_MAX_NUM ] ;
 
 	Num = 0 ;
 	Info = InputSysData.PF.InputInfo ;
@@ -862,9 +862,9 @@ extern int32_t ProcessInputEvent( )
 
 		Source = HTML5_INPUT_SOURCE_JOYSTICK;
 		DeviceId = event.index;
-		InputNo = GetAndroidDeviceIdToInputInfoNo( Source, DeviceId ) ;
+		InputNo = GetHTML5DeviceIdToInputInfoNo( Source, DeviceId ) ;
 
-		if( InputNo >= 0 && InputNo < ANDR_DEVICE_MAX_NUM )
+		if( InputNo >= 0 && InputNo < HTML5_DEVICE_MAX_NUM )
 		{
 			int j;
 
@@ -902,12 +902,12 @@ static EM_BOOL onKeyAction(int eventType, const EmscriptenKeyboardEvent *keyEven
 	preventDefault = EM_FALSE;
 	Source = HTML5_INPUT_SOURCE_KEYBOARD;
 	DeviceId = 0;
-	InputNo = GetAndroidDeviceIdToInputInfoNo( Source, DeviceId ) ;
+	InputNo = GetHTML5DeviceIdToInputInfoNo( Source, DeviceId ) ;
 	KeyCode = keyEvent->keyCode;
 
-	if( InputNo >= 0 && InputNo < ANDR_DEVICE_MAX_NUM )
+	if( InputNo >= 0 && InputNo < HTML5_DEVICE_MAX_NUM )
 	{
-		if( KeyCode < ANDR_KEYCODE_MAX )
+		if( KeyCode < HTML5_KEYCODE_MAX )
 		{
 			if( eventType == EMSCRIPTEN_EVENT_KEYDOWN )
 			{
@@ -938,9 +938,9 @@ static EM_BOOL onMouseWheel(int eventType, const EmscriptenWheelEvent *wheelEven
 
 	Source = HTML5_INPUT_SOURCE_MOUSE;
 	DeviceId = 0;
-	InputNo = GetAndroidDeviceIdToInputInfoNo( Source, DeviceId ) ;
+	InputNo = GetHTML5DeviceIdToInputInfoNo( Source, DeviceId ) ;
 
-	if( InputNo >= 0 && InputNo < ANDR_DEVICE_MAX_NUM )
+	if( InputNo >= 0 && InputNo < HTML5_DEVICE_MAX_NUM )
 	{
 		int LogType = -1 ;
 		
@@ -1030,10 +1030,10 @@ static EM_BOOL onTouchAction(int eventType, const EmscriptenTouchEvent *touchEve
 
 	Source = HTML5_INPUT_SOURCE_TOUCHSCREEN;
 	DeviceId = 0;
-	InputNo = GetAndroidDeviceIdToInputInfoNo( Source, DeviceId ) ;
+	InputNo = GetHTML5DeviceIdToInputInfoNo( Source, DeviceId ) ;
 	preventDefault = EM_FALSE;
 
-	if( InputNo >= 0 && InputNo < ANDR_DEVICE_MAX_NUM )
+	if( InputNo >= 0 && InputNo < HTML5_DEVICE_MAX_NUM )
 	{
 		TOUCHINPUTDATA TouchInputData ;
 		int32_t PointerCount ;

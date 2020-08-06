@@ -56,13 +56,13 @@ extern int MemoryProcess_PF( void )
 	return 0 ;
 }
 
-// Android のヒープ用のメモリ領域を確保するためのコールバック関数群の AutoAlloc_CreateHeapCallback
+// HTML5 のヒープ用のメモリ領域を確保するためのコールバック関数群の AutoAlloc_CreateHeapCallback
 extern int NormalMemory_AutoAlloc_CreateHeapCallback_PF( int Param, void *Buffer, ALLOCMEM_SIZE_TYPE Size )
 {
-	PLATFORMHEAP_ANDR *			PlatformHeap = ( PLATFORMHEAP_ANDR * )Buffer ;
+	PLATFORMHEAP_HTML5 *			PlatformHeap = ( PLATFORMHEAP_HTML5 * )Buffer ;
 
 	// バッファサイズチェック
-	if( sizeof( PLATFORMHEAP_ANDR ) > ALLOCHEAP_CALLBACK_INFO_SIZE )
+	if( sizeof( PLATFORMHEAP_HTML5 ) > ALLOCHEAP_CALLBACK_INFO_SIZE )
 	{
 		*( ( DWORD * )0x00000000 ) = 0xffffffff ;
 	}
@@ -81,7 +81,7 @@ extern int NormalMemory_AutoAlloc_CreateHeapCallback_PF( int Param, void *Buffer
 // 環境依存の一般的なヒープ用のメモリ領域を確保するためのコールバック関数群の AutoAlloc_GetHeapAddressCallback
 extern void * NormalMemory_AutoAlloc_GetHeapAddressCallback_PF( int Param, void *Buffer )
 {
-	PLATFORMHEAP_ANDR *			PlatformHeap = ( PLATFORMHEAP_ANDR * )Buffer ;
+	PLATFORMHEAP_HTML5 *			PlatformHeap = ( PLATFORMHEAP_HTML5 * )Buffer ;
 
 	return PlatformHeap->AllocAddress ;
 }
@@ -89,7 +89,7 @@ extern void * NormalMemory_AutoAlloc_GetHeapAddressCallback_PF( int Param, void 
 // 環境依存の一般的なヒープ用のメモリ領域を確保するためのコールバック関数群の AutoAlloc_GetHeapSizeCallback
 extern ALLOCMEM_SIZE_TYPE NormalMemory_AutoAlloc_GetHeapSizeCallback_PF( int Param, void *Buffer )
 {
-	PLATFORMHEAP_ANDR *			PlatformHeap = ( PLATFORMHEAP_ANDR * )Buffer ;
+	PLATFORMHEAP_HTML5 *			PlatformHeap = ( PLATFORMHEAP_HTML5 * )Buffer ;
 
 	return ( ALLOCMEM_SIZE_TYPE )PlatformHeap->AllocSize ;
 }
@@ -97,7 +97,7 @@ extern ALLOCMEM_SIZE_TYPE NormalMemory_AutoAlloc_GetHeapSizeCallback_PF( int Par
 // 環境依存の一般的なヒープ用のメモリ領域を確保するためのコールバック関数群の AutoAlloc_DeleteHeapCallback
 extern int NormalMemory_AutoAlloc_DeleteHeapCallback_PF( int Param, void *Buffer )
 {
-	PLATFORMHEAP_ANDR *			PlatformHeap = ( PLATFORMHEAP_ANDR * )Buffer ;
+	PLATFORMHEAP_HTML5 *			PlatformHeap = ( PLATFORMHEAP_HTML5 * )Buffer ;
 
 	// メモリを解放
 	free( PlatformHeap->AllocAddress ) ;

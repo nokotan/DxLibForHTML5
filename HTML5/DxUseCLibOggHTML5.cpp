@@ -19,8 +19,8 @@
 #include "../DxUseCLib.h"
 #include "../DxUseCLibOgg.h"
 #include "../DxLog.h"
-#include "DxGraphicsAndroid.h"
-#include "DxUseCLibOggAndroid.h"
+#include "DxGraphicsHTML5.h"
+#include "DxUseCLibOggHTML5.h"
 
 //namespace DxLib
 //{

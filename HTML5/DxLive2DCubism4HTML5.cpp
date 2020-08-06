@@ -22,7 +22,7 @@
 #include "../DxArchive_.h"
 #include "../DxLog.h"
 #include "Live2DCubismCore.h"
-#include "DxGraphicsAndroid.h"
+#include "DxGraphicsHTML5.h"
 
 // #ifndef DX_NON_NAMESPACE
 // 
@@ -37,7 +37,7 @@
 
 // データ宣言------------------------------------------------------------------
 
-extern BYTE DxShaderCodeBin_Live2D_Cubism4_ANDR[] ;
+extern BYTE DxShaderCodeBin_Live2D_Cubism4_HTML5[] ;
 
 // シェーダーの組み合わせ[ 0:頂点シェーダー 1:フラグメントシェーダー ]
 static D_ShaderNames g_Live2D_Cubism4_ShaderSet[ LIVE2D_SHADER_Num ][ 2 ] =
@@ -150,9 +150,9 @@ static int Live2DCubism4_DLL_Unload( void )
 }
 
 // Live2D Cubism4 で使用している全てのシェーダーを開放する
-extern int Live2D_Cubism4_Android_ReleaseShaderAll( void )
+extern int Live2D_Cubism4_HTML5_ReleaseShaderAll( void )
 {
-	Graphics_Android_ShaderArray_Release( LIVE2DSYS.PF.Shader, LIVE2D_SHADER_Num ) ;
+	Graphics_HTML5_ShaderArray_Release( LIVE2DSYS.PF.Shader, LIVE2D_SHADER_Num ) ;
 
 	return 0 ;
 }
@@ -172,7 +172,7 @@ extern int Live2DCubism4_Initialize_PF( void )
 	LIVE2DSYS.EnableConstantBuffer = FALSE ;
 
 	// シェーダーオブジェクトファイルＤＸＡを圧縮したデータを解凍する
-	if( Live2DCubism4_SetupShaderCode( NULL, DxShaderCodeBin_Live2D_Cubism4_ANDR ) < 0 )
+	if( Live2DCubism4_SetupShaderCode( NULL, DxShaderCodeBin_Live2D_Cubism4_HTML5 ) < 0 )
 	{
 		return -1 ;
 	}
@@ -216,7 +216,7 @@ extern int Live2DCubism4_GenerateShaders_PF( void )
 		if( SHADERCHK( PixelShaderHandle, pPixelShader ) )
 			continue ;
 
-		Graphics_Android_Shader_Create( &LIVE2DSYS.PF.Shader[ i ], pVertexShader->PF->Shader, pPixelShader->PF->Shader ) ;
+		Graphics_HTML5_Shader_Create( &LIVE2DSYS.PF.Shader[ i ], pVertexShader->PF->Shader, pPixelShader->PF->Shader ) ;
 	}
 
 	return 0 ;
@@ -238,10 +238,10 @@ extern int Live2DCubism4_SetupShader_PF( int ConstantBufferHandle, D_CubismConst
 	// シェーダーを使用状態にセット
 	glUseProgram( LIVE2DSYS.PF.Shader[ index ].Shader ) ;
 
-	GLuint u_matrix      = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_matrix" ) ;
-	GLuint u_clipMatrix  = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_clipMatrix" ) ;
-	GLuint u_channelFlag = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_channelFlag" ) ;
-	GLuint u_baseColor   = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_baseColor" ) ;
+	GLuint u_matrix      = Graphics_HTML5_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_matrix" ) ;
+	GLuint u_clipMatrix  = Graphics_HTML5_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_clipMatrix" ) ;
+	GLuint u_channelFlag = Graphics_HTML5_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_channelFlag" ) ;
+	GLuint u_baseColor   = Graphics_HTML5_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_baseColor" ) ;
 
 	if( u_matrix != 0xffffffff )
 	{
@@ -260,7 +260,7 @@ extern int Live2DCubism4_SetupShader_PF( int ConstantBufferHandle, D_CubismConst
 		UNIFORM_SET_FLOAT4( u_baseColor, ( ( float * )&ConstantBuffer->baseColor ) )
 	}
 
-	GANDR.Device.State.SetShader_Force = &LIVE2DSYS.PF.Shader[ index ] ;
+	GHTML5.Device.State.SetShader_Force = &LIVE2DSYS.PF.Shader[ index ] ;
 
 	return 0 ;
 }
@@ -268,7 +268,7 @@ extern int Live2DCubism4_SetupShader_PF( int ConstantBufferHandle, D_CubismConst
 // Live2D Cubism4 の描画の後に呼ばれる環境依存関数
 extern int Live2DCubism4_DrawAfter_PF( void )
 {
-	GANDR.Device.State.SetShader_Force = NULL ;
+	GHTML5.Device.State.SetShader_Force = NULL ;
 
 	return 0 ;
 }

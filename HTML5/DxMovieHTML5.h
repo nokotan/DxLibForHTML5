@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_MOVIEIOS_H
-#define DX_MOVIEIOS_H
+#ifndef DX_MOVIEHTML5_H
+#define DX_MOVIEHTML5_H
 
 #include "../DxCompileConfig.h"
 
@@ -53,4 +53,4 @@ struct MOVIEGRAPHMANAGE_PF
 
 #endif // DX_NON_MOVIE
 
-#endif // DX_MOVIEIOS_H
+#endif // DX_MOVIEHTML5_H

@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_MODELANDROID_H
-#define DX_MODELANDROID_H
+#ifndef DX_MODELHTML5_H
+#define DX_MODELHTML5_H
 
 // インクルード ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
@@ -30,7 +30,7 @@ namespace DxLib
 // 構造体定義 --------------------------------------------------------------------
 
 // HTML5用 モデルデータ管理用構造体
-struct MV1_MODEL_MANAGE_IOS
+struct MV1_MODEL_MANAGE_HTML5
 {
 	void *					CommonBuffer ;						// 主にシェイプ座標の更新で使用する汎用バッファ
 	int						CommonBufferSize ;					// 主にシェイプ座標の更新で使用する汎用バッファのサイズ
@@ -61,13 +61,13 @@ struct MV1_TRIANGLE_LIST_PF
 
 // 内部大域変数宣言 --------------------------------------------------------------
 
-extern MV1_MODEL_MANAGE_IOS MV1Man_iOS ;
+extern MV1_MODEL_MANAGE_HTML5 MV1Man_HTML5 ;
 
 // 関数プロトタイプ宣言-----------------------------------------------------------
 
 // 汎用バッファ関数
-extern	int				MV1_IOS_CommonBuffer_Setup( int Size ) ;						// 指定サイズの汎用バッファの準備を行う
-extern	int				MV1_IOS_CommonBuffer_Terminate( void ) ;						// 汎用バッファの後始末を行う
+extern	int				MV1_HTML5_CommonBuffer_Setup( int Size ) ;						// 指定サイズの汎用バッファの準備を行う
+extern	int				MV1_HTML5_CommonBuffer_Terminate( void ) ;						// 汎用バッファの後始末を行う
 
 #ifndef DX_NON_NAMESPACE
 
@@ -77,4 +77,4 @@ extern	int				MV1_IOS_CommonBuffer_Terminate( void ) ;						// 汎用バッフ�
 
 #endif // DX_NON_MODEL
 
-#endif // DX_MODELIOS_H
+#endif // DX_MODELHTML5_H

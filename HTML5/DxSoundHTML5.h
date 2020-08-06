@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_SOUNDIOS_H
-#define DX_SOUNDIOS_H
+#ifndef DX_SOUNDHTML5_H
+#define DX_SOUNDHTML5_H
 
 #include "../DxCompileConfig.h"
 
@@ -131,10 +131,10 @@ extern	void	SoundBuffer_Apply_StopSoundBufferList( void ) ;							// 停止待�
 
 
 // ALデバイスとALコンテキストをセットする
-extern	void	SoundSystem_iOS_SetALDeviceAndALContext( void *ALCDevice, void *ALCContext ) ;
+extern	void	SoundSystem_HTML5_SetALDeviceAndALContext( void *ALCDevice, void *ALCContext ) ;
 
 // 再生中の ALBuffer を再作成して再再生する
-extern	void	SoundSystem_iOS_ALBuffer_RePlay( void ) ;
+extern	void	SoundSystem_HTML5_ALBuffer_RePlay( void ) ;
 
 extern	int		UpdateSound_PF( void ) ;
 
@@ -147,4 +147,4 @@ extern	int		UpdateSound_PF( void ) ;
 
 #endif // DX_NON_SOUND
 
-#endif // DX_SOUNDIOS_H
+#endif // DX_SOUNDHTML5_H

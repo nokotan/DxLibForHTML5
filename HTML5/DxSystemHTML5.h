@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_SYSTEMIOS_H
-#define DX_SYSTEMIOS_H
+#ifndef DX_SYSTEMHTML5_H
+#define DX_SYSTEMHTML5_H
 
 // インクルード ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
@@ -26,14 +26,14 @@ namespace DxLib
 
 // ソフトがアクティブかどうかをチェックする
 #define CheckActiveState()					\
-		if( g_iOSSys.NonActiveRunFlag == FALSE )\
+		if( g_HTML5Sys.NonActiveRunFlag == FALSE )\
 		{\
-			DxActiveWait_iOS() ;\
+			DxActiveWait_HTML5() ;\
 		}
 
 // 構造体定義 --------------------------------------------------------------------
 
-struct DXLIB_IOS_SYSTEMINFO
+struct DXLIB_HTML5_SYSTEMINFO
 {
 	volatile void				( *LostFocusCallbackFunction )( void *Data ) ;		// アプリのフォーカスが失われた際に呼ばれるコールバック関数
 	volatile void				*LostFocusCallbackFunctionData ;					// アプリのフォーカスが失われた際に呼ばれるコールバック関数に渡すポインタ
@@ -53,13 +53,13 @@ struct DXLIB_IOS_SYSTEMINFO
 
 // 内部大域変数宣言 --------------------------------------------------------------
 
-extern DXLIB_IOS_SYSTEMINFO g_iOSSys ;
-extern int g_iOSRunFlag ;
+extern DXLIB_HTML5_SYSTEMINFO g_HTML5Sys ;
+extern int g_HTML5RunFlag ;
 
 // 関数プロトタイプ宣言-----------------------------------------------------------
 
 // アクティブになるまで何もしない
-extern void DxActiveWait_iOS( void ) ;
+extern void DxActiveWait_HTML5( void ) ;
 
 // アプリの外部データ保存用のディレクトリパスを取得する
 extern int GetDocumentsDirPathForChar( char *PathBuffer, size_t PathBufferBytes ) ;
@@ -83,4 +83,4 @@ extern void GraphicsViewRenderBufferPresent( void ) ;
 
 #endif // DX_NON_NAMESPACE
 
-#endif // DX_SYSTEMIOS_H
+#endif // DX_SYSTEMHTML5_H

@@ -47,264 +47,264 @@ namespace DxLib
 
 // マクロ定義 -----------------------------------------------------------------
 
-#define IOS_CHECKVALID_HARDWARE									\
+#define HTML5_CHECKVALID_HARDWARE									\
 		( TRUE )
 
-// Graphics_iOS_DrawPreparation を呼ぶ定型文
-#define DX_IOS_DRAWPREP_NOTEX( FLAG )													\
-	if( GIOS.Device.DrawInfo.BeginSceneFlag == FALSE ) Graphics_iOS_RenderBegin() ;	\
-	if( GIOS.Device.DrawSetting.RenderTexture != NULL )									\
-		Graphics_iOS_DrawSetting_SetTexture( NULL ) ;									\
+// Graphics_HTML5_DrawPreparation を呼ぶ定型文
+#define DX_HTML5_DRAWPREP_NOTEX( FLAG )													\
+	if( GHTML5.Device.DrawInfo.BeginSceneFlag == FALSE ) Graphics_HTML5_RenderBegin() ;	\
+	if( GHTML5.Device.DrawSetting.RenderTexture != NULL )									\
+		Graphics_HTML5_DrawSetting_SetTexture( NULL ) ;									\
 	if( GSYS.ChangeSettingFlag ||															\
-		GIOS.Device.DrawSetting.DrawPrepAlwaysFlag != FALSE ||								\
-		GIOS.Device.DrawSetting.DrawPrepParamFlag  != FLAG )								\
-		Graphics_iOS_DrawPreparation( FLAG ) ;												
+		GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag != FALSE ||								\
+		GHTML5.Device.DrawSetting.DrawPrepParamFlag  != FLAG )								\
+		Graphics_HTML5_DrawPreparation( FLAG ) ;												
 
 
-#define DX_IOS_DRAWPREP_TEX( ORIG, TEX, FLAG )											\
-	FLAG |= DX_IOS_DRAWPREP_TEXTURE ;													\
-	if( (ORIG)->FormatDesc.AlphaChFlag   ) FLAG |= DX_IOS_DRAWPREP_TEXALPHACH ;			\
-	if( (ORIG)->FormatDesc.AlphaTestFlag ) FLAG |= DX_IOS_DRAWPREP_TEXALPHATEST ;		\
-	if( GIOS.Device.DrawInfo.BeginSceneFlag == FALSE ) Graphics_iOS_RenderBegin() ;		\
-	if( GIOS.Device.DrawSetting.RenderTexture != (TEX) )								\
-		Graphics_iOS_DrawSetting_SetTexture( (TEX) ) ;									\
+#define DX_HTML5_DRAWPREP_TEX( ORIG, TEX, FLAG )											\
+	FLAG |= DX_HTML5_DRAWPREP_TEXTURE ;													\
+	if( (ORIG)->FormatDesc.AlphaChFlag   ) FLAG |= DX_HTML5_DRAWPREP_TEXALPHACH ;			\
+	if( (ORIG)->FormatDesc.AlphaTestFlag ) FLAG |= DX_HTML5_DRAWPREP_TEXALPHATEST ;		\
+	if( GHTML5.Device.DrawInfo.BeginSceneFlag == FALSE ) Graphics_HTML5_RenderBegin() ;		\
+	if( GHTML5.Device.DrawSetting.RenderTexture != (TEX) )								\
+		Graphics_HTML5_DrawSetting_SetTexture( (TEX) ) ;									\
 	if( GSYS.ChangeSettingFlag ||														\
-		GIOS.Device.DrawSetting.DrawPrepAlwaysFlag != FALSE ||							\
-		GIOS.Device.DrawSetting.DrawPrepParamFlag  != FLAG )							\
-		Graphics_iOS_DrawPreparation( FLAG ) ;
+		GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag != FALSE ||							\
+		GHTML5.Device.DrawSetting.DrawPrepParamFlag  != FLAG )							\
+		Graphics_HTML5_DrawPreparation( FLAG ) ;
 
 
 #define GETVERTEX_POINT( p )		\
 	MV1DRAWPACKDRAWMODEL		\
 	if(\
-		  GIOS.Device.DrawInfo.Use3DVertex != 0 ||\
-		  GIOS.Device.DrawInfo.PrimitiveType != GL_POINTS ||\
-		  GIOS.Device.DrawInfo.VertexNum + 1 >= IOS_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ]\
+		  GHTML5.Device.DrawInfo.Use3DVertex != 0 ||\
+		  GHTML5.Device.DrawInfo.PrimitiveType != GL_POINTS ||\
+		  GHTML5.Device.DrawInfo.VertexNum + 1 >= HTML5_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ]\
 	  )\
 	{\
-		Graphics_iOS_RenderVertex( 0 ) ;\
-		GIOS.Device.DrawInfo.PrimitiveType = GL_POINTS ;\
+		Graphics_HTML5_RenderVertex( 0 ) ;\
+		GHTML5.Device.DrawInfo.PrimitiveType = GL_POINTS ;\
 	}\
-	*( ( void ** )&p ) = ( void * )GIOS.Device.DrawInfo.VertexBufferNextAddr ;
+	*( ( void ** )&p ) = ( void * )GHTML5.Device.DrawInfo.VertexBufferNextAddr ;
 
 
 #define GETVERTEX_POINT3D( p )		\
 	MV1DRAWPACKDRAWMODEL		\
 	if(\
-		  GIOS.Device.DrawInfo.Use3DVertex != 1 ||\
-		  GIOS.Device.DrawInfo.PrimitiveType != GL_POINTS ||\
-		  GIOS.Device.DrawInfo.VertexNum + 1 >= IOS_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ]\
+		  GHTML5.Device.DrawInfo.Use3DVertex != 1 ||\
+		  GHTML5.Device.DrawInfo.PrimitiveType != GL_POINTS ||\
+		  GHTML5.Device.DrawInfo.VertexNum + 1 >= HTML5_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ]\
 	  )\
 	{\
-		Graphics_iOS_RenderVertex( 1 ) ;\
-		GIOS.Device.DrawInfo.PrimitiveType = GL_POINTS ;\
+		Graphics_HTML5_RenderVertex( 1 ) ;\
+		GHTML5.Device.DrawInfo.PrimitiveType = GL_POINTS ;\
 	}\
-	*( ( void ** )&p ) = ( void * )GIOS.Device.DrawInfo.VertexBufferNextAddr ;
+	*( ( void ** )&p ) = ( void * )GHTML5.Device.DrawInfo.VertexBufferNextAddr ;
 
 
 #define GETVERTEX_LINEBOX( p )		\
 	MV1DRAWPACKDRAWMODEL		\
 	if(\
-		  GIOS.Device.DrawInfo.Use3DVertex != 0 ||\
-		  GIOS.Device.DrawInfo.PrimitiveType != GL_TRIANGLES ||\
-		  GIOS.Device.DrawInfo.VertexNum + 24 >= IOS_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ]\
+		  GHTML5.Device.DrawInfo.Use3DVertex != 0 ||\
+		  GHTML5.Device.DrawInfo.PrimitiveType != GL_TRIANGLES ||\
+		  GHTML5.Device.DrawInfo.VertexNum + 24 >= HTML5_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ]\
 	  )\
 	{\
-		Graphics_iOS_RenderVertex( 0 ) ;\
-		GIOS.Device.DrawInfo.PrimitiveType = GL_TRIANGLES ;\
+		Graphics_HTML5_RenderVertex( 0 ) ;\
+		GHTML5.Device.DrawInfo.PrimitiveType = GL_TRIANGLES ;\
 	}\
-	*( ( void ** )&p ) = ( void * )GIOS.Device.DrawInfo.VertexBufferNextAddr ;
+	*( ( void ** )&p ) = ( void * )GHTML5.Device.DrawInfo.VertexBufferNextAddr ;
 
 
 #define GETVERTEX_LINETRIANGLE( p )		\
 	MV1DRAWPACKDRAWMODEL		\
 	if(\
-		  GIOS.Device.DrawInfo.Use3DVertex != 0 ||\
-		  GIOS.Device.DrawInfo.PrimitiveType != GL_LINES ||\
-		  GIOS.Device.DrawInfo.VertexNum + 6 >= IOS_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ]\
+		  GHTML5.Device.DrawInfo.Use3DVertex != 0 ||\
+		  GHTML5.Device.DrawInfo.PrimitiveType != GL_LINES ||\
+		  GHTML5.Device.DrawInfo.VertexNum + 6 >= HTML5_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ]\
 	  )\
 	{\
-		Graphics_iOS_RenderVertex( 0 ) ;\
-		GIOS.Device.DrawInfo.PrimitiveType = GL_LINES ;\
+		Graphics_HTML5_RenderVertex( 0 ) ;\
+		GHTML5.Device.DrawInfo.PrimitiveType = GL_LINES ;\
 	}\
-	*( ( void ** )&p ) = ( void * )GIOS.Device.DrawInfo.VertexBufferNextAddr ;
+	*( ( void ** )&p ) = ( void * )GHTML5.Device.DrawInfo.VertexBufferNextAddr ;
 
 
 #define GETVERTEX_LINETRIANGLE3D( p )		\
 	MV1DRAWPACKDRAWMODEL		\
 	if(\
-		  GIOS.Device.DrawInfo.Use3DVertex != 1 ||\
-		  GIOS.Device.DrawInfo.PrimitiveType != GL_LINES ||\
-		  GIOS.Device.DrawInfo.VertexNum + 6 >= IOS_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ]\
+		  GHTML5.Device.DrawInfo.Use3DVertex != 1 ||\
+		  GHTML5.Device.DrawInfo.PrimitiveType != GL_LINES ||\
+		  GHTML5.Device.DrawInfo.VertexNum + 6 >= HTML5_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ]\
 	  )\
 	{\
-		Graphics_iOS_RenderVertex( 1 ) ;\
-		GIOS.Device.DrawInfo.PrimitiveType = GL_LINES ;\
+		Graphics_HTML5_RenderVertex( 1 ) ;\
+		GHTML5.Device.DrawInfo.PrimitiveType = GL_LINES ;\
 	}\
-	*( ( void ** )&p ) = ( void * )GIOS.Device.DrawInfo.VertexBufferNextAddr ;
+	*( ( void ** )&p ) = ( void * )GHTML5.Device.DrawInfo.VertexBufferNextAddr ;
 
 
 #define GETVERTEX_LINE( p )		\
 	MV1DRAWPACKDRAWMODEL		\
 	if(\
-		  GIOS.Device.DrawInfo.Use3DVertex == 1 ||\
-		  GIOS.Device.DrawInfo.PrimitiveType != GL_LINES ||\
-		  GIOS.Device.DrawInfo.VertexNum + 2 >= IOS_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ]\
+		  GHTML5.Device.DrawInfo.Use3DVertex == 1 ||\
+		  GHTML5.Device.DrawInfo.PrimitiveType != GL_LINES ||\
+		  GHTML5.Device.DrawInfo.VertexNum + 2 >= HTML5_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ]\
 	  )\
 	{\
-		Graphics_iOS_RenderVertex( 0 ) ;\
-		GIOS.Device.DrawInfo.PrimitiveType = GL_LINES ;\
+		Graphics_HTML5_RenderVertex( 0 ) ;\
+		GHTML5.Device.DrawInfo.PrimitiveType = GL_LINES ;\
 	}\
-	*( ( void ** )&p ) = ( void * )GIOS.Device.DrawInfo.VertexBufferNextAddr ;
+	*( ( void ** )&p ) = ( void * )GHTML5.Device.DrawInfo.VertexBufferNextAddr ;
 
 
 #define GETVERTEX_LINE3D( p )		\
 	MV1DRAWPACKDRAWMODEL		\
 	if(\
-		  GIOS.Device.DrawInfo.Use3DVertex != 1 ||\
-		  GIOS.Device.DrawInfo.PrimitiveType != GL_LINES ||\
-		  GIOS.Device.DrawInfo.VertexNum + 2 >= IOS_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ]\
+		  GHTML5.Device.DrawInfo.Use3DVertex != 1 ||\
+		  GHTML5.Device.DrawInfo.PrimitiveType != GL_LINES ||\
+		  GHTML5.Device.DrawInfo.VertexNum + 2 >= HTML5_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ]\
 	  )\
 	{\
-		Graphics_iOS_RenderVertex( 1 ) ;\
-		GIOS.Device.DrawInfo.PrimitiveType = GL_LINES ;\
+		Graphics_HTML5_RenderVertex( 1 ) ;\
+		GHTML5.Device.DrawInfo.PrimitiveType = GL_LINES ;\
 	}\
-	*( ( void ** )&p ) = ( void * )GIOS.Device.DrawInfo.VertexBufferNextAddr ;
+	*( ( void ** )&p ) = ( void * )GHTML5.Device.DrawInfo.VertexBufferNextAddr ;
 
 
 
 #define GETVERTEX_QUAD( p )		\
 	MV1DRAWPACKDRAWMODEL		\
 	if(\
-		  GIOS.Device.DrawInfo.Use3DVertex != 0 ||\
-		  GIOS.Device.DrawInfo.PrimitiveType != GL_TRIANGLES ||\
-		  GIOS.Device.DrawInfo.VertexNum + 6 >= IOS_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ]\
+		  GHTML5.Device.DrawInfo.Use3DVertex != 0 ||\
+		  GHTML5.Device.DrawInfo.PrimitiveType != GL_TRIANGLES ||\
+		  GHTML5.Device.DrawInfo.VertexNum + 6 >= HTML5_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ]\
 	  )\
 	{\
-		Graphics_iOS_RenderVertex( 0 ) ;\
-		GIOS.Device.DrawInfo.PrimitiveType = GL_TRIANGLES ;\
+		Graphics_HTML5_RenderVertex( 0 ) ;\
+		GHTML5.Device.DrawInfo.PrimitiveType = GL_TRIANGLES ;\
 	}\
-	*( ( void ** )&p ) = ( void * )GIOS.Device.DrawInfo.VertexBufferNextAddr ;
+	*( ( void ** )&p ) = ( void * )GHTML5.Device.DrawInfo.VertexBufferNextAddr ;
 
 
 #define GETVERTEX_TRIANGLE( p )		\
 	MV1DRAWPACKDRAWMODEL		\
 	if(\
-		  GIOS.Device.DrawInfo.Use3DVertex != 0 ||\
-		  GIOS.Device.DrawInfo.PrimitiveType != GL_TRIANGLES ||\
-		  GIOS.Device.DrawInfo.VertexNum + 3 >= IOS_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ]\
+		  GHTML5.Device.DrawInfo.Use3DVertex != 0 ||\
+		  GHTML5.Device.DrawInfo.PrimitiveType != GL_TRIANGLES ||\
+		  GHTML5.Device.DrawInfo.VertexNum + 3 >= HTML5_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ]\
 	  )\
 	{\
-		Graphics_iOS_RenderVertex( 0 ) ;\
-		GIOS.Device.DrawInfo.PrimitiveType = GL_TRIANGLES ;\
+		Graphics_HTML5_RenderVertex( 0 ) ;\
+		GHTML5.Device.DrawInfo.PrimitiveType = GL_TRIANGLES ;\
 	}\
-	*( ( void ** )&p ) = ( void * )GIOS.Device.DrawInfo.VertexBufferNextAddr ;
+	*( ( void ** )&p ) = ( void * )GHTML5.Device.DrawInfo.VertexBufferNextAddr ;
 
 
 #define GETVERTEX_TRIANGLE3D( p )		\
 	MV1DRAWPACKDRAWMODEL		\
 	if(\
-		  GIOS.Device.DrawInfo.Use3DVertex != 1 ||\
-		  GIOS.Device.DrawInfo.PrimitiveType != GL_TRIANGLES ||\
-		  GIOS.Device.DrawInfo.VertexNum + 3 >= IOS_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ]\
+		  GHTML5.Device.DrawInfo.Use3DVertex != 1 ||\
+		  GHTML5.Device.DrawInfo.PrimitiveType != GL_TRIANGLES ||\
+		  GHTML5.Device.DrawInfo.VertexNum + 3 >= HTML5_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ]\
 	  )\
 	{\
-		Graphics_iOS_RenderVertex( 1 ) ;\
-		GIOS.Device.DrawInfo.PrimitiveType = GL_TRIANGLES ;\
+		Graphics_HTML5_RenderVertex( 1 ) ;\
+		GHTML5.Device.DrawInfo.PrimitiveType = GL_TRIANGLES ;\
 	}\
-	*( ( void ** )&p ) = ( void * )GIOS.Device.DrawInfo.VertexBufferNextAddr ;
+	*( ( void ** )&p ) = ( void * )GHTML5.Device.DrawInfo.VertexBufferNextAddr ;
 
 
 #define GETVERTEX_BILLBOARD( p )		\
 	MV1DRAWPACKDRAWMODEL		\
 	if(\
-		  GIOS.Device.DrawInfo.Use3DVertex != 1 ||\
-		  GIOS.Device.DrawInfo.PrimitiveType != GL_TRIANGLES ||\
-		  GIOS.Device.DrawInfo.VertexNum + 6 >= IOS_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ]\
+		  GHTML5.Device.DrawInfo.Use3DVertex != 1 ||\
+		  GHTML5.Device.DrawInfo.PrimitiveType != GL_TRIANGLES ||\
+		  GHTML5.Device.DrawInfo.VertexNum + 6 >= HTML5_VertexBuffer_MaxVertexNum[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ]\
 	  )\
 	{\
-		Graphics_iOS_RenderVertex( 1 ) ;\
-		GIOS.Device.DrawInfo.PrimitiveType = GL_TRIANGLES ;\
+		Graphics_HTML5_RenderVertex( 1 ) ;\
+		GHTML5.Device.DrawInfo.PrimitiveType = GL_TRIANGLES ;\
 	}\
-	*( ( void ** )&p ) = ( void * )GIOS.Device.DrawInfo.VertexBufferNextAddr ;
+	*( ( void ** )&p ) = ( void * )GHTML5.Device.DrawInfo.VertexBufferNextAddr ;
 
 
 
 
 #define ADD4VERTEX_POINT		\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) ;	\
-		GIOS.Device.DrawInfo.VertexNum ++ ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) ;	\
+		GHTML5.Device.DrawInfo.VertexNum ++ ;
 
 #define ADD4VERTEX_POINT3D		\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_3D ) ;	\
-		GIOS.Device.DrawInfo.VertexNum ++ ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_3D ) ;	\
+		GHTML5.Device.DrawInfo.VertexNum ++ ;
 
 #define ADD4VERTEX_LINEBOX			\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) * 24 ;\
-		GIOS.Device.DrawInfo.VertexNum += 24 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) * 24 ;\
+		GHTML5.Device.DrawInfo.VertexNum += 24 ;
 
 #define ADD4VERTEX_LINETRIANGLE		\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) * 6 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 6 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) * 6 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 6 ;
 
 #define ADD4VERTEX_LINETRIANGLE3D		\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_3D ) * 6 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 6 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_3D ) * 6 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 6 ;
 
 #define ADD4VERTEX_LINE			\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) * 2 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 2 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) * 2 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 2 ;
 
 #define ADD4VERTEX_LINE3D		\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_3D ) * 2 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 2 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_3D ) * 2 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 2 ;
 
 #define ADD4VERTEX_NOTEX		\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) * 6 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 6 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) * 6 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 6 ;
 
 #define ADD4VERTEX_TEX			\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_2D ) * 6 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 6 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_2D ) * 6 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 6 ;
 
 #define ADD4VERTEX_BLENDTEX		\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_BLENDTEX_2D ) * 6 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 6 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_BLENDTEX_2D ) * 6 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 6 ;
 
 #define ADD3VERTEX_NOTEX		\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) * 3 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 3 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_2D ) * 3 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 3 ;
 
 #define ADD3VERTEX_TEX			\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_2D ) * 3 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 3 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_2D ) * 3 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 3 ;
 
 #define ADD3VERTEX_BLENDTEX		\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_BLENDTEX_2D ) * 3 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 3 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_BLENDTEX_2D ) * 3 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 3 ;
 
 #define ADD3VERTEX_NOTEX3D		\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_3D ) * 3 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 3 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_NOTEX_3D ) * 3 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 3 ;
 
 #define ADD4VERTEX_BILLBOARD		\
-		GIOS.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_3D ) * 6 ;	\
-		GIOS.Device.DrawInfo.VertexNum += 6 ;
+		GHTML5.Device.DrawInfo.VertexBufferNextAddr += sizeof( VERTEX_3D ) * 6 ;	\
+		GHTML5.Device.DrawInfo.VertexNum += 6 ;
 
 #define SETUPCOLOR( DEST )		\
 	if( GSYS.HardInfo.UseVertexColorBGRAFormat )\
 	{\
-		DEST  = ( ( ( ( ( 	GIOS.Device.DrawInfo.DiffuseColor & 0x00ff0000 ) >> 16 ) * Red   ) / 255 ) << 16 ) |\
-				( ( ( ( ( 	GIOS.Device.DrawInfo.DiffuseColor & 0x0000ff00 ) >> 8  ) * Green ) / 255 ) << 8  ) |\
-				( ( ( ( (	GIOS.Device.DrawInfo.DiffuseColor & 0x000000ff )       ) * Blue  ) / 255 )       ) | \
-				( 			GIOS.Device.DrawInfo.DiffuseColor & 0xff000000 ) ;\
+		DEST  = ( ( ( ( ( 	GHTML5.Device.DrawInfo.DiffuseColor & 0x00ff0000 ) >> 16 ) * Red   ) / 255 ) << 16 ) |\
+				( ( ( ( ( 	GHTML5.Device.DrawInfo.DiffuseColor & 0x0000ff00 ) >> 8  ) * Green ) / 255 ) << 8  ) |\
+				( ( ( ( (	GHTML5.Device.DrawInfo.DiffuseColor & 0x000000ff )       ) * Blue  ) / 255 )       ) | \
+				( 			GHTML5.Device.DrawInfo.DiffuseColor & 0xff000000 ) ;\
 	}\
 	else\
 	{\
-		DEST  = ( ( ( ( ( 	GIOS.Device.DrawInfo.DiffuseColor & 0x000000ff )       ) * Red   ) / 255 )       ) |\
-				( ( ( ( ( 	GIOS.Device.DrawInfo.DiffuseColor & 0x0000ff00 ) >> 8  ) * Green ) / 255 ) << 8  ) |\
-				( ( ( ( (	GIOS.Device.DrawInfo.DiffuseColor & 0x00ff0000 ) >> 16 ) * Blue  ) / 255 ) << 16 ) | \
-				( 			GIOS.Device.DrawInfo.DiffuseColor & 0xff000000 ) ;\
+		DEST  = ( ( ( ( ( 	GHTML5.Device.DrawInfo.DiffuseColor & 0x000000ff )       ) * Red   ) / 255 )       ) |\
+				( ( ( ( ( 	GHTML5.Device.DrawInfo.DiffuseColor & 0x0000ff00 ) >> 8  ) * Green ) / 255 ) << 8  ) |\
+				( ( ( ( (	GHTML5.Device.DrawInfo.DiffuseColor & 0x00ff0000 ) >> 16 ) * Blue  ) / 255 ) << 16 ) | \
+				( 			GHTML5.Device.DrawInfo.DiffuseColor & 0xff000000 ) ;\
 	}
 
 
@@ -314,50 +314,50 @@ namespace DxLib
 // 構造体宣言 -----------------------------------------------------------------
 
 // 標準描画用の複雑な処理を行わない頂点シェーダーの情報
-typedef struct tagGRAPHICS_IOS_BASE_SIMPLE_VERTEXSHADER_INFO
+typedef struct tagGRAPHICS_HTML5_BASE_SIMPLE_VERTEXSHADER_INFO
 {
 	const char *					ShaderFileName ;			// 使用する頂点シェーダーファイル名
-	VERTEXBUFFER_INPUT_INFO_IOS	InputInfo ;					// 入力頂点データ情報
-} GRAPHICS_IOS_BASE_SIMPLE_VERTEXSHADER_INFO ;
+	VERTEXBUFFER_INPUT_INFO_HTML5	InputInfo ;					// 入力頂点データ情報
+} GRAPHICS_HTML5_BASE_SIMPLE_VERTEXSHADER_INFO ;
 
 // データ定義 -----------------------------------------------------------------
 
-DX_IOS_RENDER_BLEND_INFO g_DefaultBlendDescArray[ DX_BLENDMODE_NUM ] =
+DX_HTML5_RENDER_BLEND_INFO g_DefaultBlendDescArray[ DX_BLENDMODE_NUM ] =
 {
-	{ IOS_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_NOBLEND			ノーブレンド
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA			αブレンド
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD				加算ブレンド
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB				減算ブレンド
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,		GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				乗算ブレンド
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB2			内部処理用減算ブレンド１
-	{ IOS_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_XOR				XORブレンド(非対応)
-	{ IOS_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// 欠番
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,		GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_DESTCOLOR		カラーは更新されない
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR	描画先の色の反転値を掛ける
-	{ IOS_RENDER_TYPE_INVERSE,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_INVSRC			描画元の色を反転する
-	{ IOS_RENDER_TYPE_MUL,			TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,		GL_SRC_ALPHA,			GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_MULA			アルファチャンネル考慮付き乗算ブレンド
-	{ IOS_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA_X4		αブレンドの描画側の輝度を最大４倍にできるモード
-	{ IOS_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD_X4			加算ブレンドの描画側の輝度を最大４倍にできるモード
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SRCCOLOR		描画元のカラーでそのまま描画される
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_HALF_ADD		半加算ブレンド
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_SUB1			出力ブレンドが使用可能な場合の減算ブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_NOBLEND			ノーブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA			αブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD				加算ブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB				減算ブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,		GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				乗算ブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB2			内部処理用減算ブレンド１
+	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_XOR				XORブレンド(非対応)
+	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// 欠番
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,		GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_DESTCOLOR		カラーは更新されない
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR	描画先の色の反転値を掛ける
+	{ HTML5_RENDER_TYPE_INVERSE,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_INVSRC			描画元の色を反転する
+	{ HTML5_RENDER_TYPE_MUL,			TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,		GL_SRC_ALPHA,			GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_MULA			アルファチャンネル考慮付き乗算ブレンド
+	{ HTML5_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA_X4		αブレンドの描画側の輝度を最大４倍にできるモード
+	{ HTML5_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD_X4			加算ブレンドの描画側の輝度を最大４倍にできるモード
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SRCCOLOR		描画元のカラーでそのまま描画される
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_HALF_ADD		半加算ブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_SUB1			出力ブレンドが使用可能な場合の減算ブレンド
 
-	{ IOS_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA		乗算済みαブレンドモードのαブレンド
-	{ IOS_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD			乗算済みαブレンドモードの加算ブレンド
-	{ IOS_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_ONE,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_PMA_SUB			乗算済みαブレンドモードの減算ブレンド
-	{ IOS_RENDER_TYPE_PMA_INVERSE,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_INVSRC		乗算済みαブレンドモードの描画元の色を反転する
-	{ IOS_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA_X4	乗算済みαブレンドモードのαブレンドの描画側の輝度を最大４倍にできるモード
-	{ IOS_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD_X4		乗算済みαブレンドモードの加算ブレンドの描画側の輝度を最大４倍にできるモード
+	{ HTML5_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA		乗算済みαブレンドモードのαブレンド
+	{ HTML5_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD			乗算済みαブレンドモードの加算ブレンド
+	{ HTML5_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_ONE,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_PMA_SUB			乗算済みαブレンドモードの減算ブレンド
+	{ HTML5_RENDER_TYPE_PMA_INVERSE,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_INVSRC		乗算済みαブレンドモードの描画元の色を反転する
+	{ HTML5_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA_X4	乗算済みαブレンドモードのαブレンドの描画側の輝度を最大４倍にできるモード
+	{ HTML5_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD_X4		乗算済みαブレンドモードの加算ブレンドの描画側の輝度を最大４倍にできるモード
 
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ZERO,				GL_FUNC_ADD,				GL_ZERO,		GL_ZERO,				GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_ZERO		Live2D のブレンドモード Zero 用
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_NORMAL	Live2D のブレンドモード Normal 用
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,		GL_ONE,					GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_ADD		Live2D のブレンドモード Add 用
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_DST_COLOR,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ZERO,		GL_ONE,					GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_MULT		Live2D のブレンドモード Mult 用
-	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ZERO,		GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_MASK		Live2D のブレンドモード Mask 用
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ZERO,				GL_FUNC_ADD,				GL_ZERO,		GL_ZERO,				GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_ZERO		Live2D のブレンドモード Zero 用
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_NORMAL	Live2D のブレンドモード Normal 用
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,		GL_ONE,					GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_ADD		Live2D のブレンドモード Add 用
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_DST_COLOR,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ZERO,		GL_ONE,					GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_MULT		Live2D のブレンドモード Mult 用
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ZERO,		GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_MASK		Live2D のブレンドモード Mask 用
 } ;
 
 // 頂点バッファに格納できる頂点の最大数のテーブル
-static const int IOS_VertexBuffer_MaxVertexNum[ IOS_VERTEX_INPUTLAYOUT_NUM ] =
+static const int HTML5_VertexBuffer_MaxVertexNum[ HTML5_VERTEX_INPUTLAYOUT_NUM ] =
 {
 	DX_GLES2_VERTBUFFERSIZE / sizeof( VERTEX_NOTEX_2D    ),
 	DX_GLES2_VERTBUFFERSIZE / sizeof( VERTEX_2D          ),
@@ -372,20 +372,20 @@ static const int IOS_VertexBuffer_MaxVertexNum[ IOS_VERTEX_INPUTLAYOUT_NUM ] =
 static const int g_VertexTypeToInputLayout[ 2 ][ VERTEXTYPE_NUM ] =
 {
 	{
-		IOS_VERTEX_INPUTLAYOUT_NOTEX_2D,
-		IOS_VERTEX_INPUTLAYOUT_2D,
-		IOS_VERTEX_INPUTLAYOUT_BLENDTEX_2D,
+		HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D,
+		HTML5_VERTEX_INPUTLAYOUT_2D,
+		HTML5_VERTEX_INPUTLAYOUT_BLENDTEX_2D,
 	},
 
 	{
-		IOS_VERTEX_INPUTLAYOUT_NOTEX_3D,
-		IOS_VERTEX_INPUTLAYOUT_3D,
+		HTML5_VERTEX_INPUTLAYOUT_NOTEX_3D,
+		HTML5_VERTEX_INPUTLAYOUT_3D,
 		-1,
 	},
 } ;
 
 // 単位行列
-static MATRIX IOS_GlobalIdentMatrix =
+static MATRIX HTML5_GlobalIdentMatrix =
 {
 	{
 		{ 1.0f, 0.0f, 0.0f, 0.0f },
@@ -425,7 +425,7 @@ GLenum g_DXCmpModeToGLES2CompareFunc[ 9 ] =
 	((GLMode) == GL_REPEAT ? DX_TEXADDRESS_WRAP : ( (GLMode) == GL_MIRRORED_REPEAT ? DX_TEXADDRESS_MIRROR : DX_TEXADDRESS_CLAMP ))
 
 
-// ＤＸライブラリのテクスチャアドレスモードを IOSWrapMode に変換するためのテーブル
+// ＤＸライブラリのテクスチャアドレスモードを HTML5WrapMode に変換するためのテーブル
 GLenum g_DXTexAddrModeToGLES2WrapMode[ DX_TEXADDRESS_NUM ] =
 {
 	0,						// ＤＸライブラリでは未使用
@@ -436,281 +436,281 @@ GLenum g_DXTexAddrModeToGLES2WrapMode[ DX_TEXADDRESS_NUM ] =
 } ;
 
 // 頂点データ要素基本情報
-VERTEXBUFFER_INPUT_ELEMENT_INFO_BASE_IOS g_VertexElementInfoBase[ IOS_VERTEX_ATTR_NUM ] =
+VERTEXBUFFER_INPUT_ELEMENT_INFO_BASE_HTML5 g_VertexElementInfoBase[ HTML5_VERTEX_ATTR_NUM ] =
 {
-	{ "aPosF2",			2, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_POS_F2
-	{ "aPos",			3, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_POS_F3
-	{ "aPosF4",			4, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_POS_F4
-	{ "aNrm",			3, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_NRM
-	{ "aDif",			4, GL_UNSIGNED_BYTE,	GL_TRUE  },	// IOS_VERTEX_ATTR_DIF
-	{ "aSpc",			4, GL_UNSIGNED_BYTE,	GL_TRUE  },	// IOS_VERTEX_ATTR_SPC
-	{ "aTexUV0",		2, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_TEXUV0_F2
-	{ "aTexUV1",		2, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_TEXUV1_F2
-	{ "aTexUV2",		2, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_TEXUV2_F2
-	{ "aTexUV3",		2, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_TEXUV3_F2
-	{ "aTexUV4",		2, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_TEXUV4_F2
-	{ "aTexUV5",		2, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_TEXUV5_F2
-	{ "aTexUV6",		2, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_TEXUV6_F2
-	{ "aTexUV7",		2, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_TEXUV7_F2
-	{ "aTexUV0F4",		4, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_TEXUV0_F4
-	{ "aTexUV1F4",		4, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_TEXUV1_F4
-	{ "aTan",			3, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_TAN
-	{ "aBin",			3, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_BIN
-	{ "aBlendInd0",		4, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_BLENDIND0
-	{ "aBlendWeight0",	4, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_BLENDWEIGHT0
-	{ "aBlendInd1",		4, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_BLENDIND1
-	{ "aBlendWeight1",	4, GL_FLOAT,			GL_FALSE },	// IOS_VERTEX_ATTR_BLENDWEIGHT1
+	{ "aPosF2",			2, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_POS_F2
+	{ "aPos",			3, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_POS_F3
+	{ "aPosF4",			4, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_POS_F4
+	{ "aNrm",			3, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_NRM
+	{ "aDif",			4, GL_UNSIGNED_BYTE,	GL_TRUE  },	// HTML5_VERTEX_ATTR_DIF
+	{ "aSpc",			4, GL_UNSIGNED_BYTE,	GL_TRUE  },	// HTML5_VERTEX_ATTR_SPC
+	{ "aTexUV0",		2, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_TEXUV0_F2
+	{ "aTexUV1",		2, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_TEXUV1_F2
+	{ "aTexUV2",		2, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_TEXUV2_F2
+	{ "aTexUV3",		2, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_TEXUV3_F2
+	{ "aTexUV4",		2, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_TEXUV4_F2
+	{ "aTexUV5",		2, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_TEXUV5_F2
+	{ "aTexUV6",		2, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_TEXUV6_F2
+	{ "aTexUV7",		2, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_TEXUV7_F2
+	{ "aTexUV0F4",		4, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_TEXUV0_F4
+	{ "aTexUV1F4",		4, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_TEXUV1_F4
+	{ "aTan",			3, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_TAN
+	{ "aBin",			3, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_BIN
+	{ "aBlendInd0",		4, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_BLENDIND0
+	{ "aBlendWeight0",	4, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_BLENDWEIGHT0
+	{ "aBlendInd1",		4, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_BLENDIND1
+	{ "aBlendWeight1",	4, GL_FLOAT,			GL_FALSE },	// HTML5_VERTEX_ATTR_BLENDWEIGHT1
 } ;
 
 // StretchRect用頂点データの情報
-VERTEXBUFFER_INPUT_INFO_IOS	g_StretchRectVertexInputInfo =
+VERTEXBUFFER_INPUT_INFO_HTML5	g_StretchRectVertexInputInfo =
 {
 	sizeof( float ) * 4,
 	2,
 	{
-		{ IOS_VERTEX_ATTR_POS_F2,    NULL, 0 },
-		{ IOS_VERTEX_ATTR_TEXUV0_F2, NULL, 8 },
+		{ HTML5_VERTEX_ATTR_POS_F2,    NULL, 0 },
+		{ HTML5_VERTEX_ATTR_TEXUV0_F2, NULL, 8 },
 	},
 } ;
-VERTEXBUFFER_INPUT_INFO_IOS	g_StretchRectTex2VertexInputInfo =
+VERTEXBUFFER_INPUT_INFO_HTML5	g_StretchRectTex2VertexInputInfo =
 {
 	sizeof( float ) * 6,
 	3,
 	{
-		{ IOS_VERTEX_ATTR_POS_F2,    NULL,  0 },
-		{ IOS_VERTEX_ATTR_TEXUV0_F2, NULL,  8 },
-		{ IOS_VERTEX_ATTR_TEXUV1_F2, NULL, 16 },
+		{ HTML5_VERTEX_ATTR_POS_F2,    NULL,  0 },
+		{ HTML5_VERTEX_ATTR_TEXUV0_F2, NULL,  8 },
+		{ HTML5_VERTEX_ATTR_TEXUV1_F2, NULL, 16 },
 	},
 } ;
-VERTEXBUFFER_INPUT_INFO_IOS	g_StretchRectTex8VertexInputInfo =
+VERTEXBUFFER_INPUT_INFO_HTML5	g_StretchRectTex8VertexInputInfo =
 {
 	sizeof( float ) * 18,
 	9,
 	{
-		{ IOS_VERTEX_ATTR_POS_F2,    NULL,  0 },
-		{ IOS_VERTEX_ATTR_TEXUV0_F2, NULL,  8 },
-		{ IOS_VERTEX_ATTR_TEXUV1_F2, NULL, 16 },
-		{ IOS_VERTEX_ATTR_TEXUV2_F2, NULL, 24 },
-		{ IOS_VERTEX_ATTR_TEXUV3_F2, NULL, 32 },
-		{ IOS_VERTEX_ATTR_TEXUV4_F2, NULL, 40 },
-		{ IOS_VERTEX_ATTR_TEXUV5_F2, NULL, 48 },
-		{ IOS_VERTEX_ATTR_TEXUV6_F2, NULL, 56 },
-		{ IOS_VERTEX_ATTR_TEXUV7_F2, NULL, 64 },
+		{ HTML5_VERTEX_ATTR_POS_F2,    NULL,  0 },
+		{ HTML5_VERTEX_ATTR_TEXUV0_F2, NULL,  8 },
+		{ HTML5_VERTEX_ATTR_TEXUV1_F2, NULL, 16 },
+		{ HTML5_VERTEX_ATTR_TEXUV2_F2, NULL, 24 },
+		{ HTML5_VERTEX_ATTR_TEXUV3_F2, NULL, 32 },
+		{ HTML5_VERTEX_ATTR_TEXUV4_F2, NULL, 40 },
+		{ HTML5_VERTEX_ATTR_TEXUV5_F2, NULL, 48 },
+		{ HTML5_VERTEX_ATTR_TEXUV6_F2, NULL, 56 },
+		{ HTML5_VERTEX_ATTR_TEXUV7_F2, NULL, 64 },
 	},
 } ;
 
 // マスク用頂点データの情報
-VERTEXBUFFER_INPUT_INFO_IOS	g_MaskVertexInputInfo =
+VERTEXBUFFER_INPUT_INFO_HTML5	g_MaskVertexInputInfo =
 {
 	sizeof( float ) * 6,
 	3,
 	{
-		{ IOS_VERTEX_ATTR_POS_F2,    NULL,  0 },
-		{ IOS_VERTEX_ATTR_TEXUV0_F2, NULL,  8 },
-		{ IOS_VERTEX_ATTR_TEXUV1_F2, NULL, 16 },
+		{ HTML5_VERTEX_ATTR_POS_F2,    NULL,  0 },
+		{ HTML5_VERTEX_ATTR_TEXUV0_F2, NULL,  8 },
+		{ HTML5_VERTEX_ATTR_TEXUV1_F2, NULL, 16 },
 	},
 } ;
 
 // クリア処理用頂点データの情報
-VERTEXBUFFER_INPUT_INFO_IOS	g_ClearRTVertexInputInfo =
+VERTEXBUFFER_INPUT_INFO_HTML5	g_ClearRTVertexInputInfo =
 {
 	sizeof( float ) * 2,
 	1,
 	{
-		{ IOS_VERTEX_ATTR_POS_F2, NULL,  0 },
+		{ HTML5_VERTEX_ATTR_POS_F2, NULL,  0 },
 	},
 } ;
 
 // 標準描画用の複雑な処理を行わない頂点シェーダーの情報
-static GRAPHICS_IOS_BASE_SIMPLE_VERTEXSHADER_INFO g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_NUM ] =
+static GRAPHICS_HTML5_BASE_SIMPLE_VERTEXSHADER_INFO g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_NUM ] =
 {
-	// IOS_VERTEX_INPUTLAYOUT_NOTEX_2D( VERTEX_NOTEX_2D )
+	// HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D( VERTEX_NOTEX_2D )
 	{
 		"Base_VERTEX_NOTEX_2D.vert",
 		{
 			sizeof( VERTEX_NOTEX_2D ),
 			2,
 			{
-				{ IOS_VERTEX_ATTR_POS_F4,		NULL,	0	},
-				{ IOS_VERTEX_ATTR_DIF,			NULL,	16	},
+				{ HTML5_VERTEX_ATTR_POS_F4,		NULL,	0	},
+				{ HTML5_VERTEX_ATTR_DIF,			NULL,	16	},
 			},
 		},
 	},
 
-	// IOS_VERTEX_INPUTLAYOUT_2D( VERTEX2D or VERTEX_2D )
+	// HTML5_VERTEX_INPUTLAYOUT_2D( VERTEX2D or VERTEX_2D )
 	{
 		"Base_VERTEX2D.vert",
 		{
 			sizeof( VERTEX2D ),
 			3,
 			{
-				{ IOS_VERTEX_ATTR_POS_F4,		NULL,	0	},
-				{ IOS_VERTEX_ATTR_DIF,			NULL,	16	},
-				{ IOS_VERTEX_ATTR_TEXUV0_F2,	NULL,	20	},
+				{ HTML5_VERTEX_ATTR_POS_F4,		NULL,	0	},
+				{ HTML5_VERTEX_ATTR_DIF,			NULL,	16	},
+				{ HTML5_VERTEX_ATTR_TEXUV0_F2,	NULL,	20	},
 			},
 		},
 	},
 
-	// IOS_VERTEX_INPUTLAYOUT_BLENDTEX_2D( VERTEX_BLENDTEX_2D or VERTEX2DSHADER )
+	// HTML5_VERTEX_INPUTLAYOUT_BLENDTEX_2D( VERTEX_BLENDTEX_2D or VERTEX2DSHADER )
 	{
 		"Base_VERTEX_BLENDTEX_2D.vert",
 		{
 			sizeof( VERTEX_BLENDTEX_2D ),
 			4,
 			{
-				{ IOS_VERTEX_ATTR_POS_F4,		NULL,	0	},
-				{ IOS_VERTEX_ATTR_DIF,			NULL,	16	},
-				{ IOS_VERTEX_ATTR_TEXUV0_F2,	NULL,	24	},
-				{ IOS_VERTEX_ATTR_TEXUV1_F2,	NULL,	32	},
+				{ HTML5_VERTEX_ATTR_POS_F4,		NULL,	0	},
+				{ HTML5_VERTEX_ATTR_DIF,			NULL,	16	},
+				{ HTML5_VERTEX_ATTR_TEXUV0_F2,	NULL,	24	},
+				{ HTML5_VERTEX_ATTR_TEXUV1_F2,	NULL,	32	},
 			},
 		},
 	},
 
-	// IOS_VERTEX_INPUTLAYOUT_NOTEX_3D( VERTEX_NOTEX_3D )
+	// HTML5_VERTEX_INPUTLAYOUT_NOTEX_3D( VERTEX_NOTEX_3D )
 	{
 		"Base_VERTEX_NOTEX_3D.vert",
 		{
 			sizeof( VERTEX_NOTEX_3D ),
 			2,
 			{
-				{ IOS_VERTEX_ATTR_POS_F3,		NULL,	0	},
-				{ IOS_VERTEX_ATTR_DIF,			NULL,	12	},
+				{ HTML5_VERTEX_ATTR_POS_F3,		NULL,	0	},
+				{ HTML5_VERTEX_ATTR_DIF,			NULL,	12	},
 			},
 		},
 	},
 
-	// IOS_VERTEX_INPUTLAYOUT_3D( VERTEX_3D )
+	// HTML5_VERTEX_INPUTLAYOUT_3D( VERTEX_3D )
 	{
 		"Base_VERTEX_3D.vert",
 		{
 			sizeof( VERTEX_3D ),
 			3,
 			{
-				{ IOS_VERTEX_ATTR_POS_F3,		NULL,	0	},
-				{ IOS_VERTEX_ATTR_DIF,			NULL,	12	},
-				{ IOS_VERTEX_ATTR_TEXUV0_F2,	NULL,	16	},
+				{ HTML5_VERTEX_ATTR_POS_F3,		NULL,	0	},
+				{ HTML5_VERTEX_ATTR_DIF,			NULL,	12	},
+				{ HTML5_VERTEX_ATTR_TEXUV0_F2,	NULL,	16	},
 			},
 		},
 	},
 
-	// IOS_VERTEX_INPUTLAYOUT_3D_LIGHT( VERTEX3D )
+	// HTML5_VERTEX_INPUTLAYOUT_3D_LIGHT( VERTEX3D )
 	{
 		"Base_VERTEX3D.vert",
 		{
 			sizeof( VERTEX3D ),
 			6,
 			{
-				{ IOS_VERTEX_ATTR_POS_F3,		NULL,	0	},
-				{ IOS_VERTEX_ATTR_NRM,			NULL,	12	},
-				{ IOS_VERTEX_ATTR_DIF,			NULL,	24	},
-				{ IOS_VERTEX_ATTR_SPC,			NULL,	28	},
-				{ IOS_VERTEX_ATTR_TEXUV0_F2,	NULL,	32	},
-				{ IOS_VERTEX_ATTR_TEXUV1_F2,	NULL,	40	},
+				{ HTML5_VERTEX_ATTR_POS_F3,		NULL,	0	},
+				{ HTML5_VERTEX_ATTR_NRM,			NULL,	12	},
+				{ HTML5_VERTEX_ATTR_DIF,			NULL,	24	},
+				{ HTML5_VERTEX_ATTR_SPC,			NULL,	28	},
+				{ HTML5_VERTEX_ATTR_TEXUV0_F2,	NULL,	32	},
+				{ HTML5_VERTEX_ATTR_TEXUV1_F2,	NULL,	40	},
 			},
 		},
 	},
 
-	// IOS_VERTEX_INPUTLAYOUT_SHADER_3D( VERTEX3DSHADER )
+	// HTML5_VERTEX_INPUTLAYOUT_SHADER_3D( VERTEX3DSHADER )
 	{
 		"Base_VERTEX3DSHADER.vert",
 		{
 			sizeof( VERTEX3DSHADER ),
 			9,
 			{
-				{ IOS_VERTEX_ATTR_POS_F3,		NULL,	0	},
-				{ IOS_VERTEX_ATTR_POS_F4,		NULL,	12	},
-				{ IOS_VERTEX_ATTR_NRM,			NULL,	28	},
-				{ IOS_VERTEX_ATTR_TAN,			NULL,	40	},
-				{ IOS_VERTEX_ATTR_BIN,			NULL,	52	},
-				{ IOS_VERTEX_ATTR_DIF,			NULL,	64	},
-				{ IOS_VERTEX_ATTR_SPC,			NULL,	68	},
-				{ IOS_VERTEX_ATTR_TEXUV0_F2,	NULL,	72	},
-				{ IOS_VERTEX_ATTR_TEXUV1_F2,	NULL,	80	},
+				{ HTML5_VERTEX_ATTR_POS_F3,		NULL,	0	},
+				{ HTML5_VERTEX_ATTR_POS_F4,		NULL,	12	},
+				{ HTML5_VERTEX_ATTR_NRM,			NULL,	28	},
+				{ HTML5_VERTEX_ATTR_TAN,			NULL,	40	},
+				{ HTML5_VERTEX_ATTR_BIN,			NULL,	52	},
+				{ HTML5_VERTEX_ATTR_DIF,			NULL,	64	},
+				{ HTML5_VERTEX_ATTR_SPC,			NULL,	68	},
+				{ HTML5_VERTEX_ATTR_TEXUV0_F2,	NULL,	72	},
+				{ HTML5_VERTEX_ATTR_TEXUV1_F2,	NULL,	80	},
 			},
 		},
 	},
 } ;
 
 // ピクセルフォーマット
-PIXELFORMAT_INFO_IOS g_iOSPixelFormat[ IOS_PIXEL_FORMAT_NUM ] =
+PIXELFORMAT_INFO_HTML5 g_HTML5PixelFormat[ HTML5_PIXEL_FORMAT_NUM ] =
 {
-	{ FALSE,	 32,	      0,	GL_RGBA,					GL_RGBA,		GL_UNSIGNED_BYTE			},	// IOS_PIXEL_FORMAT_R8G8B8A8
-	{ FALSE,	 24,	      0,	GL_RGB,						GL_RGB,			GL_UNSIGNED_BYTE			},	// IOS_PIXEL_FORMAT_R8G8B8
-	{ FALSE,	 16,	      0,	GL_RGBA,					GL_RGBA,		GL_UNSIGNED_SHORT_4_4_4_4	},	// IOS_PIXEL_FORMAT_R4G4B4A4
-	{ FALSE,	 16,	      0,	GL_RGBA,					GL_RGBA,		GL_UNSIGNED_SHORT_5_5_5_1	},	// IOS_PIXEL_FORMAT_R5G5B5A1
-	{ FALSE,	 16,	      0,	GL_RGB,						GL_RGB,			GL_UNSIGNED_SHORT_5_6_5		},	// IOS_PIXEL_FORMAT_R5G6B5
-	{ FALSE,	  8,	      0,	GL_LUMINANCE,				GL_LUMINANCE,	GL_UNSIGNED_BYTE			},	// IOS_PIXEL_FORMAT_R8
-	{ FALSE,	 48,	      0,	GL_RGB,						GL_RGB,			GL_HALF_FLOAT_OES			},	// IOS_PIXEL_FORMAT_R16G16B16_FLOAT
-	{ FALSE,	 96,	      0,	GL_RGB,						GL_RGB,			GL_FLOAT					},	// IOS_PIXEL_FORMAT_R32G32B32_FLOAT
-	{ FALSE,	 64,	      0,	GL_RGBA,					GL_RGBA,		GL_HALF_FLOAT_OES			},	// IOS_PIXEL_FORMAT_R16G16B16A16_FLOAT
-	{ FALSE,	128,	      0,	GL_RGBA,					GL_RGBA,		GL_FLOAT					},	// IOS_PIXEL_FORMAT_R32G32B32A32_FLOAT
+	{ FALSE,	 32,	      0,	GL_RGBA,					GL_RGBA,		GL_UNSIGNED_BYTE			},	// HTML5_PIXEL_FORMAT_R8G8B8A8
+	{ FALSE,	 24,	      0,	GL_RGB,						GL_RGB,			GL_UNSIGNED_BYTE			},	// HTML5_PIXEL_FORMAT_R8G8B8
+	{ FALSE,	 16,	      0,	GL_RGBA,					GL_RGBA,		GL_UNSIGNED_SHORT_4_4_4_4	},	// HTML5_PIXEL_FORMAT_R4G4B4A4
+	{ FALSE,	 16,	      0,	GL_RGBA,					GL_RGBA,		GL_UNSIGNED_SHORT_5_5_5_1	},	// HTML5_PIXEL_FORMAT_R5G5B5A1
+	{ FALSE,	 16,	      0,	GL_RGB,						GL_RGB,			GL_UNSIGNED_SHORT_5_6_5		},	// HTML5_PIXEL_FORMAT_R5G6B5
+	{ FALSE,	  8,	      0,	GL_LUMINANCE,				GL_LUMINANCE,	GL_UNSIGNED_BYTE			},	// HTML5_PIXEL_FORMAT_R8
+	{ FALSE,	 48,	      0,	GL_RGB,						GL_RGB,			GL_HALF_FLOAT_OES			},	// HTML5_PIXEL_FORMAT_R16G16B16_FLOAT
+	{ FALSE,	 96,	      0,	GL_RGB,						GL_RGB,			GL_FLOAT					},	// HTML5_PIXEL_FORMAT_R32G32B32_FLOAT
+	{ FALSE,	 64,	      0,	GL_RGBA,					GL_RGBA,		GL_HALF_FLOAT_OES			},	// HTML5_PIXEL_FORMAT_R16G16B16A16_FLOAT
+	{ FALSE,	128,	      0,	GL_RGBA,					GL_RGBA,		GL_FLOAT					},	// HTML5_PIXEL_FORMAT_R32G32B32A32_FLOAT
 } ;
 
 // Extension の名前
-const char *g_iOSGLExtensionName[ IOS_GL_EXTENSION_NUM ] =
+const char *g_HTML5GLExtensionName[ HTML5_GL_EXTENSION_NUM ] =
 {
-	"GL_OES_depth24",						// IOS_GL_EXTENSION_DEPTH24						
-	"GL_OES_depth32",						// IOS_GL_EXTENSION_DEPTH32						
-	"GL_OES_element_index_uint",			// IOS_GL_EXTENSION_ELEMENT_INDEX_UNIT			
-	"GL_OES_texture_float",					// IOS_GL_EXTENSION_TEXTURE_FLOAT				
-	"GL_OES_texture_float_linear",			// IOS_GL_EXTENSION_TEXTURE_FLOAT_LINEAR		
-	"GL_OES_compressed_paletted_texture",	// IOS_GL_EXTENSION_COMPRESSED_PALETTED_TEXTURE	
-	"GL_OES_compressed_ETC1_RGB8_texture",	// IOS_GL_EXTENSION_COMPRESSED_ETC1_RGB8_TEXTURE
-	"GL_OES_depth_texture",					// IOS_GL_EXTENSION_DEPTH_TEXTURE				
-	"GL_OES_texture_half_float",			// IOS_GL_EXTENSION_TEXTURE_HALF_FLOAT			
-	"GL_OES_texture_half_float_linear",		// IOS_GL_EXTENSION_TEXTURE_HALF_FLOAT_LINEAR	
-	"GL_OES_vertex_half_float",				// IOS_GL_EXTENSION_VERTEX_HALF_FLOAT
-	"GL_OES_texture_3D",					// IOS_GL_EXTENSION_TEXTURE_3D
-	"GL_APPLE_texture_format_BGRA8888",		// IOS_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888
+	"GL_OES_depth24",						// HTML5_GL_EXTENSION_DEPTH24						
+	"GL_OES_depth32",						// HTML5_GL_EXTENSION_DEPTH32						
+	"GL_OES_element_index_uint",			// HTML5_GL_EXTENSION_ELEMENT_INDEX_UNIT			
+	"GL_OES_texture_float",					// HTML5_GL_EXTENSION_TEXTURE_FLOAT				
+	"GL_OES_texture_float_linear",			// HTML5_GL_EXTENSION_TEXTURE_FLOAT_LINEAR		
+	"GL_OES_compressed_paletted_texture",	// HTML5_GL_EXTENSION_COMPRESSED_PALETTED_TEXTURE	
+	"GL_OES_compressed_ETC1_RGB8_texture",	// HTML5_GL_EXTENSION_COMPRESSED_ETC1_RGB8_TEXTURE
+	"GL_OES_depth_texture",					// HTML5_GL_EXTENSION_DEPTH_TEXTURE				
+	"GL_OES_texture_half_float",			// HTML5_GL_EXTENSION_TEXTURE_HALF_FLOAT			
+	"GL_OES_texture_half_float_linear",		// HTML5_GL_EXTENSION_TEXTURE_HALF_FLOAT_LINEAR	
+	"GL_OES_vertex_half_float",				// HTML5_GL_EXTENSION_VERTEX_HALF_FLOAT
+	"GL_OES_texture_3D",					// HTML5_GL_EXTENSION_TEXTURE_3D
+	"GL_APPLE_texture_format_BGRA8888",		// HTML5_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888
 } ;
 
 // Uniform の名前
-const GLchar *g_UniformName[ IOS_SHADER_UNIFORM_NUM ] =
+const GLchar *g_UniformName[ HTML5_SHADER_UNIFORM_NUM ] =
 {
-	"uSrcTex",						// IOS_SHADER_UNIFORM_SRC_TEX
-	"uBlendTex",					// IOS_SHADER_UNIFORM_BLEND_TEX
-	"uDifMapTex",					// IOS_SHADER_UNIFORM_DIF_MAP_TEX
-	"uNrmMapTex",					// IOS_SHADER_UNIFORM_NRM_MAP_TEX
-	"uSpcMapTex",					// IOS_SHADER_UNIFORM_SPC_MAP_TEX
-	"uToonDifGradTex",				// IOS_SHADER_UNIFORM_TOON_DIF_GRAD_TEX
-	"uToonSpcGradTex",				// IOS_SHADER_UNIFORM_TOON_SPC_GRAD_TEX
-	"uToonSphereMapTex",			// IOS_SHADER_UNIFORM_TOON_SPHERE_MAP_TEX
-	"uToonRGBtoVMaxRGBVolTex",		// IOS_SHADER_UNIFORM_TOON_RGB_TO_VMAXRGBVOL_TEX
-	"uSubTex",						// IOS_SHADER_UNIFORM_SUB_TEX
-	"uShadowMap0Tex",				// IOS_SHADER_UNIFORM_SHADOW_MAP0_TEX
-	"uShadowMap1Tex",				// IOS_SHADER_UNIFORM_SHADOW_MAP1_TEX
-	"uShadowMap2Tex",				// IOS_SHADER_UNIFORM_SHADOW_MAP2_TEX
-	"uAmb_Emi",						// IOS_SHADER_UNIFORM_AMB_EMI
-	"uMatDif",						// IOS_SHADER_UNIFORM_MAT_DIF
-	"uMatSpc",						// IOS_SHADER_UNIFORM_MAT_SPC
-	"uMatPow",						// IOS_SHADER_UNIFORM_MAT_POW
-	"uMatTypeParam0",				// IOS_SHADER_UNIFORM_MAT_TYPE_PARAM0
-	"uMatTypeParam1",				// IOS_SHADER_UNIFORM_MAT_TYPE_PARAM1
-	"uMatTypeParam2",				// IOS_SHADER_UNIFORM_MAT_TYPE_PARAM2
-	"uLightPos",					// IOS_SHADER_UNIFORM_LIGHT_POS
-	"uLightDir",					// IOS_SHADER_UNIFORM_LIGHT_DIR
-	"uLightDif",					// IOS_SHADER_UNIFORM_LIGHT_DIF
-	"uLightSpc",					// IOS_SHADER_UNIFORM_LIGHT_SPC
-	"uLightAmb",					// IOS_SHADER_UNIFORM_LIGHT_AMB
-	"uLightRange_FallOff_AT0_AT1",	// IOS_SHADER_UNIFORM_LIGHT_RANGE_FALLOFF_AT0_AT1
-	"uLightAT2_SpotP0_SpotP1",		// IOS_SHADER_UNIFORM_LIGHT_AT2_SPOTP0_SPOTP1
-	"uAntiVPMat",					// IOS_SHADER_UNIFORM_ANTI_VIEW_PORT_MAT
-	"uViewMat",						// IOS_SHADER_UNIFORM_VIEW_MAT
-	"uProjMat",						// IOS_SHADER_UNIFORM_PROJ_MAT
-	"uFog",							// IOS_SHADER_UNIFORM_FOG
-	"uToonOutLineSize",				// IOS_SHADER_UNIFORM_TOON_OUTLINE_SIZE
-	"uDifSrc_SpeSrc_MulSpeCol",		// IOS_SHADER_UNIFORM_DIFSRC_SPCSRC_MULSPECOL
-	"uSMLVPMat",					// IOS_SHADER_UNIFORM_SM_LVP_MAT
-	"uTexMat",						// IOS_SHADER_UNIFORM_TEX_MAT
-	"uLWMat",						// IOS_SHADER_UNIFORM_LW_MAT
-	"uMulAlphaColor",				// IOS_SHADER_UNIFORM_MUL_ALPHA_COLOR
-	"uATestRef",					// IOS_SHADER_UNIFORM_ALPHA_TEST_REF
-	"uATestCmpMode",				// IOS_SHADER_UNIFORM_ALPHA_TEST_CMPMODE
-	"uFogColor",					// IOS_SHADER_UNIFORM_FOG_COLOR
-	"uFactorColor",					// IOS_SHADER_UNIFORM_FACTOR_COLOR
-	"uIgnoreTextureColor",			// IOS_SHADER_UNIFORM_IGNORE_TEXTURE_COLOR
-	"uShadowMapLightEnable",		// IOS_SHADER_UNIFORM_SHADOWMAP_LIGHT_ENABLE
-	"uShadowMap_DAdj_Grad",			// IOS_SHADER_UNIFORM_SHADOWMAP_DADJ_GRAD
+	"uSrcTex",						// HTML5_SHADER_UNIFORM_SRC_TEX
+	"uBlendTex",					// HTML5_SHADER_UNIFORM_BLEND_TEX
+	"uDifMapTex",					// HTML5_SHADER_UNIFORM_DIF_MAP_TEX
+	"uNrmMapTex",					// HTML5_SHADER_UNIFORM_NRM_MAP_TEX
+	"uSpcMapTex",					// HTML5_SHADER_UNIFORM_SPC_MAP_TEX
+	"uToonDifGradTex",				// HTML5_SHADER_UNIFORM_TOON_DIF_GRAD_TEX
+	"uToonSpcGradTex",				// HTML5_SHADER_UNIFORM_TOON_SPC_GRAD_TEX
+	"uToonSphereMapTex",			// HTML5_SHADER_UNIFORM_TOON_SPHERE_MAP_TEX
+	"uToonRGBtoVMaxRGBVolTex",		// HTML5_SHADER_UNIFORM_TOON_RGB_TO_VMAXRGBVOL_TEX
+	"uSubTex",						// HTML5_SHADER_UNIFORM_SUB_TEX
+	"uShadowMap0Tex",				// HTML5_SHADER_UNIFORM_SHADOW_MAP0_TEX
+	"uShadowMap1Tex",				// HTML5_SHADER_UNIFORM_SHADOW_MAP1_TEX
+	"uShadowMap2Tex",				// HTML5_SHADER_UNIFORM_SHADOW_MAP2_TEX
+	"uAmb_Emi",						// HTML5_SHADER_UNIFORM_AMB_EMI
+	"uMatDif",						// HTML5_SHADER_UNIFORM_MAT_DIF
+	"uMatSpc",						// HTML5_SHADER_UNIFORM_MAT_SPC
+	"uMatPow",						// HTML5_SHADER_UNIFORM_MAT_POW
+	"uMatTypeParam0",				// HTML5_SHADER_UNIFORM_MAT_TYPE_PARAM0
+	"uMatTypeParam1",				// HTML5_SHADER_UNIFORM_MAT_TYPE_PARAM1
+	"uMatTypeParam2",				// HTML5_SHADER_UNIFORM_MAT_TYPE_PARAM2
+	"uLightPos",					// HTML5_SHADER_UNIFORM_LIGHT_POS
+	"uLightDir",					// HTML5_SHADER_UNIFORM_LIGHT_DIR
+	"uLightDif",					// HTML5_SHADER_UNIFORM_LIGHT_DIF
+	"uLightSpc",					// HTML5_SHADER_UNIFORM_LIGHT_SPC
+	"uLightAmb",					// HTML5_SHADER_UNIFORM_LIGHT_AMB
+	"uLightRange_FallOff_AT0_AT1",	// HTML5_SHADER_UNIFORM_LIGHT_RANGE_FALLOFF_AT0_AT1
+	"uLightAT2_SpotP0_SpotP1",		// HTML5_SHADER_UNIFORM_LIGHT_AT2_SPOTP0_SPOTP1
+	"uAntiVPMat",					// HTML5_SHADER_UNIFORM_ANTI_VIEW_PORT_MAT
+	"uViewMat",						// HTML5_SHADER_UNIFORM_VIEW_MAT
+	"uProjMat",						// HTML5_SHADER_UNIFORM_PROJ_MAT
+	"uFog",							// HTML5_SHADER_UNIFORM_FOG
+	"uToonOutLineSize",				// HTML5_SHADER_UNIFORM_TOON_OUTLINE_SIZE
+	"uDifSrc_SpeSrc_MulSpeCol",		// HTML5_SHADER_UNIFORM_DIFSRC_SPCSRC_MULSPECOL
+	"uSMLVPMat",					// HTML5_SHADER_UNIFORM_SM_LVP_MAT
+	"uTexMat",						// HTML5_SHADER_UNIFORM_TEX_MAT
+	"uLWMat",						// HTML5_SHADER_UNIFORM_LW_MAT
+	"uMulAlphaColor",				// HTML5_SHADER_UNIFORM_MUL_ALPHA_COLOR
+	"uATestRef",					// HTML5_SHADER_UNIFORM_ALPHA_TEST_REF
+	"uATestCmpMode",				// HTML5_SHADER_UNIFORM_ALPHA_TEST_CMPMODE
+	"uFogColor",					// HTML5_SHADER_UNIFORM_FOG_COLOR
+	"uFactorColor",					// HTML5_SHADER_UNIFORM_FACTOR_COLOR
+	"uIgnoreTextureColor",			// HTML5_SHADER_UNIFORM_IGNORE_TEXTURE_COLOR
+	"uShadowMapLightEnable",		// HTML5_SHADER_UNIFORM_SHADOWMAP_LIGHT_ENABLE
+	"uShadowMap_DAdj_Grad",			// HTML5_SHADER_UNIFORM_SHADOWMAP_DADJ_GRAD
 } ;
 
 GLenum g_TextureEnum[ USE_TEXTURESTAGE_NUM ] =
@@ -733,21 +733,21 @@ GLenum g_TextureEnum[ USE_TEXTURESTAGE_NUM ] =
 	GL_TEXTURE15,
 } ;
 
-// iOS を使ったグラフィックス処理情報の構造体
-GRAPHICS_HARDDATA_IOS GraphicsHardDataiOS ;
+// HTML5 を使ったグラフィックス処理情報の構造体
+GRAPHICS_HARDDATA_HTML5 GraphicsHardDataHTML5 ;
 
 // シェーダーバイナリ配列
-extern BYTE DxShaderCodeBin_Model_IOS[] ;
-extern BYTE DxShaderCodeBin_Filter_IOS[] ;
-extern BYTE DxShaderCodeBin_Base_IOS[] ;
-extern BYTE DxShaderCodeBin_Base3D_IOS[] ;
-extern BYTE DxShaderCodeBin_RgbaMix_IOS[] ;
+extern BYTE DxShaderCodeBin_Model_HTML5[] ;
+extern BYTE DxShaderCodeBin_Filter_HTML5[] ;
+extern BYTE DxShaderCodeBin_Base_HTML5[] ;
+extern BYTE DxShaderCodeBin_Base3D_HTML5[] ;
+extern BYTE DxShaderCodeBin_RgbaMix_HTML5[] ;
 
 // 関数宣言 -------------------------------------------------------------------
 
-static int Graphics_iOS_DeviceState_SetNormalTextureAddressTransformMatrix_ConstBuffer( void ) ;	// 標準描画用のテクスチャ座標変換行列を定数バッファにセットする
-static int Graphics_iOS_DeviceState_UpdateConstantFogParam( void ) ;								// フォグの色以外の定数情報を更新する
-static void Graphics_iOS_DeviceState_RefreshAmbientAndEmissiveParam( void ) ;						// アンビエントライトとエミッシブカラーを掛け合わせたパラメータを更新する
+static int Graphics_HTML5_DeviceState_SetNormalTextureAddressTransformMatrix_ConstBuffer( void ) ;	// 標準描画用のテクスチャ座標変換行列を定数バッファにセットする
+static int Graphics_HTML5_DeviceState_UpdateConstantFogParam( void ) ;								// フォグの色以外の定数情報を更新する
+static void Graphics_HTML5_DeviceState_RefreshAmbientAndEmissiveParam( void ) ;						// アンビエントライトとエミッシブカラーを掛け合わせたパラメータを更新する
 
 // glTexSubImage2D の非同期実行用の関数
 static int glTexSubImage2D_ASync(
@@ -762,10 +762,10 @@ static int glTexSubImage2D_ASync(
 ) ;
 
 
-// iOS に設定する射影行列を更新する
-static void Graphics_Hardware_IOS_RefreshProjectionMatrix( void ) ;
+// HTML5 に設定する射影行列を更新する
+static void Graphics_Hardware_HTML5_RefreshProjectionMatrix( void ) ;
 
-static int Graphics_iOS_BltBmpOrBaseImageToGraph3_MipMapBlt(
+static int Graphics_HTML5_BltBmpOrBaseImageToGraph3_MipMapBlt(
 	      IMAGEDATA_ORIG	*Orig,
 	const RECT				*SrcRect,
 	const RECT				*DestRect,
@@ -801,14 +801,14 @@ __inline	static DWORD GetDiffuseColor( void )															// 現在のディ�
 
 // プログラム -----------------------------------------------------------------
 
-// iOS を使用したグラフィックス処理の初期化を行う( 0:成功 -1:失敗 )
-extern	int		Graphics_iOS_Initialize( void )
+// HTML5 を使用したグラフィックス処理の初期化を行う( 0:成功 -1:失敗 )
+extern	int		Graphics_HTML5_Initialize( void )
 {
 	// 画面モード変更ではサブバックバッファの作り直しだけ行う
 	if( GSYS.Screen.Graphics_Screen_ChangeModeFlag )
 	{
 		// サブバックバッファの作成
-		if( Graphics_iOS_SetupSubBackBuffer() < 0 )
+		if( Graphics_HTML5_SetupSubBackBuffer() < 0 )
 		{
 			return -1 ;
 		}
@@ -816,14 +816,14 @@ extern	int		Graphics_iOS_Initialize( void )
 		return 0 ;
 	}
 
-	// iOS のグラフィックス処理の主な初期化を行う
-	if( Graphics_iOS_Device_Create() != 0 )
+	// HTML5 のグラフィックス処理の主な初期化を行う
+	if( Graphics_HTML5_Device_Create() != 0 )
 	{
 		goto ERR ;
 	}
 
 	// シェーダーの作成
-	if( Graphics_iOS_Shader_Initialize() != 0 )
+	if( Graphics_HTML5_Shader_Initialize() != 0 )
 	{
 		goto ERR ;
 	}
@@ -837,24 +837,24 @@ extern	int		Graphics_iOS_Initialize( void )
 ERR :
 
 	// 後始末を行う
-	Graphics_iOS_Terminate() ;
+	Graphics_HTML5_Terminate() ;
 
 	return -1 ;
 }
 
-// iOS を使用したグラフィックス処理の後始末を行う
-extern int Graphics_iOS_Terminate( void )
+// HTML5 を使用したグラフィックス処理の後始末を行う
+extern int Graphics_HTML5_Terminate( void )
 {
 	// 画面モード変更ではサブバックバッファの削除だけ行う
 	if( GSYS.Screen.Graphics_Screen_ChangeModeFlag )
 	{
-		Graphics_iOS_TerminateSubBackBuffer() ;
+		Graphics_HTML5_TerminateSubBackBuffer() ;
 
 		return 0 ;
 	}
 
 	// 描画処理の終了
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 #ifndef DX_NON_MODEL
 	// モデルの頂点バッファを解放
@@ -862,20 +862,20 @@ extern int Graphics_iOS_Terminate( void )
 #endif // DX_NON_MODEL
 
 	// テクスチャへ画像を転送するためのメモリの後始末を行う
-	Graphics_iOS_Texture_TerminateCommonBuffer() ;
+	Graphics_HTML5_Texture_TerminateCommonBuffer() ;
 
 	// シェーダーの解放
-	Graphics_iOS_Shader_Terminate() ;
+	Graphics_HTML5_Shader_Terminate() ;
 
-	// iOS のグラフィック処理の後始末を行う
-	Graphics_iOS_Device_Delete() ;
+	// HTML5 のグラフィック処理の後始末を行う
+	Graphics_HTML5_Device_Delete() ;
 
 	// 終了
 	return 0 ;
 }
 
 // すべての OpenGL ES 系オブジェクトを解放する
-extern int Graphics_iOS_ReleaseObjectAll( void )
+extern int Graphics_HTML5_ReleaseObjectAll( void )
 {
 	int i ;
 	SHADERHANDLEDATA                          *Shader ;
@@ -965,29 +965,29 @@ extern int Graphics_iOS_ReleaseObjectAll( void )
 
 			if( Shader->ShaderType == DX_SHADERTYPE_VERTEX )
 			{
-				Graphics_iOS_VertexShaderArray_Release( &Shader->PF->Shader, 1 ) ;
+				Graphics_HTML5_VertexShaderArray_Release( &Shader->PF->Shader, 1 ) ;
 			}
 			else
 			{
-				Graphics_iOS_FragmentShaderArray_Release( &Shader->PF->Shader, 1 ) ;
+				Graphics_HTML5_FragmentShaderArray_Release( &Shader->PF->Shader, 1 ) ;
 			}
 		}
 	}
 
 	// デバイスセット情報を初期化
-	_MEMSET( GIOS.Device.State.SetTexture, 0, sizeof( GIOS.Device.State.SetTexture ) ) ;
-	GIOS.Device.State.SetShader            = NULL ;
-	GIOS.Device.State.SetShader_Force      = NULL ;
-	_MEMSET( GIOS.Device.State.VertexAttrEnable, 0, sizeof( GIOS.Device.State.VertexAttrEnable ) ) ;
-	GIOS.Device.State.SetVertexBuffer      = 0 ;
-	GIOS.Device.State.TargetFrameBuffer    = 0 ;
+	_MEMSET( GHTML5.Device.State.SetTexture, 0, sizeof( GHTML5.Device.State.SetTexture ) ) ;
+	GHTML5.Device.State.SetShader            = NULL ;
+	GHTML5.Device.State.SetShader_Force      = NULL ;
+	_MEMSET( GHTML5.Device.State.VertexAttrEnable, 0, sizeof( GHTML5.Device.State.VertexAttrEnable ) ) ;
+	GHTML5.Device.State.SetVertexBuffer      = 0 ;
+	GHTML5.Device.State.TargetFrameBuffer    = 0 ;
 
 	// 終了
 	return 0 ;
 }
 
 // すべての OpenGL ES 系オブジェクトを作成する
-extern int Graphics_iOS_CreateObjectAll( void )
+extern int Graphics_HTML5_CreateObjectAll( void )
 {
 	int                                       i ;
 	SHADERHANDLEDATA                          *Shader ;
@@ -1064,7 +1064,7 @@ extern int Graphics_iOS_CreateObjectAll( void )
 
 		for( i = HandleManageArray[ DX_HANDLETYPE_SHADER ].AreaMin ; i <= HandleManageArray[ DX_HANDLETYPE_SHADER ].AreaMax ; i ++ )
 		{
-			GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ShaderCodeInfo ;
+			GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ShaderCodeInfo ;
 
 			Shader = ( SHADERHANDLEDATA * )HandleManageArray[ DX_HANDLETYPE_SHADER ].Handle[ i ] ;
 			if( Shader == NULL ) continue ;
@@ -1073,11 +1073,11 @@ extern int Graphics_iOS_CreateObjectAll( void )
 			ShaderCodeInfo.Size   = Shader->FunctionCodeSize ;
 			if( Shader->ShaderType == DX_SHADERTYPE_VERTEX )
 			{
-				Graphics_iOS_VertexShader_Create( &ShaderCodeInfo, &Shader->PF->Shader, 1 ) ;
+				Graphics_HTML5_VertexShader_Create( &ShaderCodeInfo, &Shader->PF->Shader, 1 ) ;
 			}
 			else
 			{
-				Graphics_iOS_FragmentShader_Create( &ShaderCodeInfo, &Shader->PF->Shader, 1 ) ;
+				Graphics_HTML5_FragmentShader_Create( &ShaderCodeInfo, &Shader->PF->Shader, 1 ) ;
 			}
 		}
 
@@ -1125,7 +1125,7 @@ extern int Graphics_iOS_CreateObjectAll( void )
 // シェーダーコード関係
 
 // シェーダーコードパッケージからシェーダーコードバイナリのアドレスとサイズを取得する
-static void Graphics_iOS_ShaderCodePackage_GetInfo( WORD **pSize, BYTE **pCode, GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO *DestInfo, int Num )
+static void Graphics_HTML5_ShaderCodePackage_GetInfo( WORD **pSize, BYTE **pCode, GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO *DestInfo, int Num )
 {
 	WORD *Size ;
 	BYTE *Code ;
@@ -1147,10 +1147,10 @@ static void Graphics_iOS_ShaderCodePackage_GetInfo( WORD **pSize, BYTE **pCode, 
 	*pCode = Code ;
 }
 
-// iOS の標準描画用のシェーダーコードの初期化を行う
-extern int Graphics_iOS_ShaderCode_Base_Initialize( void )
+// HTML5 の標準描画用のシェーダーコードの初期化を行う
+extern int Graphics_HTML5_ShaderCode_Base_Initialize( void )
 {
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_BASE *SCBASE = &GraphicsHardDataiOS.ShaderCode.Base ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_BASE *SCBASE = &GraphicsHardDataHTML5.ShaderCode.Base ;
 	int   Size = 0 ;
 	BYTE  *ShaderAddr = NULL ;
 	WORD  *SizeBuf    = NULL ;
@@ -1223,14 +1223,14 @@ extern int Graphics_iOS_ShaderCode_Base_Initialize( void )
 
 	// 標準描画用シェーダーオブジェクトファイルＤＸＡを圧縮したデータを解凍する
 	{
-		Size = DXA_Decode( DxShaderCodeBin_Base_IOS, NULL ) ;
+		Size = DXA_Decode( DxShaderCodeBin_Base_HTML5, NULL ) ;
 		SCBASE->Base2DShaderPackageImage = DXALLOC( ( size_t )Size ) ;
 		if( SCBASE->Base2DShaderPackageImage == NULL )
 		{
 			goto ERR ;
 		}
 
-		DXA_Decode( DxShaderCodeBin_Base_IOS, SCBASE->Base2DShaderPackageImage ) ;
+		DXA_Decode( DxShaderCodeBin_Base_HTML5, SCBASE->Base2DShaderPackageImage ) ;
 	}
 
 	// アドレスリストのセット
@@ -1238,71 +1238,71 @@ extern int Graphics_iOS_ShaderCode_Base_Initialize( void )
 		DWORD HeadSize ;
 
 		HeadSize = sizeof( WORD ) * (
-				sizeof( SCBASE->BaseSimple_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->BaseNoneTex_FS_Code              ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->BaseUseTex_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->MaskEffect_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->MaskEffect_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->MaskEffect_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->MaskEffect_UseGraphHandle_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->MaskEffect_UseGraphHandle_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->StretchRect_VS_Code              ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->StretchRectTex2_VS_Code          ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->StretchRectTex8_VS_Code          ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->StretchRect_FS_Code              ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->ClearRT_VS_Code                  ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE->ClearRT_FS_Code                  ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+				sizeof( SCBASE->BaseSimple_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->BaseNoneTex_FS_Code              ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->BaseUseTex_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->MaskEffect_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->MaskEffect_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->MaskEffect_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->MaskEffect_UseGraphHandle_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->MaskEffect_UseGraphHandle_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->StretchRect_VS_Code              ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->StretchRectTex2_VS_Code          ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->StretchRectTex8_VS_Code          ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->StretchRect_FS_Code              ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->ClearRT_VS_Code                  ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE->ClearRT_FS_Code                  ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		HeadSize = ( HeadSize + 15 ) / 16 * 16 ;
 
 		SizeBuf    = ( WORD * )SCBASE->Base2DShaderPackageImage ;
 		ShaderAddr = ( BYTE * )SCBASE->Base2DShaderPackageImage + HeadSize ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE->BaseSimple_VS_Code,                sizeof( SCBASE->BaseSimple_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE->BaseNoneTex_FS_Code,               sizeof( SCBASE->BaseNoneTex_FS_Code              ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE->BaseUseTex_FS_Code,                sizeof( SCBASE->BaseUseTex_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&SCBASE->MaskEffect_VS_Code,               sizeof( SCBASE->MaskEffect_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&SCBASE->MaskEffect_FS_Code,               sizeof( SCBASE->MaskEffect_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&SCBASE->MaskEffect_ReverseEffect_FS_Code, sizeof( SCBASE->MaskEffect_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE->MaskEffect_UseGraphHandle_FS_Code,               sizeof( SCBASE->MaskEffect_UseGraphHandle_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE->MaskEffect_UseGraphHandle_ReverseEffect_FS_Code, sizeof( SCBASE->MaskEffect_UseGraphHandle_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&SCBASE->StretchRect_VS_Code,              sizeof( SCBASE->StretchRect_VS_Code              ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&SCBASE->StretchRectTex2_VS_Code,          sizeof( SCBASE->StretchRectTex2_VS_Code          ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&SCBASE->StretchRectTex8_VS_Code,          sizeof( SCBASE->StretchRectTex8_VS_Code          ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&SCBASE->StretchRect_FS_Code,              sizeof( SCBASE->StretchRect_FS_Code              ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&SCBASE->ClearRT_VS_Code,                  sizeof( SCBASE->ClearRT_VS_Code                  ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&SCBASE->ClearRT_FS_Code,                  sizeof( SCBASE->ClearRT_FS_Code                  ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE->BaseSimple_VS_Code,                sizeof( SCBASE->BaseSimple_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE->BaseNoneTex_FS_Code,               sizeof( SCBASE->BaseNoneTex_FS_Code              ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE->BaseUseTex_FS_Code,                sizeof( SCBASE->BaseUseTex_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&SCBASE->MaskEffect_VS_Code,               sizeof( SCBASE->MaskEffect_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&SCBASE->MaskEffect_FS_Code,               sizeof( SCBASE->MaskEffect_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&SCBASE->MaskEffect_ReverseEffect_FS_Code, sizeof( SCBASE->MaskEffect_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE->MaskEffect_UseGraphHandle_FS_Code,               sizeof( SCBASE->MaskEffect_UseGraphHandle_FS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE->MaskEffect_UseGraphHandle_ReverseEffect_FS_Code, sizeof( SCBASE->MaskEffect_UseGraphHandle_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&SCBASE->StretchRect_VS_Code,              sizeof( SCBASE->StretchRect_VS_Code              ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&SCBASE->StretchRectTex2_VS_Code,          sizeof( SCBASE->StretchRectTex2_VS_Code          ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&SCBASE->StretchRectTex8_VS_Code,          sizeof( SCBASE->StretchRectTex8_VS_Code          ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&SCBASE->StretchRect_FS_Code,              sizeof( SCBASE->StretchRect_FS_Code              ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&SCBASE->ClearRT_VS_Code,                  sizeof( SCBASE->ClearRT_VS_Code                  ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&SCBASE->ClearRT_FS_Code,                  sizeof( SCBASE->ClearRT_FS_Code                  ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 	}
 
 #ifndef DX_NON_FILTER
 
 	// RGBAMixシェーダーパック圧縮ファイルを展開する
 	{
-		Size = DXA_Decode( DxShaderCodeBin_RgbaMix_IOS, NULL ) ;
+		Size = DXA_Decode( DxShaderCodeBin_RgbaMix_HTML5, NULL ) ;
 		SCBASE->RGBAMixS_ShaderPackImage = DXALLOC( ( size_t )Size ) ;
 		if( SCBASE->RGBAMixS_ShaderPackImage == NULL )
 		{
 			goto ERR ;
 		}
 
-		DXA_Decode( DxShaderCodeBin_RgbaMix_IOS, SCBASE->RGBAMixS_ShaderPackImage ) ;
+		DXA_Decode( DxShaderCodeBin_RgbaMix_HTML5, SCBASE->RGBAMixS_ShaderPackImage ) ;
 
 		// アドレスリストのセット
 		SizeBuf    = ( WORD  * )SCBASE->RGBAMixS_ShaderPackImage ;
 		ShaderAddr = ( BYTE  * )SCBASE->RGBAMixS_ShaderPackImage +
 			sizeof( WORD ) * (
-				sizeof( SCBASE->RGBAMixS_FS_Code )  / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE->RGBAMixS_FS_Code,  sizeof( SCBASE->RGBAMixS_FS_Code )  / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+				sizeof( SCBASE->RGBAMixS_FS_Code )  / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE->RGBAMixS_FS_Code,  sizeof( SCBASE->RGBAMixS_FS_Code )  / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 	}
 
 	// フィルターシェーダーオブジェクトファイルＤＸＡを圧縮したデータを解凍する
 	{
-		Size = DXA_Decode( DxShaderCodeBin_Filter_IOS, NULL ) ;
+		Size = DXA_Decode( DxShaderCodeBin_Filter_HTML5, NULL ) ;
 		SCBASE->FilterShaderBinDxaImage = DXALLOC( ( size_t )Size ) ;
 		if( SCBASE->FilterShaderBinDxaImage == NULL )
 		{
 			goto ERR ;
 		}
 
-		DXA_Decode( DxShaderCodeBin_Filter_IOS, SCBASE->FilterShaderBinDxaImage ) ;
+		DXA_Decode( DxShaderCodeBin_Filter_HTML5, SCBASE->FilterShaderBinDxaImage ) ;
 
 		// ＤＸＡファイルをオープンする
 		DXA_Initialize( &SCBASE->FilterShaderBinDxa ) ;
@@ -1343,10 +1343,10 @@ ERR :
 	return FALSE ;
 }
 
-// iOS の標準描画用のシェーダーコードの後始末を行う
-extern int Graphics_iOS_ShaderCode_Base_Terminate( void )
+// HTML5 の標準描画用のシェーダーコードの後始末を行う
+extern int Graphics_HTML5_ShaderCode_Base_Terminate( void )
 {
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_BASE *SCBASE = &GraphicsHardDataiOS.ShaderCode.Base ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_BASE *SCBASE = &GraphicsHardDataHTML5.ShaderCode.Base ;
 
 	// すでに後始末されていたら何もしない
 	if( SCBASE->BaseShaderInitializeFlag == FALSE )
@@ -1386,10 +1386,10 @@ extern int Graphics_iOS_ShaderCode_Base_Terminate( void )
 	return TRUE ;
 }
 
-// iOS の標準３Ｄ描画用のシェーダーコードの初期化を行う
-extern int Graphics_iOS_ShaderCode_Base3D_Initialize( void )
+// HTML5 の標準３Ｄ描画用のシェーダーコードの初期化を行う
+extern int Graphics_HTML5_ShaderCode_Base3D_Initialize( void )
 {
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_BASE3D *SCBASE3D = &GraphicsHardDataiOS.ShaderCode.Base3D ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_BASE3D *SCBASE3D = &GraphicsHardDataHTML5.ShaderCode.Base3D ;
 	HANDLEMANAGE *HandleManage = &HandleManageArray[ DX_HANDLETYPE_GRAPH ] ;
 	int   Size = 0 ;
 	BYTE  *ShaderAddr = NULL ;
@@ -1417,14 +1417,14 @@ extern int Graphics_iOS_ShaderCode_Base3D_Initialize( void )
 
 	// 圧縮データの解凍
 	{
-		Size = DXA_Decode( DxShaderCodeBin_Base3D_IOS, NULL ) ;
+		Size = DXA_Decode( DxShaderCodeBin_Base3D_HTML5, NULL ) ;
 		SCBASE3D->Base3DShaderPackageImage = DXCALLOC( ( size_t )Size ) ;
 		if( SCBASE3D->Base3DShaderPackageImage == NULL )
 		{
 			goto ERR ;
 		}
 
-		DXA_Decode( DxShaderCodeBin_Base3D_IOS, SCBASE3D->Base3DShaderPackageImage ) ;
+		DXA_Decode( DxShaderCodeBin_Base3D_HTML5, SCBASE3D->Base3DShaderPackageImage ) ;
 	}
 
 	// アドレスリストのセット
@@ -1432,26 +1432,26 @@ extern int Graphics_iOS_ShaderCode_Base3D_Initialize( void )
 		DWORD HeadSize ;
 
 		HeadSize = sizeof( WORD ) * (
-				sizeof( SCBASE3D->Base3D_PixelLighting_VS_Code         ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE3D->Base3D_PixelLighting_Normal_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE3D->Base3D_ShadowMap_VS_Code             ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE3D->Base3D_NoLighting_VS_Code            ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE3D->Base3D_VertexLighting_VS_Code        ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE3D->Base3D_ShadowMap_Normal_FS_Code      ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE3D->Base3D_NoLighting_Normal_FS_Code     ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-				sizeof( SCBASE3D->Base3D_VertexLighting_Normal_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+				sizeof( SCBASE3D->Base3D_PixelLighting_VS_Code         ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE3D->Base3D_PixelLighting_Normal_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE3D->Base3D_ShadowMap_VS_Code             ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE3D->Base3D_NoLighting_VS_Code            ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE3D->Base3D_VertexLighting_VS_Code        ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE3D->Base3D_ShadowMap_Normal_FS_Code      ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE3D->Base3D_NoLighting_Normal_FS_Code     ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+				sizeof( SCBASE3D->Base3D_VertexLighting_Normal_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		HeadSize = ( HeadSize + 15 ) / 16 * 16 ;
 
 		SizeBuf    = ( WORD * )SCBASE3D->Base3DShaderPackageImage ;
 		ShaderAddr = ( BYTE * )SCBASE3D->Base3DShaderPackageImage + HeadSize ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE3D->Base3D_PixelLighting_VS_Code,         sizeof( SCBASE3D->Base3D_PixelLighting_VS_Code         ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE3D->Base3D_PixelLighting_Normal_FS_Code,  sizeof( SCBASE3D->Base3D_PixelLighting_Normal_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE3D->Base3D_ShadowMap_VS_Code,             sizeof( SCBASE3D->Base3D_ShadowMap_VS_Code             ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE3D->Base3D_NoLighting_VS_Code,            sizeof( SCBASE3D->Base3D_NoLighting_VS_Code            ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE3D->Base3D_VertexLighting_VS_Code,        sizeof( SCBASE3D->Base3D_VertexLighting_VS_Code        ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE3D->Base3D_ShadowMap_Normal_FS_Code,      sizeof( SCBASE3D->Base3D_ShadowMap_Normal_FS_Code      ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE3D->Base3D_NoLighting_Normal_FS_Code,     sizeof( SCBASE3D->Base3D_NoLighting_Normal_FS_Code     ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCBASE3D->Base3D_VertexLighting_Normal_FS_Code, sizeof( SCBASE3D->Base3D_VertexLighting_Normal_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE3D->Base3D_PixelLighting_VS_Code,         sizeof( SCBASE3D->Base3D_PixelLighting_VS_Code         ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE3D->Base3D_PixelLighting_Normal_FS_Code,  sizeof( SCBASE3D->Base3D_PixelLighting_Normal_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE3D->Base3D_ShadowMap_VS_Code,             sizeof( SCBASE3D->Base3D_ShadowMap_VS_Code             ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE3D->Base3D_NoLighting_VS_Code,            sizeof( SCBASE3D->Base3D_NoLighting_VS_Code            ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE3D->Base3D_VertexLighting_VS_Code,        sizeof( SCBASE3D->Base3D_VertexLighting_VS_Code        ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE3D->Base3D_ShadowMap_Normal_FS_Code,      sizeof( SCBASE3D->Base3D_ShadowMap_Normal_FS_Code      ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE3D->Base3D_NoLighting_Normal_FS_Code,     sizeof( SCBASE3D->Base3D_NoLighting_Normal_FS_Code     ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCBASE3D->Base3D_VertexLighting_Normal_FS_Code, sizeof( SCBASE3D->Base3D_VertexLighting_Normal_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 	}
 
 	SCBASE3D->Base3DShaderInitializeFlag = TRUE ;
@@ -1476,10 +1476,10 @@ ERR :
 }
 
 
-// iOS の標準３Ｄ描画用のシェーダーコードの後始末を行う
-extern int Graphics_iOS_ShaderCode_Base3D_Terminate( void )
+// HTML5 の標準３Ｄ描画用のシェーダーコードの後始末を行う
+extern int Graphics_HTML5_ShaderCode_Base3D_Terminate( void )
 {
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_BASE3D *SCBASE3D = &GraphicsHardDataiOS.ShaderCode.Base3D ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_BASE3D *SCBASE3D = &GraphicsHardDataHTML5.ShaderCode.Base3D ;
 
 	// すでに後始末されていたら何もしない
 	if( SCBASE3D->Base3DShaderInitializeFlag == FALSE )
@@ -1503,10 +1503,10 @@ extern int Graphics_iOS_ShaderCode_Base3D_Terminate( void )
 
 #ifndef DX_NON_MODEL
 
-// iOS のモデル描画用のシェーダーコードの初期化を行う
-extern	int		Graphics_iOS_ShaderCode_Model_Initialize( void )
+// HTML5 のモデル描画用のシェーダーコードの初期化を行う
+extern	int		Graphics_HTML5_ShaderCode_Model_Initialize( void )
 {
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_MODEL *SCMODEL = &GraphicsHardDataiOS.ShaderCode.Model ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_MODEL *SCMODEL = &GraphicsHardDataHTML5.ShaderCode.Model ;
 	HANDLEMANAGE *HandleManage = &HandleManageArray[ DX_HANDLETYPE_GRAPH ] ;
 	int   Size = 0 ;
 	BYTE  *ShaderAddr = NULL ;
@@ -1528,14 +1528,14 @@ extern	int		Graphics_iOS_ShaderCode_Model_Initialize( void )
 
 	// 圧縮データの解凍
 	{
-		Size = DXA_Decode( DxShaderCodeBin_Model_IOS, NULL ) ;
+		Size = DXA_Decode( DxShaderCodeBin_Model_HTML5, NULL ) ;
 		SCMODEL->ModelShaderPackImage = DXCALLOC( ( size_t )Size ) ;
 		if( SCMODEL->ModelShaderPackImage == NULL )
 		{
 			goto ERR ;
 		}
 
-		DXA_Decode( DxShaderCodeBin_Model_IOS, SCMODEL->ModelShaderPackImage ) ;
+		DXA_Decode( DxShaderCodeBin_Model_HTML5, SCMODEL->ModelShaderPackImage ) ;
 	}
 
 	// アドレスリストのセット
@@ -1543,44 +1543,44 @@ extern	int		Graphics_iOS_ShaderCode_Model_Initialize( void )
 		DWORD HeadSize ;
 
 		HeadSize = sizeof( WORD ) * (
-			sizeof( SCMODEL->MV1_PixelLighting_VS_Code            ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_PixelLighting_ToonType1_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_PixelLighting_ToonType2_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_PixelLighting_Normal_FS_Code     ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_MaterialType_FS_Code             ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_ToonOutLine_ShadowMap_VS_Code    ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_ToonOutLine_VS_Code              ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_ShadowMap_VS_Code                ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_NoLighting_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_VertexLighting_VS_Code           ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_ShadowMap_Toon_FS_Code           ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_ShadowMap_Normal_FS_Code         ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_NoLighting_Toon_FS_Code          ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_NoLighting_Normal_FS_Code        ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_VertexLighting_ToonType1_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_VertexLighting_ToonType2_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) +
-			sizeof( SCMODEL->MV1_VertexLighting_Normal_FS_Code    ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+			sizeof( SCMODEL->MV1_PixelLighting_VS_Code            ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_PixelLighting_ToonType1_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_PixelLighting_ToonType2_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_PixelLighting_Normal_FS_Code     ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_MaterialType_FS_Code             ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_ToonOutLine_ShadowMap_VS_Code    ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_ToonOutLine_VS_Code              ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_ShadowMap_VS_Code                ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_NoLighting_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_VertexLighting_VS_Code           ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_ShadowMap_Toon_FS_Code           ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_ShadowMap_Normal_FS_Code         ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_NoLighting_Toon_FS_Code          ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_NoLighting_Normal_FS_Code        ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_VertexLighting_ToonType1_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_VertexLighting_ToonType2_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) +
+			sizeof( SCMODEL->MV1_VertexLighting_Normal_FS_Code    ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		HeadSize = ( HeadSize + 15 ) / 16 * 16 ;
 
 		SizeBuf    = ( WORD * )SCMODEL->ModelShaderPackImage ;
 		ShaderAddr = ( BYTE * )SCMODEL->ModelShaderPackImage + HeadSize ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_PixelLighting_VS_Code,            sizeof( SCMODEL->MV1_PixelLighting_VS_Code            ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_PixelLighting_ToonType1_FS_Code,  sizeof( SCMODEL->MV1_PixelLighting_ToonType1_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_PixelLighting_ToonType2_FS_Code,  sizeof( SCMODEL->MV1_PixelLighting_ToonType2_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_PixelLighting_Normal_FS_Code,     sizeof( SCMODEL->MV1_PixelLighting_Normal_FS_Code     ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_MaterialType_FS_Code,             sizeof( SCMODEL->MV1_MaterialType_FS_Code             ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_ToonOutLine_ShadowMap_VS_Code,    sizeof( SCMODEL->MV1_ToonOutLine_ShadowMap_VS_Code    ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_ToonOutLine_VS_Code,              sizeof( SCMODEL->MV1_ToonOutLine_VS_Code              ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_ShadowMap_VS_Code,                sizeof( SCMODEL->MV1_ShadowMap_VS_Code                ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_NoLighting_VS_Code,               sizeof( SCMODEL->MV1_NoLighting_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_VertexLighting_VS_Code,           sizeof( SCMODEL->MV1_VertexLighting_VS_Code           ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_ShadowMap_Toon_FS_Code,           sizeof( SCMODEL->MV1_ShadowMap_Toon_FS_Code           ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_ShadowMap_Normal_FS_Code,         sizeof( SCMODEL->MV1_ShadowMap_Normal_FS_Code         ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_NoLighting_Toon_FS_Code,          sizeof( SCMODEL->MV1_NoLighting_Toon_FS_Code          ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_NoLighting_Normal_FS_Code,        sizeof( SCMODEL->MV1_NoLighting_Normal_FS_Code        ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_VertexLighting_ToonType1_FS_Code, sizeof( SCMODEL->MV1_VertexLighting_ToonType1_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_VertexLighting_ToonType2_FS_Code, sizeof( SCMODEL->MV1_VertexLighting_ToonType2_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
-		Graphics_iOS_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )SCMODEL->MV1_VertexLighting_Normal_FS_Code,    sizeof( SCMODEL->MV1_VertexLighting_Normal_FS_Code    ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_PixelLighting_VS_Code,            sizeof( SCMODEL->MV1_PixelLighting_VS_Code            ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_PixelLighting_ToonType1_FS_Code,  sizeof( SCMODEL->MV1_PixelLighting_ToonType1_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_PixelLighting_ToonType2_FS_Code,  sizeof( SCMODEL->MV1_PixelLighting_ToonType2_FS_Code  ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_PixelLighting_Normal_FS_Code,     sizeof( SCMODEL->MV1_PixelLighting_Normal_FS_Code     ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_MaterialType_FS_Code,             sizeof( SCMODEL->MV1_MaterialType_FS_Code             ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_ToonOutLine_ShadowMap_VS_Code,    sizeof( SCMODEL->MV1_ToonOutLine_ShadowMap_VS_Code    ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_ToonOutLine_VS_Code,              sizeof( SCMODEL->MV1_ToonOutLine_VS_Code              ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_ShadowMap_VS_Code,                sizeof( SCMODEL->MV1_ShadowMap_VS_Code                ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_NoLighting_VS_Code,               sizeof( SCMODEL->MV1_NoLighting_VS_Code               ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_VertexLighting_VS_Code,           sizeof( SCMODEL->MV1_VertexLighting_VS_Code           ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_ShadowMap_Toon_FS_Code,           sizeof( SCMODEL->MV1_ShadowMap_Toon_FS_Code           ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_ShadowMap_Normal_FS_Code,         sizeof( SCMODEL->MV1_ShadowMap_Normal_FS_Code         ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_NoLighting_Toon_FS_Code,          sizeof( SCMODEL->MV1_NoLighting_Toon_FS_Code          ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_NoLighting_Normal_FS_Code,        sizeof( SCMODEL->MV1_NoLighting_Normal_FS_Code        ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_VertexLighting_ToonType1_FS_Code, sizeof( SCMODEL->MV1_VertexLighting_ToonType1_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_VertexLighting_ToonType2_FS_Code, sizeof( SCMODEL->MV1_VertexLighting_ToonType2_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
+		Graphics_HTML5_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )SCMODEL->MV1_VertexLighting_Normal_FS_Code,    sizeof( SCMODEL->MV1_VertexLighting_Normal_FS_Code    ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 	}
 
 	SCMODEL->ModelShaderInitializeFlag = TRUE ;
@@ -1604,10 +1604,10 @@ ERR :
 	return FALSE ;
 }
 
-// iOS のモデル描画用のシェーダーコードの後始末を行う
-extern	int		Graphics_iOS_ShaderCode_Model_Terminate( void )
+// HTML5 のモデル描画用のシェーダーコードの後始末を行う
+extern	int		Graphics_HTML5_ShaderCode_Model_Terminate( void )
 {
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_MODEL *SCMODEL = &GraphicsHardDataiOS.ShaderCode.Model ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_MODEL *SCMODEL = &GraphicsHardDataHTML5.ShaderCode.Model ;
 
 	// すでに後始末されていたら何もしない
 	if( SCMODEL->ModelShaderInitializeFlag == FALSE )
@@ -1633,44 +1633,44 @@ extern	int		Graphics_iOS_ShaderCode_Model_Terminate( void )
 
 
 // 新しいシェーダー構造体を取得する
-extern GRAPHICS_IOS_SHADER *Graphics_iOS_GetShaderStruct( void )
+extern GRAPHICS_HTML5_SHADER *Graphics_HTML5_GetShaderStruct( void )
 {
-	GRAPHICS_IOS_SHADER_LIST *UseList ;
+	GRAPHICS_HTML5_SHADER_LIST *UseList ;
 
-	if( GraphicsHardDataiOS.Device.Shader.ShadersListFirst == NULL &&
-		GraphicsHardDataiOS.Device.Shader.ShadersListLast  == NULL )
+	if( GraphicsHardDataHTML5.Device.Shader.ShadersListFirst == NULL &&
+		GraphicsHardDataHTML5.Device.Shader.ShadersListLast  == NULL )
 	{
-		GraphicsHardDataiOS.Device.Shader.ShadersListFirst = ( GRAPHICS_IOS_SHADER_LIST * )DXALLOC( sizeof( GRAPHICS_IOS_SHADER_LIST ) ) ;
-		if( GraphicsHardDataiOS.Device.Shader.ShadersListFirst == NULL )
+		GraphicsHardDataHTML5.Device.Shader.ShadersListFirst = ( GRAPHICS_HTML5_SHADER_LIST * )DXALLOC( sizeof( GRAPHICS_HTML5_SHADER_LIST ) ) ;
+		if( GraphicsHardDataHTML5.Device.Shader.ShadersListFirst == NULL )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xc5\x60\x31\x58\xea\x30\xb9\x30\xc8\x30\x3c\x68\x0d\x7d\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"シェーダー情報リスト格納用のメモリの確保に失敗しました\n" @*/ )) ;
 			return NULL ;
 		}
-		_MEMSET( GraphicsHardDataiOS.Device.Shader.ShadersListFirst, 0, sizeof( GRAPHICS_IOS_SHADER_LIST ) ) ;
-		GraphicsHardDataiOS.Device.Shader.ShadersListLast = GraphicsHardDataiOS.Device.Shader.ShadersListFirst ;
+		_MEMSET( GraphicsHardDataHTML5.Device.Shader.ShadersListFirst, 0, sizeof( GRAPHICS_HTML5_SHADER_LIST ) ) ;
+		GraphicsHardDataHTML5.Device.Shader.ShadersListLast = GraphicsHardDataHTML5.Device.Shader.ShadersListFirst ;
 
-		UseList = GraphicsHardDataiOS.Device.Shader.ShadersListFirst ;
+		UseList = GraphicsHardDataHTML5.Device.Shader.ShadersListFirst ;
 	}
 	else
 	{
-		UseList = GraphicsHardDataiOS.Device.Shader.ShadersListLast ;
+		UseList = GraphicsHardDataHTML5.Device.Shader.ShadersListLast ;
 	}
 
 	if( UseList->UseNum >= SHADERS_LIST_DATA_NUM )
 	{
-		GRAPHICS_IOS_SHADER_LIST *NewList ;
+		GRAPHICS_HTML5_SHADER_LIST *NewList ;
 
-		NewList = ( GRAPHICS_IOS_SHADER_LIST * )DXALLOC( sizeof( GRAPHICS_IOS_SHADER_LIST ) ) ;
+		NewList = ( GRAPHICS_HTML5_SHADER_LIST * )DXALLOC( sizeof( GRAPHICS_HTML5_SHADER_LIST ) ) ;
 		if( NewList == NULL )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xfd\x8f\xa0\x52\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xc5\x60\x31\x58\xea\x30\xb9\x30\xc8\x30\x3c\x68\x0d\x7d\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"追加のシェーダー情報リスト格納用のメモリの確保に失敗しました\n" @*/ )) ;
 			return NULL ;
 		}
-		_MEMSET( NewList, 0, sizeof( GRAPHICS_IOS_SHADER_LIST ) ) ;
+		_MEMSET( NewList, 0, sizeof( GRAPHICS_HTML5_SHADER_LIST ) ) ;
 		UseList->Next = NewList ;
 		UseList = NewList ;
 
-		GraphicsHardDataiOS.Device.Shader.ShadersListLast = NewList ;
+		GraphicsHardDataHTML5.Device.Shader.ShadersListLast = NewList ;
 	}
 
 	UseList->UseNum ++ ;
@@ -1678,22 +1678,22 @@ extern GRAPHICS_IOS_SHADER *Graphics_iOS_GetShaderStruct( void )
 }
 
 // シェーダー情報リストの後始末を行う
-extern int Graphics_iOS_ShaderList_Terminate( void )
+extern int Graphics_HTML5_ShaderList_Terminate( void )
 {
-	GRAPHICS_IOS_SHADER_LIST *UseList ;
+	GRAPHICS_HTML5_SHADER_LIST *UseList ;
 
-	if( GraphicsHardDataiOS.Device.Shader.ShadersListFirst == NULL &&
-		GraphicsHardDataiOS.Device.Shader.ShadersListLast  == NULL )
+	if( GraphicsHardDataHTML5.Device.Shader.ShadersListFirst == NULL &&
+		GraphicsHardDataHTML5.Device.Shader.ShadersListLast  == NULL )
 	{
 		return 0 ;
 	}
 
-	UseList = GraphicsHardDataiOS.Device.Shader.ShadersListFirst ;
+	UseList = GraphicsHardDataHTML5.Device.Shader.ShadersListFirst ;
 	while( UseList != NULL )
 	{
-		GRAPHICS_IOS_SHADER_LIST *Prev ;
+		GRAPHICS_HTML5_SHADER_LIST *Prev ;
 
-		Graphics_iOS_ShaderArray_Release( UseList->Shaders, UseList->UseNum ) ;
+		Graphics_HTML5_ShaderArray_Release( UseList->Shaders, UseList->UseNum ) ;
 
 		Prev = UseList ;
 		UseList = UseList->Next ;
@@ -1701,14 +1701,14 @@ extern int Graphics_iOS_ShaderList_Terminate( void )
 		Prev = NULL ;
 	}
 
-	GraphicsHardDataiOS.Device.Shader.ShadersListFirst = NULL ;
-	GraphicsHardDataiOS.Device.Shader.ShadersListLast  = NULL ;
+	GraphicsHardDataHTML5.Device.Shader.ShadersListFirst = NULL ;
+	GraphicsHardDataHTML5.Device.Shader.ShadersListLast  = NULL ;
 
 	return 0 ;
 }
 
 // シェーダーコードから頂点シェーダーを作成する
-extern int Graphics_iOS_VertexShader_Create( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO *Code, GLuint *pDestShader, int Num )
+extern int Graphics_HTML5_VertexShader_Create( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO *Code, GLuint *pDestShader, int Num )
 {
 	int i ;
 
@@ -1749,7 +1749,7 @@ extern int Graphics_iOS_VertexShader_Create( GRAPHICS_HARDWARE_IOS_SHADERCODE_IN
 }
 
 // シェーダーコードからフラグメントシェーダーを作成する
-extern int Graphics_iOS_FragmentShader_Create( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO *Code, GLuint *pDestShader, int Num )
+extern int Graphics_HTML5_FragmentShader_Create( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO *Code, GLuint *pDestShader, int Num )
 {
 	int i ;
 
@@ -1790,7 +1790,7 @@ extern int Graphics_iOS_FragmentShader_Create( GRAPHICS_HARDWARE_IOS_SHADERCODE_
 }
 
 // シェーダーの Uniform 番号を取得する
-extern GLuint Graphics_iOS_Shader_GetUniformIndex( GRAPHICS_IOS_SHADER *ShaderInfo, const GLchar *UniformName )
+extern GLuint Graphics_HTML5_Shader_GetUniformIndex( GRAPHICS_HTML5_SHADER *ShaderInfo, const GLchar *UniformName )
 {
 	GLuint lResult ;
 
@@ -1808,7 +1808,7 @@ extern GLuint Graphics_iOS_Shader_GetUniformIndex( GRAPHICS_IOS_SHADER *ShaderIn
 }
 
 // 頂点シェーダーとフラグメントシェーダーからシェーダー情報をセットアップする
-extern int Graphics_iOS_Shader_Create( GRAPHICS_IOS_SHADER *ShaderInfo, GLuint VertexShader, GLuint FragmentShader )
+extern int Graphics_HTML5_Shader_Create( GRAPHICS_HTML5_SHADER *ShaderInfo, GLuint VertexShader, GLuint FragmentShader )
 {
 	int i ;
 
@@ -1819,21 +1819,21 @@ extern int Graphics_iOS_Shader_Create( GRAPHICS_IOS_SHADER *ShaderInfo, GLuint V
 
     glLinkProgram( ShaderInfo->Shader );
 
-	for( i = 0 ; i < IOS_VERTEX_ATTR_NUM ; i ++ )
+	for( i = 0 ; i < HTML5_VERTEX_ATTR_NUM ; i ++ )
 	{
 		ShaderInfo->AttributeIndex[ i ] = glGetAttribLocation( ShaderInfo->Shader, g_VertexElementInfoBase[ i ].AttrName ) ;
 	}
 
-	for( i = 0 ; i < IOS_SHADER_UNIFORM_NUM ; i ++ )
+	for( i = 0 ; i < HTML5_SHADER_UNIFORM_NUM ; i ++ )
 	{
-		ShaderInfo->UniformIndex[ i ] = Graphics_iOS_Shader_GetUniformIndex( ShaderInfo, g_UniformName[ i ] ) ;
+		ShaderInfo->UniformIndex[ i ] = Graphics_HTML5_Shader_GetUniformIndex( ShaderInfo, g_UniformName[ i ] ) ;
 	}
 
 	return 0 ;
 }
 
 // 頂点シェーダー配列を解放する
-extern void Graphics_iOS_VertexShaderArray_Release( GLuint *pObject, int Num )
+extern void Graphics_HTML5_VertexShaderArray_Release( GLuint *pObject, int Num )
 {
 	int i ;
 
@@ -1848,7 +1848,7 @@ extern void Graphics_iOS_VertexShaderArray_Release( GLuint *pObject, int Num )
 }
 
 // フラグメントシェーダー配列を解放する
-extern void Graphics_iOS_FragmentShaderArray_Release( GLuint *pObject, int Num )
+extern void Graphics_HTML5_FragmentShaderArray_Release( GLuint *pObject, int Num )
 {
 	int i ;
 
@@ -1863,7 +1863,7 @@ extern void Graphics_iOS_FragmentShaderArray_Release( GLuint *pObject, int Num )
 }
 
 // シェーダー配列を解放する
-extern void Graphics_iOS_ShaderArray_Release( GRAPHICS_IOS_SHADER *pShaderInfo, int Num )
+extern void Graphics_HTML5_ShaderArray_Release( GRAPHICS_HTML5_SHADER *pShaderInfo, int Num )
 {
 	int i ;
 
@@ -1877,11 +1877,11 @@ extern void Graphics_iOS_ShaderArray_Release( GRAPHICS_IOS_SHADER *pShaderInfo, 
 	}
 }
 
-// iOS のシェーダーの初期化を行う
-extern int Graphics_iOS_Shader_Initialize( void )
+// HTML5 のシェーダーの初期化を行う
+extern int Graphics_HTML5_Shader_Initialize( void )
 {
-	GRAPHICS_HARDWARE_IOS_SHADERCODE      *ShaderCode = &GraphicsHardDataiOS.ShaderCode ;
-	GRAPHICS_HARDWARE_IOS_SHADER          *Shader     = &GraphicsHardDataiOS.Device.Shader ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE      *ShaderCode = &GraphicsHardDataHTML5.ShaderCode ;
+	GRAPHICS_HARDWARE_HTML5_SHADER          *Shader     = &GraphicsHardDataHTML5.Device.Shader ;
 	int Result ;
 	static GLuint MaskEffect_VS ;
 	static GLuint MaskEffect_FS ;
@@ -1900,18 +1900,18 @@ extern int Graphics_iOS_Shader_Initialize( void )
 	int FunctionResult = -1 ;
 
 	// 既に作成されていたときのために削除処理を行う
-	//TerminateiOSShader() ;
-	Graphics_iOS_Shader_Terminate() ;
+	//TerminateHTML5Shader() ;
+	Graphics_HTML5_Shader_Terminate() ;
 
 //	return 0 ;
 
 	DXST_LOGFILE_ADDUTF16LE( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xb3\x30\xfc\x30\xc9\x30\xa2\x95\xc2\x4f\x6e\x30\x1d\x52\x1f\x67\x16\x53\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"シェーダーコード関係の初期化.... " @*/ ) ;
 
-	// iOS の場合はシェーダーは必ず使用できる
+	// HTML5 の場合はシェーダーは必ず使用できる
 	GSYS.HardInfo.UseShader = TRUE ;
 
 	// 標準描画用シェーダーコードが展開されていない場合は展開
-	if( Graphics_iOS_ShaderCode_Base_Initialize() == FALSE )
+	if( Graphics_HTML5_ShaderCode_Base_Initialize() == FALSE )
 	{
 		DXST_LOGFILEFMT_ADDUTF16LE(( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xb3\x30\xfc\x30\xc9\x30\x92\x30\x55\x5c\x8b\x95\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"シェーダーコードを展開するメモリ領域の確保に失敗しました\n" @*/ )) ;
 		GSYS.HardInfo.UseShader = FALSE ;
@@ -1921,7 +1921,7 @@ extern int Graphics_iOS_Shader_Initialize( void )
 	// 基本的な描画処理に使用するシェーダーを作成する
 	{
 //		// 標準描画用の複雑な処理を行わない頂点シェーダーの作成
-//		Result = Graphics_iOS_VertexShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )ShaderCode->Base.BaseSimple_VS_Code, Shader->Base.BaseSimple_VS, sizeof( ShaderCode->Base.BaseSimple_VS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+//		Result = Graphics_HTML5_VertexShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )ShaderCode->Base.BaseSimple_VS_Code, Shader->Base.BaseSimple_VS, sizeof( ShaderCode->Base.BaseSimple_VS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 //		if( Result < 0 )
 //		{
 //			DXST_LOGFILEFMT_ADDUTF16LE(( "\x19\x6a\x96\x6e\xcf\x63\x3b\x75\x28\x75\x6e\x30\x07\x89\xd1\x96\x6a\x30\xe6\x51\x06\x74\x92\x30\x4c\x88\x8f\x30\x6a\x30\x44\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"標準描画用の複雑な処理を行わない頂点シェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
@@ -1930,7 +1930,7 @@ extern int Graphics_iOS_Shader_Initialize( void )
 //		}
 //
 //		// 固定機能パイプライン互換のフラグメントシェーダー( テクスチャなし )の作成
-//		Result = Graphics_iOS_FragmentShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )ShaderCode->Base.BaseNoneTex_FS_Code, &Shader->Base.BaseNoneTex_FS[ 0 ][ 0 ], sizeof( ShaderCode->Base.BaseNoneTex_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+//		Result = Graphics_HTML5_FragmentShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )ShaderCode->Base.BaseNoneTex_FS_Code, &Shader->Base.BaseNoneTex_FS[ 0 ][ 0 ], sizeof( ShaderCode->Base.BaseNoneTex_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 //		if( Result < 0 )
 //		{
 //			DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6a\x30\x57\x30\x20\x00\x29\x00\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"固定機能パイプライン互換のフラグメントシェーダーオブジェクト( テクスチャなし ) No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
@@ -1940,31 +1940,31 @@ extern int Graphics_iOS_Shader_Initialize( void )
 //
 //		// 固定機能パイプライン互換のシェーダー( テクスチャなし )の作成
 //		// ( ここでは使用頻度の高いシェーダーのみ作成 )
-//		for( i = 0 ; i < IOS_VERTEX_INPUTLAYOUT_NUM ; i ++ )
+//		for( i = 0 ; i < HTML5_VERTEX_INPUTLAYOUT_NUM ; i ++ )
 //		{
-//			if( i != IOS_VERTEX_INPUTLAYOUT_NOTEX_2D &&
-//				i != IOS_VERTEX_INPUTLAYOUT_NOTEX_3D )
+//			if( i != HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D &&
+//				i != HTML5_VERTEX_INPUTLAYOUT_NOTEX_3D )
 //			{
 //				continue ;
 //			}
 //
-//			for( j = 0 ; j < IOS_RENDER_TYPE_NUM ; j ++ )
+//			for( j = 0 ; j < HTML5_RENDER_TYPE_NUM ; j ++ )
 //			{
-//				if( j != IOS_RENDER_TYPE_NORMAL &&
-//					j != IOS_RENDER_TYPE_PMA_NORMAL )
+//				if( j != HTML5_RENDER_TYPE_NORMAL &&
+//					j != HTML5_RENDER_TYPE_PMA_NORMAL )
 //				{
 //					continue ;
 //				}
 //
-//				for( k = 0 ; k < IOS_FS_ALPHATEST_NUM ; k ++ )
+//				for( k = 0 ; k < HTML5_FS_ALPHATEST_NUM ; k ++ )
 //				{
-//					Shader->Base.BaseNoneTex_Shader[ i ][ j ][ k ] = Graphics_iOS_GetShaderStruct() ;
+//					Shader->Base.BaseNoneTex_Shader[ i ][ j ][ k ] = Graphics_HTML5_GetShaderStruct() ;
 //					if( Shader->Base.BaseNoneTex_Shader[ i ][ j ][ k ] == NULL )
 //					{
 //						GSYS.HardInfo.UseShader = FALSE ;
 //						goto END ;
 //					}
-//					Result = Graphics_iOS_Shader_Create( Shader->Base.BaseNoneTex_Shader[ i ][ j ][ k ], Shader->Base.BaseSimple_VS[ i ], Shader->Base.BaseNoneTex_FS[ j ][ k ] ) ;
+//					Result = Graphics_HTML5_Shader_Create( Shader->Base.BaseNoneTex_Shader[ i ][ j ][ k ], Shader->Base.BaseSimple_VS[ i ], Shader->Base.BaseNoneTex_FS[ j ][ k ] ) ;
 //					if( Result < 0 )
 //					{
 //						DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6a\x30\x57\x30\x20\x00\x29\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"固定機能パイプライン互換のシェーダーオブジェクト( テクスチャなし )の作成に失敗しました\n" @*/ ) ) ;
@@ -1977,11 +1977,11 @@ extern int Graphics_iOS_Shader_Initialize( void )
 
 		// 固定機能パイプライン互換のシェーダー( テクスチャあり )の作成
 		// ( ここでは使用頻度の高いシェーダーのみ作成 )
-//		for( i = 0 ; i < IOS_VERTEX_INPUTLAYOUT_NUM ; i ++ )
+//		for( i = 0 ; i < HTML5_VERTEX_INPUTLAYOUT_NUM ; i ++ )
 //		{
-//			if( i != IOS_VERTEX_INPUTLAYOUT_2D &&
-//				i != IOS_VERTEX_INPUTLAYOUT_3D &&
-//				i != IOS_VERTEX_INPUTLAYOUT_3D_LIGHT )
+//			if( i != HTML5_VERTEX_INPUTLAYOUT_2D &&
+//				i != HTML5_VERTEX_INPUTLAYOUT_3D &&
+//				i != HTML5_VERTEX_INPUTLAYOUT_3D_LIGHT )
 //			{
 //				continue ;
 //			}
@@ -1993,10 +1993,10 @@ extern int Graphics_iOS_Shader_Initialize( void )
 //					continue ;
 //				}
 //
-//				for( k = 0 ; k < IOS_RENDER_TYPE_NUM ; k ++ )
+//				for( k = 0 ; k < HTML5_RENDER_TYPE_NUM ; k ++ )
 //				{
-//					if( k != IOS_RENDER_TYPE_NORMAL &&
-//						k != IOS_RENDER_TYPE_PMA_NORMAL )
+//					if( k != HTML5_RENDER_TYPE_NORMAL &&
+//						k != HTML5_RENDER_TYPE_PMA_NORMAL )
 //					{
 //						continue ;
 //					}
@@ -2010,9 +2010,9 @@ extern int Graphics_iOS_Shader_Initialize( void )
 //
 //						for( m = 0 ; m < 2 ; m ++ )
 //						{
-//							for( n = 0 ; n < IOS_FS_ALPHATEST_NUM ; n ++ )
+//							for( n = 0 ; n < HTML5_FS_ALPHATEST_NUM ; n ++ )
 //							{
-//								Result = Graphics_iOS_FragmentShader_Create( &ShaderCode->Base.BaseUseTex_FS_Code[ j ][ k ][ l ][ m ][ n ], &Shader->Base.BaseUseTex_FS[ j ][ k ][ l ][ m ][ n ], 1 ) ;
+//								Result = Graphics_HTML5_FragmentShader_Create( &ShaderCode->Base.BaseUseTex_FS_Code[ j ][ k ][ l ][ m ][ n ], &Shader->Base.BaseUseTex_FS[ j ][ k ][ l ][ m ][ n ], 1 ) ;
 //								if( Result < 0 )
 //								{
 //									DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x42\x30\x8a\x30\x20\x00\x29\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"固定機能パイプライン互換のフラグメントシェーダーオブジェクト( テクスチャあり ) の作成に失敗しました\n" @*/ )) ;
@@ -2020,13 +2020,13 @@ extern int Graphics_iOS_Shader_Initialize( void )
 //									goto END ;
 //								}
 //
-//								Shader->Base.BaseUseTex_Shader[ i ][ j ][ k ][ l ][ m ][ n ] = Graphics_iOS_GetShaderStruct() ;
+//								Shader->Base.BaseUseTex_Shader[ i ][ j ][ k ][ l ][ m ][ n ] = Graphics_HTML5_GetShaderStruct() ;
 //								if( Shader->Base.BaseUseTex_Shader[ i ][ j ][ k ][ l ][ m ][ n ] == NULL )
 //								{
 //									GSYS.HardInfo.UseShader = FALSE ;
 //									goto END ;
 //								}
-//								Result = Graphics_iOS_Shader_Create( Shader->Base.BaseUseTex_Shader[ i ][ j ][ k ][ l ][ m ][ n ], Shader->Base.BaseSimple_VS[ i ], Shader->Base.BaseUseTex_FS[ j ][ k ][ l ][ m ][ n ] ) ;
+//								Result = Graphics_HTML5_Shader_Create( Shader->Base.BaseUseTex_Shader[ i ][ j ][ k ][ l ][ m ][ n ], Shader->Base.BaseSimple_VS[ i ], Shader->Base.BaseUseTex_FS[ j ][ k ][ l ][ m ][ n ] ) ;
 //								if( Result < 0 )
 //								{
 //									DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x42\x30\x8a\x30\x20\x00\x29\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"固定機能パイプライン互換のシェーダーオブジェクト( テクスチャあり )の作成に失敗しました\n" @*/ ) ) ;
@@ -2041,7 +2041,7 @@ extern int Graphics_iOS_Shader_Initialize( void )
 //		}
 
 		// マスク処理用頂点シェーダーの作成
-		Result = Graphics_iOS_VertexShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&ShaderCode->Base.MaskEffect_VS_Code, &MaskEffect_VS, sizeof( ShaderCode->Base.MaskEffect_VS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Result = Graphics_HTML5_VertexShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&ShaderCode->Base.MaskEffect_VS_Code, &MaskEffect_VS, sizeof( ShaderCode->Base.MaskEffect_VS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"マスク処理用の頂点シェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
@@ -2050,28 +2050,28 @@ extern int Graphics_iOS_Shader_Initialize( void )
 		}
 
 		// マスク処理用フラグメントシェーダーの作成
-		Result = Graphics_iOS_FragmentShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&ShaderCode->Base.MaskEffect_FS_Code, &MaskEffect_FS, sizeof( ShaderCode->Base.MaskEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Result = Graphics_HTML5_FragmentShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&ShaderCode->Base.MaskEffect_FS_Code, &MaskEffect_FS, sizeof( ShaderCode->Base.MaskEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"マスク処理用のフラグメントシェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
-		Result = Graphics_iOS_FragmentShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&ShaderCode->Base.MaskEffect_ReverseEffect_FS_Code, &MaskEffect_ReverseEffect_FS, sizeof( ShaderCode->Base.MaskEffect_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Result = Graphics_HTML5_FragmentShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&ShaderCode->Base.MaskEffect_ReverseEffect_FS_Code, &MaskEffect_ReverseEffect_FS, sizeof( ShaderCode->Base.MaskEffect_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"反転効果マスク処理用のフラグメントシェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
-		Result = Graphics_iOS_FragmentShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )ShaderCode->Base.MaskEffect_UseGraphHandle_FS_Code, MaskEffect_UseGraphHandle_FS, sizeof( ShaderCode->Base.MaskEffect_UseGraphHandle_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Result = Graphics_HTML5_FragmentShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )ShaderCode->Base.MaskEffect_UseGraphHandle_FS_Code, MaskEffect_UseGraphHandle_FS, sizeof( ShaderCode->Base.MaskEffect_UseGraphHandle_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"マスク処理用のフラグメントシェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
-		Result = Graphics_iOS_FragmentShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )ShaderCode->Base.MaskEffect_UseGraphHandle_ReverseEffect_FS_Code, MaskEffect_UseGraphHandle_ReverseEffect_FS, sizeof( ShaderCode->Base.MaskEffect_UseGraphHandle_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Result = Graphics_HTML5_FragmentShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )ShaderCode->Base.MaskEffect_UseGraphHandle_ReverseEffect_FS_Code, MaskEffect_UseGraphHandle_ReverseEffect_FS, sizeof( ShaderCode->Base.MaskEffect_UseGraphHandle_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"反転効果マスク処理用のフラグメントシェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
@@ -2080,14 +2080,14 @@ extern int Graphics_iOS_Shader_Initialize( void )
 		}
 
 		// マスク用シェーダーの作成
-		Result = Graphics_iOS_Shader_Create( &Shader->Base.MaskEffect_Shader, MaskEffect_VS, MaskEffect_FS ) ;
+		Result = Graphics_HTML5_Shader_Create( &Shader->Base.MaskEffect_Shader, MaskEffect_VS, MaskEffect_FS ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"マスク処理用のシェーダーオブジェクトの作成に失敗しました\n" @*/ ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
-		Result = Graphics_iOS_Shader_Create( &Shader->Base.MaskEffect_ReverseEffect_Shader, MaskEffect_VS, MaskEffect_ReverseEffect_FS ) ;
+		Result = Graphics_HTML5_Shader_Create( &Shader->Base.MaskEffect_ReverseEffect_Shader, MaskEffect_VS, MaskEffect_ReverseEffect_FS ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"反転効果マスク処理用のシェーダーオブジェクトの作成に失敗しました\n" @*/ ) ) ;
@@ -2096,7 +2096,7 @@ extern int Graphics_iOS_Shader_Initialize( void )
 		}
 		for( i = 0 ; i < 4 ; i ++ )
 		{
-			Result = Graphics_iOS_Shader_Create( &Shader->Base.MaskEffect_UseGraphHandle_Shader[ i ], MaskEffect_VS, MaskEffect_UseGraphHandle_FS[ i ] ) ;
+			Result = Graphics_HTML5_Shader_Create( &Shader->Base.MaskEffect_UseGraphHandle_Shader[ i ], MaskEffect_VS, MaskEffect_UseGraphHandle_FS[ i ] ) ;
 			if( Result < 0 )
 			{
 				DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"マスク処理用のシェーダーオブジェクトの作成に失敗しました\n" @*/ ) ) ;
@@ -2106,7 +2106,7 @@ extern int Graphics_iOS_Shader_Initialize( void )
 		}
 		for( i = 0 ; i < 4 ; i ++ )
 		{
-			Result = Graphics_iOS_Shader_Create( &Shader->Base.MaskEffect_UseGraphHandle_ReverseEffect_Shader[ i ], MaskEffect_VS, MaskEffect_UseGraphHandle_ReverseEffect_FS[ i ] ) ;
+			Result = Graphics_HTML5_Shader_Create( &Shader->Base.MaskEffect_UseGraphHandle_ReverseEffect_Shader[ i ], MaskEffect_VS, MaskEffect_UseGraphHandle_ReverseEffect_FS[ i ] ) ;
 			if( Result < 0 )
 			{
 				DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"反転効果マスク処理用のシェーダーオブジェクトの作成に失敗しました\n" @*/ ) ) ;
@@ -2116,28 +2116,28 @@ extern int Graphics_iOS_Shader_Initialize( void )
 		}
 
 		// 単純転送用頂点シェーダー・フラグメントシェーダーの作成
-		Result = Graphics_iOS_VertexShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&ShaderCode->Base.StretchRect_VS_Code, &Shader->Base.StretchRect_VS, sizeof( ShaderCode->Base.StretchRect_VS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Result = Graphics_HTML5_VertexShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&ShaderCode->Base.StretchRect_VS_Code, &Shader->Base.StretchRect_VS, sizeof( ShaderCode->Base.StretchRect_VS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"単純転送用の頂点シェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
-		Result = Graphics_iOS_VertexShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&ShaderCode->Base.StretchRectTex2_VS_Code, &Shader->Base.StretchRectTex2_VS, sizeof( ShaderCode->Base.StretchRectTex2_VS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Result = Graphics_HTML5_VertexShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&ShaderCode->Base.StretchRectTex2_VS_Code, &Shader->Base.StretchRectTex2_VS, sizeof( ShaderCode->Base.StretchRectTex2_VS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xa7\x5e\x19\x6a\x32\x00\x0b\x50\x6e\x30\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"テクスチャ座標2個の単純転送用の頂点シェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
-		Result = Graphics_iOS_VertexShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&ShaderCode->Base.StretchRectTex8_VS_Code, &Shader->Base.StretchRectTex8_VS, sizeof( ShaderCode->Base.StretchRectTex8_VS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Result = Graphics_HTML5_VertexShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&ShaderCode->Base.StretchRectTex8_VS_Code, &Shader->Base.StretchRectTex8_VS, sizeof( ShaderCode->Base.StretchRectTex8_VS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xa7\x5e\x19\x6a\x38\x00\x0b\x50\x6e\x30\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"テクスチャ座標8個の単純転送用の頂点シェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
-		Result = Graphics_iOS_FragmentShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&ShaderCode->Base.StretchRect_FS_Code, &StretchRect_FS, sizeof( ShaderCode->Base.StretchRect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Result = Graphics_HTML5_FragmentShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&ShaderCode->Base.StretchRect_FS_Code, &StretchRect_FS, sizeof( ShaderCode->Base.StretchRect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"単純転送用のフラグメントシェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
@@ -2146,7 +2146,7 @@ extern int Graphics_iOS_Shader_Initialize( void )
 		}
 
 		// 単純転送用シェーダーの作成
-		Result = Graphics_iOS_Shader_Create( &Shader->Base.StretchRect_Shader, Shader->Base.StretchRect_VS, StretchRect_FS ) ;
+		Result = Graphics_HTML5_Shader_Create( &Shader->Base.StretchRect_Shader, Shader->Base.StretchRect_VS, StretchRect_FS ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"単純転送用のシェーダーオブジェクトの作成に失敗しました\n" @*/ ) ) ;
@@ -2155,14 +2155,14 @@ extern int Graphics_iOS_Shader_Initialize( void )
 		}
 
 		// クリア処理用頂点シェーダー・フラグメントシェーダーの作成
-		Result = Graphics_iOS_VertexShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&ShaderCode->Base.ClearRT_VS_Code, &ClearRT_VS, sizeof( ShaderCode->Base.ClearRT_VS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Result = Graphics_HTML5_VertexShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&ShaderCode->Base.ClearRT_VS_Code, &ClearRT_VS, sizeof( ShaderCode->Base.ClearRT_VS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xaf\x30\xea\x30\xa2\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"クリア処理用の頂点シェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
-		Result = Graphics_iOS_FragmentShader_Create( ( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO * )&ShaderCode->Base.ClearRT_FS_Code, &ClearRT_FS, sizeof( ShaderCode->Base.ClearRT_FS_Code ) / sizeof( GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ) ) ;
+		Result = Graphics_HTML5_FragmentShader_Create( ( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO * )&ShaderCode->Base.ClearRT_FS_Code, &ClearRT_FS, sizeof( ShaderCode->Base.ClearRT_FS_Code ) / sizeof( GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xaf\x30\xea\x30\xa2\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"クリア処理用のフラグメントシェーダーオブジェクト No.%d の作成に失敗しました\n" @*/, -( Result + 1 ) ) ) ;
@@ -2171,7 +2171,7 @@ extern int Graphics_iOS_Shader_Initialize( void )
 		}
 
 		// クリア処理用シェーダーの作成
-		Result = Graphics_iOS_Shader_Create( &Shader->Base.ClearRT_Shader, ClearRT_VS, ClearRT_FS ) ;
+		Result = Graphics_HTML5_Shader_Create( &Shader->Base.ClearRT_Shader, ClearRT_VS, ClearRT_FS ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xaf\x30\xea\x30\xa2\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"クリア処理用のシェーダーオブジェクトの作成に失敗しました\n" @*/ ) ) ;
@@ -2187,55 +2187,55 @@ extern int Graphics_iOS_Shader_Initialize( void )
 END :
 
 	// シェーダーの後始末
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )&MaskEffect_VS,								sizeof( MaskEffect_VS )									/ sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )&MaskEffect_FS,								sizeof( MaskEffect_FS )									/ sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )&MaskEffect_ReverseEffect_FS,					sizeof( MaskEffect_ReverseEffect_FS )					/ sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )MaskEffect_UseGraphHandle_FS,					sizeof( MaskEffect_UseGraphHandle_FS )					/ sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )MaskEffect_UseGraphHandle_ReverseEffect_FS,	sizeof( MaskEffect_UseGraphHandle_ReverseEffect_FS )	/ sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )&StretchRect_FS,								sizeof( StretchRect_FS )								/ sizeof( GLuint ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )&ClearRT_VS,									sizeof( ClearRT_VS )									/ sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )&ClearRT_FS,									sizeof( ClearRT_FS )									/ sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )&MaskEffect_VS,								sizeof( MaskEffect_VS )									/ sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )&MaskEffect_FS,								sizeof( MaskEffect_FS )									/ sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )&MaskEffect_ReverseEffect_FS,					sizeof( MaskEffect_ReverseEffect_FS )					/ sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )MaskEffect_UseGraphHandle_FS,					sizeof( MaskEffect_UseGraphHandle_FS )					/ sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )MaskEffect_UseGraphHandle_ReverseEffect_FS,	sizeof( MaskEffect_UseGraphHandle_ReverseEffect_FS )	/ sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )&StretchRect_FS,								sizeof( StretchRect_FS )								/ sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )&ClearRT_VS,									sizeof( ClearRT_VS )									/ sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )&ClearRT_FS,									sizeof( ClearRT_FS )									/ sizeof( GLuint ) ) ;
 
 	// 終了
 	return FunctionResult ;
 }
 
 
-// iOS のシェーダーの後始末をする
-extern int Graphics_iOS_Shader_Terminate( void )
+// HTML5 のシェーダーの後始末をする
+extern int Graphics_HTML5_Shader_Terminate( void )
 {
-	GRAPHICS_HARDDATA_IOS_DEVICE *Device = &GraphicsHardDataiOS.Device ;
-	GRAPHICS_HARDWARE_IOS_SHADER *Shader = &Device->Shader ;
+	GRAPHICS_HARDDATA_HTML5_DEVICE *Device = &GraphicsHardDataHTML5.Device ;
+	GRAPHICS_HARDWARE_HTML5_SHADER *Shader = &Device->Shader ;
 
-	Graphics_iOS_DeviceState_ResetShader() ;
+	Graphics_HTML5_DeviceState_ResetShader() ;
 
 	_MEMSET( Shader->Base.BaseNoneTex_Shader, 0, sizeof( Shader->Base.BaseNoneTex_Shader ) ) ;
 	_MEMSET( Shader->Base.BaseUseTex_Shader,  0, sizeof( Shader->Base.BaseUseTex_Shader  ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )&Shader->Base.MaskEffect_Shader,                             sizeof( Shader->Base.MaskEffect_Shader                              ) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )&Shader->Base.MaskEffect_ReverseEffect_Shader,               sizeof( Shader->Base.MaskEffect_ReverseEffect_Shader                ) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )Shader->Base.MaskEffect_UseGraphHandle_Shader,               sizeof( Shader->Base.MaskEffect_UseGraphHandle_Shader               ) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )Shader->Base.MaskEffect_UseGraphHandle_ReverseEffect_Shader, sizeof( Shader->Base.MaskEffect_UseGraphHandle_ReverseEffect_Shader ) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_VertexShaderArray_Release( ( GLuint * )&Shader->Base.StretchRect_VS,                                           sizeof( Shader->Base.StretchRect_VS                                 ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_VertexShaderArray_Release( ( GLuint * )&Shader->Base.StretchRectTex2_VS,                                       sizeof( Shader->Base.StretchRectTex2_VS                             ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_VertexShaderArray_Release( ( GLuint * )&Shader->Base.StretchRectTex8_VS,                                       sizeof( Shader->Base.StretchRectTex8_VS                             ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )&Shader->Base.StretchRect_Shader,                            sizeof( Shader->Base.StretchRect_Shader                             ) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )&Shader->Base.ClearRT_Shader,                                sizeof( Shader->Base.ClearRT_Shader                                 ) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )Shader->Base.BaseSimple_VS,											sizeof( Shader->Base.BaseSimple_VS									) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Base.BaseNoneTex_FS,											sizeof( Shader->Base.BaseNoneTex_FS									) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Base.BaseUseTex_FS,											sizeof( Shader->Base.BaseUseTex_FS									) / sizeof( GLuint ) ) ; 
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )&Shader->Base.MaskEffect_Shader,                             sizeof( Shader->Base.MaskEffect_Shader                              ) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )&Shader->Base.MaskEffect_ReverseEffect_Shader,               sizeof( Shader->Base.MaskEffect_ReverseEffect_Shader                ) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )Shader->Base.MaskEffect_UseGraphHandle_Shader,               sizeof( Shader->Base.MaskEffect_UseGraphHandle_Shader               ) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )Shader->Base.MaskEffect_UseGraphHandle_ReverseEffect_Shader, sizeof( Shader->Base.MaskEffect_UseGraphHandle_ReverseEffect_Shader ) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release( ( GLuint * )&Shader->Base.StretchRect_VS,                                           sizeof( Shader->Base.StretchRect_VS                                 ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release( ( GLuint * )&Shader->Base.StretchRectTex2_VS,                                       sizeof( Shader->Base.StretchRectTex2_VS                             ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release( ( GLuint * )&Shader->Base.StretchRectTex8_VS,                                       sizeof( Shader->Base.StretchRectTex8_VS                             ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )&Shader->Base.StretchRect_Shader,                            sizeof( Shader->Base.StretchRect_Shader                             ) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )&Shader->Base.ClearRT_Shader,                                sizeof( Shader->Base.ClearRT_Shader                                 ) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )Shader->Base.BaseSimple_VS,											sizeof( Shader->Base.BaseSimple_VS									) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Base.BaseNoneTex_FS,											sizeof( Shader->Base.BaseNoneTex_FS									) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Base.BaseUseTex_FS,											sizeof( Shader->Base.BaseUseTex_FS									) / sizeof( GLuint ) ) ; 
 
 	_MEMSET( Shader->Base3D.Base3D_PixelLighting_Normal_Shader,  0, sizeof( Shader->Base3D.Base3D_PixelLighting_Normal_Shader  ) ) ;
 	_MEMSET( Shader->Base3D.Base3D_ShadowMap_Normal_Shader,      0, sizeof( Shader->Base3D.Base3D_ShadowMap_Normal_Shader      ) ) ;
 	_MEMSET( Shader->Base3D.Base3D_NoLighting_Normal_Shader,     0, sizeof( Shader->Base3D.Base3D_NoLighting_Normal_Shader     ) ) ;
 	_MEMSET( Shader->Base3D.Base3D_VertexLighting_Normal_Shader, 0, sizeof( Shader->Base3D.Base3D_VertexLighting_Normal_Shader ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )Shader->Base3D.Base3D_PixelLighting_VS,                               sizeof( Shader->Base3D.Base3D_PixelLighting_VS             ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Base3D.Base3D_PixelLighting_Normal_FS,                        sizeof( Shader->Base3D.Base3D_PixelLighting_Normal_FS      ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )Shader->Base3D.Base3D_ShadowMap_VS,                                   sizeof( Shader->Base3D.Base3D_ShadowMap_VS                 ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Base3D.Base3D_ShadowMap_Normal_FS,                            sizeof( Shader->Base3D.Base3D_ShadowMap_Normal_FS          ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )Shader->Base3D.Base3D_NoLighting_VS,                                  sizeof( Shader->Base3D.Base3D_NoLighting_VS                ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Base3D.Base3D_NoLighting_Normal_FS,                           sizeof( Shader->Base3D.Base3D_NoLighting_Normal_FS         ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )Shader->Base3D.Base3D_VertexLighting_VS,                              sizeof( Shader->Base3D.Base3D_VertexLighting_VS            ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Base3D.Base3D_VertexLighting_Normal_FS,                       sizeof( Shader->Base3D.Base3D_VertexLighting_Normal_FS     ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )Shader->Base3D.Base3D_PixelLighting_VS,                               sizeof( Shader->Base3D.Base3D_PixelLighting_VS             ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Base3D.Base3D_PixelLighting_Normal_FS,                        sizeof( Shader->Base3D.Base3D_PixelLighting_Normal_FS      ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )Shader->Base3D.Base3D_ShadowMap_VS,                                   sizeof( Shader->Base3D.Base3D_ShadowMap_VS                 ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Base3D.Base3D_ShadowMap_Normal_FS,                            sizeof( Shader->Base3D.Base3D_ShadowMap_Normal_FS          ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )Shader->Base3D.Base3D_NoLighting_VS,                                  sizeof( Shader->Base3D.Base3D_NoLighting_VS                ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Base3D.Base3D_NoLighting_Normal_FS,                           sizeof( Shader->Base3D.Base3D_NoLighting_Normal_FS         ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )Shader->Base3D.Base3D_VertexLighting_VS,                              sizeof( Shader->Base3D.Base3D_VertexLighting_VS            ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Base3D.Base3D_VertexLighting_Normal_FS,                       sizeof( Shader->Base3D.Base3D_VertexLighting_Normal_FS     ) / sizeof( GLuint ) ) ;
 
 #ifndef DX_NON_MODEL
 
@@ -2252,34 +2252,34 @@ extern int Graphics_iOS_Shader_Terminate( void )
 	_MEMSET( Shader->Model.MV1_VertexLighting_ToonType1_Shader, 0, sizeof( Shader->Model.MV1_VertexLighting_ToonType1_Shader ) ) ;
 	_MEMSET( Shader->Model.MV1_VertexLighting_ToonType2_Shader, 0, sizeof( Shader->Model.MV1_VertexLighting_ToonType2_Shader ) ) ;
 	_MEMSET( Shader->Model.MV1_VertexLighting_Normal_Shader,    0, sizeof( Shader->Model.MV1_VertexLighting_Normal_Shader    ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_PixelLighting_VS,                                 sizeof( Shader->Model.MV1_PixelLighting_VS                ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_PixelLighting_ToonType1_FS,                       sizeof( Shader->Model.MV1_PixelLighting_ToonType1_FS      ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_PixelLighting_ToonType2_FS,                       sizeof( Shader->Model.MV1_PixelLighting_ToonType2_FS      ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_PixelLighting_Normal_FS,                          sizeof( Shader->Model.MV1_PixelLighting_Normal_FS         ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_MaterialType_FS,                                  sizeof( Shader->Model.MV1_MaterialType_FS                 ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_ToonOutLine_ShadowMap_VS,                         sizeof( Shader->Model.MV1_ToonOutLine_ShadowMap_VS        ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_ToonOutLine_VS,                                   sizeof( Shader->Model.MV1_ToonOutLine_VS                  ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_ShadowMap_VS,                                     sizeof( Shader->Model.MV1_ShadowMap_VS                    ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_ShadowMap_Normal_FS,                              sizeof( Shader->Model.MV1_ShadowMap_Normal_FS             ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_ShadowMap_Toon_FS,                                sizeof( Shader->Model.MV1_ShadowMap_Toon_FS               ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_NoLighting_VS,                                    sizeof( Shader->Model.MV1_NoLighting_VS                   ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_NoLighting_Toon_FS,                               sizeof( Shader->Model.MV1_NoLighting_Toon_FS              ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_NoLighting_Normal_FS,                             sizeof( Shader->Model.MV1_NoLighting_Normal_FS            ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_VertexLighting_VS,                                sizeof( Shader->Model.MV1_VertexLighting_VS               ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_VertexLighting_ToonType1_FS,                      sizeof( Shader->Model.MV1_VertexLighting_ToonType1_FS     ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_VertexLighting_ToonType2_FS,                      sizeof( Shader->Model.MV1_VertexLighting_ToonType2_FS     ) / sizeof( GLuint ) ) ;
-	Graphics_iOS_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_VertexLighting_Normal_FS,                         sizeof( Shader->Model.MV1_VertexLighting_Normal_FS        ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_PixelLighting_VS,                                 sizeof( Shader->Model.MV1_PixelLighting_VS                ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_PixelLighting_ToonType1_FS,                       sizeof( Shader->Model.MV1_PixelLighting_ToonType1_FS      ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_PixelLighting_ToonType2_FS,                       sizeof( Shader->Model.MV1_PixelLighting_ToonType2_FS      ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_PixelLighting_Normal_FS,                          sizeof( Shader->Model.MV1_PixelLighting_Normal_FS         ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_MaterialType_FS,                                  sizeof( Shader->Model.MV1_MaterialType_FS                 ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_ToonOutLine_ShadowMap_VS,                         sizeof( Shader->Model.MV1_ToonOutLine_ShadowMap_VS        ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_ToonOutLine_VS,                                   sizeof( Shader->Model.MV1_ToonOutLine_VS                  ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_ShadowMap_VS,                                     sizeof( Shader->Model.MV1_ShadowMap_VS                    ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_ShadowMap_Normal_FS,                              sizeof( Shader->Model.MV1_ShadowMap_Normal_FS             ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_ShadowMap_Toon_FS,                                sizeof( Shader->Model.MV1_ShadowMap_Toon_FS               ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_NoLighting_VS,                                    sizeof( Shader->Model.MV1_NoLighting_VS                   ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_NoLighting_Toon_FS,                               sizeof( Shader->Model.MV1_NoLighting_Toon_FS              ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_NoLighting_Normal_FS,                             sizeof( Shader->Model.MV1_NoLighting_Normal_FS            ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_VertexShaderArray_Release(   ( GLuint * )Shader->Model.MV1_VertexLighting_VS,                                sizeof( Shader->Model.MV1_VertexLighting_VS               ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_VertexLighting_ToonType1_FS,                      sizeof( Shader->Model.MV1_VertexLighting_ToonType1_FS     ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_VertexLighting_ToonType2_FS,                      sizeof( Shader->Model.MV1_VertexLighting_ToonType2_FS     ) / sizeof( GLuint ) ) ;
+	Graphics_HTML5_FragmentShaderArray_Release( ( GLuint * )Shader->Model.MV1_VertexLighting_Normal_FS,                         sizeof( Shader->Model.MV1_VertexLighting_Normal_FS        ) / sizeof( GLuint ) ) ;
 
 #endif // DX_NON_MODEL
 
-	Graphics_iOS_ShaderList_Terminate() ;
+	Graphics_HTML5_ShaderList_Terminate() ;
 
 #ifndef DX_NON_FILTER
-	GraphFilter_iOS_ReleaseShaderAll();
+	GraphFilter_HTML5_ReleaseShaderAll();
 #endif // DX_NON_FILTER
 
 #ifndef DX_NON_LIVE2D_CUBISM4
-	Live2D_Cubism4_iOS_ReleaseShaderAll() ;
+	Live2D_Cubism4_HTML5_ReleaseShaderAll() ;
 #endif // DX_NON_LIVE2D_CUBISM4
 
 	// 正常終了
@@ -2287,21 +2287,21 @@ extern int Graphics_iOS_Shader_Terminate( void )
 }
 
 // ３Ｄ標準描画の指定の頂点用の描画用シェーダーをセットアップする
-extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
+extern int Graphics_HTML5_Shader_Normal3DDraw_Setup( void )
 {
-	GRAPHICS_HARDWARE_IOS_SHADER_BASE3D		*SB3D  = &GIOS.Device.Shader.Base3D ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_BASE3D	*SCB3D = &GIOS.ShaderCode.Base3D ;
+	GRAPHICS_HARDWARE_HTML5_SHADER_BASE3D		*SB3D  = &GHTML5.Device.Shader.Base3D ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_BASE3D	*SCB3D = &GHTML5.ShaderCode.Base3D ;
 	int											ValidPL ;
-	GRAPHICS_IOS_SHADER						**Shader_PL		= NULL ;
+	GRAPHICS_HTML5_SHADER					**Shader_PL		= NULL ;
 	GLuint										*VS_PL			= NULL ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO	*VSAddress_PL	= NULL ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*VSAddress_PL	= NULL ;
 	GLuint										*FS_PL			= NULL ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO	*FSAddress_PL	= NULL ;
-	GRAPHICS_IOS_SHADER						**Shader		= NULL ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*FSAddress_PL	= NULL ;
+	GRAPHICS_HTML5_SHADER					**Shader		= NULL ;
 	GLuint										*VS				= NULL ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO	*VSAddress		= NULL ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*VSAddress		= NULL ;
 	GLuint										*FS				= NULL ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO	*FSAddress		= NULL ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*FSAddress		= NULL ;
 	int											ShadowMap ;
 	int											IgnoreTextureAlpha ;
 	int											FogType ;
@@ -2313,29 +2313,29 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 	int											RenderType ;
 	int											NextBlendMode ;
 
-	if( GIOS.ShaderCode.Base3D.Base3DShaderInitializeFlag == FALSE &&
-		Graphics_iOS_ShaderCode_Base3D_Initialize() == FALSE )
+	if( GHTML5.ShaderCode.Base3D.Base3DShaderInitializeFlag == FALSE &&
+		Graphics_HTML5_ShaderCode_Base3D_Initialize() == FALSE )
 	{
 		return FALSE ;
 	}
 
 	// テクスチャアルファを無視するかどうかをセット
 	IgnoreTextureAlpha = 1 ;
-	if( GIOS.Device.DrawSetting.AlphaChannelValidFlag ||
-		GIOS.Device.DrawSetting.AlphaTestValidFlag ||
-		GIOS.Device.State.DepthEnable )
+	if( GHTML5.Device.DrawSetting.AlphaChannelValidFlag ||
+		GHTML5.Device.DrawSetting.AlphaTestValidFlag ||
+		GHTML5.Device.State.DepthEnable )
 	{
 		IgnoreTextureAlpha = 0 ;
 	}
-	if( IgnoreTextureAlpha != GIOS.Device.DrawSetting.IgnoreGraphAlphaFlag )
+	if( IgnoreTextureAlpha != GHTML5.Device.DrawSetting.IgnoreGraphAlphaFlag )
 	{
-		Graphics_iOS_DrawSetting_SetIgnoreDrawGraphAlpha( IgnoreTextureAlpha ) ;
+		Graphics_HTML5_DrawSetting_SetIgnoreDrawGraphAlpha( IgnoreTextureAlpha ) ;
 	}
 
 	// ブレンドモードの決定
 	{
-		NextBlendMode = GIOS.Device.DrawSetting.BlendMode ;
-		switch( GIOS.Device.DrawSetting.BlendMode )
+		NextBlendMode = GHTML5.Device.DrawSetting.BlendMode ;
+		switch( GHTML5.Device.DrawSetting.BlendMode )
 		{
 		case DX_BLENDMODE_SUB :
 			// 減算ブレンドの場合は14番目のブレンドモードを使用する
@@ -2350,9 +2350,9 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 			}
 
 			// 描画元画像にαチャンネルがある場合やブレンド画像の有無など条件次第で DX_BLENDMODE_ALPHA を使用する
-			if( GIOS.Device.DrawSetting.RenderTexture != NULL )
+			if( GHTML5.Device.DrawSetting.RenderTexture != NULL )
 			{
-				if( GIOS.Device.DrawSetting.AlphaChannelValidFlag == TRUE )
+				if( GHTML5.Device.DrawSetting.AlphaChannelValidFlag == TRUE )
 				{
 					NextBlendMode = DX_BLENDMODE_ALPHA ;
 				}
@@ -2362,9 +2362,9 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 	}
 
 	ShadowMap       = GSYS.DrawSetting.UseShadowMapNum != 0 ? 1 : 0 ;
-	FogType         = GIOS.Device.State.FogEnable ? GIOS.Device.State.FogMode : DX_FOGMODE_NONE ;
+	FogType         = GHTML5.Device.State.FogEnable ? GHTML5.Device.State.FogMode : DX_FOGMODE_NONE ;
 	RenderType = g_DefaultBlendDescArray[ NextBlendMode ].RenderType ;
-	AlphaTestMode   = GIOS.Device.State.AlphaTestModeShaderIndex ;
+	AlphaTestMode   = GHTML5.Device.State.AlphaTestModeShaderIndex ;
 	BumpMap         = 0 ;
 
 	if( GSYS.DrawSetting.ShadowMapDraw )
@@ -2380,7 +2380,7 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 		Shader       = &SB3D->Base3D_ShadowMap_Normal_Shader[ BumpMap ][ AlphaTestMode ] ;
 	}
 	else
-	if( GIOS.Device.State.Lighting )
+	if( GHTML5.Device.State.Lighting )
 	{
 		// ライティングあり描画
 
@@ -2389,12 +2389,12 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 
 		for( i = 0 ; i < DX_PIXELLIGHTING_LIGHT_NUM ; i ++ )
 		{
-			LightMode[ i ] = GIOS.Device.State.LightEnableFlag[ i ] ? GIOS.Device.State.LightParam[ i ].LightType : 0 ;
+			LightMode[ i ] = GHTML5.Device.State.LightEnableFlag[ i ] ? GHTML5.Device.State.LightParam[ i ].LightType : 0 ;
 		}
 
-		LightIndex84 = GIOS.ShaderCode.Base.LightIndexList84[ LightMode[ 0 ] ][ LightMode[ 1 ] ][ LightMode[ 2 ] ][ LightMode[ 3 ] ][ LightMode[ 4 ] ][ LightMode[ 5 ] ] ;
-		LightIndex20 = GIOS.ShaderCode.Base.LightIndexList20[ LightMode[ 0 ] ][ LightMode[ 1 ] ][ LightMode[ 2 ] ] ;
-		LightIndex10 = GIOS.ShaderCode.Base.LightIndexList10
+		LightIndex84 = GHTML5.ShaderCode.Base.LightIndexList84[ LightMode[ 0 ] ][ LightMode[ 1 ] ][ LightMode[ 2 ] ][ LightMode[ 3 ] ][ LightMode[ 4 ] ][ LightMode[ 5 ] ] ;
+		LightIndex20 = GHTML5.ShaderCode.Base.LightIndexList20[ LightMode[ 0 ] ][ LightMode[ 1 ] ][ LightMode[ 2 ] ] ;
+		LightIndex10 = GHTML5.ShaderCode.Base.LightIndexList10
 				[ LightMode[ 0 ] == DX_LIGHTTYPE_D3DLIGHT_DIRECTIONAL ? 2 : ( LightMode[ 0 ] ? 1 : 0 ) ]
 				[ LightMode[ 1 ] == DX_LIGHTTYPE_D3DLIGHT_DIRECTIONAL ? 2 : ( LightMode[ 1 ] ? 1 : 0 ) ]
 				[ LightMode[ 2 ] == DX_LIGHTTYPE_D3DLIGHT_DIRECTIONAL ? 2 : ( LightMode[ 2 ] ? 1 : 0 ) ] ;
@@ -2432,15 +2432,15 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 		VSAddress_PL != NULL && VSAddress_PL->Binary != NULL &&
 		FSAddress_PL != NULL && FSAddress_PL->Binary != NULL ;
 
-	if( ( GSYS.Light.EnableNum > DX_VERTEXLIGHTING_LIGHT_NUM || GIOS.UsePixelLightingShader ) && ValidPL )
+	if( ( GSYS.Light.EnableNum > DX_VERTEXLIGHTING_LIGHT_NUM || GHTML5.UsePixelLightingShader ) && ValidPL )
 	{
 		// 頂点シェーダーがあるかどうかを調べる
 		if( *VS_PL == 0 )
 		{
 			// 頂点シェーダーの作成を試みる
-			if( Graphics_iOS_VertexShader_Create( VSAddress_PL, VS_PL, 1 ) != 0 )
+			if( Graphics_HTML5_VertexShader_Create( VSAddress_PL, VS_PL, 1 ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_iOS_Shader_Normal3DDraw_Setup でピクセルライティング用頂点シェーダーの作成に失敗しました\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_HTML5_Shader_Normal3DDraw_Setup でピクセルライティング用頂点シェーダーの作成に失敗しました\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
@@ -2449,9 +2449,9 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 		if( *FS_PL == 0 )
 		{
 			// フラグメントシェーダーの作成を試みる
-			if( Graphics_iOS_FragmentShader_Create( FSAddress_PL, FS_PL, 1 ) != 0 )
+			if( Graphics_HTML5_FragmentShader_Create( FSAddress_PL, FS_PL, 1 ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_iOS_Shader_Normal3DDraw_Setup でピクセルライティング用フラグメントシェーダーの作成に失敗しました\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_HTML5_Shader_Normal3DDraw_Setup でピクセルライティング用フラグメントシェーダーの作成に失敗しました\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
@@ -2459,7 +2459,7 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 		// シェーダーがあるかどうかを調べる
 		if( *Shader_PL == NULL )
 		{
-			*Shader_PL = Graphics_iOS_GetShaderStruct() ;
+			*Shader_PL = Graphics_HTML5_GetShaderStruct() ;
 			if( *Shader_PL == NULL )
 			{
 				return FALSE ;
@@ -2468,15 +2468,15 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 		if( ( *Shader_PL )->Shader == 0 )
 		{
 			// シェーダーの作成を試みる
-			if( Graphics_iOS_Shader_Create( *Shader_PL, *VS_PL, *FS_PL ) != 0 )
+			if( Graphics_HTML5_Shader_Create( *Shader_PL, *VS_PL, *FS_PL ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_iOS_Shader_Normal3DDraw_Setup でピクセルライティング用シェーダーの作成に失敗しました\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_HTML5_Shader_Normal3DDraw_Setup でピクセルライティング用シェーダーの作成に失敗しました\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
 
 		// シェーダーのセットアップ
-		Graphics_iOS_DeviceState_SetShader( *Shader_PL, FALSE ) ;
+		Graphics_HTML5_DeviceState_SetShader( *Shader_PL, FALSE ) ;
 	}
 	else
 	{
@@ -2484,9 +2484,9 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 		if( *VS == 0 )
 		{
 			// シェーダーの作成を試みる
-			if( Graphics_iOS_VertexShader_Create( VSAddress, VS, 1 ) != 0 )
+			if( Graphics_HTML5_VertexShader_Create( VSAddress, VS, 1 ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_iOS_Shader_Normal3DDraw_Setup で頂点ライティング用頂点シェーダーの作成に失敗しました\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_HTML5_Shader_Normal3DDraw_Setup で頂点ライティング用頂点シェーダーの作成に失敗しました\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
@@ -2496,9 +2496,9 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 		if( *FS == 0 )
 		{
 			// シェーダーの作成を試みる
-			if( Graphics_iOS_FragmentShader_Create( FSAddress, FS, 1 ) != 0 )
+			if( Graphics_HTML5_FragmentShader_Create( FSAddress, FS, 1 ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_iOS_Shader_Normal3DDraw_Setup で頂点ライティング用フラグメントシェーダーの作成に失敗しました\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_HTML5_Shader_Normal3DDraw_Setup で頂点ライティング用フラグメントシェーダーの作成に失敗しました\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
@@ -2506,7 +2506,7 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 		// シェーダーがあるかどうかを調べる
 		if( *Shader == NULL )
 		{
-			*Shader = Graphics_iOS_GetShaderStruct() ;
+			*Shader = Graphics_HTML5_GetShaderStruct() ;
 			if( *Shader == NULL )
 			{
 				return FALSE ;
@@ -2515,36 +2515,36 @@ extern int Graphics_iOS_Shader_Normal3DDraw_Setup( void )
 		if( ( *Shader )->Shader == 0 )
 		{
 			// シェーダーの作成を試みる
-			if( Graphics_iOS_Shader_Create( *Shader, *VS, *FS ) != 0 )
+			if( Graphics_HTML5_Shader_Create( *Shader, *VS, *FS ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_iOS_Shader_Normal3DDraw_Setup で頂点ライティング用シェーダーの作成に失敗しました\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_HTML5_Shader_Normal3DDraw_Setup で頂点ライティング用シェーダーの作成に失敗しました\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
 
 		// シェーダーのセットアップ
-		Graphics_iOS_DeviceState_SetShader( *Shader, FALSE ) ;
+		Graphics_HTML5_DeviceState_SetShader( *Shader, FALSE ) ;
 	}
 
 	// 終了
 	return TRUE ;
 }
 
-// アルファテストの比較モードからフラグメントシェーダーのアルファテストモード( IOS_FS_ALPHATEST_CMP_GREATER 等 )を取得する
-extern int Graphics_iOS_Shader_GetAlphaTestModeIndex( int AlphaTestEnable, int AlphaTestMode /* DX_CMP_NEVER 等 */ )
+// アルファテストの比較モードからフラグメントシェーダーのアルファテストモード( HTML5_FS_ALPHATEST_CMP_GREATER 等 )を取得する
+extern int Graphics_HTML5_Shader_GetAlphaTestModeIndex( int AlphaTestEnable, int AlphaTestMode /* DX_CMP_NEVER 等 */ )
 {
 	if( AlphaTestEnable == FALSE )
 	{
-		return IOS_FS_ALPHATEST_CMP_GREATER ;
+		return HTML5_FS_ALPHATEST_CMP_GREATER ;
 	}
 
 	switch( AlphaTestMode )
 	{
 	default:
-		return IOS_FS_ALPHATEST_CMP_OTHER ;
+		return HTML5_FS_ALPHATEST_CMP_OTHER ;
 
 	case DX_CMP_GREATER :		// DrawAlpha >  TestParam
-		return IOS_FS_ALPHATEST_CMP_GREATER ;
+		return HTML5_FS_ALPHATEST_CMP_GREATER ;
 	}
 }
 
@@ -2579,49 +2579,49 @@ extern int Graphics_iOS_Shader_GetAlphaTestModeIndex( int AlphaTestEnable, int A
 
 
 
-// iOS の画面関係
+// HTML5 の画面関係
 
 // ScreenCopy や GetDrawScreen を実現するために使用するテンポラリバッファの作成( 0:成功  -1:失敗 )
-extern	int		Graphics_iOS_SetupSubBackBuffer( void )
+extern	int		Graphics_HTML5_SetupSubBackBuffer( void )
 {
-	GIOS.Device.Screen.SubBackBufferTextureSizeX = GSYS.Screen.MainScreenSizeX ;
-	GIOS.Device.Screen.SubBackBufferTextureSizeY = GSYS.Screen.MainScreenSizeY ;
+	GHTML5.Device.Screen.SubBackBufferTextureSizeX = GSYS.Screen.MainScreenSizeX ;
+	GHTML5.Device.Screen.SubBackBufferTextureSizeY = GSYS.Screen.MainScreenSizeY ;
 
 	// ピクセルタイプの決定
 	if( GSYS.Screen.UserScreenImage != NULL )
 	{
 		DWORD i ;
-		DWORD PixelNum = GIOS.Device.Screen.SubBackBufferTextureSizeX * GIOS.Device.Screen.SubBackBufferTextureSizeY ;
+		DWORD PixelNum = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY ;
 		BYTE *p ;
 
 		switch( GSYS.Screen.UserScreenImagePixelFormat )
 		{
 		case DX_USER_SCREEN_PIXEL_FORMAT_R5G6B5:
-			GIOS.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGB ;
-			GIOS.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGB ;
-			GIOS.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_SHORT_5_6_5 ;
+			GHTML5.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGB ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGB ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_SHORT_5_6_5 ;
 			break ;
 
 		case DX_USER_SCREEN_PIXEL_FORMAT_R5G5B5X1:
-			GIOS.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
-			GIOS.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGBA ;
-			GIOS.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_SHORT_5_5_5_1 ;
+			GHTML5.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGBA ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_SHORT_5_5_5_1 ;
 			break ;
 
 		case DX_USER_SCREEN_PIXEL_FORMAT_X1R5G5B5:
-			GIOS.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
-			GIOS.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGBA ;
-			GIOS.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_SHORT_5_5_5_1 ;
+			GHTML5.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGBA ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_SHORT_5_5_5_1 ;
 
-			GIOS.Device.Screen.SubBackBufferTextureTempBuffer = DXALLOC( GIOS.Device.Screen.SubBackBufferTextureSizeX * GIOS.Device.Screen.SubBackBufferTextureSizeY * 2 ) ;
-			if( GIOS.Device.Screen.SubBackBufferTextureTempBuffer == NULL )
+			GHTML5.Device.Screen.SubBackBufferTextureTempBuffer = DXALLOC( GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 2 ) ;
+			if( GHTML5.Device.Screen.SubBackBufferTextureTempBuffer == NULL )
 			{
 				DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xd6\x30\xd0\x30\xc3\x30\xaf\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x78\x30\x6e\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xe2\x8e\x01\x90\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"サブバックバッファへのテクスチャ転送用のメモリ確保に失敗しました\n" @*/ ) ;
 				return -1 ;
 			}
 
 			// 転送用バッファの内容を初期化
-			p = ( BYTE * )GIOS.Device.Screen.SubBackBufferTextureTempBuffer ;
+			p = ( BYTE * )GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ;
 			for( i = 0 ; i < PixelNum ; i ++ )
 			{
 				( ( WORD * )p )[ i ] = 0x0001 ;
@@ -2629,36 +2629,36 @@ extern	int		Graphics_iOS_SetupSubBackBuffer( void )
 			break ;
 
 		case DX_USER_SCREEN_PIXEL_FORMAT_X8B8G8R8:
-			GIOS.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
-			GIOS.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGBA ;
-			GIOS.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_BYTE ;
+			GHTML5.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGBA ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_BYTE ;
 			break ;
 
 		case DX_USER_SCREEN_PIXEL_FORMAT_X8R8G8B8:
-			if( GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] )
+			if( GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] )
 			{
-				GIOS.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
-				GIOS.Device.Screen.SubBackBufferTexturePixelFormat = GL_BGRA_EXT ;
+				GHTML5.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
+				GHTML5.Device.Screen.SubBackBufferTexturePixelFormat = GL_BGRA_EXT ;
 			}
 			else
 			{
-				GIOS.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
-				GIOS.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGBA ;
-				GIOS.Device.Screen.SubBackBufferTextureTempBuffer = DXALLOC( GIOS.Device.Screen.SubBackBufferTextureSizeX * GIOS.Device.Screen.SubBackBufferTextureSizeY * 4 ) ;
-				if( GIOS.Device.Screen.SubBackBufferTextureTempBuffer == NULL )
+				GHTML5.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
+				GHTML5.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGBA ;
+				GHTML5.Device.Screen.SubBackBufferTextureTempBuffer = DXALLOC( GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 4 ) ;
+				if( GHTML5.Device.Screen.SubBackBufferTextureTempBuffer == NULL )
 				{
 					DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xd6\x30\xd0\x30\xc3\x30\xaf\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x78\x30\x6e\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xe2\x8e\x01\x90\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"サブバックバッファへのテクスチャ転送用のメモリ確保に失敗しました\n" @*/ ) ;
 					return -1 ;
 				}
 
 				// 転送用バッファの内容を初期化
-				p = ( BYTE * )GIOS.Device.Screen.SubBackBufferTextureTempBuffer ;
+				p = ( BYTE * )GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ;
 				for( i = 0 ; i < PixelNum ; i ++ )
 				{
 					( ( DWORD * )p )[ i ] = 0xff000000 ;
 				}
 			}
-			GIOS.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_BYTE ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_BYTE ;
 			break ;
 		}
 	}
@@ -2667,16 +2667,16 @@ extern	int		Graphics_iOS_SetupSubBackBuffer( void )
 	{
 		if( GSYS.Screen.MainScreenColorBitDepth == 16 )
 		{
-			GIOS.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGB ;
-			GIOS.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGB ;
-			GIOS.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_SHORT_5_6_5 ;
+			GHTML5.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGB ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGB ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_SHORT_5_6_5 ;
 		}
 		else
 		{
-			if( GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] )
+			if( GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] )
 			{
-				GIOS.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
-				GIOS.Device.Screen.SubBackBufferTexturePixelFormat = GL_BGRA_EXT ;
+				GHTML5.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
+				GHTML5.Device.Screen.SubBackBufferTexturePixelFormat = GL_BGRA_EXT ;
 			}
 			else
 			{
@@ -2684,62 +2684,62 @@ extern	int		Graphics_iOS_SetupSubBackBuffer( void )
 				DWORD PixelNum ;
 				DWORD *p ;
 
-				GIOS.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
-				GIOS.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGBA ;
-				GIOS.Device.Screen.SubBackBufferTextureTempBuffer = DXALLOC( GIOS.Device.Screen.SubBackBufferTextureSizeX * GIOS.Device.Screen.SubBackBufferTextureSizeY * 4 ) ;
-				if( GIOS.Device.Screen.SubBackBufferTextureTempBuffer == NULL )
+				GHTML5.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGBA ;
+				GHTML5.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGBA ;
+				GHTML5.Device.Screen.SubBackBufferTextureTempBuffer = DXALLOC( GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 4 ) ;
+				if( GHTML5.Device.Screen.SubBackBufferTextureTempBuffer == NULL )
 				{
 					DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xd6\x30\xd0\x30\xc3\x30\xaf\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x78\x30\x6e\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xe2\x8e\x01\x90\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"サブバックバッファへのテクスチャ転送用のメモリ確保に失敗しました\n" @*/ ) ;
 					return -1 ;
 				}
 
 				// 転送用バッファの内容を初期化
-				PixelNum = GIOS.Device.Screen.SubBackBufferTextureSizeX * GIOS.Device.Screen.SubBackBufferTextureSizeY ;
-				p = ( DWORD * )GIOS.Device.Screen.SubBackBufferTextureTempBuffer ;
+				PixelNum = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY ;
+				p = ( DWORD * )GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ;
 				for( i = 0 ; i < PixelNum ; i ++ )
 				{
 					p[ i ] = 0xff000000 ;
 				}
 			}
-			GIOS.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_BYTE ;
+			GHTML5.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_BYTE ;
 		}
 	}
 	else
 	{
-		GIOS.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGB ;
-		GIOS.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGB ;
-		GIOS.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_BYTE ;
+		GHTML5.Device.Screen.SubBackBufferTextureInternalFormat = GL_RGB ;
+		GHTML5.Device.Screen.SubBackBufferTexturePixelFormat = GL_RGB ;
+		GHTML5.Device.Screen.SubBackBufferTexturePixelType = GL_UNSIGNED_BYTE ;
 	}
 
 	// Offscreen position framebuffer texture target
-	glGenTextures( 1, &GIOS.Device.Screen.SubBackBufferTexture ) ;
-	glBindTexture( GL_TEXTURE_2D, GIOS.Device.Screen.SubBackBufferTexture ) ;
+	glGenTextures( 1, &GHTML5.Device.Screen.SubBackBufferTexture ) ;
+	glBindTexture( GL_TEXTURE_2D, GHTML5.Device.Screen.SubBackBufferTexture ) ;
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ) ;
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE ) ;
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR ) ;
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR ) ;
-	glTexImage2D( GL_TEXTURE_2D, 0, GIOS.Device.Screen.SubBackBufferTextureInternalFormat, GIOS.Device.Screen.SubBackBufferTextureSizeX, GIOS.Device.Screen.SubBackBufferTextureSizeY, 0, GIOS.Device.Screen.SubBackBufferTexturePixelFormat, GIOS.Device.Screen.SubBackBufferTexturePixelType, 0 ) ;
+	glTexImage2D( GL_TEXTURE_2D, 0, GHTML5.Device.Screen.SubBackBufferTextureInternalFormat, GHTML5.Device.Screen.SubBackBufferTextureSizeX, GHTML5.Device.Screen.SubBackBufferTextureSizeY, 0, GHTML5.Device.Screen.SubBackBufferTexturePixelFormat, GHTML5.Device.Screen.SubBackBufferTexturePixelType, 0 ) ;
 
 	// ソフトウェアレンダリングモードではない場合のみフレームバッファを作成する
 	if( GSYS.Setting.NotUseHardware == FALSE )
 	{
-		glGenFramebuffers( 1, &GIOS.Device.Screen.SubBackBufferFrameBuffer ) ;
-		glBindFramebuffer( GL_FRAMEBUFFER, GIOS.Device.Screen.SubBackBufferFrameBuffer ) ;
+		glGenFramebuffers( 1, &GHTML5.Device.Screen.SubBackBufferFrameBuffer ) ;
+		glBindFramebuffer( GL_FRAMEBUFFER, GHTML5.Device.Screen.SubBackBufferFrameBuffer ) ;
 
 		// レンダーバッファ識別子を生成します。
-		glGenRenderbuffers( 1, &GIOS.Device.Screen.SubBackBufferDepthBuffer ) ;
+		glGenRenderbuffers( 1, &GHTML5.Device.Screen.SubBackBufferDepthBuffer ) ;
 
 		// レンダーバッファ識別子に対応したレンダーバッファオブジェクトを生成します。
-		glBindRenderbuffer( GL_RENDERBUFFER, GIOS.Device.Screen.SubBackBufferDepthBuffer ) ;
+		glBindRenderbuffer( GL_RENDERBUFFER, GHTML5.Device.Screen.SubBackBufferDepthBuffer ) ;
 
 		// レンダーバッファの幅と高さを指定します。
-		glRenderbufferStorage( GL_RENDERBUFFER, GIOS.Device.Caps.DepthBufferFormat[ ZBUFFER_FORMAT_24BIT ], GIOS.Device.Screen.SubBackBufferTextureSizeX, GIOS.Device.Screen.SubBackBufferTextureSizeY ) ;
+		glRenderbufferStorage( GL_RENDERBUFFER, GHTML5.Device.Caps.DepthBufferFormat[ ZBUFFER_FORMAT_24BIT ], GHTML5.Device.Screen.SubBackBufferTextureSizeX, GHTML5.Device.Screen.SubBackBufferTextureSizeY ) ;
 
 		// フレームバッファのアタッチメントとしてレンダーバッファをアタッチします。
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, GIOS.Device.Screen.SubBackBufferDepthBuffer ) ;
+		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, GHTML5.Device.Screen.SubBackBufferDepthBuffer ) ;
 
 		// フレームバッファのアタッチメントとして 2D テクスチャをアタッチします。
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GIOS.Device.Screen.SubBackBufferTexture, 0 ) ;
+		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GHTML5.Device.Screen.SubBackBufferTexture, 0 ) ;
 
 		// フレームバッファが完全かどうかチェックします。
 		GLint status = glCheckFramebufferStatus( GL_FRAMEBUFFER ) ;
@@ -2756,30 +2756,30 @@ extern	int		Graphics_iOS_SetupSubBackBuffer( void )
 }
 
 // サブバックバッファの後始末を行う( 0:成功  -1:失敗 )
-extern int Graphics_iOS_TerminateSubBackBuffer( void )
+extern int Graphics_HTML5_TerminateSubBackBuffer( void )
 {
-	if( GIOS.Device.Screen.SubBackBufferTextureTempBuffer != NULL )
+	if( GHTML5.Device.Screen.SubBackBufferTextureTempBuffer != NULL )
 	{
-		DXFREE( GIOS.Device.Screen.SubBackBufferTextureTempBuffer ) ;
-		GIOS.Device.Screen.SubBackBufferTextureTempBuffer = NULL ;
+		DXFREE( GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ) ;
+		GHTML5.Device.Screen.SubBackBufferTextureTempBuffer = NULL ;
 	}
 
-	if( GIOS.Device.Screen.SubBackBufferFrameBuffer != 0 )
+	if( GHTML5.Device.Screen.SubBackBufferFrameBuffer != 0 )
 	{
-		glDeleteFramebuffers( 1, &GIOS.Device.Screen.SubBackBufferFrameBuffer ) ;
-		GIOS.Device.Screen.SubBackBufferFrameBuffer = 0 ;
+		glDeleteFramebuffers( 1, &GHTML5.Device.Screen.SubBackBufferFrameBuffer ) ;
+		GHTML5.Device.Screen.SubBackBufferFrameBuffer = 0 ;
 	}
 
-	if( GIOS.Device.Screen.SubBackBufferTexture != 0 )
+	if( GHTML5.Device.Screen.SubBackBufferTexture != 0 )
 	{
-		glDeleteTextures( 1, &GIOS.Device.Screen.SubBackBufferTexture ) ;
-		GIOS.Device.Screen.SubBackBufferTexture = 0 ;
+		glDeleteTextures( 1, &GHTML5.Device.Screen.SubBackBufferTexture ) ;
+		GHTML5.Device.Screen.SubBackBufferTexture = 0 ;
 	}
 
-	if( GIOS.Device.Screen.SubBackBufferDepthBuffer != 0 )
+	if( GHTML5.Device.Screen.SubBackBufferDepthBuffer != 0 )
 	{
-		glDeleteRenderbuffers( 1, &GIOS.Device.Screen.SubBackBufferDepthBuffer ) ;
-		GIOS.Device.Screen.SubBackBufferDepthBuffer = 0 ;
+		glDeleteRenderbuffers( 1, &GHTML5.Device.Screen.SubBackBufferDepthBuffer ) ;
+		GHTML5.Device.Screen.SubBackBufferDepthBuffer = 0 ;
 	}
 
 	// 終了
@@ -2787,7 +2787,7 @@ extern int Graphics_iOS_TerminateSubBackBuffer( void )
 }
 
 // 表画面が描画先の際の定期処理
-extern int Graphics_iOS_FrontScreenProcess( void )
+extern int Graphics_HTML5_FrontScreenProcess( void )
 {
 	int NowTime ;
 
@@ -2799,11 +2799,11 @@ extern int Graphics_iOS_FrontScreenProcess( void )
 
 	// 前回 ScreenCopy をしてから 16ms 以上経過していたら ScreenCopy を行う
 	NowTime = NS_GetNowCount() ;
-	if( NowTime - GIOS.Device.Screen.FrontScreenCopyTime > 16 )
+	if( NowTime - GHTML5.Device.Screen.FrontScreenCopyTime > 16 )
 	{
 		Graphics_Screen_ScreenCopyBase( TRUE ) ;
 
-		GIOS.Device.Screen.FrontScreenCopyTime = NowTime ;
+		GHTML5.Device.Screen.FrontScreenCopyTime = NowTime ;
 	}
 
 	// 終了
@@ -2833,10 +2833,10 @@ extern int Graphics_iOS_FrontScreenProcess( void )
 
 
 
-// iOS の画像関係
+// HTML5 の画像関係
 
-// IOS_PIXEL_FORMAT_R8G8B8A8 などのフォーマットに合わせたカラーフォーマット情報を取得する
-extern COLORDATA *Graphics_iOS_GetDataFormatColorData( int PixelFormat )
+// HTML5_PIXEL_FORMAT_R8G8B8A8 などのフォーマットに合わせたカラーフォーマット情報を取得する
+extern COLORDATA *Graphics_HTML5_GetDataFormatColorData( int PixelFormat )
 {
 	static int InitializeFlag = FALSE ;
 	static COLORDATA R8G8B8A8_ColorData ;
@@ -2865,16 +2865,16 @@ extern COLORDATA *Graphics_iOS_GetDataFormatColorData( int PixelFormat )
 		NS_CreateColorData( &R32G32B32A32F_ColorData,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 4, 32,  TRUE ) ;
 	}
 
-	     if( PixelFormat == IOS_PIXEL_FORMAT_R8G8B8A8			) return &R8G8B8A8_ColorData ;
-	else if( PixelFormat == IOS_PIXEL_FORMAT_R8G8B8				) return &R8G8B8_ColorData ;
-	else if( PixelFormat == IOS_PIXEL_FORMAT_A4B4G4R4			) return &A4B4G4R4_ColorData ;
-	else if( PixelFormat == IOS_PIXEL_FORMAT_A1B5G5R5			) return &A1B5G5R5_ColorData ;
-	else if( PixelFormat == IOS_PIXEL_FORMAT_B5G6R5				) return &B5G6R5_ColorData ;
-	else if( PixelFormat == IOS_PIXEL_FORMAT_R8					) return &R8_ColorData ;
-	else if( PixelFormat == IOS_PIXEL_FORMAT_R16G16B16_FLOAT	) return &R16G16B16F_ColorData ;
-	else if( PixelFormat == IOS_PIXEL_FORMAT_R32G32B32_FLOAT	) return &R32G32B32F_ColorData ;
-	else if( PixelFormat == IOS_PIXEL_FORMAT_R16G16B16A16_FLOAT	) return &R16G16B16A16F_ColorData ;
-	else if( PixelFormat == IOS_PIXEL_FORMAT_R32G32B32A32_FLOAT	) return &R32G32B32A32F_ColorData ;
+	     if( PixelFormat == HTML5_PIXEL_FORMAT_R8G8B8A8			) return &R8G8B8A8_ColorData ;
+	else if( PixelFormat == HTML5_PIXEL_FORMAT_R8G8B8				) return &R8G8B8_ColorData ;
+	else if( PixelFormat == HTML5_PIXEL_FORMAT_A4B4G4R4			) return &A4B4G4R4_ColorData ;
+	else if( PixelFormat == HTML5_PIXEL_FORMAT_A1B5G5R5			) return &A1B5G5R5_ColorData ;
+	else if( PixelFormat == HTML5_PIXEL_FORMAT_B5G6R5				) return &B5G6R5_ColorData ;
+	else if( PixelFormat == HTML5_PIXEL_FORMAT_R8					) return &R8_ColorData ;
+	else if( PixelFormat == HTML5_PIXEL_FORMAT_R16G16B16_FLOAT	) return &R16G16B16F_ColorData ;
+	else if( PixelFormat == HTML5_PIXEL_FORMAT_R32G32B32_FLOAT	) return &R32G32B32F_ColorData ;
+	else if( PixelFormat == HTML5_PIXEL_FORMAT_R16G16B16A16_FLOAT	) return &R16G16B16A16F_ColorData ;
+	else if( PixelFormat == HTML5_PIXEL_FORMAT_R32G32B32A32_FLOAT	) return &R32G32B32A32F_ColorData ;
 
 	return NULL ;
 }
@@ -2952,59 +2952,59 @@ extern	int		Graphics_CheckRequiredNormalImageConv_BaseImageFormat_PF(
 }
 
 // テクスチャ画像転送用の共有メモリのセットアップを行う
-extern int Graphics_iOS_Texture_SetupCommonBuffer( unsigned int Size )
+extern int Graphics_HTML5_Texture_SetupCommonBuffer( unsigned int Size )
 {
 	// 既に指定のサイズを確保してあったら何もせずに終了
-	if( GIOS.Texture.CommonBufferSize >= Size )
+	if( GHTML5.Texture.CommonBufferSize >= Size )
 	{
 		return 0 ;
 	}
 
 	// 既存のメモリを解放
-	DXFREE( GIOS.Texture.CommonBuffer ) ;
-	GIOS.Texture.CommonBuffer     = NULL ;
-	GIOS.Texture.CommonBufferSize = 0 ;
+	DXFREE( GHTML5.Texture.CommonBuffer ) ;
+	GHTML5.Texture.CommonBuffer     = NULL ;
+	GHTML5.Texture.CommonBufferSize = 0 ;
 
 	// 容量を追加する
 	Size += 512 * 1024 ;
 
 	// メモリの確保
-	GIOS.Texture.CommonBuffer = DXALLOC( Size ) ;
-	if( GIOS.Texture.CommonBuffer == NULL )
+	GHTML5.Texture.CommonBuffer = DXALLOC( Size ) ;
+	if( GHTML5.Texture.CommonBuffer == NULL )
 	{
-		DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6b\x30\x3b\x75\xcf\x50\x92\x30\xe2\x8e\x01\x90\x59\x30\x8b\x30\x5f\x30\x81\x30\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x5b\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x44\x00\x33\x00\x44\x00\x31\x00\x31\x00\x5f\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x43\x00\x6f\x00\x6d\x00\x6d\x00\x6f\x00\x6e\x00\x42\x00\x75\x00\x66\x00\x66\x00\x65\x00\x72\x00\x5d\x00\x0a\x00\x00"/*@ L"テクスチャに画像を転送するためのメモリの確保に失敗しました[Graphics_iOS_Texture_SetupCommonBuffer]\n" @*/ )) ;
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6b\x30\x3b\x75\xcf\x50\x92\x30\xe2\x8e\x01\x90\x59\x30\x8b\x30\x5f\x30\x81\x30\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x5b\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x44\x00\x33\x00\x44\x00\x31\x00\x31\x00\x5f\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x43\x00\x6f\x00\x6d\x00\x6d\x00\x6f\x00\x6e\x00\x42\x00\x75\x00\x66\x00\x66\x00\x65\x00\x72\x00\x5d\x00\x0a\x00\x00"/*@ L"テクスチャに画像を転送するためのメモリの確保に失敗しました[Graphics_HTML5_Texture_SetupCommonBuffer]\n" @*/ )) ;
 		return -1 ;
 	}
 
 	// 確保したメモリのサイズを保存
-	GIOS.Texture.CommonBufferSize = Size ;
+	GHTML5.Texture.CommonBufferSize = Size ;
 
 	// 終了
 	return 0 ;
 }
 
 // テクスチャ画像転送用の共有メモリの後始末を行う
-extern int Graphics_iOS_Texture_TerminateCommonBuffer( void )
+extern int Graphics_HTML5_Texture_TerminateCommonBuffer( void )
 {
 	// メモリを確保していたら解放
-	if( GIOS.Texture.CommonBuffer != NULL )
+	if( GHTML5.Texture.CommonBuffer != NULL )
 	{
-		DXFREE( GIOS.Texture.CommonBuffer ) ;
-		GIOS.Texture.CommonBuffer = NULL ;
+		DXFREE( GHTML5.Texture.CommonBuffer ) ;
+		GHTML5.Texture.CommonBuffer = NULL ;
 	}
-	GIOS.Texture.CommonBufferSize = 0 ;
+	GHTML5.Texture.CommonBufferSize = 0 ;
 
 	// 終了
 	return 0 ;
 }
 
 // レンダーターゲットテクスチャにテクスチャの単純転送を行う
-extern int		Graphics_iOS_StretchRect(
+extern int		Graphics_HTML5_StretchRect(
 	GLuint					SrcTexture,			uint32_t SrcTextureWidth,   uint32_t SrcTextureHeight,   const RECT *SrcRect,	// NULL で全体
 	GLuint					FrameBuffer,		uint32_t FrameBufferWidth,  uint32_t FrameBufferHeight,  const RECT *DestRect,	// NULL で全体
 	GLenum					FilterType,
 	int						AlphaBlend,
-	GRAPHICS_IOS_SHADER	*Shader,
+	GRAPHICS_HTML5_SHADER	*Shader,
 	GLuint					BlendTexture,		uint32_t BlendTextureWidth, uint32_t BlendTextureHeight, const RECT *BlendRect,	// NULL で全体
 	VERTEX_TEX8_2D *		Texcoord8Vertex
 )
@@ -3024,7 +3024,7 @@ extern int		Graphics_iOS_StretchRect(
 	int			BlendMode ;
 	int			NotWriteAlphaChannelFlag ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -3059,7 +3059,7 @@ extern int		Graphics_iOS_StretchRect(
 	DRAWSTOCKINFO
 
 	// 描画終了
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// 頂点データを準備
 	if( Texcoord8Vertex == NULL )
@@ -3177,27 +3177,27 @@ extern int		Graphics_iOS_StretchRect(
 	}
 
 	// 描画の開始を行う
-	Graphics_iOS_RenderBegin() ;
+	Graphics_HTML5_RenderBegin() ;
 
 	// StretchRect用の設定を行う
 	{
-		// 描画先のフレームバッファを変更( 設定は Graphics_iOS_DeviceState_RefreshRenderState で戻す )
+		// 描画先のフレームバッファを変更( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
 		glBindFramebuffer( GL_FRAMEBUFFER, FrameBuffer ) ;
 
-		// ビューポートをセット( 設定は Graphics_iOS_DeviceState_RefreshRenderState で戻す )
+		// ビューポートをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
 		glViewport( 0, 0, FrameBufferWidth, FrameBufferHeight ) ;
 
 		// シェーダーをセット
 		if( Shader == NULL )
 		{
-			Shader = &GIOS.Device.Shader.Base.StretchRect_Shader ;
+			Shader = &GHTML5.Device.Shader.Base.StretchRect_Shader ;
 		}
-		Graphics_iOS_DeviceState_SetShader( Shader, FALSE ) ;
+		Graphics_HTML5_DeviceState_SetShader( Shader, FALSE ) ;
 
 		// Uniform の更新
-		Graphics_iOS_DeviceState_UpdateShaderUniform( Shader, 0 ) ;
+		Graphics_HTML5_DeviceState_UpdateShaderUniform( Shader, 0 ) ;
 
-		// テクスチャをセット( 設定は Graphics_iOS_DeviceState_RefreshRenderState で戻す )
+		// テクスチャをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
 		glActiveTexture( GL_TEXTURE0 ) ;
 		glBindTexture( GL_TEXTURE_2D, SrcTexture ) ;
 
@@ -3208,7 +3208,7 @@ extern int		Graphics_iOS_StretchRect(
 		// ブレンドテクスチャをセット
 		if( BlendTexture != 0 )
 		{
-			// テクスチャをセット( 設定は Graphics_iOS_DeviceState_RefreshRenderState で戻す )
+			// テクスチャをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
 			glActiveTexture( GL_TEXTURE1 ) ;
 			glBindTexture( GL_TEXTURE_2D, BlendTexture ) ;
 
@@ -3218,12 +3218,12 @@ extern int		Graphics_iOS_StretchRect(
 		}
 
 		// ブレンドモードを変更
-		BlendMode = GIOS.Device.State.BlendMode ;
-		NotWriteAlphaChannelFlag = GIOS.Device.State.NotWriteAlphaChannelFlag ;
-		Graphics_iOS_DeviceState_SetBlendMode( AlphaBlend ? DX_BLENDMODE_ALPHA : DX_BLENDMODE_NOBLEND, FALSE ) ;
+		BlendMode = GHTML5.Device.State.BlendMode ;
+		NotWriteAlphaChannelFlag = GHTML5.Device.State.NotWriteAlphaChannelFlag ;
+		Graphics_HTML5_DeviceState_SetBlendMode( AlphaBlend ? DX_BLENDMODE_ALPHA : DX_BLENDMODE_NOBLEND, FALSE ) ;
 
 		// 頂点データのセットアップ
-		Graphics_iOS_DeviceState_SetupShaderVertexData(
+		Graphics_HTML5_DeviceState_SetupShaderVertexData(
 			Shader,
 			Texcoord8Vertex != NULL ? &g_StretchRectTex8VertexInputInfo : ( BlendTexture != 0 ? &g_StretchRectTex2VertexInputInfo : &g_StretchRectVertexInputInfo ),
 			VertexData
@@ -3237,21 +3237,21 @@ extern int		Graphics_iOS_StretchRect(
 	// 設定を元に戻す
 	{
 		// ブレンドモードを変更
-		Graphics_iOS_DeviceState_SetBlendMode( BlendMode, NotWriteAlphaChannelFlag ) ;
+		Graphics_HTML5_DeviceState_SetBlendMode( BlendMode, NotWriteAlphaChannelFlag ) ;
 
 		// 今までの設定を復帰する
-		Graphics_iOS_DeviceState_RefreshRenderState() ;
+		Graphics_HTML5_DeviceState_RefreshRenderState() ;
 	}
 
 	// 描画を終了しておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// 正常終了
 	return 0 ;
 }
 
 // 指定のテクスチャの内容に読み込みアクセスできるようにする
-extern	int		Graphics_iOS_Texture_Map(
+extern	int		Graphics_HTML5_Texture_Map(
 	GLuint				TargetTexture,
 	GLuint				TargetFrameBuffer,
 	GLuint				TargetWidth,
@@ -3265,7 +3265,7 @@ extern	int		Graphics_iOS_Texture_Map(
 	GLuint Height ;
 	RECT   TempRect ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -3327,12 +3327,12 @@ extern	int		Graphics_iOS_Texture_Map(
 		}
 
 		// 作業用フレームバッファにテクスチャの内容を転送
-		Graphics_iOS_StretchRect( TargetTexture, TargetWidth, TargetHeight, MapRect, TempFrameBuffer, Width, Height, NULL ) ;
+		Graphics_HTML5_StretchRect( TargetTexture, TargetWidth, TargetHeight, MapRect, TempFrameBuffer, Width, Height, NULL ) ;
 
 		// ピクセルデータの読み取り
 		glBindFramebuffer( GL_FRAMEBUFFER, TempFrameBuffer ) ;
 		glReadPixels( 0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, *MapTempImage ) ;
-		glBindFramebuffer( GL_FRAMEBUFFER, GIOS.Device.State.TargetFrameBuffer ) ;
+		glBindFramebuffer( GL_FRAMEBUFFER, GHTML5.Device.State.TargetFrameBuffer ) ;
 
 		// フレームバッファとテクスチャの削除
 		glBindTexture( GL_TEXTURE_2D, 0 ) ;
@@ -3362,7 +3362,7 @@ extern	int		Graphics_iOS_Texture_Map(
 		glPixelStorei( GL_PACK_ALIGNMENT,   pack_backup ) ;
 		glPixelStorei( GL_UNPACK_ALIGNMENT, unpack_backup ) ;
 
-		glBindFramebuffer( GL_FRAMEBUFFER, GIOS.Device.State.TargetFrameBuffer ) ;
+		glBindFramebuffer( GL_FRAMEBUFFER, GHTML5.Device.State.TargetFrameBuffer ) ;
 
 // テストコード
 //#ifdef _DEBUG
@@ -3382,7 +3382,7 @@ extern	int		Graphics_iOS_Texture_Map(
 	}
 
 	// 基本イメージ構造体のデータにセット
-	MapBaseImage->ColorData      = *Graphics_iOS_GetDataFormatColorData( IOS_PIXEL_FORMAT_R8G8B8A8 ) ;
+	MapBaseImage->ColorData      = *Graphics_HTML5_GetDataFormatColorData( HTML5_PIXEL_FORMAT_R8G8B8A8 ) ;
 	MapBaseImage->Width          = ( int )Width ;
 	MapBaseImage->Height         = ( int )Height ;
 	MapBaseImage->Pitch          = Width * 4 ;
@@ -3395,7 +3395,7 @@ extern	int		Graphics_iOS_Texture_Map(
 }
 
 // 指定のテクスチャの内容への読み込みアクセスを終了する
-extern	int		Graphics_iOS_Texture_Unmap( void * MapTempImage )
+extern	int		Graphics_HTML5_Texture_Unmap( void * MapTempImage )
 {
 	// メモリの解放
 	if( MapTempImage != NULL )
@@ -3451,11 +3451,11 @@ extern	int		Graphics_iOS_Texture_Unmap( void * MapTempImage )
 
 
 
-// iOSDevice の初期化関係
+// HTML5Device の初期化関係
 
     
 // デバイスの作成に相当する処理を行う( 0:成功  -1:失敗 )
-extern	int		Graphics_iOS_Device_Create( void )
+extern	int		Graphics_HTML5_Device_Create( void )
 {
 	// OpenGL ES と EGL の初期化
 
@@ -3482,30 +3482,30 @@ extern	int		Graphics_iOS_Device_Create( void )
 		EGL_NONE
 	} ;
 
-	GIOS.Device.Screen.Display = eglGetDisplay( EGL_DEFAULT_DISPLAY ) ;
+	GHTML5.Device.Screen.Display = eglGetDisplay( EGL_DEFAULT_DISPLAY ) ;
 
 	// EGL を初期化
 	Major = 0 ;
 	Minor = 0 ;
-	eglInitialize(      GIOS.Device.Screen.Display, &Major, &Minor ) ;
-	eglChooseConfig(    GIOS.Device.Screen.Display, attribs, &config, 1, &numConfigs ) ;
-	eglGetConfigAttrib( GIOS.Device.Screen.Display, config, EGL_NATIVE_VISUAL_ID, &format ) ;
+	eglInitialize(      GHTML5.Device.Screen.Display, &Major, &Minor ) ;
+	eglChooseConfig(    GHTML5.Device.Screen.Display, attribs, &config, 1, &numConfigs ) ;
+	eglGetConfigAttrib( GHTML5.Device.Screen.Display, config, EGL_NATIVE_VISUAL_ID, &format ) ;
 
-	ANativeWindow_setBuffersGeometry( ( ANativeWindow * )g_iOSSys.NativeWindow, 0, 0, format ) ;
+	ANativeWindow_setBuffersGeometry( ( ANativeWindow * )g_HTML5Sys.NativeWindow, 0, 0, format ) ;
 
-	GIOS.Device.Screen.Surface = eglCreateWindowSurface( GIOS.Device.Screen.Display, config, ( ANativeWindow * )g_iOSSys.NativeWindow, NULL ) ;
-	GIOS.Device.Screen.Context = eglCreateContext(       GIOS.Device.Screen.Display, config, EGL_NO_CONTEXT, context_attribs ) ;
+	GHTML5.Device.Screen.Surface = eglCreateWindowSurface( GHTML5.Device.Screen.Display, config, ( ANativeWindow * )g_HTML5Sys.NativeWindow, NULL ) ;
+	GHTML5.Device.Screen.Context = eglCreateContext(       GHTML5.Device.Screen.Display, config, EGL_NO_CONTEXT, context_attribs ) ;
 */
-//	if( eglMakeCurrent( GIOS.Device.Screen.Display, GIOS.Device.Screen.Surface, GIOS.Device.Screen.Surface, GIOS.Device.Screen.Context ) == EGL_FALSE )
+//	if( eglMakeCurrent( GHTML5.Device.Screen.Display, GHTML5.Device.Screen.Surface, GHTML5.Device.Screen.Surface, GHTML5.Device.Screen.Context ) == EGL_FALSE )
 //	{
 //		DXST_LOGFILE_ADDUTF16LE( "\x65\x00\x67\x00\x6c\x00\x4d\x00\x61\x00\x6b\x00\x65\x00\x43\x00\x75\x00\x72\x00\x72\x00\x65\x00\x6e\x00\x74\x00\x20\x00\x4c\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"eglMakeCurrent が失敗しました\n" @*/ ) ;
 //		return -1 ;
 //	}
 
 	// 画面サイズ取得
-//	eglQuerySurface( GIOS.Device.Screen.Display, GIOS.Device.Screen.Surface, EGL_WIDTH,  &GIOS.Device.Screen.Width ) ;
-//	eglQuerySurface( GIOS.Device.Screen.Display, GIOS.Device.Screen.Surface, EGL_HEIGHT, &GIOS.Device.Screen.Height ) ;
-//	DXST_LOGFILEFMT_ADDUTF16LE(( "\xb9\x30\xaf\x30\xea\x30\xfc\x30\xf3\x30\xb5\x30\xa4\x30\xba\x30\x3a\x00\x25\x00\x64\x00\x20\x00\x78\x00\x20\x00\x25\x00\x64\x00\x00"/*@ L"スクリーンサイズ:%d x %d" @*/, GIOS.Device.Screen.Width, GIOS.Device.Screen.Height )) ;
+//	eglQuerySurface( GHTML5.Device.Screen.Display, GHTML5.Device.Screen.Surface, EGL_WIDTH,  &GHTML5.Device.Screen.Width ) ;
+//	eglQuerySurface( GHTML5.Device.Screen.Display, GHTML5.Device.Screen.Surface, EGL_HEIGHT, &GHTML5.Device.Screen.Height ) ;
+//	DXST_LOGFILEFMT_ADDUTF16LE(( "\xb9\x30\xaf\x30\xea\x30\xfc\x30\xf3\x30\xb5\x30\xa4\x30\xba\x30\x3a\x00\x25\x00\x64\x00\x20\x00\x78\x00\x20\x00\x25\x00\x64\x00\x00"/*@ L"スクリーンサイズ:%d x %d" @*/, GHTML5.Device.Screen.Width, GHTML5.Device.Screen.Height )) ;
 
 	{
 		EmscriptenWebGLContextAttributes attrib;
@@ -3547,8 +3547,8 @@ extern	int		Graphics_iOS_Device_Create( void )
 		if( Version != NULL )
 		{
 			Length = CL_strlen( DX_CHARCODEFORMAT_ASCII, ( char * )Version ) ;
-			GIOS.Device.Caps.Version = ( TCHAR * )DXALLOC( sizeof( TCHAR ) * ( Length + 1 ) ) ;
-			ConvString( ( char * )Version, -1, DX_CHARCODEFORMAT_ASCII, GIOS.Device.Caps.Version, sizeof( TCHAR ) * ( Length + 1 ), _TCHARCODEFORMAT ) ;
+			GHTML5.Device.Caps.Version = ( TCHAR * )DXALLOC( sizeof( TCHAR ) * ( Length + 1 ) ) ;
+			ConvString( ( char * )Version, -1, DX_CHARCODEFORMAT_ASCII, GHTML5.Device.Caps.Version, sizeof( TCHAR ) * ( Length + 1 ), _TCHARCODEFORMAT ) ;
 			if( Length * 4 + 2 < sizeof( TempStr ) )
 			{
 				ConvString( ( char * )Version, -1, DX_CHARCODEFORMAT_ASCII, TempStr, sizeof( TempStr ), DX_CHARCODEFORMAT_UTF16LE ) ;
@@ -3559,8 +3559,8 @@ extern	int		Graphics_iOS_Device_Create( void )
 		if( Renderer != NULL )
 		{
 			Length = CL_strlen( DX_CHARCODEFORMAT_ASCII, ( char * )Renderer ) ;
-			GIOS.Device.Caps.Renderer = ( TCHAR * )DXALLOC( sizeof( TCHAR ) * ( Length + 1 ) ) ;
-			ConvString( ( char * )Renderer, -1, DX_CHARCODEFORMAT_ASCII, GIOS.Device.Caps.Renderer, sizeof( TCHAR ) * ( Length + 1 ), _TCHARCODEFORMAT ) ;
+			GHTML5.Device.Caps.Renderer = ( TCHAR * )DXALLOC( sizeof( TCHAR ) * ( Length + 1 ) ) ;
+			ConvString( ( char * )Renderer, -1, DX_CHARCODEFORMAT_ASCII, GHTML5.Device.Caps.Renderer, sizeof( TCHAR ) * ( Length + 1 ), _TCHARCODEFORMAT ) ;
 			if( Length * 4 + 2 < sizeof( TempStr ) )
 			{
 				ConvString( ( char * )Renderer, -1, DX_CHARCODEFORMAT_ASCII, TempStr, sizeof( TempStr ), DX_CHARCODEFORMAT_UTF16LE ) ;
@@ -3571,8 +3571,8 @@ extern	int		Graphics_iOS_Device_Create( void )
 		if( Vendor != NULL )
 		{
 			Length = CL_strlen( DX_CHARCODEFORMAT_ASCII, ( char * )Vendor ) ;
-			GIOS.Device.Caps.Vendor = ( TCHAR * )DXALLOC( sizeof( TCHAR ) * ( Length + 1 ) ) ;
-			ConvString( ( char * )Vendor, -1, DX_CHARCODEFORMAT_ASCII, GIOS.Device.Caps.Vendor, sizeof( TCHAR ) * ( Length + 1 ), _TCHARCODEFORMAT ) ;
+			GHTML5.Device.Caps.Vendor = ( TCHAR * )DXALLOC( sizeof( TCHAR ) * ( Length + 1 ) ) ;
+			ConvString( ( char * )Vendor, -1, DX_CHARCODEFORMAT_ASCII, GHTML5.Device.Caps.Vendor, sizeof( TCHAR ) * ( Length + 1 ), _TCHARCODEFORMAT ) ;
 			if( Length * 4 + 2 < sizeof( TempStr ) )
 			{
 				ConvString( ( char * )Vendor, -1, DX_CHARCODEFORMAT_ASCII, TempStr, sizeof( TempStr ), DX_CHARCODEFORMAT_UTF16LE ) ;
@@ -3583,8 +3583,8 @@ extern	int		Graphics_iOS_Device_Create( void )
 		if( Shading_Language_Version != NULL )
 		{
 			Length = CL_strlen( DX_CHARCODEFORMAT_ASCII, ( char * )Shading_Language_Version ) ;
-			GIOS.Device.Caps.Shading_Language_Version = ( TCHAR * )DXALLOC( sizeof( TCHAR ) * ( Length + 1 ) ) ;
-			ConvString( ( char * )Shading_Language_Version, -1, DX_CHARCODEFORMAT_ASCII, GIOS.Device.Caps.Shading_Language_Version, sizeof( TCHAR ) * ( Length + 1 ), _TCHARCODEFORMAT ) ;
+			GHTML5.Device.Caps.Shading_Language_Version = ( TCHAR * )DXALLOC( sizeof( TCHAR ) * ( Length + 1 ) ) ;
+			ConvString( ( char * )Shading_Language_Version, -1, DX_CHARCODEFORMAT_ASCII, GHTML5.Device.Caps.Shading_Language_Version, sizeof( TCHAR ) * ( Length + 1 ), _TCHARCODEFORMAT ) ;
 			if( Length * 4 + 2 < sizeof( TempStr ) )
 			{
 				ConvString( ( char * )Shading_Language_Version, -1, DX_CHARCODEFORMAT_ASCII, TempStr, sizeof( TempStr ), DX_CHARCODEFORMAT_UTF16LE ) ;
@@ -3606,9 +3606,9 @@ extern	int		Graphics_iOS_Device_Create( void )
         {
             DXST_LOGFILE_ADDUTF16LE(( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\x45\x00\x78\x00\x74\x00\x65\x00\x6e\x00\x73\x00\x69\x00\x6f\x00\x6e\x00\x73\x00\x20\x00\x00\x4e\xa7\x89\x0a\x00\x00"/*@ L"OpenGL ES Extensions 一覧\n" @*/ )) ;
 
-            _MEMSET( GIOS.Device.Caps.Extensions, 0, sizeof( GIOS.Device.Caps.Extensions ) ) ;
+            _MEMSET( GHTML5.Device.Caps.Extensions, 0, sizeof( GHTML5.Device.Caps.Extensions ) ) ;
 
-            GIOS.Device.Caps.ExtensionNum = 0 ;
+            GHTML5.Device.Caps.ExtensionNum = 0 ;
             j = 0 ;
             lExtensionsTemp = lExtensions ;
             for(;;)
@@ -3631,7 +3631,7 @@ extern	int		Graphics_iOS_Device_Create( void )
                     DXST_LOGFILE_ADDA( lTempStr ) ;
                 }
 
-                for( i = 0; i < IOS_GL_EXTENSION_NUM; i++ )
+                for( i = 0; i < HTML5_GL_EXTENSION_NUM; i++ )
                 {
                     k = 0 ;
                     for(;;)
@@ -3641,25 +3641,25 @@ extern	int		Graphics_iOS_Device_Create( void )
                             break ;
                         }
 
-                        if( g_iOSGLExtensionName[ i ][ k ] == '\0' )
+                        if( g_HTML5GLExtensionName[ i ][ k ] == '\0' )
                         {
                             break ;
                         }
 
-                        if( lExtensionsTemp[ j + k ] != g_iOSGLExtensionName[ i ][ k ] )
+                        if( lExtensionsTemp[ j + k ] != g_HTML5GLExtensionName[ i ][ k ] )
                         {
                             break ;
                         }
 
                         k ++ ;
                     }
-                    if( g_iOSGLExtensionName[ i ][ k ] == '\0' &&
+                    if( g_HTML5GLExtensionName[ i ][ k ] == '\0' &&
                         ( lExtensionsTemp[ j + k ] == ' ' || lExtensionsTemp[ j + k ] == '\0' ) )
                     {
-                        GIOS.Device.Caps.Extensions[ i ] = TRUE ;
+                        GHTML5.Device.Caps.Extensions[ i ] = TRUE ;
                     }
                 }
-                GIOS.Device.Caps.ExtensionNum ++ ;
+                GHTML5.Device.Caps.ExtensionNum ++ ;
 
                 for( ; lExtensionsTemp[ j ] != ' ' && lExtensionsTemp[ j ] != '\0'; j++ ){}
                 if( lExtensionsTemp[ j ] == '\0' )
@@ -3669,7 +3669,7 @@ extern	int		Graphics_iOS_Device_Create( void )
                 j++ ;
             }
 
-            GIOS.Device.Caps.ExtensionNames = ( TCHAR ** )DXALLOC( sizeof( TCHAR * ) * ( GIOS.Device.Caps.ExtensionNum + 1 ) ) ;
+            GHTML5.Device.Caps.ExtensionNames = ( TCHAR ** )DXALLOC( sizeof( TCHAR * ) * ( GHTML5.Device.Caps.ExtensionNum + 1 ) ) ;
             j = 0 ;
             l = 0 ;
             lExtensionsTemp = lExtensions ;
@@ -3686,8 +3686,8 @@ extern	int		Graphics_iOS_Device_Create( void )
                 TempBuffer = ( GLchar * )DXALLOC( sizeof( GLchar ) * ( k + 1 ) ) ;
                 _MEMCPY( TempBuffer, &lExtensionsTemp[ j ], sizeof( GLchar ) * k ) ;
                 TempBuffer[ k ] = 0 ;
-                GIOS.Device.Caps.ExtensionNames[ l ] = ( TCHAR * )DXALLOC( sizeof( TCHAR ) * ( k + 1 ) ) ;
-                ConvString( TempBuffer, -1, DX_CHARCODEFORMAT_ASCII, GIOS.Device.Caps.ExtensionNames[ l ], sizeof( TCHAR ) * ( k + 1 ), _TCHARCODEFORMAT ) ;
+                GHTML5.Device.Caps.ExtensionNames[ l ] = ( TCHAR * )DXALLOC( sizeof( TCHAR ) * ( k + 1 ) ) ;
+                ConvString( TempBuffer, -1, DX_CHARCODEFORMAT_ASCII, GHTML5.Device.Caps.ExtensionNames[ l ], sizeof( TCHAR ) * ( k + 1 ), _TCHARCODEFORMAT ) ;
                 l ++ ;
                 DXFREE( TempBuffer ) ;
                 TempBuffer = NULL ;
@@ -3700,25 +3700,25 @@ extern	int		Graphics_iOS_Device_Create( void )
 
                 j++ ;
             }
-            GIOS.Device.Caps.ExtensionNames[ l ] = NULL ;
+            GHTML5.Device.Caps.ExtensionNames[ l ] = NULL ;
         }
 	}
 
 	// シェーダー関係の能力取得
-	glGetIntegerv( GL_MAX_VERTEX_ATTRIBS,									&GIOS.Device.Caps.Shader_Max_Vertex_Attribs ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x41\x00\x74\x00\x74\x00\x72\x00\x69\x00\x62\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex Attribs：%d" @*/,				 GIOS.Device.Caps.Shader_Max_Vertex_Attribs )) ;
-	glGetIntegerv( GL_MAX_VERTEX_UNIFORM_VECTORS,							&GIOS.Device.Caps.Shader_Max_Vertex_Uniform_Vectors ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x66\x00\x6f\x00\x72\x00\x6d\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex Uniform Vectors：%d" @*/,		 GIOS.Device.Caps.Shader_Max_Vertex_Uniform_Vectors )) ;
-	glGetIntegerv( GL_MAX_VARYING_VECTORS,									&GIOS.Device.Caps.Shader_Max_Varying_Vectors ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x61\x00\x72\x00\x79\x00\x69\x00\x6e\x00\x67\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Varying Vectors：%d" @*/,				 GIOS.Device.Caps.Shader_Max_Varying_Vectors )) ;
-	glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,						&GIOS.Device.Caps.Shader_Max_Combined_Texture_Image_Units ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x43\x00\x6f\x00\x6d\x00\x62\x00\x69\x00\x6e\x00\x65\x00\x64\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Combined Texture Image Units：%d" @*/,	 GIOS.Device.Caps.Shader_Max_Combined_Texture_Image_Units )) ;
-	glGetIntegerv( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,						&GIOS.Device.Caps.Shader_Max_Vertex_Texture_Image_Units ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex Texture Image Units：%d" @*/,	 GIOS.Device.Caps.Shader_Max_Vertex_Texture_Image_Units )) ;
-	glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS,								&GIOS.Device.Caps.Shader_Max_Texture_Image_Units ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Texture Image Units：%d" @*/,			 GIOS.Device.Caps.Shader_Max_Texture_Image_Units )) ;
-	glGetIntegerv( GL_MAX_FRAGMENT_UNIFORM_VECTORS,							&GIOS.Device.Caps.Shader_Max_Fragment_Uniform_Vectors ) ;	
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x46\x00\x72\x00\x61\x00\x67\x00\x6d\x00\x65\x00\x6e\x00\x74\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x66\x00\x6f\x00\x72\x00\x6d\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Fragment Uniform Vectors：%d" @*/,		 GIOS.Device.Caps.Shader_Max_Fragment_Uniform_Vectors )) ;
+	glGetIntegerv( GL_MAX_VERTEX_ATTRIBS,									&GHTML5.Device.Caps.Shader_Max_Vertex_Attribs ) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x41\x00\x74\x00\x74\x00\x72\x00\x69\x00\x62\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex Attribs：%d" @*/,				 GHTML5.Device.Caps.Shader_Max_Vertex_Attribs )) ;
+	glGetIntegerv( GL_MAX_VERTEX_UNIFORM_VECTORS,							&GHTML5.Device.Caps.Shader_Max_Vertex_Uniform_Vectors ) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x66\x00\x6f\x00\x72\x00\x6d\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex Uniform Vectors：%d" @*/,		 GHTML5.Device.Caps.Shader_Max_Vertex_Uniform_Vectors )) ;
+	glGetIntegerv( GL_MAX_VARYING_VECTORS,									&GHTML5.Device.Caps.Shader_Max_Varying_Vectors ) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x61\x00\x72\x00\x79\x00\x69\x00\x6e\x00\x67\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Varying Vectors：%d" @*/,				 GHTML5.Device.Caps.Shader_Max_Varying_Vectors )) ;
+	glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,						&GHTML5.Device.Caps.Shader_Max_Combined_Texture_Image_Units ) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x43\x00\x6f\x00\x6d\x00\x62\x00\x69\x00\x6e\x00\x65\x00\x64\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Combined Texture Image Units：%d" @*/,	 GHTML5.Device.Caps.Shader_Max_Combined_Texture_Image_Units )) ;
+	glGetIntegerv( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,						&GHTML5.Device.Caps.Shader_Max_Vertex_Texture_Image_Units ) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex Texture Image Units：%d" @*/,	 GHTML5.Device.Caps.Shader_Max_Vertex_Texture_Image_Units )) ;
+	glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS,								&GHTML5.Device.Caps.Shader_Max_Texture_Image_Units ) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Texture Image Units：%d" @*/,			 GHTML5.Device.Caps.Shader_Max_Texture_Image_Units )) ;
+	glGetIntegerv( GL_MAX_FRAGMENT_UNIFORM_VECTORS,							&GHTML5.Device.Caps.Shader_Max_Fragment_Uniform_Vectors ) ;	
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x46\x00\x72\x00\x61\x00\x67\x00\x6d\x00\x65\x00\x6e\x00\x74\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x66\x00\x6f\x00\x72\x00\x6d\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Fragment Uniform Vectors：%d" @*/,		 GHTML5.Device.Caps.Shader_Max_Fragment_Uniform_Vectors )) ;
 
 	// RGBのブレンド設定とは別にアルファチャンネルのブレンド設定が行える
 	GSYS.HardInfo.SeparateAlphaBlendEnable = TRUE ;
@@ -3766,112 +3766,112 @@ extern	int		Graphics_iOS_Device_Create( void )
 	// 一度に描画できる最大プリミティブ数を取得する
 	GSYS.HardInfo.MaxPrimitiveCount = 65536 ;
 
-	// Graphics_iOS_DrawPreparation を行うべきフラグを立てる
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	// Graphics_HTML5_DrawPreparation を行うべきフラグを立てる
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 各種フォーマットをセット
 	{
-		GIOS.Device.Caps.ScreenFormat = IOS_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.ScreenFormat = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
 
 		{
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PAL4                  ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PAL8                  ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_PAL4            ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_PAL8            ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_PAL4        ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_PAL8        ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PAL4                  ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PAL8                  ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_PAL4            ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_PAL8            ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_PAL4        ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_PAL8        ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
 		}
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_RGB16                 ] = IOS_PIXEL_FORMAT_B5G6R5 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_RGB32                 ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_RGB16           ] = IOS_PIXEL_FORMAT_A4B4G4R4 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_RGB32           ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_RGB16       ] = IOS_PIXEL_FORMAT_A1B5G5R5 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_RGB32       ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DXT1                  ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DXT2                  ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DXT3                  ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DXT4                  ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DXT5                  ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_BC7_UNORM             ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_BC7_UNORM_SRGB        ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM0             ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM1             ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM2             ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM3             ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_I16              ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_RGB16                 ] = HTML5_PIXEL_FORMAT_B5G6R5 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_RGB32                 ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_RGB16           ] = HTML5_PIXEL_FORMAT_A4B4G4R4 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_RGB32           ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_RGB16       ] = HTML5_PIXEL_FORMAT_A1B5G5R5 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_RGB32       ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DXT1                  ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DXT2                  ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DXT3                  ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DXT4                  ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DXT5                  ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_BC7_UNORM             ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_BC7_UNORM_SRGB        ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM0             ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM1             ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM2             ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM3             ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_I16              ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
 
-		if( GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_TEXTURE_HALF_FLOAT ] || GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_TEXTURE_HALF_FLOAT_LINEAR ] )
+		if( GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_HALF_FLOAT ] || GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_HALF_FLOAT_LINEAR ] )
 		{
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F16              ] = IOS_PIXEL_FORMAT_R16G16B16A16_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_F16               ] = IOS_PIXEL_FORMAT_R16G16B16_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F16               ] = IOS_PIXEL_FORMAT_R16G16B16_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F16    ] = IOS_PIXEL_FORMAT_R16G16B16A16_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_F16     ] = IOS_PIXEL_FORMAT_R16G16B16_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_F16     ] = IOS_PIXEL_FORMAT_R16G16B16_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F16              ] = HTML5_PIXEL_FORMAT_R16G16B16A16_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_F16               ] = HTML5_PIXEL_FORMAT_R16G16B16_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F16               ] = HTML5_PIXEL_FORMAT_R16G16B16_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F16    ] = HTML5_PIXEL_FORMAT_R16G16B16A16_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_F16     ] = HTML5_PIXEL_FORMAT_R16G16B16_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_F16     ] = HTML5_PIXEL_FORMAT_R16G16B16_FLOAT ;
 		}
 		else
-		if( GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_TEXTURE_FLOAT ] || GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_TEXTURE_FLOAT_LINEAR ] )
+		if( GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FLOAT ] || GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FLOAT_LINEAR ] )
 		{
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F16              ] = IOS_PIXEL_FORMAT_R32G32B32A32_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_F16               ] = IOS_PIXEL_FORMAT_R32G32B32_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F16               ] = IOS_PIXEL_FORMAT_R32G32B32_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F16    ] = IOS_PIXEL_FORMAT_R32G32B32A32_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_F16     ] = IOS_PIXEL_FORMAT_R32G32B32_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_F16     ] = IOS_PIXEL_FORMAT_R32G32B32_FLOAT ;
-		}
-		else
-		{
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F16              ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_F16               ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F16               ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F16    ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_F16     ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_F16     ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		}
-
-		if( GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_TEXTURE_FLOAT ] || GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_TEXTURE_FLOAT_LINEAR ] )
-		{
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F32              ] = IOS_PIXEL_FORMAT_R32G32B32A32_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_F32               ] = IOS_PIXEL_FORMAT_R32G32B32_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F32               ] = IOS_PIXEL_FORMAT_R32G32B32_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F32    ] = IOS_PIXEL_FORMAT_R32G32B32A32_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_F32     ] = IOS_PIXEL_FORMAT_R32G32B32_FLOAT ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_F32     ] = IOS_PIXEL_FORMAT_R32G32B32_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F16              ] = HTML5_PIXEL_FORMAT_R32G32B32A32_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_F16               ] = HTML5_PIXEL_FORMAT_R32G32B32_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F16               ] = HTML5_PIXEL_FORMAT_R32G32B32_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F16    ] = HTML5_PIXEL_FORMAT_R32G32B32A32_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_F16     ] = HTML5_PIXEL_FORMAT_R32G32B32_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_F16     ] = HTML5_PIXEL_FORMAT_R32G32B32_FLOAT ;
 		}
 		else
 		{
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F32              ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_F32               ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F32               ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F32    ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_F32     ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-			GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_F32     ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F16              ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_F16               ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F16               ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F16    ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_F16     ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_F16     ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
 		}
 
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_I8                ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_I16               ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_I8                ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_I16               ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_RGB16       ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_RGB32       ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ALPHA_RGB32 ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_I16    ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_I8      ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_I16     ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_I8      ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
-		GIOS.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_I16     ] = IOS_PIXEL_FORMAT_R8G8B8A8 ;
+		if( GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FLOAT ] || GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FLOAT_LINEAR ] )
+		{
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F32              ] = HTML5_PIXEL_FORMAT_R32G32B32A32_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_F32               ] = HTML5_PIXEL_FORMAT_R32G32B32_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F32               ] = HTML5_PIXEL_FORMAT_R32G32B32_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F32    ] = HTML5_PIXEL_FORMAT_R32G32B32A32_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_F32     ] = HTML5_PIXEL_FORMAT_R32G32B32_FLOAT ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_F32     ] = HTML5_PIXEL_FORMAT_R32G32B32_FLOAT ;
+		}
+		else
+		{
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F32              ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_F32               ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F32               ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F32    ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_F32     ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+			GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_F32     ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		}
 
-		GIOS.Device.Caps.MaskAlphaFormat = IOS_PIXEL_FORMAT_R8 ;
-		GIOS.Device.Caps.DepthBufferFormat[ ZBUFFER_FORMAT_16BIT ] = GL_DEPTH_COMPONENT16 ;
-		GIOS.Device.Caps.DepthBufferFormat[ ZBUFFER_FORMAT_24BIT ] = GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_DEPTH24 ] ? GL_DEPTH_COMPONENT24_OES : GL_DEPTH_COMPONENT16 ;
-		GIOS.Device.Caps.DepthBufferFormat[ ZBUFFER_FORMAT_32BIT ] = GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_DEPTH32 ] ? GL_DEPTH_COMPONENT32_OES : ( GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_DEPTH24 ] ? GL_DEPTH_COMPONENT24_OES : GL_DEPTH_COMPONENT16 ) ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_I8                ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_ONE_I16               ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_I8                ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_TWO_I16               ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_RGB16       ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_RGB32       ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ALPHA_RGB32 ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_I16    ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_I8      ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ONE_I16     ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_I8      ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+		GHTML5.Device.Caps.TextureFormat[      DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_TWO_I16     ] = HTML5_PIXEL_FORMAT_R8G8B8A8 ;
+
+		GHTML5.Device.Caps.MaskAlphaFormat = HTML5_PIXEL_FORMAT_R8 ;
+		GHTML5.Device.Caps.DepthBufferFormat[ ZBUFFER_FORMAT_16BIT ] = GL_DEPTH_COMPONENT16 ;
+		GHTML5.Device.Caps.DepthBufferFormat[ ZBUFFER_FORMAT_24BIT ] = GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_DEPTH24 ] ? GL_DEPTH_COMPONENT24_OES : GL_DEPTH_COMPONENT16 ;
+		GHTML5.Device.Caps.DepthBufferFormat[ ZBUFFER_FORMAT_32BIT ] = GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_DEPTH32 ] ? GL_DEPTH_COMPONENT32_OES : ( GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_DEPTH24 ] ? GL_DEPTH_COMPONENT24_OES : GL_DEPTH_COMPONENT16 ) ;
 	}
 
 	// カラーフォーマット情報の初期化を行う
-	Graphics_iOS_GetDataFormatColorData( IOS_PIXEL_FORMAT_R8G8B8A8 ) ;
+	Graphics_HTML5_GetDataFormatColorData( HTML5_PIXEL_FORMAT_R8G8B8A8 ) ;
 
     // サブバックバッファの作成
-    if( Graphics_iOS_SetupSubBackBuffer() < 0 )
+    if( Graphics_HTML5_SetupSubBackBuffer() < 0 )
     {
         return -1 ;
     }
@@ -3881,85 +3881,85 @@ extern	int		Graphics_iOS_Device_Create( void )
 }
 
 // デバイスの破棄に相当する処理を行う
-extern	int		Graphics_iOS_Device_Delete( void )
+extern	int		Graphics_HTML5_Device_Delete( void )
 {
 	// サブバックバッファ関係の後始末
-	Graphics_iOS_TerminateSubBackBuffer() ;
+	Graphics_HTML5_TerminateSubBackBuffer() ;
 
-/*	if( GIOS.Device.Screen.Display != EGL_NO_DISPLAY )
+/*	if( GHTML5.Device.Screen.Display != EGL_NO_DISPLAY )
 	{
-		eglMakeCurrent( GIOS.Device.Screen.Display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT ) ;
+		eglMakeCurrent( GHTML5.Device.Screen.Display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT ) ;
 
-		if( GIOS.Device.Screen.Context != EGL_NO_CONTEXT )
+		if( GHTML5.Device.Screen.Context != EGL_NO_CONTEXT )
 		{
-			eglDestroyContext( GIOS.Device.Screen.Display, GIOS.Device.Screen.Context ) ;
+			eglDestroyContext( GHTML5.Device.Screen.Display, GHTML5.Device.Screen.Context ) ;
 		}
 
-		if( GIOS.Device.Screen.Surface != EGL_NO_SURFACE )
+		if( GHTML5.Device.Screen.Surface != EGL_NO_SURFACE )
 		{
-			eglDestroySurface( GIOS.Device.Screen.Display, GIOS.Device.Screen.Surface ) ;
+			eglDestroySurface( GHTML5.Device.Screen.Display, GHTML5.Device.Screen.Surface ) ;
 		}
 
-		eglTerminate( GIOS.Device.Screen.Display ) ;
+		eglTerminate( GHTML5.Device.Screen.Display ) ;
 	}
 */
-	// g_AndroidSys.SoftThreadWait = 0 ;
-//	GIOS.Device.Screen.Display = EGL_NO_DISPLAY ;
-//	GIOS.Device.Screen.Context = EGL_NO_CONTEXT ;
-//	GIOS.Device.Screen.Surface = EGL_NO_SURFACE ;
+	// g_HTML5Sys.SoftThreadWait = 0 ;
+//	GHTML5.Device.Screen.Display = EGL_NO_DISPLAY ;
+//	GHTML5.Device.Screen.Context = EGL_NO_CONTEXT ;
+//	GHTML5.Device.Screen.Surface = EGL_NO_SURFACE ;
 
 	// メモリの解放
-	if( GIOS.Device.Caps.ExtensionNames != NULL )
+	if( GHTML5.Device.Caps.ExtensionNames != NULL )
 	{
 		int i ;
 
-		for( i = 0 ; i < GIOS.Device.Caps.ExtensionNum ; i ++ )
+		for( i = 0 ; i < GHTML5.Device.Caps.ExtensionNum ; i ++ )
 		{
-			if( GIOS.Device.Caps.ExtensionNames[ i ] != NULL )
+			if( GHTML5.Device.Caps.ExtensionNames[ i ] != NULL )
 			{
-				DXFREE( GIOS.Device.Caps.ExtensionNames[ i ] ) ;
-				GIOS.Device.Caps.ExtensionNames[ i ] = NULL ;
+				DXFREE( GHTML5.Device.Caps.ExtensionNames[ i ] ) ;
+				GHTML5.Device.Caps.ExtensionNames[ i ] = NULL ;
 			}
 		}
-		DXFREE( GIOS.Device.Caps.ExtensionNames ) ;
-		GIOS.Device.Caps.ExtensionNames = NULL ;
+		DXFREE( GHTML5.Device.Caps.ExtensionNames ) ;
+		GHTML5.Device.Caps.ExtensionNames = NULL ;
 	}
-	if( GIOS.Device.Caps.Version != NULL )
+	if( GHTML5.Device.Caps.Version != NULL )
 	{
-		DXFREE( GIOS.Device.Caps.Version ) ;
-		GIOS.Device.Caps.Version = NULL ;
+		DXFREE( GHTML5.Device.Caps.Version ) ;
+		GHTML5.Device.Caps.Version = NULL ;
 	}
-	if( GIOS.Device.Caps.Renderer != NULL )
+	if( GHTML5.Device.Caps.Renderer != NULL )
 	{
-		DXFREE( GIOS.Device.Caps.Renderer ) ;
-		GIOS.Device.Caps.Renderer = NULL ;
+		DXFREE( GHTML5.Device.Caps.Renderer ) ;
+		GHTML5.Device.Caps.Renderer = NULL ;
 	}
-	if( GIOS.Device.Caps.Vendor != NULL )
+	if( GHTML5.Device.Caps.Vendor != NULL )
 	{
-		DXFREE( GIOS.Device.Caps.Vendor ) ;
-		GIOS.Device.Caps.Vendor = NULL ;
+		DXFREE( GHTML5.Device.Caps.Vendor ) ;
+		GHTML5.Device.Caps.Vendor = NULL ;
 	}
-	if( GIOS.Device.Caps.Shading_Language_Version != NULL )
+	if( GHTML5.Device.Caps.Shading_Language_Version != NULL )
 	{
-		DXFREE( GIOS.Device.Caps.Shading_Language_Version ) ;
-		GIOS.Device.Caps.Shading_Language_Version = NULL ;
+		DXFREE( GHTML5.Device.Caps.Shading_Language_Version ) ;
+		GHTML5.Device.Caps.Shading_Language_Version = NULL ;
 	}
 
 	// デバイスセット情報を初期化
-	_MEMSET( GIOS.Device.State.SetTexture, 0, sizeof( GIOS.Device.State.SetTexture ) ) ;
-	GIOS.Device.State.SetNormalShader = FALSE ;
-	GIOS.Device.State.SetShader = NULL ;
-	GIOS.Device.State.SetShader_Force = NULL ;
-	GIOS.Device.State.TargetFrameBuffer = 0 ;
-	GIOS.Device.State.TargetFrameBufferWidth = 0 ;
-	GIOS.Device.State.TargetFrameBufferHeight = 0 ;
-	GIOS.Device.State.SetVertexBuffer = 0 ;
+	_MEMSET( GHTML5.Device.State.SetTexture, 0, sizeof( GHTML5.Device.State.SetTexture ) ) ;
+	GHTML5.Device.State.SetNormalShader = FALSE ;
+	GHTML5.Device.State.SetShader = NULL ;
+	GHTML5.Device.State.SetShader_Force = NULL ;
+	GHTML5.Device.State.TargetFrameBuffer = 0 ;
+	GHTML5.Device.State.TargetFrameBufferWidth = 0 ;
+	GHTML5.Device.State.TargetFrameBufferHeight = 0 ;
+	GHTML5.Device.State.SetVertexBuffer = 0 ;
 
 	return 0 ;
 }
 
 // Direct3DDevice11 関係の初期化
-extern	int		Graphics_iOS_Device_Initialize( void )
+extern	int		Graphics_HTML5_Device_Initialize( void )
 {
 	int i ;
 
@@ -3969,44 +3969,44 @@ extern	int		Graphics_iOS_Device_Initialize( void )
 
 	// 描画ステータスのセット
 	{
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck = TRUE ;
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck = TRUE ;
 
 		// 描画情報の初期値をセット
 		{
-			GIOS.Device.State.CullEnable		= FALSE ;
-			GIOS.Device.State.CullFace			= GL_BACK ;
-			GIOS.Device.State.DepthBias		= 0 ;
+			GHTML5.Device.State.CullEnable		= FALSE ;
+			GHTML5.Device.State.CullFace			= GL_BACK ;
+			GHTML5.Device.State.DepthBias		= 0 ;
 
-			GIOS.Device.State.DepthEnable		= FALSE ;
-			GIOS.Device.State.DepthWriteEnable	= FALSE ;
-			GIOS.Device.State.DepthFunc		= GL_LEQUAL ;
+			GHTML5.Device.State.DepthEnable		= FALSE ;
+			GHTML5.Device.State.DepthWriteEnable	= FALSE ;
+			GHTML5.Device.State.DepthFunc		= GL_LEQUAL ;
 
-			GIOS.Device.State.BlendMode		= DX_BLENDMODE_NOBLEND ;
+			GHTML5.Device.State.BlendMode		= DX_BLENDMODE_NOBLEND ;
 
 			for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 			{
-				GIOS.Device.State.TexMagFilter[ i ]		= GL_NEAREST ;
-				GIOS.Device.State.TexMinFilter[ i ]		= GL_NEAREST ;
-				GIOS.Device.State.TexAddressModeU[ i ]		= GL_CLAMP_TO_EDGE ;
-				GIOS.Device.State.TexAddressModeV[ i ]		= GL_CLAMP_TO_EDGE ;
-				GIOS.Device.State.TexAddressModeW[ i ]		= GL_CLAMP_TO_EDGE ;
-				GIOS.Device.State.MaxAnisotropyDim[ i ]	= 0 ;
+				GHTML5.Device.State.TexMagFilter[ i ]		= GL_NEAREST ;
+				GHTML5.Device.State.TexMinFilter[ i ]		= GL_NEAREST ;
+				GHTML5.Device.State.TexAddressModeU[ i ]		= GL_CLAMP_TO_EDGE ;
+				GHTML5.Device.State.TexAddressModeV[ i ]		= GL_CLAMP_TO_EDGE ;
+				GHTML5.Device.State.TexAddressModeW[ i ]		= GL_CLAMP_TO_EDGE ;
+				GHTML5.Device.State.MaxAnisotropyDim[ i ]	= 0 ;
 			}
 		}
 
 		// 描画モードをセット
-		Graphics_iOS_DeviceState_SetDrawMode( DX_DRAWMODE_NEAREST ) ;
+		Graphics_HTML5_DeviceState_SetDrawMode( DX_DRAWMODE_NEAREST ) ;
 
 		// 最大異方性をセット
-		Graphics_iOS_DeviceState_SetMaxAnisotropy( 16 ) ;
+		Graphics_HTML5_DeviceState_SetMaxAnisotropy( 16 ) ;
 
 		// テクスチャ座標変換行列を使用するかどうかの設定をセット
-		Graphics_iOS_DeviceState_SetTextureAddressTransformMatrix(
+		Graphics_HTML5_DeviceState_SetTextureAddressTransformMatrix(
 			FALSE,
-			&IOS_GlobalIdentMatrix ) ;
+			&HTML5_GlobalIdentMatrix ) ;
 
 		// ライティングＯＮ
-		Graphics_iOS_DeviceState_SetLighting( TRUE ) ;
+		Graphics_HTML5_DeviceState_SetLighting( TRUE ) ;
 
 		// マテリアルのパラメータを設定
 		{
@@ -4028,28 +4028,28 @@ extern	int		Graphics_iOS_Device_Initialize( void )
 			Material.Ambient.b  = 0.0f ;
 			Material.Ambient.a  = 0.0f ;
 			Material.Power      = 20.0f ;
-			Graphics_iOS_DeviceState_SetMaterial( &Material ) ;
+			Graphics_HTML5_DeviceState_SetMaterial( &Material ) ;
 		}
 
 		// 頂点のカラー値をマテリアルのディフューズカラーやスペキュラカラーとして使用するかどうかの設定を初期化
-		Graphics_iOS_DeviceState_SetUseVertexDiffuseColor( TRUE ) ;
-		Graphics_iOS_DeviceState_SetUseVertexSpecularColor( TRUE ) ;
+		Graphics_HTML5_DeviceState_SetUseVertexDiffuseColor( TRUE ) ;
+		Graphics_HTML5_DeviceState_SetUseVertexSpecularColor( TRUE ) ;
 
 		// スペキュラ処理を使用するかどうかを初期化
-		Graphics_iOS_DeviceState_SetSpecularEnable( TRUE ) ;
+		Graphics_HTML5_DeviceState_SetSpecularEnable( TRUE ) ;
 
 		// フォグ関係の設定
-		Graphics_iOS_DeviceState_SetFogEnable( FALSE ) ;
-		Graphics_iOS_DeviceState_SetFogColor( 0 ) ;
-		Graphics_iOS_DeviceState_SetFogVertexMode( DX_FOGMODE_NONE ) ;
-		Graphics_iOS_DeviceState_SetFogStartEnd( 0.0f, 1.0f ) ;
-		Graphics_iOS_DeviceState_SetFogDensity( 1.0f ) ;
+		Graphics_HTML5_DeviceState_SetFogEnable( FALSE ) ;
+		Graphics_HTML5_DeviceState_SetFogColor( 0 ) ;
+		Graphics_HTML5_DeviceState_SetFogVertexMode( DX_FOGMODE_NONE ) ;
+		Graphics_HTML5_DeviceState_SetFogStartEnd( 0.0f, 1.0f ) ;
+		Graphics_HTML5_DeviceState_SetFogDensity( 1.0f ) ;
 
 		// グローバルアンビエントカラーセット
 		{
 			COLOR_F GAmbColor = { 0.0f } ;
 
-			Graphics_iOS_DeviceState_SetAmbient( &GAmbColor ) ;
+			Graphics_HTML5_DeviceState_SetAmbient( &GAmbColor ) ;
 		}
 
 		// ビューポートを設定
@@ -4060,133 +4060,133 @@ extern	int		Graphics_iOS_Device_Initialize( void )
 			Viewport.top		= 0 ;
 			Viewport.right		= ( float )GSYS.Screen.MainScreenSizeX ;
 			Viewport.bottom		= ( float )GSYS.Screen.MainScreenSizeY ;
-			Graphics_iOS_DeviceState_SetViewport( &Viewport ) ;
+			Graphics_HTML5_DeviceState_SetViewport( &Viewport ) ;
 		}
 
 		// 描画画像のＲＧＢを無視するかどうかをセット
-		Graphics_iOS_DrawSetting_SetIgnoreDrawGraphColor( FALSE ) ;
+		Graphics_HTML5_DrawSetting_SetIgnoreDrawGraphColor( FALSE ) ;
 
 		// 描画画像のＡを無視するかどうかをセット
-		Graphics_iOS_DrawSetting_SetIgnoreDrawGraphAlpha( FALSE ) ;
+		Graphics_HTML5_DrawSetting_SetIgnoreDrawGraphAlpha( FALSE ) ;
 
 		// 描画先のアルファチャンネルの内容を書き換えるかを設定する
-		Graphics_iOS_DrawSetting_SetWriteAlphaChannelFlag( FALSE ) ;
+		Graphics_HTML5_DrawSetting_SetWriteAlphaChannelFlag( FALSE ) ;
 
 		// 描画先設定
-//		Graphics_iOS_DeviceState_SetRenderTarget(
-//			&GIOS.Device.Screen.DispBuffer[ GIOS.Device.Screen.BackBufferIndex ].RenderTarget
+//		Graphics_HTML5_DeviceState_SetRenderTarget(
+//			&GHTML5.Device.Screen.DispBuffer[ GHTML5.Device.Screen.BackBufferIndex ].RenderTarget
 //		) ;
 
 		// ブレンドモード設定
-		Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE ) ;
+		Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE ) ;
 
 		// アルファテスト設定を初期化
-		Graphics_iOS_DrawSetting_SetDrawAlphaTest( -1, 0 ) ;
+		Graphics_HTML5_DrawSetting_SetDrawAlphaTest( -1, 0 ) ;
 
 		// ブレンドテクスチャ関係を初期化
-		Graphics_iOS_DrawSetting_SetBlendTexture( NULL ) ;
-		GIOS.Device.DrawSetting.BlendGraphBorderParam	= -1 ;
-		GIOS.Device.DrawSetting.BlendGraphType			= 0 ;
+		Graphics_HTML5_DrawSetting_SetBlendTexture( NULL ) ;
+		GHTML5.Device.DrawSetting.BlendGraphBorderParam	= -1 ;
+		GHTML5.Device.DrawSetting.BlendGraphType			= 0 ;
 
 		// 描画テクスチャ関係を初期化
-		Graphics_iOS_DrawSetting_SetTexture( NULL ) ;
-		GIOS.Device.DrawSetting.AlphaChannelValidFlag	= FALSE ;
-		GIOS.Device.DrawSetting.AlphaTestValidFlag		= FALSE ;
+		Graphics_HTML5_DrawSetting_SetTexture( NULL ) ;
+		GHTML5.Device.DrawSetting.AlphaChannelValidFlag	= FALSE ;
+		GHTML5.Device.DrawSetting.AlphaTestValidFlag		= FALSE ;
 
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck = FALSE ;
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck = FALSE ;
 	}
 
 	// デバイス設定をリフレッシュ
-	Graphics_iOS_DeviceState_RefreshRenderState() ;
+	Graphics_HTML5_DeviceState_RefreshRenderState() ;
 
 	// フラグを初期化
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag		= TRUE ;
-	GIOS.Device.DrawSetting.AlphaChannelValidFlag	= FALSE ;
-	GIOS.Device.DrawSetting.AlphaTestValidFlag		= FALSE ;
-	GIOS.Device.DrawSetting.AlphaTestMode			= -1 ;
-	GIOS.Device.DrawSetting.AlphaTestParam			= 0 ;
-	GIOS.Device.DrawSetting.BlendMode				= DX_BLENDMODE_NOBLEND ;
-	GIOS.Device.DrawSetting.ChangeBlendParamFlag	= TRUE ;
-	GIOS.Device.DrawSetting.ChangeTextureFlag		= FALSE ;
-	GIOS.Device.DrawSetting.IgnoreGraphColorFlag	= FALSE ;
-	GIOS.Device.DrawSetting.BlendGraphType			= 0 ;
-	GIOS.Device.DrawSetting.BlendGraphBorderParam	= -1 ;
-	GIOS.Device.DrawSetting.RenderTexture			= NULL ;
-	GIOS.Device.DrawSetting.BlendTexture			= NULL ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag		= TRUE ;
+	GHTML5.Device.DrawSetting.AlphaChannelValidFlag	= FALSE ;
+	GHTML5.Device.DrawSetting.AlphaTestValidFlag		= FALSE ;
+	GHTML5.Device.DrawSetting.AlphaTestMode			= -1 ;
+	GHTML5.Device.DrawSetting.AlphaTestParam			= 0 ;
+	GHTML5.Device.DrawSetting.BlendMode				= DX_BLENDMODE_NOBLEND ;
+	GHTML5.Device.DrawSetting.ChangeBlendParamFlag	= TRUE ;
+	GHTML5.Device.DrawSetting.ChangeTextureFlag		= FALSE ;
+	GHTML5.Device.DrawSetting.IgnoreGraphColorFlag	= FALSE ;
+	GHTML5.Device.DrawSetting.BlendGraphType			= 0 ;
+	GHTML5.Device.DrawSetting.BlendGraphBorderParam	= -1 ;
+	GHTML5.Device.DrawSetting.RenderTexture			= NULL ;
+	GHTML5.Device.DrawSetting.BlendTexture			= NULL ;
 
 	// 描画情報を初期化
-	GIOS.Device.DrawInfo.DiffuseColor				= 0xffffffff ;
-	GIOS.Device.DrawInfo.BlendMaxNotDrawFlag		= FALSE ;
-	GIOS.Device.DrawInfo.BeginSceneFlag			= FALSE ;
-	GIOS.Device.DrawInfo.VertexNum					= 0 ;
-	GIOS.Device.DrawInfo.Use3DVertex				= 0 ;
-	GIOS.Device.DrawInfo.VertexType				= VERTEXTYPE_TEX ;
-	GIOS.Device.DrawInfo.PrimitiveType				= GL_TRIANGLES ;
+	GHTML5.Device.DrawInfo.DiffuseColor				= 0xffffffff ;
+	GHTML5.Device.DrawInfo.BlendMaxNotDrawFlag		= FALSE ;
+	GHTML5.Device.DrawInfo.BeginSceneFlag			= FALSE ;
+	GHTML5.Device.DrawInfo.VertexNum					= 0 ;
+	GHTML5.Device.DrawInfo.Use3DVertex				= 0 ;
+	GHTML5.Device.DrawInfo.VertexType				= VERTEXTYPE_TEX ;
+	GHTML5.Device.DrawInfo.PrimitiveType				= GL_TRIANGLES ;
 
 	// 頂点バッファのアドレスをセット
-	GIOS.Device.DrawInfo.VertexBufferNextAddr = GIOS.Device.DrawInfo.VertexBuffer ;
+	GHTML5.Device.DrawInfo.VertexBufferNextAddr = GHTML5.Device.DrawInfo.VertexBuffer ;
 
 	// 終了
 	return 0 ;
 }
 
 // 一時的に Direct3DDevice11 を破棄した際に、破棄前の状態を作り出すための関数
-extern	int		Graphics_iOS_Device_ReInitialize( void )
+extern	int		Graphics_HTML5_Device_ReInitialize( void )
 {
 	int i ;
 
 	// 初期化フラグを立てる
-	GIOS.Device.DrawSetting.CancelSettingEqualCheck = TRUE ;
+	GHTML5.Device.DrawSetting.CancelSettingEqualCheck = TRUE ;
 
 	// 必ず Graphics_D3D9_DrawPreparation を実行するフラグを立てる
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 削除前と同じ環境を作り出す
 	{
 		// 描画テクスチャ関係を初期化
-		Graphics_iOS_DrawSetting_SetTexture( NULL ) ;
-		GIOS.Device.DrawSetting.AlphaChannelValidFlag	= FALSE ;
-		GIOS.Device.DrawSetting.AlphaTestValidFlag	= FALSE ;
+		Graphics_HTML5_DrawSetting_SetTexture( NULL ) ;
+		GHTML5.Device.DrawSetting.AlphaChannelValidFlag	= FALSE ;
+		GHTML5.Device.DrawSetting.AlphaTestValidFlag	= FALSE ;
 
 		// 描画頂点情報もリセット
-		GIOS.Device.DrawInfo.VertexNum = 0 ;
+		GHTML5.Device.DrawInfo.VertexNum = 0 ;
 
 		// 描画ブレンドモードの設定
-		Graphics_iOS_DrawSetting_SetDrawBlendMode( GIOS.Device.DrawSetting.BlendMode, GIOS.Device.DrawSetting.AlphaTestValidFlag, GIOS.Device.DrawSetting.AlphaChannelValidFlag ) ;
+		Graphics_HTML5_DrawSetting_SetDrawBlendMode( GHTML5.Device.DrawSetting.BlendMode, GHTML5.Device.DrawSetting.AlphaTestValidFlag, GHTML5.Device.DrawSetting.AlphaChannelValidFlag ) ;
 
 		// 描画画像のＲＧＢを無視するかどうかをセットする
-		Graphics_iOS_DrawSetting_SetIgnoreDrawGraphColor( GIOS.Device.DrawSetting.IgnoreGraphColorFlag ) ;
+		Graphics_HTML5_DrawSetting_SetIgnoreDrawGraphColor( GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ) ;
 
 		// 描画画像のＡを無視するかどうかをセットする
-		Graphics_iOS_DrawSetting_SetIgnoreDrawGraphAlpha( GIOS.Device.DrawSetting.IgnoreGraphAlphaFlag ) ;
+		Graphics_HTML5_DrawSetting_SetIgnoreDrawGraphAlpha( GHTML5.Device.DrawSetting.IgnoreGraphAlphaFlag ) ;
 
 		// 描画先のアルファチャンネルの内容を書き換えるかを設定する
-		Graphics_iOS_DrawSetting_SetWriteAlphaChannelFlag( GIOS.Device.DrawSetting.NotWriteAlphaChannelFlag ) ;
+		Graphics_HTML5_DrawSetting_SetWriteAlphaChannelFlag( GHTML5.Device.DrawSetting.NotWriteAlphaChannelFlag ) ;
 
 		// 異方性フィルタリングの設定をセット
-		Graphics_iOS_DeviceState_SetMaxAnisotropy( GIOS.Device.State.MaxAnisotropy ) ;
+		Graphics_HTML5_DeviceState_SetMaxAnisotropy( GHTML5.Device.State.MaxAnisotropy ) ;
 
 		// UVアドレッシングモードの設定をセット
 		for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 		{
-			Graphics_iOS_DeviceState_SetTextureAddressUVW(
-				GLES2WrapModeToDXTexAddrMode( GIOS.Device.State.TexAddressModeU[ i ] ),
-				GLES2WrapModeToDXTexAddrMode( GIOS.Device.State.TexAddressModeV[ i ] ),
-				GLES2WrapModeToDXTexAddrMode( GIOS.Device.State.TexAddressModeW[ i ] ),
+			Graphics_HTML5_DeviceState_SetTextureAddressUVW(
+				GLES2WrapModeToDXTexAddrMode( GHTML5.Device.State.TexAddressModeU[ i ] ),
+				GLES2WrapModeToDXTexAddrMode( GHTML5.Device.State.TexAddressModeV[ i ] ),
+				GLES2WrapModeToDXTexAddrMode( GHTML5.Device.State.TexAddressModeW[ i ] ),
 				i ) ;
 		}
 
 		// テクスチャ座標変換行列を使用するかどうかの設定をセット
-		Graphics_iOS_DeviceState_SetTextureAddressTransformMatrix(
-			GIOS.Device.State.TextureAddressTransformMatrixUse,
-			&GIOS.Device.State.TextureAddressTransformMatrix ) ;
+		Graphics_HTML5_DeviceState_SetTextureAddressTransformMatrix(
+			GHTML5.Device.State.TextureAddressTransformMatrixUse,
+			&GHTML5.Device.State.TextureAddressTransformMatrix ) ;
 
 		// フォグの設定をセット
-		Graphics_iOS_DeviceState_SetFogEnable(     GIOS.Device.State.FogEnable ) ;
-		Graphics_iOS_DeviceState_SetFogVertexMode( GIOS.Device.State.FogMode ) ;
-		Graphics_iOS_DeviceState_SetFogColor(      GIOS.Device.State.FogColor ) ;
-		Graphics_iOS_DeviceState_SetFogStartEnd(   GIOS.Device.State.FogStart, GIOS.Device.State.FogEnd ) ;
-		Graphics_iOS_DeviceState_SetFogDensity(    GIOS.Device.State.FogDensity ) ;
+		Graphics_HTML5_DeviceState_SetFogEnable(     GHTML5.Device.State.FogEnable ) ;
+		Graphics_HTML5_DeviceState_SetFogVertexMode( GHTML5.Device.State.FogMode ) ;
+		Graphics_HTML5_DeviceState_SetFogColor(      GHTML5.Device.State.FogColor ) ;
+		Graphics_HTML5_DeviceState_SetFogStartEnd(   GHTML5.Device.State.FogStart, GHTML5.Device.State.FogEnd ) ;
+		Graphics_HTML5_DeviceState_SetFogDensity(    GHTML5.Device.State.FogDensity ) ;
 
 		// 行列の再設定
 		NS_SetTransformToWorldD(                              &GSYS.DrawSetting.WorldMatrix ) ;
@@ -4195,25 +4195,25 @@ extern	int		Graphics_iOS_Device_ReInitialize( void )
 		NS_SetTransformToViewportD(                           &GSYS.DrawSetting.ViewportMatrix ) ;
 
 		// ライトの再設定
-		Graphics_iOS_DeviceState_SetAmbient( &GIOS.Device.State.GlobalAmbientLightColor ) ;
-		Graphics_iOS_DeviceState_SetLighting( GIOS.Device.State.Lighting ) ;
-		for( i = 0 ; i < DX_IOS_COMMON_CONST_LIGHT_NUM ; i ++ )
+		Graphics_HTML5_DeviceState_SetAmbient( &GHTML5.Device.State.GlobalAmbientLightColor ) ;
+		Graphics_HTML5_DeviceState_SetLighting( GHTML5.Device.State.Lighting ) ;
+		for( i = 0 ; i < DX_HTML5_COMMON_CONST_LIGHT_NUM ; i ++ )
 		{
-			if( GIOS.Device.State.LightParam[ i ].LightType == 0 )
+			if( GHTML5.Device.State.LightParam[ i ].LightType == 0 )
 			{
 				continue ;
 			}
 
-			Graphics_iOS_DeviceState_SetLightState( i, &GIOS.Device.State.LightParam[ i ] ) ;
-			Graphics_iOS_DeviceState_SetLightEnable( i, GIOS.Device.State.LightEnableFlag[ i ] ) ;
+			Graphics_HTML5_DeviceState_SetLightState( i, &GHTML5.Device.State.LightParam[ i ] ) ;
+			Graphics_HTML5_DeviceState_SetLightEnable( i, GHTML5.Device.State.LightEnableFlag[ i ] ) ;
 		}
 	}
 
 	// 初期化フラグを倒す
-	GIOS.Device.DrawSetting.CancelSettingEqualCheck = FALSE ;
+	GHTML5.Device.DrawSetting.CancelSettingEqualCheck = FALSE ;
 
 	// 上記以外の設定をリフレッシュ
-	Graphics_iOS_DeviceState_RefreshRenderState() ;
+	Graphics_HTML5_DeviceState_RefreshRenderState() ;
 
 	// 終了
 	return 0 ;
@@ -4242,42 +4242,42 @@ extern	int		Graphics_iOS_Device_ReInitialize( void )
 
 
 
-// iOSDevice ステータス関係
+// HTML5Device ステータス関係
 
 // 描画設定をリフレッシュ
-extern	void	Graphics_iOS_DeviceState_RefreshRenderState( void )
+extern	void	Graphics_HTML5_DeviceState_RefreshRenderState( void )
 {
-	RECT Viewport = GIOS.Device.State.ViewportRect ;
+	RECT Viewport = GHTML5.Device.State.ViewportRect ;
 
 	// 初期化フラグを立てる
-	GIOS.Device.DrawSetting.CancelSettingEqualCheck = TRUE ;
+	GHTML5.Device.DrawSetting.CancelSettingEqualCheck = TRUE ;
 
-	// Graphics_iOS_DrawPreparation を行うべきフラグを立てる
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	// Graphics_HTML5_DrawPreparation を行うべきフラグを立てる
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 設定のリフレッシュ
-	Graphics_iOS_DeviceState_SetFogEnable             ( GIOS.Device.State.FogEnable           ) ;
-//	Graphics_iOS_DeviceState_SetScissorRect           ( &GIOS.Device.State.ScissorRect        ) ;
-	Graphics_iOS_DrawSetting_SetTexture               ( GIOS.Device.DrawSetting.RenderTexture ) ;
-	Graphics_iOS_DrawSetting_SetBlendTexture          ( GIOS.Device.DrawSetting.BlendTexture ) ;
-	Graphics_iOS_DeviceState_SetBaseState             (                                       ) ;
-	Graphics_iOS_DeviceState_SetDrawMode              ( GIOS.Device.State.DrawMode            ) ;
-//	Graphics_iOS_DrawSetting_SetDrawBlendMode         ( GIOS.Device.DrawSetting.BlendMode, GIOS.Device.DrawSetting.AlphaChannelValidFlag  ) ;
-	Graphics_iOS_DeviceState_NormalDrawSetup          (                                       ) ;
-	Graphics_iOS_DeviceState_SetDepthEnable           ( GIOS.Device.State.DepthEnable         ) ;
-	Graphics_iOS_DeviceState_SetDepthWriteEnable      ( GIOS.Device.State.DepthWriteEnable    ) ;
-	Graphics_iOS_DeviceState_SetDepthFunc             ( GIOS.Device.State.DepthFunc           ) ;
-	Graphics_iOS_DeviceState_SetDepthBias             ( GIOS.Device.State.DepthBias           ) ;
-	Graphics_iOS_DeviceState_SetCullMode              ( GIOS.Device.State.CullEnable == FALSE ? 0 : ( GIOS.Device.State.CullFace == GL_FRONT ? 1 : 2 ) ) ;
-//	Graphics_iOS_DeviceState_SetShadeMode             ( GIOS.Device.State.ShadeMode           ) ;
-	Graphics_iOS_DeviceState_SetMaterial              ( &GIOS.Device.State.Material           ) ;
-	Graphics_iOS_DeviceState_SetSpecularEnable        ( GIOS.Device.State.UseSpecular         ) ;
-	Graphics_iOS_DeviceState_SetUseVertexDiffuseColor ( GIOS.Device.State.MaterialUseVertexDiffuseColor ) ;
-	Graphics_iOS_DeviceState_SetUseVertexSpecularColor( GIOS.Device.State.MaterialUseVertexSpecularColor ) ;
-	Graphics_iOS_DeviceState_SetShader                ( GIOS.Device.State.SetShader, GIOS.Device.State.SetNormalShader ) ;
-	Graphics_iOS_DeviceState_SetRenderTarget          ( GIOS.Device.State.TargetFrameBuffer, GIOS.Device.State.TargetFrameBufferWidth, GIOS.Device.State.TargetFrameBufferHeight ) ;
-	Graphics_iOS_DeviceState_SetViewport              ( &Viewport ) ;
-	Graphics_iOS_DeviceState_SetBackgroundColor       ( GIOS.Device.State.BackgroundColor.r, GIOS.Device.State.BackgroundColor.g, GIOS.Device.State.BackgroundColor.b, GIOS.Device.State.BackgroundColor.a ) ;
+	Graphics_HTML5_DeviceState_SetFogEnable             ( GHTML5.Device.State.FogEnable           ) ;
+//	Graphics_HTML5_DeviceState_SetScissorRect           ( &GHTML5.Device.State.ScissorRect        ) ;
+	Graphics_HTML5_DrawSetting_SetTexture               ( GHTML5.Device.DrawSetting.RenderTexture ) ;
+	Graphics_HTML5_DrawSetting_SetBlendTexture          ( GHTML5.Device.DrawSetting.BlendTexture ) ;
+	Graphics_HTML5_DeviceState_SetBaseState             (                                       ) ;
+	Graphics_HTML5_DeviceState_SetDrawMode              ( GHTML5.Device.State.DrawMode            ) ;
+//	Graphics_HTML5_DrawSetting_SetDrawBlendMode         ( GHTML5.Device.DrawSetting.BlendMode, GHTML5.Device.DrawSetting.AlphaChannelValidFlag  ) ;
+	Graphics_HTML5_DeviceState_NormalDrawSetup          (                                       ) ;
+	Graphics_HTML5_DeviceState_SetDepthEnable           ( GHTML5.Device.State.DepthEnable         ) ;
+	Graphics_HTML5_DeviceState_SetDepthWriteEnable      ( GHTML5.Device.State.DepthWriteEnable    ) ;
+	Graphics_HTML5_DeviceState_SetDepthFunc             ( GHTML5.Device.State.DepthFunc           ) ;
+	Graphics_HTML5_DeviceState_SetDepthBias             ( GHTML5.Device.State.DepthBias           ) ;
+	Graphics_HTML5_DeviceState_SetCullMode              ( GHTML5.Device.State.CullEnable == FALSE ? 0 : ( GHTML5.Device.State.CullFace == GL_FRONT ? 1 : 2 ) ) ;
+//	Graphics_HTML5_DeviceState_SetShadeMode             ( GHTML5.Device.State.ShadeMode           ) ;
+	Graphics_HTML5_DeviceState_SetMaterial              ( &GHTML5.Device.State.Material           ) ;
+	Graphics_HTML5_DeviceState_SetSpecularEnable        ( GHTML5.Device.State.UseSpecular         ) ;
+	Graphics_HTML5_DeviceState_SetUseVertexDiffuseColor ( GHTML5.Device.State.MaterialUseVertexDiffuseColor ) ;
+	Graphics_HTML5_DeviceState_SetUseVertexSpecularColor( GHTML5.Device.State.MaterialUseVertexSpecularColor ) ;
+	Graphics_HTML5_DeviceState_SetShader                ( GHTML5.Device.State.SetShader, GHTML5.Device.State.SetNormalShader ) ;
+	Graphics_HTML5_DeviceState_SetRenderTarget          ( GHTML5.Device.State.TargetFrameBuffer, GHTML5.Device.State.TargetFrameBufferWidth, GHTML5.Device.State.TargetFrameBufferHeight ) ;
+	Graphics_HTML5_DeviceState_SetViewport              ( &Viewport ) ;
+	Graphics_HTML5_DeviceState_SetBackgroundColor       ( GHTML5.Device.State.BackgroundColor.r, GHTML5.Device.State.BackgroundColor.g, GHTML5.Device.State.BackgroundColor.b, GHTML5.Device.State.BackgroundColor.a ) ;
 
 	// テクスチャをセット
 	{
@@ -4285,19 +4285,19 @@ extern	void	Graphics_iOS_DeviceState_RefreshRenderState( void )
 
 		for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 		{
-			Graphics_iOS_DeviceState_SetTexture( i, GIOS.Device.State.SetTexture[ i ] ) ;
+			Graphics_HTML5_DeviceState_SetTexture( i, GHTML5.Device.State.SetTexture[ i ] ) ;
 		}
 	}
 
 	// 定数バッファをリフレッシュ
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 初期化フラグを倒す
-	GIOS.Device.DrawSetting.CancelSettingEqualCheck = FALSE ;
+	GHTML5.Device.DrawSetting.CancelSettingEqualCheck = FALSE ;
 }
 
 // OpenGL の基本設定を行う
-extern int Graphics_iOS_DeviceState_SetBaseState( void )
+extern int Graphics_HTML5_DeviceState_SetBaseState( void )
 {
 	// 書き出し
 	DRAWSTOCKINFO
@@ -4307,13 +4307,13 @@ extern int Graphics_iOS_DeviceState_SetBaseState( void )
 }
 
 // サンプラーのテクスチャフィルタリングモードを設定する
-extern int Graphics_iOS_DeviceState_SetSampleFilterMode( GLenum Filter, int Sampler )
+extern int Graphics_HTML5_DeviceState_SetSampleFilterMode( GLenum Filter, int Sampler )
 {
 	int i ;
 	GLenum MagFilter ;
 	GLenum MinFilter ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -4342,15 +4342,15 @@ extern int Graphics_iOS_DeviceState_SetSampleFilterMode( GLenum Filter, int Samp
 		if( Filter == GL_NEAREST ||
 			Filter == GL_LINEAR )
 		{
-			GIOS.Device.State.DrawMode = -1 ;
+			GHTML5.Device.State.DrawMode = -1 ;
 		}
 
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 			{
-				if( GIOS.Device.State.TexMagFilter[ i ] != MagFilter ||
-					GIOS.Device.State.TexMinFilter[ i ] != MinFilter )
+				if( GHTML5.Device.State.TexMagFilter[ i ] != MagFilter ||
+					GHTML5.Device.State.TexMinFilter[ i ] != MinFilter )
 				{
 					break ;
 				}
@@ -4365,36 +4365,36 @@ extern int Graphics_iOS_DeviceState_SetSampleFilterMode( GLenum Filter, int Samp
 
 		for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 		{
-			if( GIOS.Device.State.TexMagFilter[ i ] == MagFilter &&
-				GIOS.Device.State.TexMinFilter[ i ] == MinFilter &&
-				GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+			if( GHTML5.Device.State.TexMagFilter[ i ] == MagFilter &&
+				GHTML5.Device.State.TexMinFilter[ i ] == MinFilter &&
+				GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 			{
 				continue ;
 			}
 
-			GIOS.Device.State.TexMagFilter[ i ] = MagFilter ;
-			GIOS.Device.State.TexMinFilter[ i ] = MinFilter ;
+			GHTML5.Device.State.TexMagFilter[ i ] = MagFilter ;
+			GHTML5.Device.State.TexMinFilter[ i ] = MinFilter ;
 
-			if( GIOS.Device.State.SetTexture[ i ] != NULL )
+			if( GHTML5.Device.State.SetTexture[ i ] != NULL )
 			{
 				glActiveTexture( g_TextureEnum[ i ] ) ;
-				glBindTexture( GL_TEXTURE_2D, GIOS.Device.State.SetTexture[ i ]->TextureBuffer ) ;
-				if( GIOS.Device.State.SetTexture[ i ]->MagFilter != GIOS.Device.State.TexMagFilter[ i ] )
+				glBindTexture( GL_TEXTURE_2D, GHTML5.Device.State.SetTexture[ i ]->TextureBuffer ) ;
+				if( GHTML5.Device.State.SetTexture[ i ]->MagFilter != GHTML5.Device.State.TexMagFilter[ i ] )
 				{
-					GIOS.Device.State.SetTexture[ i ]->MagFilter = GIOS.Device.State.TexMagFilter[ i ] ;
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GIOS.Device.State.SetTexture[ i ]->MagFilter ) ;
+					GHTML5.Device.State.SetTexture[ i ]->MagFilter = GHTML5.Device.State.TexMagFilter[ i ] ;
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GHTML5.Device.State.SetTexture[ i ]->MagFilter ) ;
 				}
-				if( GIOS.Device.State.SetTexture[ i ]->MinFilter != GIOS.Device.State.TexMinFilter[ i ] )
+				if( GHTML5.Device.State.SetTexture[ i ]->MinFilter != GHTML5.Device.State.TexMinFilter[ i ] )
 				{
 					GLenum MinFilterTmp = MinFilter ;
-					if( GIOS.Device.State.SetTexture[ i ]->MipMapCount <= 1 && MinFilter == GL_LINEAR_MIPMAP_LINEAR )
+					if( GHTML5.Device.State.SetTexture[ i ]->MipMapCount <= 1 && MinFilter == GL_LINEAR_MIPMAP_LINEAR )
 					{
 						MinFilterTmp = GL_LINEAR ;
 					}
-					if( GIOS.Device.State.SetTexture[ i ]->MinFilter != MinFilterTmp )
+					if( GHTML5.Device.State.SetTexture[ i ]->MinFilter != MinFilterTmp )
 					{
-						GIOS.Device.State.SetTexture[ i ]->MinFilter = MinFilterTmp ;
-						glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GIOS.Device.State.SetTexture[ i ]->MinFilter ) ;
+						GHTML5.Device.State.SetTexture[ i ]->MinFilter = MinFilterTmp ;
+						glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GHTML5.Device.State.SetTexture[ i ]->MinFilter ) ;
 					}
 				}
 			}
@@ -4407,68 +4407,68 @@ extern int Graphics_iOS_DeviceState_SetSampleFilterMode( GLenum Filter, int Samp
 			return 0 ;
 		}
 
-		GIOS.Device.State.DrawMode = -1 ;
+		GHTML5.Device.State.DrawMode = -1 ;
 
-		if( GIOS.Device.State.TexMagFilter[ Sampler ] == MagFilter &&
-			GIOS.Device.State.TexMinFilter[ Sampler ] == MinFilter &&
-			GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.State.TexMagFilter[ Sampler ] == MagFilter &&
+			GHTML5.Device.State.TexMinFilter[ Sampler ] == MinFilter &&
+			GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			return 0 ;
 		}
 
 		DRAWSTOCKINFO
 
-		GIOS.Device.State.TexMagFilter[ Sampler ] = MagFilter ;
-		GIOS.Device.State.TexMinFilter[ Sampler ] = MinFilter ;
+		GHTML5.Device.State.TexMagFilter[ Sampler ] = MagFilter ;
+		GHTML5.Device.State.TexMinFilter[ Sampler ] = MinFilter ;
 
-		if( GIOS.Device.State.SetTexture[ Sampler ] != NULL )
+		if( GHTML5.Device.State.SetTexture[ Sampler ] != NULL )
 		{
 			glActiveTexture( g_TextureEnum[ Sampler ] ) ;
-			glBindTexture( GL_TEXTURE_2D, GIOS.Device.State.SetTexture[ Sampler ]->TextureBuffer ) ;
-			if( GIOS.Device.State.SetTexture[ Sampler ]->MagFilter != GIOS.Device.State.TexMagFilter[ Sampler ] )
+			glBindTexture( GL_TEXTURE_2D, GHTML5.Device.State.SetTexture[ Sampler ]->TextureBuffer ) ;
+			if( GHTML5.Device.State.SetTexture[ Sampler ]->MagFilter != GHTML5.Device.State.TexMagFilter[ Sampler ] )
 			{
-				GIOS.Device.State.SetTexture[ Sampler ]->MagFilter = GIOS.Device.State.TexMagFilter[ Sampler ] ;
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GIOS.Device.State.SetTexture[ Sampler ]->MagFilter ) ;
+				GHTML5.Device.State.SetTexture[ Sampler ]->MagFilter = GHTML5.Device.State.TexMagFilter[ Sampler ] ;
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GHTML5.Device.State.SetTexture[ Sampler ]->MagFilter ) ;
 			}
-			if( GIOS.Device.State.SetTexture[ Sampler ]->MinFilter != GIOS.Device.State.TexMinFilter[ Sampler ] )
+			if( GHTML5.Device.State.SetTexture[ Sampler ]->MinFilter != GHTML5.Device.State.TexMinFilter[ Sampler ] )
 			{
 				GLenum MinFilterTmp = MinFilter ;
-				if( GIOS.Device.State.SetTexture[ Sampler ]->MipMapCount <= 1 && MinFilter == GL_LINEAR_MIPMAP_LINEAR )
+				if( GHTML5.Device.State.SetTexture[ Sampler ]->MipMapCount <= 1 && MinFilter == GL_LINEAR_MIPMAP_LINEAR )
 				{
 					MinFilterTmp = GL_LINEAR ;
 				}
-				if( GIOS.Device.State.SetTexture[ Sampler ]->MinFilter != MinFilterTmp )
+				if( GHTML5.Device.State.SetTexture[ Sampler ]->MinFilter != MinFilterTmp )
 				{
-					GIOS.Device.State.SetTexture[ Sampler ]->MinFilter = MinFilterTmp ;
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GIOS.Device.State.SetTexture[ Sampler ]->MinFilter ) ;
+					GHTML5.Device.State.SetTexture[ Sampler ]->MinFilter = MinFilterTmp ;
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GHTML5.Device.State.SetTexture[ Sampler ]->MinFilter ) ;
 				}
 			}
 		}
 	}
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // 深度バッファの有効無効のセット
-extern int Graphics_iOS_DeviceState_SetDepthEnable( BOOL DepthEnable )
+extern int Graphics_HTML5_DeviceState_SetDepthEnable( BOOL DepthEnable )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
 	// モードが同じだったら何もせず終了
-	if( GIOS.Device.State.DepthEnable == DepthEnable &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.DepthEnable == DepthEnable &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 	
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.DepthEnable = DepthEnable ;
+	GHTML5.Device.State.DepthEnable = DepthEnable ;
 
 	if( DepthEnable )
 	{
@@ -4479,107 +4479,107 @@ extern int Graphics_iOS_DeviceState_SetDepthEnable( BOOL DepthEnable )
 		glDisable( GL_DEPTH_TEST ) ;
 	}
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // 深度バッファの書き込みの有無をセット
-extern int Graphics_iOS_DeviceState_SetDepthWriteEnable( int Flag )
+extern int Graphics_HTML5_DeviceState_SetDepthWriteEnable( int Flag )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
 	// モードが同じだったら何もせず終了
-	if( GIOS.Device.State.DepthWriteEnable == Flag &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.DepthWriteEnable == Flag &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 	
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.DepthWriteEnable = Flag ;
+	GHTML5.Device.State.DepthWriteEnable = Flag ;
 
 	glDepthMask( Flag ? GL_TRUE : GL_FALSE ) ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // 深度値の比較タイプをセット
-extern int Graphics_iOS_DeviceState_SetDepthFunc( GLenum DepthFunc )
+extern int Graphics_HTML5_DeviceState_SetDepthFunc( GLenum DepthFunc )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
 	// モードが同じだったら何もせず終了
-	if( GIOS.Device.State.DepthFunc == DepthFunc &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.DepthFunc == DepthFunc &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 	
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.DepthFunc = DepthFunc ;
+	GHTML5.Device.State.DepthFunc = DepthFunc ;
 
 	glDepthFunc( DepthFunc ) ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // 深度値のバイアスをセット
-extern int Graphics_iOS_DeviceState_SetDepthBias( int DepthBias )
+extern int Graphics_HTML5_DeviceState_SetDepthBias( int DepthBias )
 {
 	// モードが同じだったら何もせず終了
-	if( GIOS.Device.State.DepthBias == DepthBias &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.DepthBias == DepthBias &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 	
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.DepthBias = DepthBias ;
+	GHTML5.Device.State.DepthBias = DepthBias ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // ワールド変換用行列をセットする
-extern int Graphics_iOS_DeviceState_SetWorldMatrix( const MATRIX *Matrix )
+extern int Graphics_HTML5_DeviceState_SetWorldMatrix( const MATRIX *Matrix )
 {
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 3 ] = Matrix->m[ 3 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 0 ] = Matrix->m[ 0 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 1 ] = Matrix->m[ 1 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 2 ] = Matrix->m[ 2 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 3 ] = Matrix->m[ 3 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 0 ] = Matrix->m[ 0 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 1 ] = Matrix->m[ 1 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 2 ] = Matrix->m[ 2 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 3 ] = Matrix->m[ 3 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 3 ] = Matrix->m[ 3 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 0 ] = Matrix->m[ 0 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 1 ] = Matrix->m[ 1 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 2 ] = Matrix->m[ 2 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 3 ] = Matrix->m[ 3 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 0 ] = Matrix->m[ 0 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 1 ] = Matrix->m[ 1 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 2 ] = Matrix->m[ 2 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 3 ] = Matrix->m[ 3 ][ 2 ] ;
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 終了
 	return 0 ;
 }
 
 // ビュー変換用行列をセットする
-extern int Graphics_iOS_DeviceState_SetViewMatrix( const MATRIX *Matrix )
+extern int Graphics_HTML5_DeviceState_SetViewMatrix( const MATRIX *Matrix )
 {
 	// ライトの位置・方向の再計算
 	{
@@ -4587,126 +4587,126 @@ extern int Graphics_iOS_DeviceState_SetViewMatrix( const MATRIX *Matrix )
 		VECTOR Direction ;
 		VECTOR Position ;
 
-		for( i = 0 ; i < DX_IOS_COMMON_CONST_LIGHT_NUM ; i ++ )
+		for( i = 0 ; i < DX_HTML5_COMMON_CONST_LIGHT_NUM ; i ++ )
 		{
-			VectorTransformSR( &Direction, &GIOS.Device.State.LightParam[ i ].Direction, Matrix ) ;
-			VectorTransform(   &Position,  &GIOS.Device.State.LightParam[ i ].Position,  Matrix ) ;
-			GIOS.Device.Shader.Constant.uLightPos[ i ][ 0 ]  = Position.x ;
-			GIOS.Device.Shader.Constant.uLightPos[ i ][ 1 ]  = Position.y ;
-			GIOS.Device.Shader.Constant.uLightPos[ i ][ 2 ]  = Position.z ;
-			GIOS.Device.Shader.Constant.uLightDir[ i ][ 0 ] = Direction.x ;
-			GIOS.Device.Shader.Constant.uLightDir[ i ][ 1 ] = Direction.y ;
-			GIOS.Device.Shader.Constant.uLightDir[ i ][ 2 ] = Direction.z ;
+			VectorTransformSR( &Direction, &GHTML5.Device.State.LightParam[ i ].Direction, Matrix ) ;
+			VectorTransform(   &Position,  &GHTML5.Device.State.LightParam[ i ].Position,  Matrix ) ;
+			GHTML5.Device.Shader.Constant.uLightPos[ i ][ 0 ]  = Position.x ;
+			GHTML5.Device.Shader.Constant.uLightPos[ i ][ 1 ]  = Position.y ;
+			GHTML5.Device.Shader.Constant.uLightPos[ i ][ 2 ]  = Position.z ;
+			GHTML5.Device.Shader.Constant.uLightDir[ i ][ 0 ] = Direction.x ;
+			GHTML5.Device.Shader.Constant.uLightDir[ i ][ 1 ] = Direction.y ;
+			GHTML5.Device.Shader.Constant.uLightDir[ i ][ 2 ] = Direction.z ;
 		}
 	}
 
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uViewMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uViewMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uViewMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uViewMat[ 0 ][ 3 ] = Matrix->m[ 3 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uViewMat[ 1 ][ 0 ] = Matrix->m[ 0 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uViewMat[ 1 ][ 1 ] = Matrix->m[ 1 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uViewMat[ 1 ][ 2 ] = Matrix->m[ 2 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uViewMat[ 1 ][ 3 ] = Matrix->m[ 3 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uViewMat[ 2 ][ 0 ] = Matrix->m[ 0 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uViewMat[ 2 ][ 1 ] = Matrix->m[ 1 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uViewMat[ 2 ][ 2 ] = Matrix->m[ 2 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uViewMat[ 2 ][ 3 ] = Matrix->m[ 3 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 0 ][ 3 ] = Matrix->m[ 3 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 1 ][ 0 ] = Matrix->m[ 0 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 1 ][ 1 ] = Matrix->m[ 1 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 1 ][ 2 ] = Matrix->m[ 2 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 1 ][ 3 ] = Matrix->m[ 3 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 2 ][ 0 ] = Matrix->m[ 0 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 2 ][ 1 ] = Matrix->m[ 1 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 2 ][ 2 ] = Matrix->m[ 2 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uViewMat[ 2 ][ 3 ] = Matrix->m[ 3 ][ 2 ] ;
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 終了
 	return 0 ;
 }
 
 // 投影変換用行列をセットする
-extern int Graphics_iOS_DeviceState_SetProjectionMatrix( const MATRIX *Matrix )
+extern int Graphics_HTML5_DeviceState_SetProjectionMatrix( const MATRIX *Matrix )
 {
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uProjMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 0 ][ 3 ] = Matrix->m[ 3 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 1 ][ 0 ] = Matrix->m[ 0 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 1 ][ 1 ] = Matrix->m[ 1 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 1 ][ 2 ] = Matrix->m[ 2 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 1 ][ 3 ] = Matrix->m[ 3 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 2 ][ 0 ] = Matrix->m[ 0 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 2 ][ 1 ] = Matrix->m[ 1 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 2 ][ 2 ] = Matrix->m[ 2 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 2 ][ 3 ] = Matrix->m[ 3 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 3 ][ 0 ] = Matrix->m[ 0 ][ 3 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 3 ][ 1 ] = Matrix->m[ 1 ][ 3 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 3 ][ 2 ] = Matrix->m[ 2 ][ 3 ] ;
-	GIOS.Device.Shader.Constant.uProjMat[ 3 ][ 3 ] = Matrix->m[ 3 ][ 3 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 0 ][ 3 ] = Matrix->m[ 3 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 1 ][ 0 ] = Matrix->m[ 0 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 1 ][ 1 ] = Matrix->m[ 1 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 1 ][ 2 ] = Matrix->m[ 2 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 1 ][ 3 ] = Matrix->m[ 3 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 2 ][ 0 ] = Matrix->m[ 0 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 2 ][ 1 ] = Matrix->m[ 1 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 2 ][ 2 ] = Matrix->m[ 2 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 2 ][ 3 ] = Matrix->m[ 3 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 3 ][ 0 ] = Matrix->m[ 0 ][ 3 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 3 ][ 1 ] = Matrix->m[ 1 ][ 3 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 3 ][ 2 ] = Matrix->m[ 2 ][ 3 ] ;
+	GHTML5.Device.Shader.Constant.uProjMat[ 3 ][ 3 ] = Matrix->m[ 3 ][ 3 ] ;
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 終了
 	return 0 ;
 }
 
 // アンチビューポート行列をセットする
-extern int Graphics_iOS_DeviceState_SetAntiViewportMatrix( const MATRIX *Matrix )
+extern int Graphics_HTML5_DeviceState_SetAntiViewportMatrix( const MATRIX *Matrix )
 {
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 0 ][ 3 ] = Matrix->m[ 3 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 1 ][ 0 ] = Matrix->m[ 0 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 1 ][ 1 ] = Matrix->m[ 1 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 1 ][ 2 ] = Matrix->m[ 2 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 1 ][ 3 ] = Matrix->m[ 3 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 2 ][ 0 ] = Matrix->m[ 0 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 2 ][ 1 ] = Matrix->m[ 1 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 2 ][ 2 ] = Matrix->m[ 2 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 2 ][ 3 ] = Matrix->m[ 3 ][ 2 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 3 ][ 0 ] = Matrix->m[ 0 ][ 3 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 3 ][ 1 ] = Matrix->m[ 1 ][ 3 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 3 ][ 2 ] = Matrix->m[ 2 ][ 3 ] ;
-	GIOS.Device.Shader.Constant.uAntiVPMat[ 3 ][ 3 ] = Matrix->m[ 3 ][ 3 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 0 ][ 3 ] = Matrix->m[ 3 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 1 ][ 0 ] = Matrix->m[ 0 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 1 ][ 1 ] = Matrix->m[ 1 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 1 ][ 2 ] = Matrix->m[ 2 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 1 ][ 3 ] = Matrix->m[ 3 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 2 ][ 0 ] = Matrix->m[ 0 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 2 ][ 1 ] = Matrix->m[ 1 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 2 ][ 2 ] = Matrix->m[ 2 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 2 ][ 3 ] = Matrix->m[ 3 ][ 2 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 3 ][ 0 ] = Matrix->m[ 0 ][ 3 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 3 ][ 1 ] = Matrix->m[ 1 ][ 3 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 3 ][ 2 ] = Matrix->m[ 2 ][ 3 ] ;
+	GHTML5.Device.Shader.Constant.uAntiVPMat[ 3 ][ 3 ] = Matrix->m[ 3 ][ 3 ] ;
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 終了
 	return 0 ;
 }
 
 // アンビエントライトとエミッシブカラーを掛け合わせたパラメータを更新する
-extern void Graphics_iOS_DeviceState_RefreshAmbientAndEmissiveParam( void )
+extern void Graphics_HTML5_DeviceState_RefreshAmbientAndEmissiveParam( void )
 {
 	int i ;
 
 	// 有効なライトのアンビエントカラーとマテリアルのアンビエントカラーを乗算したものをシェーダーにセットする
-	for( i = 0 ; i <= GIOS.Device.State.LightEnableMaxIndex ; i ++ )
+	for( i = 0 ; i <= GHTML5.Device.State.LightEnableMaxIndex ; i ++ )
 	{
-		if( GIOS.Device.State.LightEnableFlag[ i ] == FALSE )
+		if( GHTML5.Device.State.LightEnableFlag[ i ] == FALSE )
 		{
 			continue ;
 		}
 
 		// 定数バッファに反映する
-		GIOS.Device.Shader.Constant.uLightAmb[ i ][ 0 ] = GIOS.Device.State.LightParam[ i ].Ambient.r * GIOS.Device.State.Material.Ambient.r ;
-		GIOS.Device.Shader.Constant.uLightAmb[ i ][ 1 ] = GIOS.Device.State.LightParam[ i ].Ambient.g * GIOS.Device.State.Material.Ambient.g ;
-		GIOS.Device.Shader.Constant.uLightAmb[ i ][ 2 ] = GIOS.Device.State.LightParam[ i ].Ambient.b * GIOS.Device.State.Material.Ambient.b ;
-		GIOS.Device.Shader.Constant.uLightAmb[ i ][ 3 ] = GIOS.Device.State.LightParam[ i ].Ambient.a * GIOS.Device.State.Material.Ambient.a ;
+		GHTML5.Device.Shader.Constant.uLightAmb[ i ][ 0 ] = GHTML5.Device.State.LightParam[ i ].Ambient.r * GHTML5.Device.State.Material.Ambient.r ;
+		GHTML5.Device.Shader.Constant.uLightAmb[ i ][ 1 ] = GHTML5.Device.State.LightParam[ i ].Ambient.g * GHTML5.Device.State.Material.Ambient.g ;
+		GHTML5.Device.Shader.Constant.uLightAmb[ i ][ 2 ] = GHTML5.Device.State.LightParam[ i ].Ambient.b * GHTML5.Device.State.Material.Ambient.b ;
+		GHTML5.Device.Shader.Constant.uLightAmb[ i ][ 3 ] = GHTML5.Device.State.LightParam[ i ].Ambient.a * GHTML5.Device.State.Material.Ambient.a ;
 	}
 
 	// グローバルアンビエントライトカラーとマテリアルアンビエントカラーを乗算したものとエミッシブカラーを加算したものを作成する
-	GIOS.Device.Shader.Constant.uAmb_Emi[ 0 ] = GIOS.Device.State.GlobalAmbientLightColor.r * GIOS.Device.State.Material.Ambient.r + GIOS.Device.State.Material.Emissive.r ;
-	GIOS.Device.Shader.Constant.uAmb_Emi[ 1 ] = GIOS.Device.State.GlobalAmbientLightColor.g * GIOS.Device.State.Material.Ambient.g + GIOS.Device.State.Material.Emissive.g ;
-	GIOS.Device.Shader.Constant.uAmb_Emi[ 2 ] = GIOS.Device.State.GlobalAmbientLightColor.b * GIOS.Device.State.Material.Ambient.b + GIOS.Device.State.Material.Emissive.b ;
-	GIOS.Device.Shader.Constant.uAmb_Emi[ 3 ] = GIOS.Device.State.GlobalAmbientLightColor.a * GIOS.Device.State.Material.Ambient.a + GIOS.Device.State.Material.Emissive.a ;
+	GHTML5.Device.Shader.Constant.uAmb_Emi[ 0 ] = GHTML5.Device.State.GlobalAmbientLightColor.r * GHTML5.Device.State.Material.Ambient.r + GHTML5.Device.State.Material.Emissive.r ;
+	GHTML5.Device.Shader.Constant.uAmb_Emi[ 1 ] = GHTML5.Device.State.GlobalAmbientLightColor.g * GHTML5.Device.State.Material.Ambient.g + GHTML5.Device.State.Material.Emissive.g ;
+	GHTML5.Device.Shader.Constant.uAmb_Emi[ 2 ] = GHTML5.Device.State.GlobalAmbientLightColor.b * GHTML5.Device.State.Material.Ambient.b + GHTML5.Device.State.Material.Emissive.b ;
+	GHTML5.Device.Shader.Constant.uAmb_Emi[ 3 ] = GHTML5.Device.State.GlobalAmbientLightColor.a * GHTML5.Device.State.Material.Ambient.a + GHTML5.Device.State.Material.Emissive.a ;
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 }
 
 
 
 // ライトのセット
-extern int Graphics_iOS_DeviceState_SetLightState( int LightNumber, LIGHTPARAM *Light )
+extern int Graphics_HTML5_DeviceState_SetLightState( int LightNumber, LIGHTPARAM *Light )
 {
 	VECTOR  Direction ;
 	VECTOR  Position ;
@@ -4715,13 +4715,13 @@ extern int Graphics_iOS_DeviceState_SetLightState( int LightNumber, LIGHTPARAM *
 	float   PhiSin ;
 	float   PhiCos ;
 
-	if( LightNumber < 0 || LightNumber >= DX_IOS_COMMON_CONST_LIGHT_NUM )
+	if( LightNumber < 0 || LightNumber >= DX_HTML5_COMMON_CONST_LIGHT_NUM )
 	{
 		return -1 ;
 	}
 
-	if( _MEMCMP( &GIOS.Device.State.LightParam[ LightNumber ], Light, sizeof( LIGHTPARAM ) ) == 0 &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( _MEMCMP( &GHTML5.Device.State.LightParam[ LightNumber ], Light, sizeof( LIGHTPARAM ) ) == 0 &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -4729,7 +4729,7 @@ extern int Graphics_iOS_DeviceState_SetLightState( int LightNumber, LIGHTPARAM *
 	DRAWSTOCKINFO
 
 	// パラメータの保存
-	GIOS.Device.State.LightParam[ LightNumber ] = *Light ;
+	GHTML5.Device.State.LightParam[ LightNumber ] = *Light ;
 
 	// 定数データに反映
 	_SINCOS( Light->Theta / 2.0f, &ThetaSin, &ThetaCos ) ;
@@ -4737,137 +4737,137 @@ extern int Graphics_iOS_DeviceState_SetLightState( int LightNumber, LIGHTPARAM *
 
 	VectorTransformSR( &Direction, &Light->Direction, &GSYS.DrawSetting.ViewMatrixF ) ;
 	VectorTransform(   &Position,  &Light->Position,  &GSYS.DrawSetting.ViewMatrixF ) ;
-	GIOS.Device.Shader.Constant.uLightPos[ LightNumber ][ 0 ]						= Position.x ;
-	GIOS.Device.Shader.Constant.uLightPos[ LightNumber ][ 1 ]						= Position.y ;
-	GIOS.Device.Shader.Constant.uLightPos[ LightNumber ][ 2 ]						= Position.z ;
-	GIOS.Device.Shader.Constant.uLightDir[ LightNumber ][ 0 ]						= Direction.x ;
-	GIOS.Device.Shader.Constant.uLightDir[ LightNumber ][ 1 ]						= Direction.y ;
-	GIOS.Device.Shader.Constant.uLightDir[ LightNumber ][ 2 ]						= Direction.z ;
-	GIOS.Device.Shader.Constant.uLightDif[ LightNumber ][ 0 ]						= Light->Diffuse.r ;
-	GIOS.Device.Shader.Constant.uLightDif[ LightNumber ][ 1 ]						= Light->Diffuse.g ;
-	GIOS.Device.Shader.Constant.uLightDif[ LightNumber ][ 2 ]						= Light->Diffuse.b ;
-	GIOS.Device.Shader.Constant.uLightDif[ LightNumber ][ 3 ]						= Light->Diffuse.a ;
-	GIOS.Device.Shader.Constant.uLightSpc[ LightNumber ][ 0 ]						= Light->Specular.r ;
-	GIOS.Device.Shader.Constant.uLightSpc[ LightNumber ][ 1 ]						= Light->Specular.g ;
-	GIOS.Device.Shader.Constant.uLightSpc[ LightNumber ][ 2 ]						= Light->Specular.b ;
-	GIOS.Device.Shader.Constant.uLightSpc[ LightNumber ][ 3 ]						= Light->Specular.a ;
-	GIOS.Device.Shader.Constant.uLightAmb[ LightNumber ][ 0 ]						= Light->Ambient.r ;
-	GIOS.Device.Shader.Constant.uLightAmb[ LightNumber ][ 1 ]						= Light->Ambient.g ;
-	GIOS.Device.Shader.Constant.uLightAmb[ LightNumber ][ 2 ]						= Light->Ambient.b ;
-	GIOS.Device.Shader.Constant.uLightAmb[ LightNumber ][ 3 ]						= Light->Ambient.a ;
-	GIOS.Device.Shader.Constant.uLightRange_FallOff_AT0_AT1[ LightNumber ][ 0 ]	= Light->Range * Light->Range ;
-	GIOS.Device.Shader.Constant.uLightRange_FallOff_AT0_AT1[ LightNumber ][ 1 ]	= Light->Falloff ;
-	GIOS.Device.Shader.Constant.uLightRange_FallOff_AT0_AT1[ LightNumber ][ 2 ]	= Light->Attenuation0 ;
-	GIOS.Device.Shader.Constant.uLightRange_FallOff_AT0_AT1[ LightNumber ][ 3 ]	= Light->Attenuation1 ;
-	GIOS.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ LightNumber ][ 0 ]		= Light->Attenuation2 ;
-	GIOS.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ LightNumber ][ 1 ]		= PhiCos ;
+	GHTML5.Device.Shader.Constant.uLightPos[ LightNumber ][ 0 ]						= Position.x ;
+	GHTML5.Device.Shader.Constant.uLightPos[ LightNumber ][ 1 ]						= Position.y ;
+	GHTML5.Device.Shader.Constant.uLightPos[ LightNumber ][ 2 ]						= Position.z ;
+	GHTML5.Device.Shader.Constant.uLightDir[ LightNumber ][ 0 ]						= Direction.x ;
+	GHTML5.Device.Shader.Constant.uLightDir[ LightNumber ][ 1 ]						= Direction.y ;
+	GHTML5.Device.Shader.Constant.uLightDir[ LightNumber ][ 2 ]						= Direction.z ;
+	GHTML5.Device.Shader.Constant.uLightDif[ LightNumber ][ 0 ]						= Light->Diffuse.r ;
+	GHTML5.Device.Shader.Constant.uLightDif[ LightNumber ][ 1 ]						= Light->Diffuse.g ;
+	GHTML5.Device.Shader.Constant.uLightDif[ LightNumber ][ 2 ]						= Light->Diffuse.b ;
+	GHTML5.Device.Shader.Constant.uLightDif[ LightNumber ][ 3 ]						= Light->Diffuse.a ;
+	GHTML5.Device.Shader.Constant.uLightSpc[ LightNumber ][ 0 ]						= Light->Specular.r ;
+	GHTML5.Device.Shader.Constant.uLightSpc[ LightNumber ][ 1 ]						= Light->Specular.g ;
+	GHTML5.Device.Shader.Constant.uLightSpc[ LightNumber ][ 2 ]						= Light->Specular.b ;
+	GHTML5.Device.Shader.Constant.uLightSpc[ LightNumber ][ 3 ]						= Light->Specular.a ;
+	GHTML5.Device.Shader.Constant.uLightAmb[ LightNumber ][ 0 ]						= Light->Ambient.r ;
+	GHTML5.Device.Shader.Constant.uLightAmb[ LightNumber ][ 1 ]						= Light->Ambient.g ;
+	GHTML5.Device.Shader.Constant.uLightAmb[ LightNumber ][ 2 ]						= Light->Ambient.b ;
+	GHTML5.Device.Shader.Constant.uLightAmb[ LightNumber ][ 3 ]						= Light->Ambient.a ;
+	GHTML5.Device.Shader.Constant.uLightRange_FallOff_AT0_AT1[ LightNumber ][ 0 ]	= Light->Range * Light->Range ;
+	GHTML5.Device.Shader.Constant.uLightRange_FallOff_AT0_AT1[ LightNumber ][ 1 ]	= Light->Falloff ;
+	GHTML5.Device.Shader.Constant.uLightRange_FallOff_AT0_AT1[ LightNumber ][ 2 ]	= Light->Attenuation0 ;
+	GHTML5.Device.Shader.Constant.uLightRange_FallOff_AT0_AT1[ LightNumber ][ 3 ]	= Light->Attenuation1 ;
+	GHTML5.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ LightNumber ][ 0 ]		= Light->Attenuation2 ;
+	GHTML5.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ LightNumber ][ 1 ]		= PhiCos ;
 	if( _FABS( ThetaCos - PhiCos ) < 0.0000001f )
 	{
-		GIOS.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ LightNumber ][ 2 ]    = 100000.0f ;
+		GHTML5.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ LightNumber ][ 2 ]    = 100000.0f ;
 	}
 	else
 	{
-		GIOS.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ LightNumber ][ 2 ]	= 1.0f / ( ThetaCos - PhiCos ) ;
+		GHTML5.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ LightNumber ][ 2 ]	= 1.0f / ( ThetaCos - PhiCos ) ;
 	}
-	GIOS.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ LightNumber ][ 3 ]		= 0.0f ;
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ LightNumber ][ 3 ]		= 0.0f ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// アンビエントカラーとエミッシブカラーを掛け合わせた情報を更新する
-	Graphics_iOS_DeviceState_RefreshAmbientAndEmissiveParam() ;
+	Graphics_HTML5_DeviceState_RefreshAmbientAndEmissiveParam() ;
 
 	// 終了
 	return 0 ;
 }
 
 // ライトの有効、無効を変更
-extern int Graphics_iOS_DeviceState_SetLightEnable( int LightNumber, int EnableState )
+extern int Graphics_HTML5_DeviceState_SetLightEnable( int LightNumber, int EnableState )
 {
-	if( LightNumber < 0 || LightNumber >= DX_IOS_COMMON_CONST_LIGHT_NUM )
+	if( LightNumber < 0 || LightNumber >= DX_HTML5_COMMON_CONST_LIGHT_NUM )
 	{
 		return -1 ;
 	}
 
-	if( GIOS.Device.State.LightEnableFlag[ LightNumber ] == EnableState &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.LightEnableFlag[ LightNumber ] == EnableState &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.LightEnableFlag[ LightNumber ] = EnableState ;
+	GHTML5.Device.State.LightEnableFlag[ LightNumber ] = EnableState ;
 
 	// 有効なライトの最大インデックスを更新
 	if( EnableState == TRUE )
 	{
-		if( GIOS.Device.State.LightEnableMaxIndex < LightNumber )
-			GIOS.Device.State.LightEnableMaxIndex = LightNumber ;
+		if( GHTML5.Device.State.LightEnableMaxIndex < LightNumber )
+			GHTML5.Device.State.LightEnableMaxIndex = LightNumber ;
 	}
 	else
 	{
-		if( GIOS.Device.State.LightEnableMaxIndex == LightNumber )
+		if( GHTML5.Device.State.LightEnableMaxIndex == LightNumber )
 		{
 			int i ;
 
-			for( i = LightNumber ; i > 0 && GIOS.Device.State.LightEnableFlag[ i ] == FALSE ; i -- ){}
-			GIOS.Device.State.LightEnableMaxIndex = i ;
+			for( i = LightNumber ; i > 0 && GHTML5.Device.State.LightEnableFlag[ i ] == FALSE ; i -- ){}
+			GHTML5.Device.State.LightEnableMaxIndex = i ;
 		}
 	}
 
 	// アンビエントカラーとエミッシブカラーを掛け合わせた情報を更新する
-	Graphics_iOS_DeviceState_RefreshAmbientAndEmissiveParam() ;
+	Graphics_HTML5_DeviceState_RefreshAmbientAndEmissiveParam() ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // マテリアルのセット
-extern int Graphics_iOS_DeviceState_SetMaterial( MATERIALPARAM *Material )
+extern int Graphics_HTML5_DeviceState_SetMaterial( MATERIALPARAM *Material )
 {
-	if( _MEMCMP( GSYS.Light.MaterialTypeParam, GIOS.Device.State.MaterialTypeParam, sizeof( GSYS.Light.MaterialTypeParam) ) == 0 &&
-		_MEMCMP( Material, &GIOS.Device.State.Material, sizeof( MATERIALPARAM ) ) == 0 &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( _MEMCMP( GSYS.Light.MaterialTypeParam, GHTML5.Device.State.MaterialTypeParam, sizeof( GSYS.Light.MaterialTypeParam) ) == 0 &&
+		_MEMCMP( Material, &GHTML5.Device.State.Material, sizeof( MATERIALPARAM ) ) == 0 &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.Material = *Material ;
-	_MEMCPY( GIOS.Device.State.MaterialTypeParam, GSYS.Light.MaterialTypeParam, sizeof( GSYS.Light.MaterialTypeParam ) ) ;
+	GHTML5.Device.State.Material = *Material ;
+	_MEMCPY( GHTML5.Device.State.MaterialTypeParam, GSYS.Light.MaterialTypeParam, sizeof( GSYS.Light.MaterialTypeParam ) ) ;
 
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uMatDif[ 0 ]   = Material->Diffuse.r ;
-	GIOS.Device.Shader.Constant.uMatDif[ 1 ]   = Material->Diffuse.g ;
-	GIOS.Device.Shader.Constant.uMatDif[ 2 ]   = Material->Diffuse.b ;
-	GIOS.Device.Shader.Constant.uMatDif[ 3 ]   = Material->Diffuse.a ;
-	GIOS.Device.Shader.Constant.uMatSpc[ 0 ]   = Material->Specular.r ;
-	GIOS.Device.Shader.Constant.uMatSpc[ 1 ]   = Material->Specular.g ;
-	GIOS.Device.Shader.Constant.uMatSpc[ 2 ]   = Material->Specular.b ;
-	GIOS.Device.Shader.Constant.uMatSpc[ 3 ]   = Material->Specular.a ;
-	GIOS.Device.Shader.Constant.uMatPow        = Material->Power < 0.00000000001f ? 0.00000000001f : Material->Power ;
-	GIOS.Device.Shader.Constant.uMatTypeParam0 = GIOS.Device.State.MaterialTypeParam[ 0 ] ;
-	GIOS.Device.Shader.Constant.uMatTypeParam1 = GIOS.Device.State.MaterialTypeParam[ 1 ] ;
-	GIOS.Device.Shader.Constant.uMatTypeParam2 = GIOS.Device.State.MaterialTypeParam[ 2 ] ;
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.uMatDif[ 0 ]   = Material->Diffuse.r ;
+	GHTML5.Device.Shader.Constant.uMatDif[ 1 ]   = Material->Diffuse.g ;
+	GHTML5.Device.Shader.Constant.uMatDif[ 2 ]   = Material->Diffuse.b ;
+	GHTML5.Device.Shader.Constant.uMatDif[ 3 ]   = Material->Diffuse.a ;
+	GHTML5.Device.Shader.Constant.uMatSpc[ 0 ]   = Material->Specular.r ;
+	GHTML5.Device.Shader.Constant.uMatSpc[ 1 ]   = Material->Specular.g ;
+	GHTML5.Device.Shader.Constant.uMatSpc[ 2 ]   = Material->Specular.b ;
+	GHTML5.Device.Shader.Constant.uMatSpc[ 3 ]   = Material->Specular.a ;
+	GHTML5.Device.Shader.Constant.uMatPow        = Material->Power < 0.00000000001f ? 0.00000000001f : Material->Power ;
+	GHTML5.Device.Shader.Constant.uMatTypeParam0 = GHTML5.Device.State.MaterialTypeParam[ 0 ] ;
+	GHTML5.Device.Shader.Constant.uMatTypeParam1 = GHTML5.Device.State.MaterialTypeParam[ 1 ] ;
+	GHTML5.Device.Shader.Constant.uMatTypeParam2 = GHTML5.Device.State.MaterialTypeParam[ 2 ] ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// アンビエントカラーとエミッシブカラーを掛け合わせた情報を更新する
-	Graphics_iOS_DeviceState_RefreshAmbientAndEmissiveParam() ;
+	Graphics_HTML5_DeviceState_RefreshAmbientAndEmissiveParam() ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // スペキュラを使用するかどうかをセット
-extern int Graphics_iOS_DeviceState_SetSpecularEnable( int UseFlag )
+extern int Graphics_HTML5_DeviceState_SetSpecularEnable( int UseFlag )
 {
 	// 既存のパラメータと同じ場合は何もしない
-	if( GIOS.Device.State.UseSpecular == UseFlag &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.UseSpecular == UseFlag &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -4875,22 +4875,22 @@ extern int Graphics_iOS_DeviceState_SetSpecularEnable( int UseFlag )
 	DRAWSTOCKINFO
 
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uDifSrc_SpeSrc_MulSpeCol[ 2 ] = UseFlag ? 1.0f : 0.0f ;
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.uDifSrc_SpeSrc_MulSpeCol[ 2 ] = UseFlag ? 1.0f : 0.0f ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
-	GIOS.Device.State.UseSpecular = UseFlag ;
+	GHTML5.Device.State.UseSpecular = UseFlag ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // 頂点のディフューズカラーをマテリアルのディフューズカラーとして使用するかどうかを設定する
-extern int Graphics_iOS_DeviceState_SetUseVertexDiffuseColor( int UseFlag )
+extern int Graphics_HTML5_DeviceState_SetUseVertexDiffuseColor( int UseFlag )
 {
-	if( UseFlag == GIOS.Device.State.MaterialUseVertexDiffuseColor &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( UseFlag == GHTML5.Device.State.MaterialUseVertexDiffuseColor &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -4898,22 +4898,22 @@ extern int Graphics_iOS_DeviceState_SetUseVertexDiffuseColor( int UseFlag )
 	DRAWSTOCKINFO
 
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uDifSrc_SpeSrc_MulSpeCol[ 0 ] = UseFlag ? 1.0f : 0.0f ;
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.uDifSrc_SpeSrc_MulSpeCol[ 0 ] = UseFlag ? 1.0f : 0.0f ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
-	GIOS.Device.State.MaterialUseVertexDiffuseColor = UseFlag ;
+	GHTML5.Device.State.MaterialUseVertexDiffuseColor = UseFlag ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // 頂点のスペキュラカラーをマテリアルのスペキュラカラーとして使用するかどうかを設定する
-extern int Graphics_iOS_DeviceState_SetUseVertexSpecularColor( int UseFlag )
+extern int Graphics_HTML5_DeviceState_SetUseVertexSpecularColor( int UseFlag )
 {
-	if( UseFlag == GIOS.Device.State.MaterialUseVertexSpecularColor &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( UseFlag == GHTML5.Device.State.MaterialUseVertexSpecularColor &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -4921,25 +4921,25 @@ extern int Graphics_iOS_DeviceState_SetUseVertexSpecularColor( int UseFlag )
 	DRAWSTOCKINFO
 
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uDifSrc_SpeSrc_MulSpeCol[ 1 ] = UseFlag ? 1.0f : 0.0f ;
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.uDifSrc_SpeSrc_MulSpeCol[ 1 ] = UseFlag ? 1.0f : 0.0f ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
-	GIOS.Device.State.MaterialUseVertexSpecularColor = UseFlag ;
+	GHTML5.Device.State.MaterialUseVertexSpecularColor = UseFlag ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // カリングの有無をセット 
-extern int Graphics_iOS_DeviceState_SetCullMode( int State )
+extern int Graphics_HTML5_DeviceState_SetCullMode( int State )
 {
 	int Enable = FALSE ;
 	GLenum CullFace = GL_BACK ;
 	GLenum FrontFace = GL_CW ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -4963,17 +4963,17 @@ extern int Graphics_iOS_DeviceState_SetCullMode( int State )
 	}
 
 	// モードが同じだったら何もせず終了
-	if( GIOS.Device.State.CullEnable == Enable &&
-		GIOS.Device.State.CullFace == CullFace &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.CullEnable == Enable &&
+		GHTML5.Device.State.CullFace == CullFace &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 	
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.CullEnable = Enable ;
-	GIOS.Device.State.CullFace   = CullFace ;
+	GHTML5.Device.State.CullEnable = Enable ;
+	GHTML5.Device.State.CullFace   = CullFace ;
 
 	if( Enable )
 	{
@@ -4988,40 +4988,40 @@ extern int Graphics_iOS_DeviceState_SetCullMode( int State )
 	glCullFace( CullFace ) ;
 	glFrontFace( FrontFace ) ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // アンビエントカラーのセット
-extern int Graphics_iOS_DeviceState_SetAmbient( COLOR_F *Color )
+extern int Graphics_HTML5_DeviceState_SetAmbient( COLOR_F *Color )
 {
-	if( _MEMCMP( Color, &GIOS.Device.State.GlobalAmbientLightColor, sizeof( COLOR_F ) ) == 0 &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( _MEMCMP( Color, &GHTML5.Device.State.GlobalAmbientLightColor, sizeof( COLOR_F ) ) == 0 &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.GlobalAmbientLightColor = *Color ;
+	GHTML5.Device.State.GlobalAmbientLightColor = *Color ;
 
 	// アンビエントカラーとエミッシブカラーを掛け合わせた情報を更新する
-	Graphics_iOS_DeviceState_RefreshAmbientAndEmissiveParam() ;
+	Graphics_HTML5_DeviceState_RefreshAmbientAndEmissiveParam() ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // テクスチャーのアドレッシングモードをセットする
-extern int  Graphics_iOS_DeviceState_SetTextureAddress( int AddressMode, int Sampler )
+extern int  Graphics_HTML5_DeviceState_SetTextureAddress( int AddressMode, int Sampler )
 {
 	int i ;
 	GLenum WrapMode ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -5035,13 +5035,13 @@ extern int  Graphics_iOS_DeviceState_SetTextureAddress( int AddressMode, int Sam
 
 	if( Sampler < 0 )
 	{
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 			{
-				if( WrapMode != GIOS.Device.State.TexAddressModeU[ i ] ||
-					WrapMode != GIOS.Device.State.TexAddressModeV[ i ] ||
-					WrapMode != GIOS.Device.State.TexAddressModeW[ i ] )
+				if( WrapMode != GHTML5.Device.State.TexAddressModeU[ i ] ||
+					WrapMode != GHTML5.Device.State.TexAddressModeV[ i ] ||
+					WrapMode != GHTML5.Device.State.TexAddressModeW[ i ] )
 				{
 					break ;
 				}
@@ -5056,31 +5056,31 @@ extern int  Graphics_iOS_DeviceState_SetTextureAddress( int AddressMode, int Sam
 
 		for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 		{
-			if( WrapMode == GIOS.Device.State.TexAddressModeU[ i ] &&
-				WrapMode == GIOS.Device.State.TexAddressModeV[ i ] &&
-				WrapMode == GIOS.Device.State.TexAddressModeW[ i ] &&
-				GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+			if( WrapMode == GHTML5.Device.State.TexAddressModeU[ i ] &&
+				WrapMode == GHTML5.Device.State.TexAddressModeV[ i ] &&
+				WrapMode == GHTML5.Device.State.TexAddressModeW[ i ] &&
+				GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 			{
 				continue ;
 			}
 
-			GIOS.Device.State.TexAddressModeU[ i ] = WrapMode ;
-			GIOS.Device.State.TexAddressModeV[ i ] = WrapMode ;
-			GIOS.Device.State.TexAddressModeW[ i ] = WrapMode ;
+			GHTML5.Device.State.TexAddressModeU[ i ] = WrapMode ;
+			GHTML5.Device.State.TexAddressModeV[ i ] = WrapMode ;
+			GHTML5.Device.State.TexAddressModeW[ i ] = WrapMode ;
 
-			if( GIOS.Device.State.SetTexture[ i ] != NULL )
+			if( GHTML5.Device.State.SetTexture[ i ] != NULL )
 			{
 				glActiveTexture( g_TextureEnum[ i ] ) ;
-				glBindTexture( GL_TEXTURE_2D, GIOS.Device.State.SetTexture[ i ]->TextureBuffer ) ;
-				if( GIOS.Device.State.SetTexture[ i ]->WrapS != GIOS.Device.State.TexAddressModeU[ i ] )
+				glBindTexture( GL_TEXTURE_2D, GHTML5.Device.State.SetTexture[ i ]->TextureBuffer ) ;
+				if( GHTML5.Device.State.SetTexture[ i ]->WrapS != GHTML5.Device.State.TexAddressModeU[ i ] )
 				{
-					GIOS.Device.State.SetTexture[ i ]->WrapS = GIOS.Device.State.TexAddressModeU[ i ] ;
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GIOS.Device.State.SetTexture[ i ]->WrapS ) ;
+					GHTML5.Device.State.SetTexture[ i ]->WrapS = GHTML5.Device.State.TexAddressModeU[ i ] ;
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GHTML5.Device.State.SetTexture[ i ]->WrapS ) ;
 				}
-				if( GIOS.Device.State.SetTexture[ i ]->WrapT != GIOS.Device.State.TexAddressModeV[ i ] )
+				if( GHTML5.Device.State.SetTexture[ i ]->WrapT != GHTML5.Device.State.TexAddressModeV[ i ] )
 				{
-					GIOS.Device.State.SetTexture[ i ]->WrapT = GIOS.Device.State.TexAddressModeV[ i ] ;
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GIOS.Device.State.SetTexture[ i ]->WrapT ) ;
+					GHTML5.Device.State.SetTexture[ i ]->WrapT = GHTML5.Device.State.TexAddressModeV[ i ] ;
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GHTML5.Device.State.SetTexture[ i ]->WrapT ) ;
 				}
 			}
 		}
@@ -5092,49 +5092,49 @@ extern int  Graphics_iOS_DeviceState_SetTextureAddress( int AddressMode, int Sam
 			return -1 ;
 		}
 
-		if( WrapMode == GIOS.Device.State.TexAddressModeU[ Sampler ] &&
-			WrapMode == GIOS.Device.State.TexAddressModeV[ Sampler ] &&
-			WrapMode == GIOS.Device.State.TexAddressModeW[ Sampler ] &&
-			GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( WrapMode == GHTML5.Device.State.TexAddressModeU[ Sampler ] &&
+			WrapMode == GHTML5.Device.State.TexAddressModeV[ Sampler ] &&
+			WrapMode == GHTML5.Device.State.TexAddressModeW[ Sampler ] &&
+			GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			return 0 ;
 		}
 
 		DRAWSTOCKINFO
 
-		GIOS.Device.State.TexAddressModeU[ Sampler ] = WrapMode ;
-		GIOS.Device.State.TexAddressModeV[ Sampler ] = WrapMode ;
-		GIOS.Device.State.TexAddressModeW[ Sampler ] = WrapMode ;
+		GHTML5.Device.State.TexAddressModeU[ Sampler ] = WrapMode ;
+		GHTML5.Device.State.TexAddressModeV[ Sampler ] = WrapMode ;
+		GHTML5.Device.State.TexAddressModeW[ Sampler ] = WrapMode ;
 
-		if( GIOS.Device.State.SetTexture[ Sampler ] != NULL )
+		if( GHTML5.Device.State.SetTexture[ Sampler ] != NULL )
 		{
 			glActiveTexture( g_TextureEnum[ Sampler ] ) ;
-			glBindTexture( GL_TEXTURE_2D, GIOS.Device.State.SetTexture[ Sampler ]->TextureBuffer ) ;
-			if( GIOS.Device.State.SetTexture[ Sampler ]->WrapS != GIOS.Device.State.TexAddressModeU[ Sampler ] )
+			glBindTexture( GL_TEXTURE_2D, GHTML5.Device.State.SetTexture[ Sampler ]->TextureBuffer ) ;
+			if( GHTML5.Device.State.SetTexture[ Sampler ]->WrapS != GHTML5.Device.State.TexAddressModeU[ Sampler ] )
 			{
-				GIOS.Device.State.SetTexture[ Sampler ]->WrapS = GIOS.Device.State.TexAddressModeU[ Sampler ] ;
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GIOS.Device.State.SetTexture[ Sampler ]->WrapS ) ;
+				GHTML5.Device.State.SetTexture[ Sampler ]->WrapS = GHTML5.Device.State.TexAddressModeU[ Sampler ] ;
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GHTML5.Device.State.SetTexture[ Sampler ]->WrapS ) ;
 			}
-			if( GIOS.Device.State.SetTexture[ Sampler ]->WrapT != GIOS.Device.State.TexAddressModeV[ Sampler ] )
+			if( GHTML5.Device.State.SetTexture[ Sampler ]->WrapT != GHTML5.Device.State.TexAddressModeV[ Sampler ] )
 			{
-				GIOS.Device.State.SetTexture[ Sampler ]->WrapT = GIOS.Device.State.TexAddressModeV[ Sampler ] ;
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GIOS.Device.State.SetTexture[ Sampler ]->WrapT ) ;
+				GHTML5.Device.State.SetTexture[ Sampler ]->WrapT = GHTML5.Device.State.TexAddressModeV[ Sampler ] ;
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GHTML5.Device.State.SetTexture[ Sampler ]->WrapT ) ;
 			}
 		}
 	}
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // テクスチャーのアドレッシングモードをセットする
-extern int Graphics_iOS_DeviceState_SetTextureAddressU( int AddressMode, int Sampler )
+extern int Graphics_HTML5_DeviceState_SetTextureAddressU( int AddressMode, int Sampler )
 {
 	int i ;
 	GLenum WrapMode ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -5148,11 +5148,11 @@ extern int Graphics_iOS_DeviceState_SetTextureAddressU( int AddressMode, int Sam
 
 	if( Sampler == -1 )
 	{
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 			{
-				if( WrapMode != GIOS.Device.State.TexAddressModeU[ i ] )
+				if( WrapMode != GHTML5.Device.State.TexAddressModeU[ i ] )
 				{
 					break ;
 				}
@@ -5167,22 +5167,22 @@ extern int Graphics_iOS_DeviceState_SetTextureAddressU( int AddressMode, int Sam
 
 		for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 		{
-			if( WrapMode == GIOS.Device.State.TexAddressModeU[ i ] &&
-				GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+			if( WrapMode == GHTML5.Device.State.TexAddressModeU[ i ] &&
+				GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 			{
 				continue ;
 			}
 
-			GIOS.Device.State.TexAddressModeU[ i ] = WrapMode ;
+			GHTML5.Device.State.TexAddressModeU[ i ] = WrapMode ;
 
-			if( GIOS.Device.State.SetTexture[ i ] != NULL )
+			if( GHTML5.Device.State.SetTexture[ i ] != NULL )
 			{
 				glActiveTexture( g_TextureEnum[ i ] ) ;
-				glBindTexture( GL_TEXTURE_2D, GIOS.Device.State.SetTexture[ i ]->TextureBuffer ) ;
-				if( GIOS.Device.State.SetTexture[ i ]->WrapS != GIOS.Device.State.TexAddressModeU[ i ] )
+				glBindTexture( GL_TEXTURE_2D, GHTML5.Device.State.SetTexture[ i ]->TextureBuffer ) ;
+				if( GHTML5.Device.State.SetTexture[ i ]->WrapS != GHTML5.Device.State.TexAddressModeU[ i ] )
 				{
-					GIOS.Device.State.SetTexture[ i ]->WrapS = GIOS.Device.State.TexAddressModeU[ i ] ;
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GIOS.Device.State.SetTexture[ i ]->WrapS ) ;
+					GHTML5.Device.State.SetTexture[ i ]->WrapS = GHTML5.Device.State.TexAddressModeU[ i ] ;
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GHTML5.Device.State.SetTexture[ i ]->WrapS ) ;
 				}
 			}
 		}
@@ -5194,40 +5194,40 @@ extern int Graphics_iOS_DeviceState_SetTextureAddressU( int AddressMode, int Sam
 			return -1 ;
 		}
 
-		if( WrapMode == GIOS.Device.State.TexAddressModeU[ Sampler ] &&
-			GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( WrapMode == GHTML5.Device.State.TexAddressModeU[ Sampler ] &&
+			GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			return 0 ;
 		}
 
 		DRAWSTOCKINFO
 
-		GIOS.Device.State.TexAddressModeU[ Sampler ] = WrapMode ;
+		GHTML5.Device.State.TexAddressModeU[ Sampler ] = WrapMode ;
 
-		if( GIOS.Device.State.SetTexture[ Sampler ] != NULL )
+		if( GHTML5.Device.State.SetTexture[ Sampler ] != NULL )
 		{
 			glActiveTexture( g_TextureEnum[ Sampler ] ) ;
-			glBindTexture( GL_TEXTURE_2D, GIOS.Device.State.SetTexture[ Sampler ]->TextureBuffer ) ;
-			if( GIOS.Device.State.SetTexture[ Sampler ]->WrapS != GIOS.Device.State.TexAddressModeU[ Sampler ] )
+			glBindTexture( GL_TEXTURE_2D, GHTML5.Device.State.SetTexture[ Sampler ]->TextureBuffer ) ;
+			if( GHTML5.Device.State.SetTexture[ Sampler ]->WrapS != GHTML5.Device.State.TexAddressModeU[ Sampler ] )
 			{
-				GIOS.Device.State.SetTexture[ Sampler ]->WrapS = GIOS.Device.State.TexAddressModeU[ Sampler ] ;
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GIOS.Device.State.SetTexture[ Sampler ]->WrapS ) ;
+				GHTML5.Device.State.SetTexture[ Sampler ]->WrapS = GHTML5.Device.State.TexAddressModeU[ Sampler ] ;
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GHTML5.Device.State.SetTexture[ Sampler ]->WrapS ) ;
 			}
 		}
 	}
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // テクスチャーのアドレッシングモードをセットする
-extern int Graphics_iOS_DeviceState_SetTextureAddressV( int AddressMode, int Sampler )
+extern int Graphics_HTML5_DeviceState_SetTextureAddressV( int AddressMode, int Sampler )
 {
 	int i ;
 	GLenum WrapMode ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -5241,11 +5241,11 @@ extern int Graphics_iOS_DeviceState_SetTextureAddressV( int AddressMode, int Sam
 
 	if( Sampler == -1 )
 	{
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 			{
-				if( WrapMode != GIOS.Device.State.TexAddressModeV[ i ] )
+				if( WrapMode != GHTML5.Device.State.TexAddressModeV[ i ] )
 				{
 					break ;
 				}
@@ -5260,22 +5260,22 @@ extern int Graphics_iOS_DeviceState_SetTextureAddressV( int AddressMode, int Sam
 
 		for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 		{
-			if( WrapMode == GIOS.Device.State.TexAddressModeV[ i ] &&
-				GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+			if( WrapMode == GHTML5.Device.State.TexAddressModeV[ i ] &&
+				GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 			{
 				continue ;
 			}
 
-			GIOS.Device.State.TexAddressModeV[ i ] = WrapMode ;
+			GHTML5.Device.State.TexAddressModeV[ i ] = WrapMode ;
 
-			if( GIOS.Device.State.SetTexture[ i ] != NULL )
+			if( GHTML5.Device.State.SetTexture[ i ] != NULL )
 			{
 				glActiveTexture( g_TextureEnum[ i ] ) ;
-				glBindTexture( GL_TEXTURE_2D, GIOS.Device.State.SetTexture[ i ]->TextureBuffer ) ;
-				if( GIOS.Device.State.SetTexture[ i ]->WrapT != GIOS.Device.State.TexAddressModeV[ i ] )
+				glBindTexture( GL_TEXTURE_2D, GHTML5.Device.State.SetTexture[ i ]->TextureBuffer ) ;
+				if( GHTML5.Device.State.SetTexture[ i ]->WrapT != GHTML5.Device.State.TexAddressModeV[ i ] )
 				{
-					GIOS.Device.State.SetTexture[ i ]->WrapT = GIOS.Device.State.TexAddressModeV[ i ] ;
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GIOS.Device.State.SetTexture[ i ]->WrapT ) ;
+					GHTML5.Device.State.SetTexture[ i ]->WrapT = GHTML5.Device.State.TexAddressModeV[ i ] ;
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GHTML5.Device.State.SetTexture[ i ]->WrapT ) ;
 				}
 			}
 		}
@@ -5287,35 +5287,35 @@ extern int Graphics_iOS_DeviceState_SetTextureAddressV( int AddressMode, int Sam
 			return -1 ;
 		}
 
-		if( WrapMode == GIOS.Device.State.TexAddressModeV[ Sampler ] &&
-			GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( WrapMode == GHTML5.Device.State.TexAddressModeV[ Sampler ] &&
+			GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			return 0 ;
 		}
 
 		DRAWSTOCKINFO
 
-		GIOS.Device.State.TexAddressModeV[ Sampler ] = WrapMode ;
+		GHTML5.Device.State.TexAddressModeV[ Sampler ] = WrapMode ;
 
-		if( GIOS.Device.State.SetTexture[ Sampler ] != NULL )
+		if( GHTML5.Device.State.SetTexture[ Sampler ] != NULL )
 		{
 			glActiveTexture( g_TextureEnum[ Sampler ] ) ;
-			glBindTexture( GL_TEXTURE_2D, GIOS.Device.State.SetTexture[ Sampler ]->TextureBuffer ) ;
-			if( GIOS.Device.State.SetTexture[ Sampler ]->WrapT != GIOS.Device.State.TexAddressModeV[ Sampler ] )
+			glBindTexture( GL_TEXTURE_2D, GHTML5.Device.State.SetTexture[ Sampler ]->TextureBuffer ) ;
+			if( GHTML5.Device.State.SetTexture[ Sampler ]->WrapT != GHTML5.Device.State.TexAddressModeV[ Sampler ] )
 			{
-				GIOS.Device.State.SetTexture[ Sampler ]->WrapT = GIOS.Device.State.TexAddressModeV[ Sampler ] ;
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GIOS.Device.State.SetTexture[ Sampler ]->WrapT ) ;
+				GHTML5.Device.State.SetTexture[ Sampler ]->WrapT = GHTML5.Device.State.TexAddressModeV[ Sampler ] ;
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GHTML5.Device.State.SetTexture[ Sampler ]->WrapT ) ;
 			}
 		}
 	}
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // テクスチャーのアドレッシングモードをセットする
-extern int Graphics_iOS_DeviceState_SetTextureAddressW( int AddressMode, int Sampler )
+extern int Graphics_HTML5_DeviceState_SetTextureAddressW( int AddressMode, int Sampler )
 {
 	int i ;
 	GLenum WrapMode ;
@@ -5329,11 +5329,11 @@ extern int Graphics_iOS_DeviceState_SetTextureAddressW( int AddressMode, int Sam
 
 	if( Sampler == -1 )
 	{
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 			{
-				if( WrapMode != GIOS.Device.State.TexAddressModeW[ i ] )
+				if( WrapMode != GHTML5.Device.State.TexAddressModeW[ i ] )
 				{
 					break ;
 				}
@@ -5348,13 +5348,13 @@ extern int Graphics_iOS_DeviceState_SetTextureAddressW( int AddressMode, int Sam
 
 		for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 		{
-			if( WrapMode == GIOS.Device.State.TexAddressModeW[ i ] &&
-				GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+			if( WrapMode == GHTML5.Device.State.TexAddressModeW[ i ] &&
+				GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 			{
 				continue ;
 			}
 
-			GIOS.Device.State.TexAddressModeW[ i ] = WrapMode ;
+			GHTML5.Device.State.TexAddressModeW[ i ] = WrapMode ;
 		}
 	}
 	else
@@ -5364,36 +5364,36 @@ extern int Graphics_iOS_DeviceState_SetTextureAddressW( int AddressMode, int Sam
 			return -1 ;
 		}
 
-		if( WrapMode == GIOS.Device.State.TexAddressModeW[ Sampler ] &&
-			GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( WrapMode == GHTML5.Device.State.TexAddressModeW[ Sampler ] &&
+			GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			return 0 ;
 		}
 
 		DRAWSTOCKINFO
 
-		GIOS.Device.State.TexAddressModeW[ Sampler ] = WrapMode ;
+		GHTML5.Device.State.TexAddressModeW[ Sampler ] = WrapMode ;
 	}
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // テクスチャーのアドレッシングモードをセットする
-extern int Graphics_iOS_DeviceState_SetTextureAddressUVW( int AddressModeU, int AddressModeV, int AddressModeW, int Sampler )
+extern int Graphics_HTML5_DeviceState_SetTextureAddressUVW( int AddressModeU, int AddressModeV, int AddressModeW, int Sampler )
 {
-	if( Graphics_iOS_DeviceState_SetTextureAddressU( AddressModeU, Sampler ) < 0 )
+	if( Graphics_HTML5_DeviceState_SetTextureAddressU( AddressModeU, Sampler ) < 0 )
 	{
 		return -1 ;
 	}
 
-	if( Graphics_iOS_DeviceState_SetTextureAddressV( AddressModeV, Sampler ) < 0 )
+	if( Graphics_HTML5_DeviceState_SetTextureAddressV( AddressModeV, Sampler ) < 0 )
 	{
 		return -1 ;
 	}
 
-	if( Graphics_iOS_DeviceState_SetTextureAddressW( AddressModeW, Sampler ) < 0 )
+	if( Graphics_HTML5_DeviceState_SetTextureAddressW( AddressModeW, Sampler ) < 0 )
 	{
 		return -1 ;
 	}
@@ -5402,32 +5402,32 @@ extern int Graphics_iOS_DeviceState_SetTextureAddressUVW( int AddressModeU, int 
 }
 
 // 標準描画用のテクスチャ座標変換行列を定数バッファにセットする
-static int Graphics_iOS_DeviceState_SetNormalTextureAddressTransformMatrix_ConstBuffer( void )
+static int Graphics_HTML5_DeviceState_SetNormalTextureAddressTransformMatrix_ConstBuffer( void )
 {
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uTexMat[ 0 ][ 0 ] = GIOS.Device.State.TextureAddressTransformMatrix.m[ 0 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uTexMat[ 0 ][ 1 ] = GIOS.Device.State.TextureAddressTransformMatrix.m[ 1 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uTexMat[ 0 ][ 2 ] = GIOS.Device.State.TextureAddressTransformMatrix.m[ 2 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uTexMat[ 0 ][ 3 ] = GIOS.Device.State.TextureAddressTransformMatrix.m[ 3 ][ 0 ] ;
-	GIOS.Device.Shader.Constant.uTexMat[ 1 ][ 0 ] = GIOS.Device.State.TextureAddressTransformMatrix.m[ 0 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uTexMat[ 1 ][ 1 ] = GIOS.Device.State.TextureAddressTransformMatrix.m[ 1 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uTexMat[ 1 ][ 2 ] = GIOS.Device.State.TextureAddressTransformMatrix.m[ 2 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.uTexMat[ 1 ][ 3 ] = GIOS.Device.State.TextureAddressTransformMatrix.m[ 3 ][ 1 ] ;
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.uTexMat[ 0 ][ 0 ] = GHTML5.Device.State.TextureAddressTransformMatrix.m[ 0 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uTexMat[ 0 ][ 1 ] = GHTML5.Device.State.TextureAddressTransformMatrix.m[ 1 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uTexMat[ 0 ][ 2 ] = GHTML5.Device.State.TextureAddressTransformMatrix.m[ 2 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uTexMat[ 0 ][ 3 ] = GHTML5.Device.State.TextureAddressTransformMatrix.m[ 3 ][ 0 ] ;
+	GHTML5.Device.Shader.Constant.uTexMat[ 1 ][ 0 ] = GHTML5.Device.State.TextureAddressTransformMatrix.m[ 0 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uTexMat[ 1 ][ 1 ] = GHTML5.Device.State.TextureAddressTransformMatrix.m[ 1 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uTexMat[ 1 ][ 2 ] = GHTML5.Device.State.TextureAddressTransformMatrix.m[ 2 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.uTexMat[ 1 ][ 3 ] = GHTML5.Device.State.TextureAddressTransformMatrix.m[ 3 ][ 1 ] ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 標準描画用のテクスチャパラメータが設定されているかどうかフラグを立てる
-	GIOS.Device.Shader.Constant.SetNormalTextureAddressTransformMatrix = TRUE ;
+	GHTML5.Device.Shader.Constant.SetNormalTextureAddressTransformMatrix = TRUE ;
 
 	// 正常終了
 	return 0 ;
 }
 
 // テクスチャ座標変換行列をセットする
-extern int  Graphics_iOS_DeviceState_SetTextureAddressTransformMatrix( int Use, MATRIX *Matrix )
+extern int  Graphics_HTML5_DeviceState_SetTextureAddressTransformMatrix( int Use, MATRIX *Matrix )
 {
-	if( GIOS.Device.State.TextureAddressTransformMatrixUse == FALSE &&
+	if( GHTML5.Device.State.TextureAddressTransformMatrixUse == FALSE &&
 		Use == FALSE && 
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -5435,67 +5435,67 @@ extern int  Graphics_iOS_DeviceState_SetTextureAddressTransformMatrix( int Use, 
 	DRAWSTOCKINFO
 
 	// テクスチャ座標変換行列を使用するかどうかを保存
-	GIOS.Device.State.TextureAddressTransformMatrixUse = Use ;
+	GHTML5.Device.State.TextureAddressTransformMatrixUse = Use ;
 
 	// テクスチャ座標変換行列をセット
 	if( Use == TRUE )
 	{
-		GIOS.Device.State.TextureAddressTransformMatrix = *Matrix ;
+		GHTML5.Device.State.TextureAddressTransformMatrix = *Matrix ;
 	}
 	else
 	{
-		CreateIdentityMatrix( &GIOS.Device.State.TextureAddressTransformMatrix ) ;
+		CreateIdentityMatrix( &GHTML5.Device.State.TextureAddressTransformMatrix ) ;
 	}
 
 	// 定数バッファに反映する
-	Graphics_iOS_DeviceState_SetNormalTextureAddressTransformMatrix_ConstBuffer() ;
+	Graphics_HTML5_DeviceState_SetNormalTextureAddressTransformMatrix_ConstBuffer() ;
 
 	return 0 ;
 }
 
 // フォグを有効にするかどうかを設定する( TRUE:有効  FALSE:無効 )
-extern int  Graphics_iOS_DeviceState_SetFogEnable( int Flag )
+extern int  Graphics_HTML5_DeviceState_SetFogEnable( int Flag )
 {
-	if( Flag == GIOS.Device.State.FogEnable &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( Flag == GHTML5.Device.State.FogEnable &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.FogEnable = Flag ;
+	GHTML5.Device.State.FogEnable = Flag ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // フォグモードを設定する
-extern int  Graphics_iOS_DeviceState_SetFogVertexMode( int Mode /* DX_FOGMODE_NONE 等 */ )
+extern int  Graphics_HTML5_DeviceState_SetFogVertexMode( int Mode /* DX_FOGMODE_NONE 等 */ )
 {
-	if( Mode == GIOS.Device.State.FogMode &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( Mode == GHTML5.Device.State.FogMode &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.FogMode = Mode ;
+	GHTML5.Device.State.FogMode = Mode ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // フォグカラーを変更する
-extern int  Graphics_iOS_DeviceState_SetFogColor( unsigned int Color )
+extern int  Graphics_HTML5_DeviceState_SetFogColor( unsigned int Color )
 {
-	if( Color == GIOS.Device.State.FogColor &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( Color == GHTML5.Device.State.FogColor &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -5503,36 +5503,36 @@ extern int  Graphics_iOS_DeviceState_SetFogColor( unsigned int Color )
 	DRAWSTOCKINFO
 
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uFogColor[ 0 ] = ( ( Color >> 16 ) & 0xff ) / 255.0f ;
-	GIOS.Device.Shader.Constant.uFogColor[ 1 ] = ( ( Color >>  8 ) & 0xff ) / 255.0f ;
-	GIOS.Device.Shader.Constant.uFogColor[ 2 ] = ( ( Color >>  0 ) & 0xff ) / 255.0f ;
-	GIOS.Device.Shader.Constant.uFogColor[ 3 ] = 1.0f ;
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.uFogColor[ 0 ] = ( ( Color >> 16 ) & 0xff ) / 255.0f ;
+	GHTML5.Device.Shader.Constant.uFogColor[ 1 ] = ( ( Color >>  8 ) & 0xff ) / 255.0f ;
+	GHTML5.Device.Shader.Constant.uFogColor[ 2 ] = ( ( Color >>  0 ) & 0xff ) / 255.0f ;
+	GHTML5.Device.Shader.Constant.uFogColor[ 3 ] = 1.0f ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
-	GIOS.Device.State.FogColor = Color ;
+	GHTML5.Device.State.FogColor = Color ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // フォグの色以外の定数情報を更新する
-static int Graphics_iOS_DeviceState_UpdateConstantFogParam( void )
+static int Graphics_HTML5_DeviceState_UpdateConstantFogParam( void )
 {
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uFog[ 0 ] = GIOS.Device.State.FogEnd / ( GIOS.Device.State.FogEnd - GIOS.Device.State.FogStart ) ;
-	GIOS.Device.Shader.Constant.uFog[ 1 ] = -1.0f / ( GIOS.Device.State.FogEnd - GIOS.Device.State.FogStart ) ;
-	GIOS.Device.Shader.Constant.uFog[ 2 ] = GIOS.Device.State.FogDensity ;
-	GIOS.Device.Shader.Constant.uFog[ 3 ] = 2.71828183f ;
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.uFog[ 0 ] = GHTML5.Device.State.FogEnd / ( GHTML5.Device.State.FogEnd - GHTML5.Device.State.FogStart ) ;
+	GHTML5.Device.Shader.Constant.uFog[ 1 ] = -1.0f / ( GHTML5.Device.State.FogEnd - GHTML5.Device.State.FogStart ) ;
+	GHTML5.Device.Shader.Constant.uFog[ 2 ] = GHTML5.Device.State.FogDensity ;
+	GHTML5.Device.Shader.Constant.uFog[ 3 ] = 2.71828183f ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 終了
 	return 0 ;
 }
 
 // フォグが始まる距離と終了する距離を設定する( 0.0f 〜 1.0f )
-extern int  Graphics_iOS_DeviceState_SetFogStartEnd( float Start, float End )
+extern int  Graphics_HTML5_DeviceState_SetFogStartEnd( float Start, float End )
 {
 	int UpdateFlag ;
 
@@ -5540,94 +5540,94 @@ extern int  Graphics_iOS_DeviceState_SetFogStartEnd( float Start, float End )
 
 	UpdateFlag = FALSE ;
 
-	if( Start != GIOS.Device.State.FogStart ||
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == TRUE )
+	if( Start != GHTML5.Device.State.FogStart ||
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == TRUE )
 	{
-		GIOS.Device.State.FogStart = Start ;
+		GHTML5.Device.State.FogStart = Start ;
 		UpdateFlag = TRUE ;
 	}
 
-	if( End != GIOS.Device.State.FogEnd ||
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == TRUE )
+	if( End != GHTML5.Device.State.FogEnd ||
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == TRUE )
 	{
-		GIOS.Device.State.FogEnd = End ;
+		GHTML5.Device.State.FogEnd = End ;
 		UpdateFlag = TRUE ;
 	}
 
 	if( UpdateFlag )
 	{
 		// 定数情報を更新
-		Graphics_iOS_DeviceState_UpdateConstantFogParam() ;
+		Graphics_HTML5_DeviceState_UpdateConstantFogParam() ;
 	}
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // フォグの密度を設定する( 0.0f 〜 1.0f )
-extern int  Graphics_iOS_DeviceState_SetFogDensity( float Density )
+extern int  Graphics_HTML5_DeviceState_SetFogDensity( float Density )
 {
-	if( Density == GIOS.Device.State.FogDensity &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( Density == GHTML5.Device.State.FogDensity &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.FogDensity = Density ;
+	GHTML5.Device.State.FogDensity = Density ;
 
 	// 定数情報を更新
-	Graphics_iOS_DeviceState_UpdateConstantFogParam() ;
+	Graphics_HTML5_DeviceState_UpdateConstantFogParam() ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // ライティングの有無フラグをセットする
-extern int  Graphics_iOS_DeviceState_SetLighting( int UseFlag )
+extern int  Graphics_HTML5_DeviceState_SetLighting( int UseFlag )
 {
-	if( UseFlag == GIOS.Device.State.Lighting &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( UseFlag == GHTML5.Device.State.Lighting &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.Lighting = UseFlag ;
+	GHTML5.Device.State.Lighting = UseFlag ;
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // 最大異方性をセットする
-extern	int		Graphics_iOS_DeviceState_SetMaxAnisotropy( int MaxAnisotropy, int Sampler )
+extern	int		Graphics_HTML5_DeviceState_SetMaxAnisotropy( int MaxAnisotropy, int Sampler )
 {
 	int i ;
 	int SetAnisotropy = MaxAnisotropy ;
 
 	if( Sampler < 0 )
 	{
-		if( GIOS.Device.State.MaxAnisotropy == MaxAnisotropy &&
-			GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.State.MaxAnisotropy == MaxAnisotropy &&
+			GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			return 0 ;
 		}
 
-		GIOS.Device.State.MaxAnisotropy = MaxAnisotropy ;
+		GHTML5.Device.State.MaxAnisotropy = MaxAnisotropy ;
 
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 			{
-				if( GIOS.Device.State.MaxAnisotropyDim[ i ] != SetAnisotropy )
+				if( GHTML5.Device.State.MaxAnisotropyDim[ i ] != SetAnisotropy )
 				{
 					break ;
 				}
@@ -5642,13 +5642,13 @@ extern	int		Graphics_iOS_DeviceState_SetMaxAnisotropy( int MaxAnisotropy, int Sa
 
 		for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 		{
-			if( GIOS.Device.State.MaxAnisotropyDim[ i ] == SetAnisotropy &&
-				GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+			if( GHTML5.Device.State.MaxAnisotropyDim[ i ] == SetAnisotropy &&
+				GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 			{
 				continue ;
 			}
 
-			GIOS.Device.State.MaxAnisotropyDim[ i ] = SetAnisotropy ;
+			GHTML5.Device.State.MaxAnisotropyDim[ i ] = SetAnisotropy ;
 		}
 	}
 	else
@@ -5658,49 +5658,49 @@ extern	int		Graphics_iOS_DeviceState_SetMaxAnisotropy( int MaxAnisotropy, int Sa
 			return 0 ;
 		}
 
-		GIOS.Device.State.MaxAnisotropy = -1 ;
+		GHTML5.Device.State.MaxAnisotropy = -1 ;
 
-		if( GIOS.Device.State.MaxAnisotropyDim[ Sampler ] == SetAnisotropy &&
-			GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.State.MaxAnisotropyDim[ Sampler ] == SetAnisotropy &&
+			GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			return 0 ;
 		}
 
 		DRAWSTOCKINFO
 
-		GIOS.Device.State.MaxAnisotropyDim[ Sampler ] = SetAnisotropy ;
+		GHTML5.Device.State.MaxAnisotropyDim[ Sampler ] = SetAnisotropy ;
 	}
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // ビューポートをセットする
-extern	int		Graphics_iOS_DeviceState_SetViewport( RECT *Viewport )
+extern	int		Graphics_HTML5_DeviceState_SetViewport( RECT *Viewport )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
-	if( Viewport->left   == GIOS.Device.State.ViewportRect.left   &&
-		Viewport->top    == GIOS.Device.State.ViewportRect.top    &&
-		Viewport->right  == GIOS.Device.State.ViewportRect.right  &&
-		Viewport->bottom == GIOS.Device.State.ViewportRect.bottom &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( Viewport->left   == GHTML5.Device.State.ViewportRect.left   &&
+		Viewport->top    == GHTML5.Device.State.ViewportRect.top    &&
+		Viewport->right  == GHTML5.Device.State.ViewportRect.right  &&
+		Viewport->bottom == GHTML5.Device.State.ViewportRect.bottom &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
 	// 書き出す
-	if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		DRAWSTOCKINFO
 	}
 
 	// 描画を終了させておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// ビューポートの設定を反映
     glViewport(
@@ -5711,14 +5711,14 @@ extern	int		Graphics_iOS_DeviceState_SetViewport( RECT *Viewport )
 	) ;
 
 	// ビューポートの情報の保存
-	GIOS.Device.State.ViewportRect = *Viewport ;
+	GHTML5.Device.State.ViewportRect = *Viewport ;
 
 	// 終了
 	return 0 ;
 }
 
 // ビューポートをセットする( 簡易版 )
-extern	int		Graphics_iOS_DeviceState_SetViewportEasy( int x1, int y1, int x2, int y2 )
+extern	int		Graphics_HTML5_DeviceState_SetViewportEasy( int x1, int y1, int x2, int y2 )
 {
 	RECT Viewport ;
 
@@ -5727,19 +5727,19 @@ extern	int		Graphics_iOS_DeviceState_SetViewportEasy( int x1, int y1, int x2, in
 	Viewport.right  = x2 ;
 	Viewport.bottom = y2 ;
 
-	return Graphics_iOS_DeviceState_SetViewport( &Viewport ) ;
+	return Graphics_HTML5_DeviceState_SetViewport( &Viewport ) ;
 }
 
 // 描画モードのセット
-extern	int		Graphics_iOS_DeviceState_SetDrawMode( int DrawMode )
+extern	int		Graphics_HTML5_DeviceState_SetDrawMode( int DrawMode )
 {
-	if( GIOS.Device.State.DrawMode == DrawMode &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.DrawMode == DrawMode &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
-	if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		DRAWSTOCKINFO
 	}
@@ -5749,34 +5749,34 @@ extern	int		Graphics_iOS_DeviceState_SetDrawMode( int DrawMode )
 	{
 	case DX_DRAWMODE_BILINEAR :
 		// バイリニア描画
-		Graphics_iOS_DeviceState_SetSampleFilterMode( GL_LINEAR_MIPMAP_LINEAR, -1 ) ;
+		Graphics_HTML5_DeviceState_SetSampleFilterMode( GL_LINEAR_MIPMAP_LINEAR, -1 ) ;
 		break ;
 
 	case DX_DRAWMODE_NEAREST :
 		// 二アレストネイバー
-		Graphics_iOS_DeviceState_SetSampleFilterMode( GL_NEAREST, -1 ) ;
+		Graphics_HTML5_DeviceState_SetSampleFilterMode( GL_NEAREST, -1 ) ;
 		break ;
 
 	case DX_DRAWMODE_ANISOTROPIC :
 		// 異方性フィルタリング
-		Graphics_iOS_DeviceState_SetSampleFilterMode( GL_LINEAR_MIPMAP_LINEAR, -1 ) ;
+		Graphics_HTML5_DeviceState_SetSampleFilterMode( GL_LINEAR_MIPMAP_LINEAR, -1 ) ;
 		break ;
 
 	default : return -1 ;
 	}
 
-	GIOS.Device.State.DrawMode                 = DrawMode ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.State.DrawMode                 = DrawMode ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // アルファテストで使用する比較モードを設定する
-extern	int		Graphics_iOS_DeviceState_SetAlphaTestCmpMode( int AlphaTestCmpMode /* DX_CMP_NEVER など */ )
+extern	int		Graphics_HTML5_DeviceState_SetAlphaTestCmpMode( int AlphaTestCmpMode /* DX_CMP_NEVER など */ )
 {
-	if( GIOS.Device.State.AlphaTestCmpMode == AlphaTestCmpMode &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.AlphaTestCmpMode == AlphaTestCmpMode &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -5784,22 +5784,22 @@ extern	int		Graphics_iOS_DeviceState_SetAlphaTestCmpMode( int AlphaTestCmpMode /
 	DRAWSTOCKINFO
 
 	// 値を保存
-	GIOS.Device.State.AlphaTestCmpMode = AlphaTestCmpMode ;
+	GHTML5.Device.State.AlphaTestCmpMode = AlphaTestCmpMode ;
 
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uATestCmpMode = AlphaTestCmpMode ;
+	GHTML5.Device.Shader.Constant.uATestCmpMode = AlphaTestCmpMode ;
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 終了
 	return 0 ;
 }
 
 // アルファテストで使用する参照値を設定する
-extern	int		Graphics_iOS_DeviceState_SetAlphaTestRef( int AlphaTestRef )
+extern	int		Graphics_HTML5_DeviceState_SetAlphaTestRef( int AlphaTestRef )
 {
-	if( GIOS.Device.State.AlphaTestRef == AlphaTestRef &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.AlphaTestRef == AlphaTestRef &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -5807,49 +5807,49 @@ extern	int		Graphics_iOS_DeviceState_SetAlphaTestRef( int AlphaTestRef )
 	DRAWSTOCKINFO
 
 	// 値を保存
-	GIOS.Device.State.AlphaTestRef = AlphaTestRef ;
+	GHTML5.Device.State.AlphaTestRef = AlphaTestRef ;
 
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uATestRef = AlphaTestRef / 255.0f ;
+	GHTML5.Device.Shader.Constant.uATestRef = AlphaTestRef / 255.0f ;
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 終了
 	return 0 ;
 }
 
 // カラーにアルファ値を乗算するかどうかを設定する
-extern	int		Graphics_iOS_DeviceState_SetMulAlphaColor( int UseMulAlphaColor )
+extern	int		Graphics_HTML5_DeviceState_SetMulAlphaColor( int UseMulAlphaColor )
 {
 	DRAWSTOCKINFO
 
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uMulAlphaColor = UseMulAlphaColor ? 1.0f : 0.0f ;
+	GHTML5.Device.Shader.Constant.uMulAlphaColor = UseMulAlphaColor ? 1.0f : 0.0f ;
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 終了
 	return 0 ;
 }
 
 // 背景色を設定する
-extern	int		Graphics_iOS_DeviceState_SetBackgroundColor( int Red, int Green, int Blue, int Alpha )
+extern	int		Graphics_HTML5_DeviceState_SetBackgroundColor( int Red, int Green, int Blue, int Alpha )
 {
 	float RedF ;
 	float GreenF ;
 	float BlueF ;
 	float AlphaF ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
-	if( GIOS.Device.State.BackgroundColor.r == Red &&
-		GIOS.Device.State.BackgroundColor.g == Green &&
-		GIOS.Device.State.BackgroundColor.b == Blue &&
-		GIOS.Device.State.BackgroundColor.a == Alpha &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.BackgroundColor.r == Red &&
+		GHTML5.Device.State.BackgroundColor.g == Green &&
+		GHTML5.Device.State.BackgroundColor.b == Blue &&
+		GHTML5.Device.State.BackgroundColor.a == Alpha &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -5863,23 +5863,23 @@ extern	int		Graphics_iOS_DeviceState_SetBackgroundColor( int Red, int Green, int
 
 	glClearColor( RedF, GreenF, BlueF, AlphaF ) ;
 
-	GIOS.Device.State.BackgroundColor.r = ( BYTE )Red ;
-	GIOS.Device.State.BackgroundColor.g = ( BYTE )Green ;
-	GIOS.Device.State.BackgroundColor.b = ( BYTE )Blue ;
-	GIOS.Device.State.BackgroundColor.a = ( BYTE )Alpha ;
+	GHTML5.Device.State.BackgroundColor.r = ( BYTE )Red ;
+	GHTML5.Device.State.BackgroundColor.g = ( BYTE )Green ;
+	GHTML5.Device.State.BackgroundColor.b = ( BYTE )Blue ;
+	GHTML5.Device.State.BackgroundColor.a = ( BYTE )Alpha ;
 	
 	// 終了
 	return 0 ;
 }
 
 // Factor Color を設定する
-extern	int		Graphics_iOS_DeviceState_SetFactorColor( const DX_IOS_SHADER_FLOAT4 *FactorColor )
+extern	int		Graphics_HTML5_DeviceState_SetFactorColor( const DX_HTML5_SHADER_FLOAT4 *FactorColor )
 {
-	if( GIOS.Device.Shader.Constant.uFactorColor[ 0 ] == (*FactorColor)[ 0 ] &&
-		GIOS.Device.Shader.Constant.uFactorColor[ 1 ] == (*FactorColor)[ 1 ] &&
-		GIOS.Device.Shader.Constant.uFactorColor[ 2 ] == (*FactorColor)[ 2 ] &&
-		GIOS.Device.Shader.Constant.uFactorColor[ 3 ] == (*FactorColor)[ 3 ] &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.Shader.Constant.uFactorColor[ 0 ] == (*FactorColor)[ 0 ] &&
+		GHTML5.Device.Shader.Constant.uFactorColor[ 1 ] == (*FactorColor)[ 1 ] &&
+		GHTML5.Device.Shader.Constant.uFactorColor[ 2 ] == (*FactorColor)[ 2 ] &&
+		GHTML5.Device.Shader.Constant.uFactorColor[ 3 ] == (*FactorColor)[ 3 ] &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -5887,22 +5887,22 @@ extern	int		Graphics_iOS_DeviceState_SetFactorColor( const DX_IOS_SHADER_FLOAT4 
 	DRAWSTOCKINFO
 
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uFactorColor[ 0 ] = (*FactorColor)[ 0 ] ;
-	GIOS.Device.Shader.Constant.uFactorColor[ 1 ] = (*FactorColor)[ 1 ] ;
-	GIOS.Device.Shader.Constant.uFactorColor[ 2 ] = (*FactorColor)[ 2 ] ;
-	GIOS.Device.Shader.Constant.uFactorColor[ 3 ] = (*FactorColor)[ 3 ] ;
+	GHTML5.Device.Shader.Constant.uFactorColor[ 0 ] = (*FactorColor)[ 0 ] ;
+	GHTML5.Device.Shader.Constant.uFactorColor[ 1 ] = (*FactorColor)[ 1 ] ;
+	GHTML5.Device.Shader.Constant.uFactorColor[ 2 ] = (*FactorColor)[ 2 ] ;
+	GHTML5.Device.Shader.Constant.uFactorColor[ 3 ] = (*FactorColor)[ 3 ] ;
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 終了
 	return 0 ;
 }
 
 // トゥーンレンダリングの輪郭線の太さを設定する
-extern int Graphics_iOS_DeviceState_SetToonOutLineSize( float Size )
+extern int Graphics_HTML5_DeviceState_SetToonOutLineSize( float Size )
 {
-	if( GIOS.Device.Shader.Constant.uToonOutLineSize[ 0 ] == Size &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.Shader.Constant.uToonOutLineSize[ 0 ] == Size &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -5910,45 +5910,45 @@ extern int Graphics_iOS_DeviceState_SetToonOutLineSize( float Size )
 	DRAWSTOCKINFO
 
 	// 定数データに反映
-	GIOS.Device.Shader.Constant.uToonOutLineSize[ 0 ] = Size ;
-	GIOS.Device.Shader.Constant.uToonOutLineSize[ 1 ] = Size ;
-	GIOS.Device.Shader.Constant.uToonOutLineSize[ 2 ] = Size ;
-	GIOS.Device.Shader.Constant.uToonOutLineSize[ 3 ] = Size ;
+	GHTML5.Device.Shader.Constant.uToonOutLineSize[ 0 ] = Size ;
+	GHTML5.Device.Shader.Constant.uToonOutLineSize[ 1 ] = Size ;
+	GHTML5.Device.Shader.Constant.uToonOutLineSize[ 2 ] = Size ;
+	GHTML5.Device.Shader.Constant.uToonOutLineSize[ 3 ] = Size ;
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 終了
 	return 0 ;
 }
 
 // 描画ブレンドモードのセット
-extern	int		Graphics_iOS_DeviceState_SetBlendMode( int BlendMode, int NotWriteAlphaChannelFlag )
+extern	int		Graphics_HTML5_DeviceState_SetBlendMode( int BlendMode, int NotWriteAlphaChannelFlag )
 {
-	DX_IOS_RENDER_BLEND_INFO *BlendInfo ;
+	DX_HTML5_RENDER_BLEND_INFO *BlendInfo ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
-	if( GIOS.Device.State.BlendMode == BlendMode &&
-		GIOS.Device.State.NotWriteAlphaChannelFlag == NotWriteAlphaChannelFlag &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.BlendMode == BlendMode &&
+		GHTML5.Device.State.NotWriteAlphaChannelFlag == NotWriteAlphaChannelFlag &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.BlendMode = BlendMode ;
-	GIOS.Device.State.NotWriteAlphaChannelFlag = NotWriteAlphaChannelFlag ;
+	GHTML5.Device.State.BlendMode = BlendMode ;
+	GHTML5.Device.State.NotWriteAlphaChannelFlag = NotWriteAlphaChannelFlag ;
 
 	BlendInfo = &g_DefaultBlendDescArray[ BlendMode ] ;
 
 	if( BlendInfo->BlendEnable )
 	{
 		glEnable( GL_BLEND ) ;
-		if( GIOS.Device.State.NotWriteAlphaChannelFlag )
+		if( GHTML5.Device.State.NotWriteAlphaChannelFlag )
 		{
 			glBlendEquationSeparate(
 				BlendInfo->ColorBlendFunc,
@@ -5976,21 +5976,21 @@ extern	int		Graphics_iOS_DeviceState_SetBlendMode( int BlendMode, int NotWriteAl
 		glDisable( GL_BLEND ) ;
 	}
 
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	return 0 ;
 }
 
 // 描画対象の変更
-extern	int		Graphics_iOS_DeviceState_SetRenderTarget( GLuint TargetFrameBuffer, GLuint TargetFrameBufferWidth, GLuint TargetFrameBufferHeight )
+extern	int		Graphics_HTML5_DeviceState_SetRenderTarget( GLuint TargetFrameBuffer, GLuint TargetFrameBufferWidth, GLuint TargetFrameBufferHeight )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
-	if( GIOS.Device.State.TargetFrameBuffer == TargetFrameBuffer &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck  == FALSE )
+	if( GHTML5.Device.State.TargetFrameBuffer == TargetFrameBuffer &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck  == FALSE )
 	{
 		return 0 ;
 	}
@@ -5999,12 +5999,12 @@ extern	int		Graphics_iOS_DeviceState_SetRenderTarget( GLuint TargetFrameBuffer, 
 	DRAWSTOCKINFO
 
 	// 描画を終了しておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// レンダリングターゲットの保存
-	GIOS.Device.State.TargetFrameBuffer = TargetFrameBuffer ;
-	GIOS.Device.State.TargetFrameBufferWidth = TargetFrameBufferWidth ;
-	GIOS.Device.State.TargetFrameBufferHeight = TargetFrameBufferHeight ;
+	GHTML5.Device.State.TargetFrameBuffer = TargetFrameBuffer ;
+	GHTML5.Device.State.TargetFrameBufferWidth = TargetFrameBufferWidth ;
+	GHTML5.Device.State.TargetFrameBufferHeight = TargetFrameBufferHeight ;
 
 	// レンダリングターゲットの変更
 	glBindFramebuffer( GL_FRAMEBUFFER, TargetFrameBuffer ) ;
@@ -6012,7 +6012,7 @@ extern	int		Graphics_iOS_DeviceState_SetRenderTarget( GLuint TargetFrameBuffer, 
 	// ビューポートの設定値を更新
 	if( TargetFrameBuffer != 0 )
 	{
-		Graphics_iOS_DeviceState_SetViewportEasy( 0, 0, TargetFrameBufferWidth, TargetFrameBufferHeight ) ;
+		Graphics_HTML5_DeviceState_SetViewportEasy( 0, 0, TargetFrameBufferWidth, TargetFrameBufferHeight ) ;
 	}
 
 	// 終了
@@ -6020,15 +6020,15 @@ extern	int		Graphics_iOS_DeviceState_SetRenderTarget( GLuint TargetFrameBuffer, 
 }
 
 // 使用するシェーダーを変更する
-extern	int	Graphics_iOS_DeviceState_SetShader( GRAPHICS_IOS_SHADER *Shader, int NormalShader )
+extern	int	Graphics_HTML5_DeviceState_SetShader( GRAPHICS_HTML5_SHADER *Shader, int NormalShader )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
-	if( GIOS.Device.State.SetShader == Shader &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.SetShader == Shader &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -6038,11 +6038,11 @@ extern	int	Graphics_iOS_DeviceState_SetShader( GRAPHICS_IOS_SHADER *Shader, int 
 	    glUseProgram( Shader->Shader ) ;
 	}
 
-	GIOS.Device.State.SetShader          = Shader ;
-	GIOS.Device.State.SetNormalShader    = NormalShader ;
+	GHTML5.Device.State.SetShader          = Shader ;
+	GHTML5.Device.State.SetNormalShader    = NormalShader ;
 	if( NormalShader == FALSE )
 	{
-		GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+		GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 	}
 
 	// 終了
@@ -6050,44 +6050,44 @@ extern	int	Graphics_iOS_DeviceState_SetShader( GRAPHICS_IOS_SHADER *Shader, int 
 }
 
 // シェーダーの使用を止める
-extern	int		Graphics_iOS_DeviceState_ResetShader( int SetNormalShaderCancel )
+extern	int		Graphics_HTML5_DeviceState_ResetShader( int SetNormalShaderCancel )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
-	if( GIOS.Device.State.SetNormalShader &&
+	if( GHTML5.Device.State.SetNormalShader &&
 		SetNormalShaderCancel &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
-	if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
-		GIOS.Device.State.SetShader == NULL )
+	if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
+		GHTML5.Device.State.SetShader == NULL )
 	{
 		return 0 ;
 	}
 
 	// 描画を終了しておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
     glUseProgram( 0 ) ;
 
-	GIOS.Device.State.SetShader = NULL ;
+	GHTML5.Device.State.SetShader = NULL ;
 
-	GIOS.Device.State.SetNormalShader    = FALSE ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.State.SetNormalShader    = FALSE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // シェーダーの Uniform を更新する
-extern int Graphics_iOS_DeviceState_UpdateShaderUniform( GRAPHICS_IOS_SHADER *Shader, int LightNum, int UseLocalWorldMatrixUniformNum )
+extern int Graphics_HTML5_DeviceState_UpdateShaderUniform( GRAPHICS_HTML5_SHADER *Shader, int LightNum, int UseLocalWorldMatrixUniformNum )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -6095,8 +6095,8 @@ extern int Graphics_iOS_DeviceState_UpdateShaderUniform( GRAPHICS_IOS_SHADER *Sh
 	// 現在のシェーダーに適用されている Uniform 更新番号と、
 	// グローバルで持っているシェーダーの更新番号が一致している場合は何もせずに終了
 	if( Shader == NULL ||
-		( Shader->ApplyUniformUpdateCount == GIOS.Device.Shader.Constant.UpdateCount &&
-		  GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE ) )
+		( Shader->ApplyUniformUpdateCount == GHTML5.Device.Shader.Constant.UpdateCount &&
+		  GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE ) )
 	{
 		return 0 ;
 	}
@@ -6106,230 +6106,230 @@ extern int Graphics_iOS_DeviceState_UpdateShaderUniform( GRAPHICS_IOS_SHADER *Sh
 
 	// シェーダーにグローバルの Uniform を適用する
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SRC_TEX ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SRC_TEX ] != 0xffff )
 	{
-		glUniform1i( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SRC_TEX ], 0 ) ;
+		glUniform1i( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SRC_TEX ], 0 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_BLEND_TEX ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_BLEND_TEX ] != 0xffff )
 	{
-		glUniform1i( Shader->UniformIndex[ IOS_SHADER_UNIFORM_BLEND_TEX ], 1 ) ;
+		glUniform1i( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_BLEND_TEX ], 1 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_DIF_MAP_TEX ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_DIF_MAP_TEX ] != 0xffff )
 	{
-		glUniform1i( Shader->UniformIndex[ IOS_SHADER_UNIFORM_DIF_MAP_TEX ], 0 ) ;
+		glUniform1i( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_DIF_MAP_TEX ], 0 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_NRM_MAP_TEX ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_NRM_MAP_TEX ] != 0xffff )
 	{
-		glUniform1i( Shader->UniformIndex[ IOS_SHADER_UNIFORM_NRM_MAP_TEX ], 1 ) ;
+		glUniform1i( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_NRM_MAP_TEX ], 1 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SPC_MAP_TEX ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SPC_MAP_TEX ] != 0xffff )
 	{
-		glUniform1i( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SPC_MAP_TEX ], 2 ) ;
+		glUniform1i( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SPC_MAP_TEX ], 2 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_TOON_DIF_GRAD_TEX ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_TOON_DIF_GRAD_TEX ] != 0xffff )
 	{
-		glUniform1i( Shader->UniformIndex[ IOS_SHADER_UNIFORM_TOON_DIF_GRAD_TEX ], 3 ) ;
+		glUniform1i( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_TOON_DIF_GRAD_TEX ], 3 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_TOON_SPC_GRAD_TEX ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_TOON_SPC_GRAD_TEX ] != 0xffff )
 	{
-		glUniform1i( Shader->UniformIndex[ IOS_SHADER_UNIFORM_TOON_SPC_GRAD_TEX ], 4 ) ;
+		glUniform1i( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_TOON_SPC_GRAD_TEX ], 4 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_TOON_SPHERE_MAP_TEX ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_TOON_SPHERE_MAP_TEX ] != 0xffff )
 	{
-		glUniform1i( Shader->UniformIndex[ IOS_SHADER_UNIFORM_TOON_SPHERE_MAP_TEX ], 5 ) ;
+		glUniform1i( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_TOON_SPHERE_MAP_TEX ], 5 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SHADOW_MAP0_TEX ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SHADOW_MAP0_TEX ] != 0xffff )
 	{
-		glUniform1i( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SHADOW_MAP0_TEX ], 8 ) ;
+		glUniform1i( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SHADOW_MAP0_TEX ], 8 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SHADOW_MAP1_TEX ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SHADOW_MAP1_TEX ] != 0xffff )
 	{
-		glUniform1i( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SHADOW_MAP0_TEX ], 9 ) ;
+		glUniform1i( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SHADOW_MAP0_TEX ], 9 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SHADOW_MAP2_TEX ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SHADOW_MAP2_TEX ] != 0xffff )
 	{
-		glUniform1i( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SHADOW_MAP0_TEX ], 10 ) ;
+		glUniform1i( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SHADOW_MAP0_TEX ], 10 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_AMB_EMI ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_AMB_EMI ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ IOS_SHADER_UNIFORM_AMB_EMI ], GIOS.Device.Shader.Constant.uAmb_Emi ) ;
+		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_AMB_EMI ], GHTML5.Device.Shader.Constant.uAmb_Emi ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_DIF ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_DIF ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_DIF ], GIOS.Device.Shader.Constant.uMatDif ) ;
+		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_DIF ], GHTML5.Device.Shader.Constant.uMatDif ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_SPC ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_SPC ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_SPC ], GIOS.Device.Shader.Constant.uMatSpc ) ;
+		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_SPC ], GHTML5.Device.Shader.Constant.uMatSpc ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_POW ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_POW ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_POW ], GIOS.Device.Shader.Constant.uMatPow ) ;
+		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_POW ], GHTML5.Device.Shader.Constant.uMatPow ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_TYPE_PARAM0 ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_TYPE_PARAM0 ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_TYPE_PARAM0 ], GIOS.Device.Shader.Constant.uMatTypeParam0 ) ;
+		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_TYPE_PARAM0 ], GHTML5.Device.Shader.Constant.uMatTypeParam0 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_TYPE_PARAM1 ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_TYPE_PARAM1 ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_TYPE_PARAM1 ], GIOS.Device.Shader.Constant.uMatTypeParam1 ) ;
+		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_TYPE_PARAM1 ], GHTML5.Device.Shader.Constant.uMatTypeParam1 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_TYPE_PARAM2 ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_TYPE_PARAM2 ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MAT_TYPE_PARAM2 ], GIOS.Device.Shader.Constant.uMatTypeParam2 ) ;
+		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MAT_TYPE_PARAM2 ], GHTML5.Device.Shader.Constant.uMatTypeParam2 ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_POS ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_POS ] != 0xffff )
 	{
-		glUniform3fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_POS ], LightNum, GIOS.Device.Shader.Constant.uLightPos[ 0 ] ) ;
+		glUniform3fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_POS ], LightNum, GHTML5.Device.Shader.Constant.uLightPos[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_DIR ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_DIR ] != 0xffff )
 	{
-		glUniform3fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_DIR ], LightNum, GIOS.Device.Shader.Constant.uLightDir[ 0 ] ) ;
+		glUniform3fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_DIR ], LightNum, GHTML5.Device.Shader.Constant.uLightDir[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_DIF ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_DIF ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_DIF ], LightNum, GIOS.Device.Shader.Constant.uLightDif[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_DIF ], LightNum, GHTML5.Device.Shader.Constant.uLightDif[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_SPC ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_SPC ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_SPC ], LightNum, GIOS.Device.Shader.Constant.uLightSpc[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_SPC ], LightNum, GHTML5.Device.Shader.Constant.uLightSpc[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_AMB ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_AMB ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_AMB ], LightNum, GIOS.Device.Shader.Constant.uLightAmb[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_AMB ], LightNum, GHTML5.Device.Shader.Constant.uLightAmb[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_RANGE_FALLOFF_AT0_AT1 ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_RANGE_FALLOFF_AT0_AT1 ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_RANGE_FALLOFF_AT0_AT1 ], LightNum, GIOS.Device.Shader.Constant.uLightRange_FallOff_AT0_AT1[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_RANGE_FALLOFF_AT0_AT1 ], LightNum, GHTML5.Device.Shader.Constant.uLightRange_FallOff_AT0_AT1[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_AT2_SPOTP0_SPOTP1 ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_AT2_SPOTP0_SPOTP1 ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LIGHT_AT2_SPOTP0_SPOTP1 ], LightNum, GIOS.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LIGHT_AT2_SPOTP0_SPOTP1 ], LightNum, GHTML5.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_ANTI_VIEW_PORT_MAT ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_ANTI_VIEW_PORT_MAT ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_ANTI_VIEW_PORT_MAT ], 4, GIOS.Device.Shader.Constant.uAntiVPMat[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_ANTI_VIEW_PORT_MAT ], 4, GHTML5.Device.Shader.Constant.uAntiVPMat[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_VIEW_MAT ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_VIEW_MAT ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_VIEW_MAT ], 3, GIOS.Device.Shader.Constant.uViewMat[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_VIEW_MAT ], 3, GHTML5.Device.Shader.Constant.uViewMat[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_PROJ_MAT ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_PROJ_MAT ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_PROJ_MAT ], 4, GIOS.Device.Shader.Constant.uProjMat[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_PROJ_MAT ], 4, GHTML5.Device.Shader.Constant.uProjMat[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_FOG ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_FOG ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ IOS_SHADER_UNIFORM_FOG ], GIOS.Device.Shader.Constant.uFog ) ;
+		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_FOG ], GHTML5.Device.Shader.Constant.uFog ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_TOON_OUTLINE_SIZE ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_TOON_OUTLINE_SIZE ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ IOS_SHADER_UNIFORM_TOON_OUTLINE_SIZE ], GIOS.Device.Shader.Constant.uToonOutLineSize ) ;
+		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_TOON_OUTLINE_SIZE ], GHTML5.Device.Shader.Constant.uToonOutLineSize ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_DIFSRC_SPCSRC_MULSPECOL ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_DIFSRC_SPCSRC_MULSPECOL ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ IOS_SHADER_UNIFORM_DIFSRC_SPCSRC_MULSPECOL ], GIOS.Device.Shader.Constant.uDifSrc_SpeSrc_MulSpeCol ) ;
+		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_DIFSRC_SPCSRC_MULSPECOL ], GHTML5.Device.Shader.Constant.uDifSrc_SpeSrc_MulSpeCol ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SM_LVP_MAT ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SM_LVP_MAT ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SM_LVP_MAT ], 12, GIOS.Device.Shader.Constant.uSMLVPMat[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SM_LVP_MAT ], 12, GHTML5.Device.Shader.Constant.uSMLVPMat[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_TEX_MAT ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_TEX_MAT ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_TEX_MAT ], 6, GIOS.Device.Shader.Constant.uTexMat[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_TEX_MAT ], 6, GHTML5.Device.Shader.Constant.uTexMat[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LW_MAT ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LW_MAT ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_LW_MAT ], UseLocalWorldMatrixUniformNum, GIOS.Device.Shader.Constant.uLWMat[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_LW_MAT ], UseLocalWorldMatrixUniformNum, GHTML5.Device.Shader.Constant.uLWMat[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MUL_ALPHA_COLOR ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MUL_ALPHA_COLOR ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ IOS_SHADER_UNIFORM_MUL_ALPHA_COLOR ], GIOS.Device.Shader.Constant.uMulAlphaColor ) ;
+		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_MUL_ALPHA_COLOR ], GHTML5.Device.Shader.Constant.uMulAlphaColor ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_ALPHA_TEST_REF ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_ALPHA_TEST_REF ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ IOS_SHADER_UNIFORM_ALPHA_TEST_REF ], GIOS.Device.Shader.Constant.uATestRef ) ;
+		UNIFORM_SET_FLOAT1( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_ALPHA_TEST_REF ], GHTML5.Device.Shader.Constant.uATestRef ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_ALPHA_TEST_CMPMODE ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_ALPHA_TEST_CMPMODE ] != 0xffff )
 	{
-		UNIFORM_SET_INT1( Shader->UniformIndex[ IOS_SHADER_UNIFORM_ALPHA_TEST_CMPMODE ], GIOS.Device.Shader.Constant.uATestCmpMode ) ;
+		UNIFORM_SET_INT1( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_ALPHA_TEST_CMPMODE ], GHTML5.Device.Shader.Constant.uATestCmpMode ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_FOG_COLOR ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_FOG_COLOR ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ IOS_SHADER_UNIFORM_FOG_COLOR ], GIOS.Device.Shader.Constant.uFogColor ) ;
+		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_FOG_COLOR ], GHTML5.Device.Shader.Constant.uFogColor ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_FACTOR_COLOR ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_FACTOR_COLOR ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ IOS_SHADER_UNIFORM_FACTOR_COLOR ], GIOS.Device.Shader.Constant.uFactorColor ) ;
+		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_FACTOR_COLOR ], GHTML5.Device.Shader.Constant.uFactorColor ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_IGNORE_TEXTURE_COLOR ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_IGNORE_TEXTURE_COLOR ] != 0xffff )
 	{
-		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ IOS_SHADER_UNIFORM_IGNORE_TEXTURE_COLOR ], GIOS.Device.Shader.Constant.uIgnoreTextureColor ) ;
+		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_IGNORE_TEXTURE_COLOR ], GHTML5.Device.Shader.Constant.uIgnoreTextureColor ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SHADOWMAP_LIGHT_ENABLE ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SHADOWMAP_LIGHT_ENABLE ] != 0xffff )
 	{
-		glUniform4fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SHADOWMAP_LIGHT_ENABLE ], 3, GIOS.Device.Shader.Constant.uShadowMapLightEnable[ 0 ] ) ;
+		glUniform4fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SHADOWMAP_LIGHT_ENABLE ], 3, GHTML5.Device.Shader.Constant.uShadowMapLightEnable[ 0 ] ) ;
 	}
 
-	if( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SHADOWMAP_DADJ_GRAD ] != 0xffff )
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SHADOWMAP_DADJ_GRAD ] != 0xffff )
 	{
-		glUniform2fv( Shader->UniformIndex[ IOS_SHADER_UNIFORM_SHADOWMAP_DADJ_GRAD ], 3, GIOS.Device.Shader.Constant.uShadowMap_DAdj_Grad[ 0 ] ) ;
+		glUniform2fv( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SHADOWMAP_DADJ_GRAD ], 3, GHTML5.Device.Shader.Constant.uShadowMap_DAdj_Grad[ 0 ] ) ;
 	}
 
 	// 適用した番号を更新する
-	Shader->ApplyUniformUpdateCount = GIOS.Device.Shader.Constant.UpdateCount ;
+	Shader->ApplyUniformUpdateCount = GHTML5.Device.Shader.Constant.UpdateCount ;
 
 	// 終了
 	return 0 ;
 }
 
 // 指定のシェーダーの頂点フォーマットの頂点データの描画準備を行う
-extern int Graphics_iOS_DeviceState_SetupShaderVertexData( GRAPHICS_IOS_SHADER *Shader, VERTEXBUFFER_INPUT_INFO_IOS *VertexInputInfo, const void *VertexData, GLuint VertexBuffer )
+extern int Graphics_HTML5_DeviceState_SetupShaderVertexData( GRAPHICS_HTML5_SHADER *Shader, VERTEXBUFFER_INPUT_INFO_HTML5 *VertexInputInfo, const void *VertexData, GLuint VertexBuffer )
 {
 	int i ;
-	int UseAttr[ IOS_VERTEX_ATTR_NUM ] = { 0 } ;
+	int UseAttr[ HTML5_VERTEX_ATTR_NUM ] = { 0 } ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -6348,20 +6348,20 @@ extern int Graphics_iOS_DeviceState_SetupShaderVertexData( GRAPHICS_IOS_SHADER *
 
 	for( i = 0 ; i < VertexInputInfo->ElementInfoNum ; i ++ )
 	{
-		VERTEXBUFFER_INPUT_ELEMENT_INFO_IOS *Element = &VertexInputInfo->ElementInfo[ i ] ;
+		VERTEXBUFFER_INPUT_ELEMENT_INFO_HTML5 *Element = &VertexInputInfo->ElementInfo[ i ] ;
 
-		if( Element->ElementBase == IOS_VERTEX_ATTR_OTHER ||
+		if( Element->ElementBase == HTML5_VERTEX_ATTR_OTHER ||
 			Shader->AttributeIndex[ Element->ElementBase ] == 0xffff )
 		{
 			continue ;
 		}
 
-		VERTEXBUFFER_INPUT_ELEMENT_INFO_BASE_IOS *ElementBase = &g_VertexElementInfoBase[ Element->ElementBase ] ;
+		VERTEXBUFFER_INPUT_ELEMENT_INFO_BASE_HTML5 *ElementBase = &g_VertexElementInfoBase[ Element->ElementBase ] ;
 
 		UseAttr[ Shader->AttributeIndex[ Element->ElementBase ] ] = TRUE ;
-		if( GIOS.Device.State.VertexAttrEnable[ Shader->AttributeIndex[ Element->ElementBase ] ] == FALSE )
+		if( GHTML5.Device.State.VertexAttrEnable[ Shader->AttributeIndex[ Element->ElementBase ] ] == FALSE )
 		{
-			GIOS.Device.State.VertexAttrEnable[ Shader->AttributeIndex[ Element->ElementBase ] ] = TRUE ;
+			GHTML5.Device.State.VertexAttrEnable[ Shader->AttributeIndex[ Element->ElementBase ] ] = TRUE ;
 			glEnableVertexAttribArray( Shader->AttributeIndex[ Element->ElementBase ] ) ;
 		}
 
@@ -6376,11 +6376,11 @@ extern int Graphics_iOS_DeviceState_SetupShaderVertexData( GRAPHICS_IOS_SHADER *
 	}
 
 	// 使用されていない要素は無効化する
-	for( i = 0 ; i < IOS_VERTEX_ATTR_NUM ; i ++ )
+	for( i = 0 ; i < HTML5_VERTEX_ATTR_NUM ; i ++ )
 	{
-		if( UseAttr[ i ] == FALSE && GIOS.Device.State.VertexAttrEnable[ i ] == TRUE )
+		if( UseAttr[ i ] == FALSE && GHTML5.Device.State.VertexAttrEnable[ i ] == TRUE )
 		{
-			GIOS.Device.State.VertexAttrEnable[ i ] = FALSE ;
+			GHTML5.Device.State.VertexAttrEnable[ i ] = FALSE ;
 			glDisableVertexAttribArray( i ) ;
 		}
 	}
@@ -6390,31 +6390,31 @@ extern int Graphics_iOS_DeviceState_SetupShaderVertexData( GRAPHICS_IOS_SHADER *
 }
 
 // 使用する頂点バッファを変更する
-extern	int		Graphics_iOS_DeviceState_SetVertexBuffer( GLuint VertexBuffer )
+extern	int		Graphics_HTML5_DeviceState_SetVertexBuffer( GLuint VertexBuffer )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
-	if( GIOS.Device.State.SetVertexBuffer == VertexBuffer &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.State.SetVertexBuffer == VertexBuffer &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
     glBindBuffer( GL_ARRAY_BUFFER, VertexBuffer ) ;
 
-	GIOS.Device.State.SetVertexBuffer = VertexBuffer ;
+	GHTML5.Device.State.SetVertexBuffer = VertexBuffer ;
 
 	// 終了
 	return 0 ;
 }
 
 // シェーダーで使用するテクスチャを変更する
-extern int Graphics_iOS_DeviceState_SetTexture( int SlotIndex, GRAPHICS_IOS_TEXTURE *Texture )
+extern int Graphics_HTML5_DeviceState_SetTexture( int SlotIndex, GRAPHICS_HTML5_TEXTURE *Texture )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -6424,13 +6424,13 @@ extern int Graphics_iOS_DeviceState_SetTexture( int SlotIndex, GRAPHICS_IOS_TEXT
 		return -1 ;
 	}
 
-	if( Texture == GIOS.Device.State.SetTexture[ SlotIndex ] &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( Texture == GHTML5.Device.State.SetTexture[ SlotIndex ] &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
-	GIOS.Device.State.SetTexture[ SlotIndex ] = Texture ;
+	GHTML5.Device.State.SetTexture[ SlotIndex ] = Texture ;
 
 	glActiveTexture( g_TextureEnum[ SlotIndex ] ) ;
 	if( Texture == NULL )
@@ -6441,18 +6441,18 @@ extern int Graphics_iOS_DeviceState_SetTexture( int SlotIndex, GRAPHICS_IOS_TEXT
 	{
 		glBindTexture( GL_TEXTURE_2D, Texture->TextureBuffer ) ;
 
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck )
 		{
-			Texture->WrapS = GIOS.Device.State.TexAddressModeU[ SlotIndex ] ;
+			Texture->WrapS = GHTML5.Device.State.TexAddressModeU[ SlotIndex ] ;
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Texture->WrapS ) ;
 
-			Texture->WrapT = GIOS.Device.State.TexAddressModeV[ SlotIndex ] ;
+			Texture->WrapT = GHTML5.Device.State.TexAddressModeV[ SlotIndex ] ;
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Texture->WrapT ) ;
 
-			Texture->MagFilter = GIOS.Device.State.TexMagFilter[ SlotIndex ] ;
+			Texture->MagFilter = GHTML5.Device.State.TexMagFilter[ SlotIndex ] ;
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, Texture->MagFilter ) ;
 
-			GLenum MinFilterTmp = GIOS.Device.State.TexMinFilter[ SlotIndex ] ;
+			GLenum MinFilterTmp = GHTML5.Device.State.TexMinFilter[ SlotIndex ] ;
 			if( Texture->MipMapCount <= 1 && MinFilterTmp == GL_LINEAR_MIPMAP_LINEAR )
 			{
 				MinFilterTmp = GL_LINEAR ;
@@ -6462,24 +6462,24 @@ extern int Graphics_iOS_DeviceState_SetTexture( int SlotIndex, GRAPHICS_IOS_TEXT
 		}
 		else
 		{
-			if( Texture->WrapS != GIOS.Device.State.TexAddressModeU[ SlotIndex ] )
+			if( Texture->WrapS != GHTML5.Device.State.TexAddressModeU[ SlotIndex ] )
 			{
-				Texture->WrapS = GIOS.Device.State.TexAddressModeU[ SlotIndex ] ;
+				Texture->WrapS = GHTML5.Device.State.TexAddressModeU[ SlotIndex ] ;
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, Texture->WrapS ) ;
 			}
-			if( Texture->WrapT != GIOS.Device.State.TexAddressModeV[ SlotIndex ] )
+			if( Texture->WrapT != GHTML5.Device.State.TexAddressModeV[ SlotIndex ] )
 			{
-				Texture->WrapT = GIOS.Device.State.TexAddressModeV[ SlotIndex ] ;
+				Texture->WrapT = GHTML5.Device.State.TexAddressModeV[ SlotIndex ] ;
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Texture->WrapT ) ;
 			}
-			if( Texture->MagFilter != GIOS.Device.State.TexMagFilter[ SlotIndex ] )
+			if( Texture->MagFilter != GHTML5.Device.State.TexMagFilter[ SlotIndex ] )
 			{
-				Texture->MagFilter = GIOS.Device.State.TexMagFilter[ SlotIndex ] ;
+				Texture->MagFilter = GHTML5.Device.State.TexMagFilter[ SlotIndex ] ;
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, Texture->MagFilter ) ;
 			}
-			if( Texture->MinFilter != GIOS.Device.State.TexMinFilter[ SlotIndex ] )
+			if( Texture->MinFilter != GHTML5.Device.State.TexMinFilter[ SlotIndex ] )
 			{
-				GLenum MinFilterTmp = GIOS.Device.State.TexMinFilter[ SlotIndex ] ;
+				GLenum MinFilterTmp = GHTML5.Device.State.TexMinFilter[ SlotIndex ] ;
 				if( Texture->MipMapCount <= 1 && MinFilterTmp == GL_LINEAR_MIPMAP_LINEAR )
 				{
 					MinFilterTmp = GL_LINEAR ;
@@ -6498,35 +6498,35 @@ extern int Graphics_iOS_DeviceState_SetTexture( int SlotIndex, GRAPHICS_IOS_TEXT
 }
 
 // 標準描画の準備を行う
-extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
+extern	int		Graphics_HTML5_DeviceState_NormalDrawSetup( void )
 {
 	int										IgnoreTextureAlpha ;
 	int										NextBlendMode ;
 	int										UseFloatFactorColor = FALSE ;
-	DX_IOS_SHADER_FLOAT4					FloatFactorColor ;
+	DX_HTML5_SHADER_FLOAT4					FloatFactorColor ;
 	int										AlphaTestRef = 0 ;
 	int										AlphaTestCmpMode = 0 ;
-    GRAPHICS_IOS_TEXTURE					*UseTexture[ USE_TEXTURESTAGE_NUM ] ;
+    GRAPHICS_HTML5_TEXTURE					*UseTexture[ USE_TEXTURESTAGE_NUM ] ;
 	int										UseTextureNum = 0 ;
-	GRAPHICS_HARDWARE_IOS_SHADER_BASE		*SB  = &GIOS.Device.Shader.Base ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_BASE	*SCB = &GIOS.ShaderCode.Base ;
+	GRAPHICS_HARDWARE_HTML5_SHADER_BASE		*SB  = &GHTML5.Device.Shader.Base ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_BASE	*SCB = &GHTML5.ShaderCode.Base ;
 	GLuint									*VS			= NULL ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO	*VSAddress	= NULL ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*VSAddress	= NULL ;
 	GLuint									*FS			= NULL ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO	*FSAddress	= NULL ;
-	GRAPHICS_IOS_SHADER						**UseShader	= NULL ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*FSAddress	= NULL ;
+	GRAPHICS_HTML5_SHADER						**UseShader	= NULL ;
 
 	// テクスチャが変更された、フラグを倒す
-	GIOS.Device.DrawSetting.ChangeTextureFlag = FALSE ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.ChangeTextureFlag = FALSE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// パラメータが変更された、フラグを倒す
-	GIOS.Device.DrawSetting.ChangeBlendParamFlag = FALSE ;
+	GHTML5.Device.DrawSetting.ChangeBlendParamFlag = FALSE ;
 
 	// ブレンドモードの決定
 	{
-		NextBlendMode = GIOS.Device.DrawSetting.BlendMode ;
-		switch( GIOS.Device.DrawSetting.BlendMode )
+		NextBlendMode = GHTML5.Device.DrawSetting.BlendMode ;
+		switch( GHTML5.Device.DrawSetting.BlendMode )
 		{
 		case DX_BLENDMODE_SUB :
 			// 減算ブレンドの場合は14番目のブレンドモードを使用する
@@ -6541,16 +6541,16 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 			}
 
 			// 描画元画像にαチャンネルがある場合やブレンド画像の有無など条件次第で DX_BLENDMODE_ALPHA を使用する
-			if( GIOS.Device.DrawSetting.RenderTexture != NULL )
+			if( GHTML5.Device.DrawSetting.RenderTexture != NULL )
 			{
-				if( GIOS.Device.DrawSetting.BlendTexture != NULL )
+				if( GHTML5.Device.DrawSetting.BlendTexture != NULL )
 				{
-					switch( GIOS.Device.DrawSetting.BlendGraphType )
+					switch( GHTML5.Device.DrawSetting.BlendGraphType )
 					{
 					case DX_BLENDGRAPHTYPE_NORMAL :
 					case DX_BLENDGRAPHTYPE_ALPHA :
-						if( GIOS.Device.DrawSetting.AlphaTestValidFlag    == TRUE ||
-							GIOS.Device.DrawSetting.AlphaChannelValidFlag == TRUE )
+						if( GHTML5.Device.DrawSetting.AlphaTestValidFlag    == TRUE ||
+							GHTML5.Device.DrawSetting.AlphaChannelValidFlag == TRUE )
 						{
 							NextBlendMode = DX_BLENDMODE_ALPHA ;
 						}
@@ -6563,7 +6563,7 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 				}
 				else
 				{
-					if( GIOS.Device.DrawSetting.AlphaChannelValidFlag == TRUE )
+					if( GHTML5.Device.DrawSetting.AlphaChannelValidFlag == TRUE )
 					{
 						NextBlendMode = DX_BLENDMODE_ALPHA ;
 					}
@@ -6574,38 +6574,38 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 	}
 	
 	// カレントテクスチャが無い場合とある場合で分岐
-	if( GIOS.Device.DrawSetting.RenderTexture == NULL )
+	if( GHTML5.Device.DrawSetting.RenderTexture == NULL )
 	{
 		// カレントテクスチャが無い場合は線や箱の描画と判断、テクスチャステージは無効にする
 
 		// とりあえず描画処理を行う
-		GIOS.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
+		GHTML5.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
 
 		// アルファテストパラメータが有効な場合はそれを優先する
-		if( GIOS.Device.DrawSetting.AlphaTestMode != -1 )
+		if( GHTML5.Device.DrawSetting.AlphaTestMode != -1 )
 		{
-			GIOS.Device.State.AlphaTestEnable = TRUE ;
-			AlphaTestCmpMode = GIOS.Device.DrawSetting.AlphaTestMode ;
-			AlphaTestRef     = GIOS.Device.DrawSetting.AlphaTestParam ;
+			GHTML5.Device.State.AlphaTestEnable = TRUE ;
+			AlphaTestCmpMode = GHTML5.Device.DrawSetting.AlphaTestMode ;
+			AlphaTestRef     = GHTML5.Device.DrawSetting.AlphaTestParam ;
 		}
 		else
 		{
-			GIOS.Device.State.AlphaTestEnable = FALSE ;
+			GHTML5.Device.State.AlphaTestEnable = FALSE ;
 		}
 
 		// 頂点タイプのセット
-		GIOS.Device.DrawInfo.VertexType = VERTEXTYPE_NOTEX ;
+		GHTML5.Device.DrawInfo.VertexType = VERTEXTYPE_NOTEX ;
 
 		// 使用するシェーダーの取得
-		GIOS.Device.State.AlphaTestModeShaderIndex = Graphics_iOS_Shader_GetAlphaTestModeIndex( GIOS.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
+		GHTML5.Device.State.AlphaTestModeShaderIndex = Graphics_HTML5_Shader_GetAlphaTestModeIndex( GHTML5.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
 
-		VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ] ;
-		VSAddress = &SCB->BaseSimple_VS_Code[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ] ;
+		VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ] ;
+		VSAddress = &SCB->BaseSimple_VS_Code[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ] ;
 
-		FS        = & SB->BaseNoneTex_FS     [ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
-		FSAddress = &SCB->BaseNoneTex_FS_Code[ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
+		FS        = & SB->BaseNoneTex_FS     [ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
+		FSAddress = &SCB->BaseNoneTex_FS_Code[ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
 
-		UseShader = &SB->BaseNoneTex_Shader[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ][ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
+		UseShader = &SB->BaseNoneTex_Shader[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ][ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
 	}
 	else
 	{
@@ -6613,16 +6613,16 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 
 		// 使用するテクスチャブレンドステージステータステーブルのインデックスをセット
 		IgnoreTextureAlpha = 1 ;
-		if( GIOS.Device.DrawSetting.AlphaChannelValidFlag ||
-			GIOS.Device.DrawSetting.AlphaTestValidFlag    ||
-			( GIOS.Device.State.DepthEnable &&
-			  GIOS.Device.DrawSetting.BlendTexture == NULL ) )
+		if( GHTML5.Device.DrawSetting.AlphaChannelValidFlag ||
+			GHTML5.Device.DrawSetting.AlphaTestValidFlag    ||
+			( GHTML5.Device.State.DepthEnable &&
+			  GHTML5.Device.DrawSetting.BlendTexture == NULL ) )
 		{
 			IgnoreTextureAlpha = 0 ;
 		}
 
 		// ブレンドテクスチャーを使用するかどうかで分岐
-		if( GIOS.Device.DrawSetting.BlendTexture != NULL )
+		if( GHTML5.Device.DrawSetting.BlendTexture != NULL )
 		{
 			int RenderType ;
 
@@ -6632,41 +6632,41 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 			RenderType = g_DefaultBlendDescArray[ NextBlendMode ].RenderType ;
 
 			// 使用するテクスチャーアドレスをセット
-			UseTexture[ 0 ] = GIOS.Device.DrawSetting.RenderTexture ;
-			UseTexture[ 1 ] = GIOS.Device.DrawSetting.BlendTexture ;
+			UseTexture[ 0 ] = GHTML5.Device.DrawSetting.RenderTexture ;
+			UseTexture[ 1 ] = GHTML5.Device.DrawSetting.BlendTexture ;
 			UseTextureNum = 2 ;
 
 			// 頂点タイプのセット
-			GIOS.Device.DrawInfo.VertexType = VERTEXTYPE_BLENDTEX ;
+			GHTML5.Device.DrawInfo.VertexType = VERTEXTYPE_BLENDTEX ;
 
 			// ブレンドタイプによって処理を分岐
-			switch( GIOS.Device.DrawSetting.BlendGraphType )
+			switch( GHTML5.Device.DrawSetting.BlendGraphType )
 			{
 			case DX_BLENDGRAPHTYPE_NORMAL :
 				// とりあえず描画処理を行う
-				GIOS.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
+				GHTML5.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
 
 				// アルファテストパラメータが有効な場合はそれを優先する
-				if( GIOS.Device.DrawSetting.AlphaTestMode != -1 )
+				if( GHTML5.Device.DrawSetting.AlphaTestMode != -1 )
 				{
-					GIOS.Device.State.AlphaTestEnable = TRUE ;
-					AlphaTestCmpMode = GIOS.Device.DrawSetting.AlphaTestMode ;
-					AlphaTestRef     = GIOS.Device.DrawSetting.AlphaTestParam ;
+					GHTML5.Device.State.AlphaTestEnable = TRUE ;
+					AlphaTestCmpMode = GHTML5.Device.DrawSetting.AlphaTestMode ;
+					AlphaTestRef     = GHTML5.Device.DrawSetting.AlphaTestParam ;
 				}
 				else
 				{
 					// α処理が有効な場合はα値が０の場合のみ表示されないようにする
-					if( GIOS.Device.DrawSetting.AlphaTestValidFlag == TRUE ||
+					if( GHTML5.Device.DrawSetting.AlphaTestValidFlag == TRUE ||
 						g_DefaultBlendDescArray[ NextBlendMode ].BlendEnable == TRUE ||
-						GIOS.Device.DrawSetting.AlphaChannelValidFlag == TRUE )
+						GHTML5.Device.DrawSetting.AlphaChannelValidFlag == TRUE )
 					{
-						GIOS.Device.State.AlphaTestEnable = TRUE ;
+						GHTML5.Device.State.AlphaTestEnable = TRUE ;
 						AlphaTestRef     = 0 ;
 						AlphaTestCmpMode = DX_CMP_GREATER ;
 					}
 					else
 					{
-						GIOS.Device.State.AlphaTestEnable = FALSE ;
+						GHTML5.Device.State.AlphaTestEnable = FALSE ;
 					}
 				}
 
@@ -6675,23 +6675,23 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 				FloatFactorColor[ 0 ] = 1.0f ;
 				FloatFactorColor[ 1 ] = 1.0f ;
 				FloatFactorColor[ 2 ] = 1.0f ;
-				FloatFactorColor[ 3 ] = GIOS.Device.DrawSetting.BlendGraphFadeRatio / 255.0f ;
+				FloatFactorColor[ 3 ] = GHTML5.Device.DrawSetting.BlendGraphFadeRatio / 255.0f ;
 
 				// 使用するシェーダーをセット
-				GIOS.Device.State.AlphaTestModeShaderIndex = Graphics_iOS_Shader_GetAlphaTestModeIndex( GIOS.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
+				GHTML5.Device.State.AlphaTestModeShaderIndex = Graphics_HTML5_Shader_GetAlphaTestModeIndex( GHTML5.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
 
-				VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ] ;
-				VSAddress = &SCB->BaseSimple_VS_Code[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ] ;
+				VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ] ;
+				VSAddress = &SCB->BaseSimple_VS_Code[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ] ;
 
-				FS        =  &SB->BaseUseTex_FS     [ 1 ][ RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
-				FSAddress = &SCB->BaseUseTex_FS_Code[ 1 ][ RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
+				FS        =  &SB->BaseUseTex_FS     [ 1 ][ RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
+				FSAddress = &SCB->BaseUseTex_FS_Code[ 1 ][ RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
 
-				UseShader = &SB->BaseUseTex_Shader[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ][ 1 ][ RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
+				UseShader = &SB->BaseUseTex_Shader[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ][ 1 ][ RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
 				break ;
 
 			case DX_BLENDGRAPHTYPE_WIPE :
 				// ブレンド境界値が最大の場合は何も描画しない
-				GIOS.Device.DrawInfo.BlendMaxNotDrawFlag = GIOS.Device.DrawSetting.BlendGraphBorderParam == 255 ? TRUE : FALSE ;
+				GHTML5.Device.DrawInfo.BlendMaxNotDrawFlag = GHTML5.Device.DrawSetting.BlendGraphBorderParam == 255 ? TRUE : FALSE ;
 
 				// float型の FactorColor を使用する
 				UseFloatFactorColor = TRUE ;
@@ -6701,13 +6701,13 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 				FloatFactorColor[ 3 ] = 0.0f ;
 
 				// 境界範囲が１以下かどうかで処理を分岐
-				if( GIOS.Device.DrawSetting.BlendGraphBorderRange <= 1 )
+				if( GHTML5.Device.DrawSetting.BlendGraphBorderRange <= 1 )
 				{
 					// ここはもう殆ど例外処理 -------------------------------------------
 
 					// αテストを使用する
-					GIOS.Device.State.AlphaTestEnable = TRUE ;
-					AlphaTestRef     = GIOS.Device.DrawSetting.BlendGraphBorderParam ;
+					GHTML5.Device.State.AlphaTestEnable = TRUE ;
+					AlphaTestRef     = GHTML5.Device.DrawSetting.BlendGraphBorderParam ;
 					AlphaTestCmpMode = DX_CMP_GREATEREQUAL ;
 
 					// αブレンド機能ＯＦＦ
@@ -6718,9 +6718,9 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 					FloatFactorColor[ 2 ] = 1.0f ;
 
 					// もし画像がαチャンネルを使用していて、且つ BlendGraphBorderParam が 0 だったら AlphaRef を０にしない
-					if( ( GIOS.Device.DrawSetting.AlphaChannelValidFlag ||
-						  GIOS.Device.DrawSetting.AlphaTestValidFlag ) &&
-						GIOS.Device.DrawSetting.BlendGraphBorderParam == 0 )
+					if( ( GHTML5.Device.DrawSetting.AlphaChannelValidFlag ||
+						  GHTML5.Device.DrawSetting.AlphaTestValidFlag ) &&
+						GHTML5.Device.DrawSetting.BlendGraphBorderParam == 0 )
 					{
 						AlphaTestRef = 1 ;
 					}
@@ -6732,14 +6732,14 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 					// αブレンドによるテクスチャブレンド
 
 					// αテストは行わない
-					GIOS.Device.State.AlphaTestEnable = FALSE ;
+					GHTML5.Device.State.AlphaTestEnable = FALSE ;
 
 					// 境界範囲によって４段階
-					if( GIOS.Device.DrawSetting.BlendGraphBorderRange <= 64 )
+					if( GHTML5.Device.DrawSetting.BlendGraphBorderRange <= 64 )
 					{
 						// ×４
 
-						p = 1280 - GIOS.Device.DrawSetting.BlendGraphBorderParam * 1280 / 255 ; 
+						p = 1280 - GHTML5.Device.DrawSetting.BlendGraphBorderParam * 1280 / 255 ; 
 
 						// ブレンドテクスチャのブレンド値によって合成パラメータを変更
 						if( p < 1024 )
@@ -6754,11 +6754,11 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 						FloatFactorColor[ 2 ] = 4.0f ;
 					}
 					else
-					if( GIOS.Device.DrawSetting.BlendGraphBorderRange <= 128 )
+					if( GHTML5.Device.DrawSetting.BlendGraphBorderRange <= 128 )
 					{
 						// ×２
 
-						p = 768 - GIOS.Device.DrawSetting.BlendGraphBorderParam * 768 / 255 ; 
+						p = 768 - GHTML5.Device.DrawSetting.BlendGraphBorderParam * 768 / 255 ; 
 
 						// ブレンドテクスチャのブレンド値によって合成パラメータを変更
 						if( p < 512 )
@@ -6776,7 +6776,7 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 					{
 						// ×１
 
-						p = 512 - GIOS.Device.DrawSetting.BlendGraphBorderParam * 512 / 255 ; 
+						p = 512 - GHTML5.Device.DrawSetting.BlendGraphBorderParam * 512 / 255 ; 
 
 						// ブレンドテクスチャのブレンド値によって合成パラメータを変更
 						if( p < 256 )
@@ -6793,53 +6793,53 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 				}
 
 				// 使用するシェーダーをセット
-				GIOS.Device.State.AlphaTestModeShaderIndex = Graphics_iOS_Shader_GetAlphaTestModeIndex( GIOS.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
+				GHTML5.Device.State.AlphaTestModeShaderIndex = Graphics_HTML5_Shader_GetAlphaTestModeIndex( GHTML5.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
 
-				VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ] ;
-				VSAddress = &SCB->BaseSimple_VS_Code[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ] ;
+				VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ] ;
+				VSAddress = &SCB->BaseSimple_VS_Code[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ] ;
 
-				FS        =  &SB->BaseUseTex_FS     [ 2 ][ RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
-				FSAddress = &SCB->BaseUseTex_FS_Code[ 2 ][ RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
+				FS        =  &SB->BaseUseTex_FS     [ 2 ][ RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
+				FSAddress = &SCB->BaseUseTex_FS_Code[ 2 ][ RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
 
-				UseShader = &SB->BaseUseTex_Shader[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ][ 2 ][ RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
+				UseShader = &SB->BaseUseTex_Shader[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ][ 2 ][ RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
 				break ;
 
 			case DX_BLENDGRAPHTYPE_ALPHA :
 				// とりあえず描画処理を行う
-				GIOS.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
+				GHTML5.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
 
 				// アルファテストパラメータが有効な場合はそれを優先する
-				if( GIOS.Device.DrawSetting.AlphaTestMode != -1 )
+				if( GHTML5.Device.DrawSetting.AlphaTestMode != -1 )
 				{
-					GIOS.Device.State.AlphaTestEnable = TRUE ;
-					AlphaTestCmpMode = GIOS.Device.DrawSetting.AlphaTestMode ;
-					AlphaTestRef     = GIOS.Device.DrawSetting.AlphaTestParam ;
+					GHTML5.Device.State.AlphaTestEnable = TRUE ;
+					AlphaTestCmpMode = GHTML5.Device.DrawSetting.AlphaTestMode ;
+					AlphaTestRef     = GHTML5.Device.DrawSetting.AlphaTestParam ;
 				}
 				else
 				{
 					// α処理が有効な場合はα値が０の場合のみ表示されないようにする
 					if( g_DefaultBlendDescArray[ NextBlendMode ].BlendEnable == TRUE )
 					{
-						GIOS.Device.State.AlphaTestEnable = TRUE ;
+						GHTML5.Device.State.AlphaTestEnable = TRUE ;
 						AlphaTestRef     = 0 ;
 						AlphaTestCmpMode = DX_CMP_GREATER ;
 					}
 					else
 					{
-						GIOS.Device.State.AlphaTestEnable = FALSE ;
+						GHTML5.Device.State.AlphaTestEnable = FALSE ;
 					}
 				}
 
 				// 使用するシェーダーをセット
-				GIOS.Device.State.AlphaTestModeShaderIndex = Graphics_iOS_Shader_GetAlphaTestModeIndex( GIOS.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
+				GHTML5.Device.State.AlphaTestModeShaderIndex = Graphics_HTML5_Shader_GetAlphaTestModeIndex( GHTML5.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
 
-				VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ] ;
-				VSAddress = &SCB->BaseSimple_VS_Code[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ] ;
+				VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ] ;
+				VSAddress = &SCB->BaseSimple_VS_Code[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ] ;
 
-				FS        =  &SB->BaseUseTex_FS     [ 3 ][ RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
-				FSAddress = &SCB->BaseUseTex_FS_Code[ 3 ][ RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
+				FS        =  &SB->BaseUseTex_FS     [ 3 ][ RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
+				FSAddress = &SCB->BaseUseTex_FS_Code[ 3 ][ RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
 
-				UseShader = &SB->BaseUseTex_Shader[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ][ 3 ][ RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
+				UseShader = &SB->BaseUseTex_Shader[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ][ 3 ][ RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
 				break ;
 			}
 		}
@@ -6848,25 +6848,25 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 			// ブレンドテクスチャーが無い場合
 
 			// とりあえず描画処理を行う
-			GIOS.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
+			GHTML5.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
 
 			// 頂点タイプのセット
-			GIOS.Device.DrawInfo.VertexType = VERTEXTYPE_TEX ;
+			GHTML5.Device.DrawInfo.VertexType = VERTEXTYPE_TEX ;
 
 			// アルファテストパラメータが有効な場合はそれを優先する
-			if( GIOS.Device.DrawSetting.AlphaTestMode != -1 )
+			if( GHTML5.Device.DrawSetting.AlphaTestMode != -1 )
 			{
-				GIOS.Device.State.AlphaTestEnable = TRUE ;
-				AlphaTestCmpMode = GIOS.Device.DrawSetting.AlphaTestMode ;
-				AlphaTestRef     = GIOS.Device.DrawSetting.AlphaTestParam ;
+				GHTML5.Device.State.AlphaTestEnable = TRUE ;
+				AlphaTestCmpMode = GHTML5.Device.DrawSetting.AlphaTestMode ;
+				AlphaTestRef     = GHTML5.Device.DrawSetting.AlphaTestParam ;
 			}
 			else
 			{
 				// αテストを使用するかどうかで処理を分岐
-				if( GIOS.Device.DrawSetting.AlphaTestValidFlag == TRUE )
+				if( GHTML5.Device.DrawSetting.AlphaTestValidFlag == TRUE )
 				{
 					// αテストを行う(透過色処理以外にαテストはブレンドテクスチャでも使用している)
-					GIOS.Device.State.AlphaTestEnable = TRUE ;
+					GHTML5.Device.State.AlphaTestEnable = TRUE ;
 					AlphaTestRef     = 16 ;
 					AlphaTestCmpMode = DX_CMP_GREATER ;
 				}
@@ -6876,30 +6876,30 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 					if( g_DefaultBlendDescArray[ NextBlendMode ].BlendEnable == TRUE &&
 						g_DefaultBlendDescArray[ NextBlendMode ].AlphaZeroNotDrawFlag == TRUE )
 					{
-						GIOS.Device.State.AlphaTestEnable = TRUE ;
+						GHTML5.Device.State.AlphaTestEnable = TRUE ;
 						AlphaTestRef     = 0 ;
 						AlphaTestCmpMode = DX_CMP_GREATER ;
 					}
 					else
 					{
-						GIOS.Device.State.AlphaTestEnable = FALSE ;
+						GHTML5.Device.State.AlphaTestEnable = FALSE ;
 					}
 				}
 			}
 
 			// 使用するフラグメントシェーダーをセット
-			GIOS.Device.State.AlphaTestModeShaderIndex = Graphics_iOS_Shader_GetAlphaTestModeIndex( GIOS.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
+			GHTML5.Device.State.AlphaTestModeShaderIndex = Graphics_HTML5_Shader_GetAlphaTestModeIndex( GHTML5.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
 
-			VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ] ;
-			VSAddress = &SCB->BaseSimple_VS_Code[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ] ;
+			VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ] ;
+			VSAddress = &SCB->BaseSimple_VS_Code[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ] ;
 
-			FS        =  &SB->BaseUseTex_FS     [ 0 ][ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
-			FSAddress = &SCB->BaseUseTex_FS_Code[ 0 ][ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
+			FS        =  &SB->BaseUseTex_FS     [ 0 ][ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
+			FSAddress = &SCB->BaseUseTex_FS_Code[ 0 ][ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
 
-			UseShader = &SB->BaseUseTex_Shader[ g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ][ 0 ][ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GIOS.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GIOS.Device.State.AlphaTestModeShaderIndex ] ;
+			UseShader = &SB->BaseUseTex_Shader[ g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ][ 0 ][ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GHTML5.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GHTML5.Device.State.AlphaTestModeShaderIndex ] ;
 
 			// 使用するテクスチャーアドレスをセット
-			UseTexture[ 0 ] = GIOS.Device.DrawSetting.RenderTexture ;
+			UseTexture[ 0 ] = GHTML5.Device.DrawSetting.RenderTexture ;
 
 			// 使用するテクスチャの数は一つ
 			UseTextureNum = 1 ;
@@ -6910,9 +6910,9 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 	if( *VS == 0 )
 	{
 		// 頂点シェーダーの作成を試みる
-		if( Graphics_iOS_VertexShader_Create( VSAddress, VS, 1 ) != 0 )
+		if( Graphics_HTML5_VertexShader_Create( VSAddress, VS, 1 ) != 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_iOS_DeviceState_NormalDrawSetup で頂点シェーダーの作成に失敗しました\n" @*/ )) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_HTML5_DeviceState_NormalDrawSetup で頂点シェーダーの作成に失敗しました\n" @*/ )) ;
 			return -1 ;
 		}
 	}
@@ -6921,9 +6921,9 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 	if( *FS == 0 )
 	{
 		// フラグメントシェーダーの作成を試みる
-		if( Graphics_iOS_FragmentShader_Create( FSAddress, FS, 1 ) != 0 )
+		if( Graphics_HTML5_FragmentShader_Create( FSAddress, FS, 1 ) != 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_iOS_DeviceState_NormalDrawSetup でフラグメントシェーダーの作成に失敗しました\n" @*/ )) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_HTML5_DeviceState_NormalDrawSetup でフラグメントシェーダーの作成に失敗しました\n" @*/ )) ;
 			return -1 ;
 		}
 	}
@@ -6931,7 +6931,7 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 	// シェーダーが作成されていなかったらシェーダーの作成を試みる
 	if( *UseShader == NULL )
 	{
-		*UseShader = Graphics_iOS_GetShaderStruct() ;
+		*UseShader = Graphics_HTML5_GetShaderStruct() ;
 		if( *UseShader == NULL )
 		{
 			return -1 ;
@@ -6939,9 +6939,9 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 	}
 	if( ( *UseShader )->Shader == 0 )
 	{
-		if( Graphics_iOS_Shader_Create( *UseShader, *VS, *FS ) != 0 )
+		if( Graphics_HTML5_Shader_Create( *UseShader, *VS, *FS ) != 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_iOS_DeviceState_NormalDrawSetup でシェーダーの作成に失敗しました\n" @*/ )) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_HTML5_DeviceState_NormalDrawSetup でシェーダーの作成に失敗しました\n" @*/ )) ;
 			return -1 ;
 		}
 	}
@@ -6952,28 +6952,28 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 
 		for( i = 0 ; i < UseTextureNum ; i ++ )
 		{
-			Graphics_iOS_DeviceState_SetTexture( i, UseTexture[ i ] ) ;
+			Graphics_HTML5_DeviceState_SetTexture( i, UseTexture[ i ] ) ;
 		}
 	}
 
-	if( GIOS.Device.State.AlphaTestEnable )
+	if( GHTML5.Device.State.AlphaTestEnable )
 	{
-		Graphics_iOS_DeviceState_SetAlphaTestRef( AlphaTestRef ) ;
-		Graphics_iOS_DeviceState_SetAlphaTestCmpMode( AlphaTestCmpMode ) ;
+		Graphics_HTML5_DeviceState_SetAlphaTestRef( AlphaTestRef ) ;
+		Graphics_HTML5_DeviceState_SetAlphaTestCmpMode( AlphaTestCmpMode ) ;
 	}
 	else
 	{
-		Graphics_iOS_DeviceState_SetAlphaTestRef( -1 ) ;
-		Graphics_iOS_DeviceState_SetAlphaTestCmpMode( DX_CMP_GREATER ) ;
+		Graphics_HTML5_DeviceState_SetAlphaTestRef( -1 ) ;
+		Graphics_HTML5_DeviceState_SetAlphaTestCmpMode( DX_CMP_GREATER ) ;
 	}
 
 	if( UseFloatFactorColor )
 	{
-		Graphics_iOS_DeviceState_SetFactorColor( &FloatFactorColor ) ;
+		Graphics_HTML5_DeviceState_SetFactorColor( &FloatFactorColor ) ;
 	}
 
-	Graphics_iOS_DeviceState_SetBlendMode( NextBlendMode, GIOS.Device.DrawSetting.NotWriteAlphaChannelFlag ) ;
-	Graphics_iOS_DeviceState_SetShader( *UseShader, TRUE ) ;
+	Graphics_HTML5_DeviceState_SetBlendMode( NextBlendMode, GHTML5.Device.DrawSetting.NotWriteAlphaChannelFlag ) ;
+	Graphics_HTML5_DeviceState_SetShader( *UseShader, TRUE ) ;
 
 	// 終了
 	return 0 ;
@@ -7007,12 +7007,12 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 // 描画設定関係関数
 
 // 描画ブレンドモードの設定
-extern int Graphics_iOS_DrawSetting_SetDrawBlendMode( int BlendMode, int AlphaTestValidFlag, int AlphaChannelValidFlag )
+extern int Graphics_HTML5_DrawSetting_SetDrawBlendMode( int BlendMode, int AlphaTestValidFlag, int AlphaChannelValidFlag )
 {
-	if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
-		GIOS.Device.DrawSetting.BlendMode               == BlendMode &&
-		GIOS.Device.DrawSetting.AlphaTestValidFlag      == AlphaTestValidFlag &&
-		GIOS.Device.DrawSetting.AlphaChannelValidFlag   == AlphaChannelValidFlag )
+	if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
+		GHTML5.Device.DrawSetting.BlendMode               == BlendMode &&
+		GHTML5.Device.DrawSetting.AlphaTestValidFlag      == AlphaTestValidFlag &&
+		GHTML5.Device.DrawSetting.AlphaChannelValidFlag   == AlphaChannelValidFlag )
 	{
 		return 0 ;
 	}
@@ -7020,22 +7020,22 @@ extern int Graphics_iOS_DrawSetting_SetDrawBlendMode( int BlendMode, int AlphaTe
 	// 描画待機している描画物を描画
 	DRAWSTOCKINFO
 
-	GIOS.Device.DrawSetting.BlendMode             = BlendMode ;
-	GIOS.Device.DrawSetting.AlphaChannelValidFlag = AlphaChannelValidFlag ;
-	GIOS.Device.DrawSetting.AlphaTestValidFlag    = AlphaTestValidFlag ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag    = TRUE ;
+	GHTML5.Device.DrawSetting.BlendMode             = BlendMode ;
+	GHTML5.Device.DrawSetting.AlphaChannelValidFlag = AlphaChannelValidFlag ;
+	GHTML5.Device.DrawSetting.AlphaTestValidFlag    = AlphaTestValidFlag ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag    = TRUE ;
 
 	// パラメータが変更された、フラグを立てる
-	GIOS.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
+	GHTML5.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 
 	return 0 ;
 }
 
 // 描画時の画像のＲＧＢを無視するかどうかを設定する
-extern int Graphics_iOS_DrawSetting_SetIgnoreDrawGraphColor( int EnableFlag )
+extern int Graphics_HTML5_DrawSetting_SetIgnoreDrawGraphColor( int EnableFlag )
 {
-	if( GIOS.Device.DrawSetting.IgnoreGraphColorFlag == EnableFlag &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.DrawSetting.IgnoreGraphColorFlag == EnableFlag &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -7044,37 +7044,37 @@ extern int Graphics_iOS_DrawSetting_SetIgnoreDrawGraphColor( int EnableFlag )
 	DRAWSTOCKINFO
 
 	// 値を保存
-	GIOS.Device.DrawSetting.IgnoreGraphColorFlag = EnableFlag ;
+	GHTML5.Device.DrawSetting.IgnoreGraphColorFlag = EnableFlag ;
 
 	// 定数データに反映
-	if( GIOS.Device.DrawSetting.IgnoreGraphColorFlag )
+	if( GHTML5.Device.DrawSetting.IgnoreGraphColorFlag )
 	{
-		GIOS.Device.Shader.Constant.uIgnoreTextureColor[ 0 ] = 1.0f ;
-		GIOS.Device.Shader.Constant.uIgnoreTextureColor[ 1 ] = 1.0f ;
-		GIOS.Device.Shader.Constant.uIgnoreTextureColor[ 2 ] = 1.0f ;
+		GHTML5.Device.Shader.Constant.uIgnoreTextureColor[ 0 ] = 1.0f ;
+		GHTML5.Device.Shader.Constant.uIgnoreTextureColor[ 1 ] = 1.0f ;
+		GHTML5.Device.Shader.Constant.uIgnoreTextureColor[ 2 ] = 1.0f ;
 	}
 	else
 	{
-		GIOS.Device.Shader.Constant.uIgnoreTextureColor[ 0 ] = 0.0f ;
-		GIOS.Device.Shader.Constant.uIgnoreTextureColor[ 1 ] = 0.0f ;
-		GIOS.Device.Shader.Constant.uIgnoreTextureColor[ 2 ] = 0.0f ;
+		GHTML5.Device.Shader.Constant.uIgnoreTextureColor[ 0 ] = 0.0f ;
+		GHTML5.Device.Shader.Constant.uIgnoreTextureColor[ 1 ] = 0.0f ;
+		GHTML5.Device.Shader.Constant.uIgnoreTextureColor[ 2 ] = 0.0f ;
 	}
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
-//	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+//	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// パラメータが変更された、フラグを立てる
-	GIOS.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
+	GHTML5.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 
 	return 0 ;
 }
 
 // 描画時の画像のＡを無視するかどうかを設定する
-extern int Graphics_iOS_DrawSetting_SetIgnoreDrawGraphAlpha( int EnableFlag )
+extern int Graphics_HTML5_DrawSetting_SetIgnoreDrawGraphAlpha( int EnableFlag )
 {
-	if( GIOS.Device.DrawSetting.IgnoreGraphAlphaFlag == EnableFlag &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.DrawSetting.IgnoreGraphAlphaFlag == EnableFlag &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
@@ -7083,31 +7083,31 @@ extern int Graphics_iOS_DrawSetting_SetIgnoreDrawGraphAlpha( int EnableFlag )
 	DRAWSTOCKINFO
 
 	// 値を保存
-	GIOS.Device.DrawSetting.IgnoreGraphAlphaFlag = EnableFlag ;
+	GHTML5.Device.DrawSetting.IgnoreGraphAlphaFlag = EnableFlag ;
 
 	// 定数データに反映
-	if( GIOS.Device.DrawSetting.IgnoreGraphAlphaFlag )
+	if( GHTML5.Device.DrawSetting.IgnoreGraphAlphaFlag )
 	{
-		GIOS.Device.Shader.Constant.uIgnoreTextureColor[ 3 ] = 1.0f ;
+		GHTML5.Device.Shader.Constant.uIgnoreTextureColor[ 3 ] = 1.0f ;
 	}
 	else
 	{
-		GIOS.Device.Shader.Constant.uIgnoreTextureColor[ 3 ] = 0.0f ;
+		GHTML5.Device.Shader.Constant.uIgnoreTextureColor[ 3 ] = 0.0f ;
 	}
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// パラメータが変更された、フラグを立てる
-	GIOS.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
+	GHTML5.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 
 	return 0 ;
 }
 
 // 描画先のアルファチャンネルの内容を書き換えるかを設定する
-extern int Graphics_iOS_DrawSetting_SetWriteAlphaChannelFlag( int NotFlag )
+extern int Graphics_HTML5_DrawSetting_SetWriteAlphaChannelFlag( int NotFlag )
 {
-	if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
-		GIOS.Device.DrawSetting.NotWriteAlphaChannelFlag == NotFlag )
+	if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
+		GHTML5.Device.DrawSetting.NotWriteAlphaChannelFlag == NotFlag )
 	{
 		return 0 ;
 	}
@@ -7115,21 +7115,21 @@ extern int Graphics_iOS_DrawSetting_SetWriteAlphaChannelFlag( int NotFlag )
 	// 描画待機している描画物を描画
 	DRAWSTOCKINFO
 
-	GIOS.Device.DrawSetting.NotWriteAlphaChannelFlag = NotFlag ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag    = TRUE ;
+	GHTML5.Device.DrawSetting.NotWriteAlphaChannelFlag = NotFlag ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag    = TRUE ;
 
 	// パラメータが変更された、フラグを立てる
-	GIOS.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
+	GHTML5.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 
 	return 0 ;
 }
 
 // アルファテストの設定
-extern int Graphics_iOS_DrawSetting_SetDrawAlphaTest( int TestMode, int TestParam )
+extern int Graphics_HTML5_DrawSetting_SetDrawAlphaTest( int TestMode, int TestParam )
 {
-	if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
-		GIOS.Device.DrawSetting.AlphaTestMode  == TestMode &&
-		GIOS.Device.DrawSetting.AlphaTestParam == TestParam )
+	if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
+		GHTML5.Device.DrawSetting.AlphaTestMode  == TestMode &&
+		GHTML5.Device.DrawSetting.AlphaTestParam == TestParam )
 	{
 		return 0 ;
 	}
@@ -7137,66 +7137,66 @@ extern int Graphics_iOS_DrawSetting_SetDrawAlphaTest( int TestMode, int TestPara
 	// 描画待機している描画物を描画
 	DRAWSTOCKINFO
 
-	GIOS.Device.DrawSetting.AlphaTestMode      = TestMode ;
-	GIOS.Device.DrawSetting.AlphaTestParam     = TestParam ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.AlphaTestMode      = TestMode ;
+	GHTML5.Device.DrawSetting.AlphaTestParam     = TestParam ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// パラメータが変更された、フラグを立てる
-	GIOS.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
+	GHTML5.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 
 	return 0 ;
 }
 
 // ブレンドするテクスチャのパラメータをセットする
-extern int Graphics_iOS_DrawSetting_SetBlendTextureParam( int BlendType, int *Param )
+extern int Graphics_HTML5_DrawSetting_SetBlendTextureParam( int BlendType, int *Param )
 {
 	// パラメータを保存
 	switch( BlendType )
 	{
 	case DX_BLENDGRAPHTYPE_NORMAL :
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
-			BlendType == GIOS.Device.DrawSetting.BlendGraphType &&
-			GIOS.Device.DrawSetting.BlendGraphFadeRatio == Param[ 0 ] )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
+			BlendType == GHTML5.Device.DrawSetting.BlendGraphType &&
+			GHTML5.Device.DrawSetting.BlendGraphFadeRatio == Param[ 0 ] )
 		{
 			return 0 ;
 		}
 
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			// 描画待機している描画物を描画
 			DRAWSTOCKINFO
 		}
 
-		GIOS.Device.DrawSetting.BlendGraphFadeRatio = Param[ 0 ] ;
+		GHTML5.Device.DrawSetting.BlendGraphFadeRatio = Param[ 0 ] ;
 		break;
 
 	case DX_BLENDGRAPHTYPE_WIPE:
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
-			BlendType == GIOS.Device.DrawSetting.BlendGraphType &&
-			GIOS.Device.DrawSetting.BlendGraphBorderParam == Param[ 0 ] &&
-			GIOS.Device.DrawSetting.BlendGraphBorderRange == Param[ 1 ] )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
+			BlendType == GHTML5.Device.DrawSetting.BlendGraphType &&
+			GHTML5.Device.DrawSetting.BlendGraphBorderParam == Param[ 0 ] &&
+			GHTML5.Device.DrawSetting.BlendGraphBorderRange == Param[ 1 ] )
 		{
 			return 0 ;
 		}
 
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			// 描画待機している描画物を描画
 			DRAWSTOCKINFO
 		}
 
-		GIOS.Device.DrawSetting.BlendGraphBorderParam = Param[ 0 ] ;
-		GIOS.Device.DrawSetting.BlendGraphBorderRange = Param[ 1 ] ;
+		GHTML5.Device.DrawSetting.BlendGraphBorderParam = Param[ 0 ] ;
+		GHTML5.Device.DrawSetting.BlendGraphBorderRange = Param[ 1 ] ;
 		break;
 
 	case DX_BLENDGRAPHTYPE_ALPHA :
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
-			BlendType == GIOS.Device.DrawSetting.BlendGraphType )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
+			BlendType == GHTML5.Device.DrawSetting.BlendGraphType )
 		{
 			return 0 ;
 		}
 
-		if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+		if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
 			// 描画待機している描画物を描画
 			DRAWSTOCKINFO
@@ -7205,85 +7205,85 @@ extern int Graphics_iOS_DrawSetting_SetBlendTextureParam( int BlendType, int *Pa
 	}
 
 	// ブレンドタイプを保存する
-	GIOS.Device.DrawSetting.BlendGraphType = BlendType ;
+	GHTML5.Device.DrawSetting.BlendGraphType = BlendType ;
 
 	// パラメータが変更された、フラグを立てる
-	GIOS.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // テクスチャをセットする 
-extern int Graphics_iOS_DrawSetting_SetTexture( GRAPHICS_IOS_TEXTURE *RenderTexture )
+extern int Graphics_HTML5_DrawSetting_SetTexture( GRAPHICS_HTML5_TEXTURE *RenderTexture )
 {
-	if( RenderTexture == GIOS.Device.DrawSetting.RenderTexture &&
-		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( RenderTexture == GHTML5.Device.DrawSetting.RenderTexture &&
+		GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		return 0 ;
 	}
 
-	if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		// 描画待機している描画物を描画
 		DRAWSTOCKINFO
 	}
 
 	// テクスチャが変更された、フラグを立てる
-	GIOS.Device.DrawSetting.ChangeTextureFlag = TRUE ;
+	GHTML5.Device.DrawSetting.ChangeTextureFlag = TRUE ;
 
 	// テクスチャの有り無しが変更された場合はブレンドパラメータの変更も行うフラグもセットする
-	if( ( GIOS.Device.DrawSetting.RenderTexture == NULL && RenderTexture != NULL ) ||
-		( GIOS.Device.DrawSetting.RenderTexture != NULL && RenderTexture == NULL ) )
+	if( ( GHTML5.Device.DrawSetting.RenderTexture == NULL && RenderTexture != NULL ) ||
+		( GHTML5.Device.DrawSetting.RenderTexture != NULL && RenderTexture == NULL ) )
 	{
-		GIOS.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
+		GHTML5.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 	}
 
 	// テクスチャセット
-	GIOS.Device.DrawSetting.RenderTexture      = RenderTexture ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.RenderTexture      = RenderTexture ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// 終了
 	return 0 ;
 }
 
 // ブレンドするテクスチャをセットする 
-extern int Graphics_iOS_DrawSetting_SetBlendTexture( GRAPHICS_IOS_TEXTURE *BlendTexture )
+extern int Graphics_HTML5_DrawSetting_SetBlendTexture( GRAPHICS_HTML5_TEXTURE *BlendTexture )
 {
-	if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
-		BlendTexture == GIOS.Device.DrawSetting.BlendTexture )
+	if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
+		BlendTexture == GHTML5.Device.DrawSetting.BlendTexture )
 	{
 		return 0 ;
 	}
 
-	if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
+	if( GHTML5.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		// 描画待機している描画物を描画
 		DRAWSTOCKINFO
 	}
 
 	// テクスチャが変更された、フラグを立てる
-	GIOS.Device.DrawSetting.ChangeTextureFlag = TRUE ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.ChangeTextureFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
 	// ブレンドテクスチャの有り無しが変更された場合はブレンドパラメータの変更も行うフラグもセットする
-	if( ( GIOS.Device.DrawSetting.BlendTexture == NULL && BlendTexture != NULL ) ||
-		( GIOS.Device.DrawSetting.BlendTexture != NULL && BlendTexture == NULL ) )
+	if( ( GHTML5.Device.DrawSetting.BlendTexture == NULL && BlendTexture != NULL ) ||
+		( GHTML5.Device.DrawSetting.BlendTexture != NULL && BlendTexture == NULL ) )
 	{
-		GIOS.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
+		GHTML5.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 	}
 
 	// テクスチャセット
-	GIOS.Device.DrawSetting.BlendTexture    = BlendTexture ;
+	GHTML5.Device.DrawSetting.BlendTexture    = BlendTexture ;
 
 	// テクスチャの幅と高さを保存
 	if( BlendTexture != NULL )
 	{
-		GIOS.Device.DrawSetting.BlendTextureWidth  = ( float )BlendTexture->Width  ;
-		GIOS.Device.DrawSetting.BlendTextureHeight = ( float )BlendTexture->Height ;
-		GIOS.Device.DrawSetting.InvBlendTextureWidth  = 1.0F / GIOS.Device.DrawSetting.BlendTextureWidth ;
-		GIOS.Device.DrawSetting.InvBlendTextureHeight = 1.0F / GIOS.Device.DrawSetting.BlendTextureHeight ;
+		GHTML5.Device.DrawSetting.BlendTextureWidth  = ( float )BlendTexture->Width  ;
+		GHTML5.Device.DrawSetting.BlendTextureHeight = ( float )BlendTexture->Height ;
+		GHTML5.Device.DrawSetting.InvBlendTextureWidth  = 1.0F / GHTML5.Device.DrawSetting.BlendTextureWidth ;
+		GHTML5.Device.DrawSetting.InvBlendTextureHeight = 1.0F / GHTML5.Device.DrawSetting.BlendTextureHeight ;
 	}
 
 	// 終了
@@ -7321,23 +7321,23 @@ extern int Graphics_iOS_DrawSetting_SetBlendTexture( GRAPHICS_IOS_TEXTURE *Blend
 
 
 
-// iOS の描画処理準備関係
+// HTML5 の描画処理準備関係
 
 #ifndef DX_NON_ASYNCLOAD
-static int Graphics_iOS_RenderVertexASyncCallback( ASYNCLOAD_MAINTHREAD_REQUESTINFO * Info )
+static int Graphics_HTML5_RenderVertexASyncCallback( ASYNCLOAD_MAINTHREAD_REQUESTINFO * Info )
 {
-	return Graphics_iOS_RenderVertex(
+	return Graphics_HTML5_RenderVertex(
 		( int )Info->Data[ 0 ],
 		FALSE ) ;
 }
 #endif // DX_NON_ASYNCLOAD
 
 // 頂点バッファに溜まった頂点データをレンダリングする
-extern	int		Graphics_iOS_RenderVertex( int NextUse3DVertex, int ASyncThread )
+extern	int		Graphics_HTML5_RenderVertex( int NextUse3DVertex, int ASyncThread )
 {
 	DWORD InputLayout ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -7347,73 +7347,73 @@ extern	int		Graphics_iOS_RenderVertex( int NextUse3DVertex, int ASyncThread )
 	{
 		ASYNCLOAD_MAINTHREAD_REQUESTINFO AInfo ;
 
-		AInfo.Function = Graphics_iOS_RenderVertexASyncCallback ;
+		AInfo.Function = Graphics_HTML5_RenderVertexASyncCallback ;
 		AInfo.Data[ 0 ] = ( DWORD_PTR )NextUse3DVertex ;
 		return AddASyncLoadRequestMainThreadInfo( &AInfo ) ;
 	}
 #endif // DX_NON_ASYNCLOAD
 
-	InputLayout = g_VertexTypeToInputLayout[ GIOS.Device.DrawInfo.Use3DVertex ][ GIOS.Device.DrawInfo.VertexType ] ;
+	InputLayout = g_VertexTypeToInputLayout[ GHTML5.Device.DrawInfo.Use3DVertex ][ GHTML5.Device.DrawInfo.VertexType ] ;
 
 	// 頂点が一つも無かったら描画は行わない
-	if( GIOS.Device.DrawInfo.VertexNum != 0 && DxLib_GetEndRequest() == FALSE && GIOS.Device.State.SetShader != NULL )
+	if( GHTML5.Device.DrawInfo.VertexNum != 0 && DxLib_GetEndRequest() == FALSE && GHTML5.Device.State.SetShader != NULL )
 	{
 		// 非描画フラグが立っていなければレンダリングする
-		if( GIOS.Device.DrawInfo.BlendMaxNotDrawFlag == FALSE )
+		if( GHTML5.Device.DrawInfo.BlendMaxNotDrawFlag == FALSE )
 		{
 			// シェーダーをセット
-			if( InputLayout == IOS_VERTEX_INPUTLAYOUT_3D_LIGHT )
+			if( InputLayout == HTML5_VERTEX_INPUTLAYOUT_3D_LIGHT )
 			{
-				if( Graphics_iOS_Shader_Normal3DDraw_Setup() == FALSE )
+				if( Graphics_HTML5_Shader_Normal3DDraw_Setup() == FALSE )
 				{
 					return -1 ;
 				}
 			}
 //			else
 //			{
-//				Graphics_iOS_DeviceState_SetVertexShader( &GIOS.Device.Shader.Base.BaseSimple_VS[ InputLayout ], TRUE ) ;
+//				Graphics_HTML5_DeviceState_SetVertexShader( &GHTML5.Device.Shader.Base.BaseSimple_VS[ InputLayout ], TRUE ) ;
 //			}
 
 			// テクスチャのセット
 			for( int i = 0; i < USE_TEXTURESTAGE_NUM; i++ )
 			{
-				if( GIOS.Device.State.SetTexture[ i ] == NULL )
+				if( GHTML5.Device.State.SetTexture[ i ] == NULL )
 				{
 					continue ;
 				}
 
 				glActiveTexture( g_TextureEnum[ i ] ) ;
-				glBindTexture( GL_TEXTURE_2D, GIOS.Device.State.SetTexture[ i ]->TextureBuffer ) ;
+				glBindTexture( GL_TEXTURE_2D, GHTML5.Device.State.SetTexture[ i ]->TextureBuffer ) ;
 			}
 
 			// Uniform の更新
-			Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+			Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 			// 頂点データのセットアップ
-			Graphics_iOS_DeviceState_SetupShaderVertexData(
-				GIOS.Device.State.SetShader,
+			Graphics_HTML5_DeviceState_SetupShaderVertexData(
+				GHTML5.Device.State.SetShader,
 				&g_BaseSimpleVertexShaderInfo[ InputLayout ].InputInfo,
-				GIOS.Device.DrawInfo.VertexBuffer
+				GHTML5.Device.DrawInfo.VertexBuffer
 			) ;
 
 			// 描画
-			glDrawArrays( GIOS.Device.DrawInfo.PrimitiveType, 0, GIOS.Device.DrawInfo.VertexNum );
+			glDrawArrays( GHTML5.Device.DrawInfo.PrimitiveType, 0, GHTML5.Device.DrawInfo.VertexNum );
 			GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 		}
 	}
 
-	GIOS.Device.DrawInfo.VertexNum = 0 ;
-	GIOS.Device.DrawInfo.VertexBufferNextAddr = GIOS.Device.DrawInfo.VertexBuffer ;
+	GHTML5.Device.DrawInfo.VertexNum = 0 ;
+	GHTML5.Device.DrawInfo.VertexBufferNextAddr = GHTML5.Device.DrawInfo.VertexBuffer ;
 
 	if( NextUse3DVertex >= 0 )
 	{
-		int PrevUse3DVertex = GIOS.Device.DrawInfo.Use3DVertex ;
+		int PrevUse3DVertex = GHTML5.Device.DrawInfo.Use3DVertex ;
 
-		GIOS.Device.DrawInfo.Use3DVertex = NextUse3DVertex ;
+		GHTML5.Device.DrawInfo.Use3DVertex = NextUse3DVertex ;
 
 		if( PrevUse3DVertex != NextUse3DVertex )
 		{
-			Graphics_iOS_DeviceState_NormalDrawSetup() ;
+			Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 		}
 	}
 
@@ -7422,21 +7422,21 @@ extern	int		Graphics_iOS_RenderVertex( int NextUse3DVertex, int ASyncThread )
 }
 
 // 描画準備を行う
-extern	void	FASTCALL Graphics_iOS_DrawPreparation( int ParamFlag )
+extern	void	FASTCALL Graphics_HTML5_DrawPreparation( int ParamFlag )
 {
 	int AlphaTest ;
 	int AlphaChannel ;
 	int Specular ;
 	int i ;
 
-	// 必ず Graphics_iOS_DrawPreparation を行うべきというフラグを倒す
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = FALSE ;
+	// 必ず Graphics_HTML5_DrawPreparation を行うべきというフラグを倒す
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = FALSE ;
 
 	// 設定が変更されたかどうかのフラグを倒す
 	GSYS.ChangeSettingFlag = FALSE ;
 
 	// ライトを使うかどうかで処理を分岐
-	if( ( ParamFlag & DX_IOS_DRAWPREP_LIGHTING ) != 0 && GSYS.Light.ProcessDisable == FALSE )
+	if( ( ParamFlag & DX_HTML5_DRAWPREP_LIGHTING ) != 0 && GSYS.Light.ProcessDisable == FALSE )
 	{
 		// ライトの設定が変更されていたら変更を適応する
 		if( GSYS.Light.HardwareChange )
@@ -7446,9 +7446,9 @@ extern	void	FASTCALL Graphics_iOS_DrawPreparation( int ParamFlag )
 		else
 		{
 			// ライトが有効なのに一時的に無効になっていたら有効にする
-			if( GIOS.Device.State.Lighting == 0 )
+			if( GHTML5.Device.State.Lighting == 0 )
 			{
-				Graphics_iOS_DeviceState_SetLighting( TRUE ) ;
+				Graphics_HTML5_DeviceState_SetLighting( TRUE ) ;
 			}
 		}
 
@@ -7456,49 +7456,49 @@ extern	void	FASTCALL Graphics_iOS_DrawPreparation( int ParamFlag )
 		if( GSYS.Light.ChangeMaterial )
 		{
 			GSYS.Light.ChangeMaterial = 0 ;
-			Graphics_iOS_DeviceState_SetMaterial( &GSYS.Light.Material ) ;
+			Graphics_HTML5_DeviceState_SetMaterial( &GSYS.Light.Material ) ;
 		}
 
 		// 頂点カラーをマテリアルのカラーとして使用するかどうかをセットする
-		if( ( GSYS.Light.MaterialNotUseVertexDiffuseColor ? FALSE : TRUE ) != GIOS.Device.State.MaterialUseVertexDiffuseColor )
+		if( ( GSYS.Light.MaterialNotUseVertexDiffuseColor ? FALSE : TRUE ) != GHTML5.Device.State.MaterialUseVertexDiffuseColor )
 		{
-			Graphics_iOS_DeviceState_SetUseVertexDiffuseColor( GSYS.Light.MaterialNotUseVertexDiffuseColor ? FALSE : TRUE ) ;
+			Graphics_HTML5_DeviceState_SetUseVertexDiffuseColor( GSYS.Light.MaterialNotUseVertexDiffuseColor ? FALSE : TRUE ) ;
 		}
 
-		if( ( GSYS.Light.MaterialNotUseVertexSpecularColor ? FALSE : TRUE ) != GIOS.Device.State.MaterialUseVertexSpecularColor )
+		if( ( GSYS.Light.MaterialNotUseVertexSpecularColor ? FALSE : TRUE ) != GHTML5.Device.State.MaterialUseVertexSpecularColor )
 		{
-			Graphics_iOS_DeviceState_SetUseVertexSpecularColor( GSYS.Light.MaterialNotUseVertexSpecularColor ? FALSE : TRUE ) ;
+			Graphics_HTML5_DeviceState_SetUseVertexSpecularColor( GSYS.Light.MaterialNotUseVertexSpecularColor ? FALSE : TRUE ) ;
 		}
 	}
 	else
 	{
 		// ライトが有効になっていたら無効にする
-		if( GIOS.Device.State.Lighting == 1 )
+		if( GHTML5.Device.State.Lighting == 1 )
 		{
-			Graphics_iOS_DeviceState_SetLighting( FALSE ) ;
+			Graphics_HTML5_DeviceState_SetLighting( FALSE ) ;
 		}
 
 		// 頂点カラーをマテリアルのカラーとして使用する
-		if( GIOS.Device.State.MaterialUseVertexDiffuseColor == FALSE )
+		if( GHTML5.Device.State.MaterialUseVertexDiffuseColor == FALSE )
 		{
-			Graphics_iOS_DeviceState_SetUseVertexDiffuseColor( TRUE ) ;
+			Graphics_HTML5_DeviceState_SetUseVertexDiffuseColor( TRUE ) ;
 		}
 
-		if( GIOS.Device.State.MaterialUseVertexSpecularColor == FALSE )
+		if( GHTML5.Device.State.MaterialUseVertexSpecularColor == FALSE )
 		{
-			Graphics_iOS_DeviceState_SetUseVertexSpecularColor( TRUE ) ;
+			Graphics_HTML5_DeviceState_SetUseVertexSpecularColor( TRUE ) ;
 		}
 	}
 
 	// スペキュラを使用するかどうかの設定を行う
-	Specular = ( GSYS.DrawSetting.NotUseSpecular == FALSE && ( ParamFlag & DX_IOS_DRAWPREP_SPECULAR ) != 0 ) ? TRUE : FALSE ;
-	if( Specular != GIOS.Device.State.UseSpecular )
+	Specular = ( GSYS.DrawSetting.NotUseSpecular == FALSE && ( ParamFlag & DX_HTML5_DRAWPREP_SPECULAR ) != 0 ) ? TRUE : FALSE ;
+	if( Specular != GHTML5.Device.State.UseSpecular )
 	{
-		Graphics_iOS_DeviceState_SetSpecularEnable( Specular ) ;
+		Graphics_HTML5_DeviceState_SetSpecularEnable( Specular ) ;
 	}
 
 	// 射影行列の設定を行う
-//	Graphics_DrawSetting_SetUse2DProjectionMatrix( ( ParamFlag & DX_IOS_DRAWPREP_3D ) == 0 ? TRUE : FALSE ) ;
+//	Graphics_DrawSetting_SetUse2DProjectionMatrix( ( ParamFlag & DX_HTML5_DRAWPREP_3D ) == 0 ? TRUE : FALSE ) ;
 
 	// Ｚバッファの設定を行う
 	{
@@ -7507,7 +7507,7 @@ extern	void	FASTCALL Graphics_iOS_DrawPreparation( int ParamFlag )
 		GLenum			DepthFunc ;
 		int				DepthBias ;
 
-		if( ParamFlag & DX_IOS_DRAWPREP_3D )
+		if( ParamFlag & DX_HTML5_DRAWPREP_3D )
 		{
 			DepthEnable      = GSYS.DrawSetting.EnableZBufferFlag3D ;
 			WriteDepthBuffer = GSYS.DrawSetting.WriteZBufferFlag3D ;
@@ -7524,58 +7524,58 @@ extern	void	FASTCALL Graphics_iOS_DrawPreparation( int ParamFlag )
 
 		if( DepthEnable )
 		{
-			if( GIOS.Device.State.DepthEnable != DepthEnable )
+			if( GHTML5.Device.State.DepthEnable != DepthEnable )
 			{
-				Graphics_iOS_DeviceState_SetDepthEnable( DepthEnable ) ;
+				Graphics_HTML5_DeviceState_SetDepthEnable( DepthEnable ) ;
 			}
 
-			if( GIOS.Device.State.DepthWriteEnable != WriteDepthBuffer  )
+			if( GHTML5.Device.State.DepthWriteEnable != WriteDepthBuffer  )
 			{
-				Graphics_iOS_DeviceState_SetDepthWriteEnable( WriteDepthBuffer  ) ;
+				Graphics_HTML5_DeviceState_SetDepthWriteEnable( WriteDepthBuffer  ) ;
 			}
 
-			if( GIOS.Device.State.DepthFunc != DepthFunc )
+			if( GHTML5.Device.State.DepthFunc != DepthFunc )
 			{
-				Graphics_iOS_DeviceState_SetDepthFunc( DepthFunc ) ;
+				Graphics_HTML5_DeviceState_SetDepthFunc( DepthFunc ) ;
 			}
 
-			if( GIOS.Device.State.DepthBias != DepthBias )
+			if( GHTML5.Device.State.DepthBias != DepthBias )
 			{
-				Graphics_iOS_DeviceState_SetDepthBias( DepthBias ) ;
+				Graphics_HTML5_DeviceState_SetDepthBias( DepthBias ) ;
 			}
 		}
 		else
 		{
-			if( GIOS.Device.State.DepthEnable )
+			if( GHTML5.Device.State.DepthEnable )
 			{
-				Graphics_iOS_DeviceState_SetDepthEnable( FALSE ) ;
+				Graphics_HTML5_DeviceState_SetDepthEnable( FALSE ) ;
 			}
 
-			if( GIOS.Device.State.DepthWriteEnable != FALSE  )
+			if( GHTML5.Device.State.DepthWriteEnable != FALSE  )
 			{
-				Graphics_iOS_DeviceState_SetDepthWriteEnable( FALSE ) ;
+				Graphics_HTML5_DeviceState_SetDepthWriteEnable( FALSE ) ;
 			}
 		}
 	}
 
 	// フォグの設定を行う
-	if( ParamFlag & DX_IOS_DRAWPREP_FOG )
+	if( ParamFlag & DX_HTML5_DRAWPREP_FOG )
 	{
-		if( GIOS.Device.State.FogEnable != GSYS.DrawSetting.FogEnable )
+		if( GHTML5.Device.State.FogEnable != GSYS.DrawSetting.FogEnable )
 		{
-			Graphics_iOS_DeviceState_SetFogEnable( GSYS.DrawSetting.FogEnable ) ;
+			Graphics_HTML5_DeviceState_SetFogEnable( GSYS.DrawSetting.FogEnable ) ;
 		}
 	}
 	else
 	{
-		if( GIOS.Device.State.FogEnable )
+		if( GHTML5.Device.State.FogEnable )
 		{
-			Graphics_iOS_DeviceState_SetFogEnable( FALSE ) ;
+			Graphics_HTML5_DeviceState_SetFogEnable( FALSE ) ;
 		}
 	}
 
 	// ブレンディング関係のセッティングを行う場合のみ実行する
-	if( ( ParamFlag & DX_IOS_DRAWPREP_NOBLENDSETTING ) == 0 )
+	if( ( ParamFlag & DX_HTML5_DRAWPREP_NOBLENDSETTING ) == 0 )
 	{
 		// フラグの初期化
 		AlphaTest    = FALSE ;
@@ -7583,14 +7583,14 @@ extern	void	FASTCALL Graphics_iOS_DrawPreparation( int ParamFlag )
 
 		// テクスチャーを使用するかどうかで処理を分岐
 		// 使用しない場合は初期値のまま
-		if( ParamFlag & DX_IOS_DRAWPREP_TEXTURE )
+		if( ParamFlag & DX_HTML5_DRAWPREP_TEXTURE )
 		{
 			// 透過色処理を行わない場合はカラーキーもαテストもαチャンネルも使用しないので初期値のまま
 			// 透過色処理を行う場合のみ処理をする
-			if( ParamFlag & DX_IOS_DRAWPREP_TRANS )
+			if( ParamFlag & DX_HTML5_DRAWPREP_TRANS )
 			{
-				int TexAlphaTestFlag = ( ParamFlag & DX_IOS_DRAWPREP_TEXALPHATEST ) != 0 ? 1 : 0 ;
-				int TexAlphaChFlag   = ( ParamFlag & DX_IOS_DRAWPREP_TEXALPHACH   ) != 0 ? 1 : 0 ;
+				int TexAlphaTestFlag = ( ParamFlag & DX_HTML5_DRAWPREP_TEXALPHATEST ) != 0 ? 1 : 0 ;
+				int TexAlphaChFlag   = ( ParamFlag & DX_HTML5_DRAWPREP_TEXALPHACH   ) != 0 ? 1 : 0 ;
 
 				// テクスチャにαビットがあるかどうかで処理を分岐
 				if( TexAlphaTestFlag || TexAlphaChFlag )
@@ -7598,7 +7598,7 @@ extern	void	FASTCALL Graphics_iOS_DrawPreparation( int ParamFlag )
 					// αテストでも頂点座標のデータ型が浮動小数点型で、且つテクスチャフィルタリングモードが
 					// 線形補間であるか、ブレンドモードが DX_BLENDMODE_NOBLEND 以外だったらαチャンネルとして扱う
 					if( ( GSYS.DrawSetting.BlendMode != DX_BLENDMODE_NOBLEND && GSYS.DrawSetting.BlendMode != DX_BLENDMODE_DESTCOLOR ) ||
-						( ( ParamFlag & DX_IOS_DRAWPREP_VECTORINT ) == 0   && GSYS.DrawSetting.DrawMode  == DX_DRAWMODE_BILINEAR   ) )
+						( ( ParamFlag & DX_HTML5_DRAWPREP_VECTORINT ) == 0   && GSYS.DrawSetting.DrawMode  == DX_DRAWMODE_BILINEAR   ) )
 					{
 						AlphaChannel = TRUE ;
 					}
@@ -7613,59 +7613,59 @@ extern	void	FASTCALL Graphics_iOS_DrawPreparation( int ParamFlag )
 		}
 
 		// 調整されたパラメータをセットする
-		if( GIOS.Device.DrawSetting.IgnoreGraphColorFlag  != GSYS.DrawSetting.IgnoreGraphColorFlag )
+		if( GHTML5.Device.DrawSetting.IgnoreGraphColorFlag  != GSYS.DrawSetting.IgnoreGraphColorFlag )
 		{
-			Graphics_iOS_DrawSetting_SetIgnoreDrawGraphColor( GSYS.DrawSetting.IgnoreGraphColorFlag ) ;
+			Graphics_HTML5_DrawSetting_SetIgnoreDrawGraphColor( GSYS.DrawSetting.IgnoreGraphColorFlag ) ;
 		}
 
-		if( GIOS.Device.DrawSetting.NotWriteAlphaChannelFlag  != GSYS.DrawSetting.NotWriteAlphaChannelFlag )
+		if( GHTML5.Device.DrawSetting.NotWriteAlphaChannelFlag  != GSYS.DrawSetting.NotWriteAlphaChannelFlag )
 		{
-			Graphics_iOS_DrawSetting_SetWriteAlphaChannelFlag( GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DrawSetting_SetWriteAlphaChannelFlag( GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 
-		if( GIOS.Device.DrawSetting.BlendMode             != GSYS.DrawSetting.BlendMode ||
-			GIOS.Device.DrawSetting.AlphaTestValidFlag    != AlphaTest ||
-			GIOS.Device.DrawSetting.AlphaChannelValidFlag != AlphaChannel               )
+		if( GHTML5.Device.DrawSetting.BlendMode             != GSYS.DrawSetting.BlendMode ||
+			GHTML5.Device.DrawSetting.AlphaTestValidFlag    != AlphaTest ||
+			GHTML5.Device.DrawSetting.AlphaChannelValidFlag != AlphaChannel               )
 		{
-			Graphics_iOS_DrawSetting_SetDrawBlendMode( GSYS.DrawSetting.BlendMode, AlphaTest, AlphaChannel ) ;
+			Graphics_HTML5_DrawSetting_SetDrawBlendMode( GSYS.DrawSetting.BlendMode, AlphaTest, AlphaChannel ) ;
 		}
 
-		if( GIOS.Device.DrawSetting.AlphaTestMode         != GSYS.DrawSetting.AlphaTestMode ||
-			GIOS.Device.DrawSetting.AlphaTestParam        != GSYS.DrawSetting.AlphaTestParam )
+		if( GHTML5.Device.DrawSetting.AlphaTestMode         != GSYS.DrawSetting.AlphaTestMode ||
+			GHTML5.Device.DrawSetting.AlphaTestParam        != GSYS.DrawSetting.AlphaTestParam )
 		{
-			Graphics_iOS_DrawSetting_SetDrawAlphaTest( GSYS.DrawSetting.AlphaTestMode, GSYS.DrawSetting.AlphaTestParam ) ;
+			Graphics_HTML5_DrawSetting_SetDrawAlphaTest( GSYS.DrawSetting.AlphaTestMode, GSYS.DrawSetting.AlphaTestParam ) ;
 		}
 
-		if( GIOS.Device.DrawSetting.ChangeBlendParamFlag ||
-			GIOS.Device.DrawSetting.ChangeTextureFlag ||
+		if( GHTML5.Device.DrawSetting.ChangeBlendParamFlag ||
+			GHTML5.Device.DrawSetting.ChangeTextureFlag ||
 			( GSYS.HardInfo.UseShader &&
-			  GIOS.Device.State.SetNormalShader == FALSE ) )
+			  GHTML5.Device.State.SetNormalShader == FALSE ) )
 		{
-			Graphics_iOS_DeviceState_NormalDrawSetup() ;
+			Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 		}
 	}
 
-	if( GIOS.Device.State.DrawMode != GSYS.DrawSetting.DrawMode )
+	if( GHTML5.Device.State.DrawMode != GSYS.DrawSetting.DrawMode )
 	{
-		Graphics_iOS_DeviceState_SetDrawMode( GSYS.DrawSetting.DrawMode ) ;
+		Graphics_HTML5_DeviceState_SetDrawMode( GSYS.DrawSetting.DrawMode ) ;
 	}
 
-	if( GIOS.Device.State.MaxAnisotropy != GSYS.DrawSetting.MaxAnisotropy )
+	if( GHTML5.Device.State.MaxAnisotropy != GSYS.DrawSetting.MaxAnisotropy )
 	{
-		Graphics_iOS_DeviceState_SetMaxAnisotropy( GSYS.DrawSetting.MaxAnisotropy ) ;
+		Graphics_HTML5_DeviceState_SetMaxAnisotropy( GSYS.DrawSetting.MaxAnisotropy ) ;
 	}
 
-	if( ParamFlag & DX_IOS_DRAWPREP_CULLING )
+	if( ParamFlag & DX_HTML5_DRAWPREP_CULLING )
 	{
 		int SetCullMode ;
 
-		if( GIOS.Device.State.CullEnable == FALSE )
+		if( GHTML5.Device.State.CullEnable == FALSE )
 		{
 			SetCullMode = 0 ;
 		}
 		else
 		{
-			switch( GIOS.Device.State.CullFace )
+			switch( GHTML5.Device.State.CullFace )
 			{
 			default :
 				SetCullMode = 0 ;
@@ -7683,46 +7683,46 @@ extern	void	FASTCALL Graphics_iOS_DrawPreparation( int ParamFlag )
 
 		if( SetCullMode != GSYS.DrawSetting.CullMode )
 		{
-			Graphics_iOS_DeviceState_SetCullMode( GSYS.DrawSetting.CullMode ) ;
+			Graphics_HTML5_DeviceState_SetCullMode( GSYS.DrawSetting.CullMode ) ;
 		}
 	}
 	else
 	{
-		if( GIOS.Device.State.CullEnable )
+		if( GHTML5.Device.State.CullEnable )
 		{
-			Graphics_iOS_DeviceState_SetCullMode( DX_CULLING_NONE ) ;
+			Graphics_HTML5_DeviceState_SetCullMode( DX_CULLING_NONE ) ;
 		}
 	}
 
 	if( GSYS.DrawSetting.MatchHardwareTextureAddressTransformMatrix == FALSE )
 	{
-		Graphics_iOS_DeviceState_SetTextureAddressTransformMatrix( GSYS.DrawSetting.TextureAddressTransformUse, &GSYS.DrawSetting.TextureAddressTransformMatrix ) ;
+		Graphics_HTML5_DeviceState_SetTextureAddressTransformMatrix( GSYS.DrawSetting.TextureAddressTransformUse, &GSYS.DrawSetting.TextureAddressTransformMatrix ) ;
 		GSYS.DrawSetting.MatchHardwareTextureAddressTransformMatrix = TRUE ;
-		GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+		GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 	}
 
-	if( ParamFlag & DX_IOS_DRAWPREP_TEXADDRESS )
+	if( ParamFlag & DX_HTML5_DRAWPREP_TEXADDRESS )
 	{
 		for( i = 0; i < USE_TEXTURESTAGE_NUM; i++ )
 		{
 			if( GSYS.DrawSetting.TexAddressModeU[ i ] == GSYS.DrawSetting.TexAddressModeV[ i ] )
 			{
-				if( GIOS.Device.State.TexAddressModeU[ i ] != g_DXTexAddrModeToGLES2WrapMode[ GSYS.DrawSetting.TexAddressModeU[ i ] ] ||
-					GIOS.Device.State.TexAddressModeV[ i ] != g_DXTexAddrModeToGLES2WrapMode[ GSYS.DrawSetting.TexAddressModeV[ i ] ] )
+				if( GHTML5.Device.State.TexAddressModeU[ i ] != g_DXTexAddrModeToGLES2WrapMode[ GSYS.DrawSetting.TexAddressModeU[ i ] ] ||
+					GHTML5.Device.State.TexAddressModeV[ i ] != g_DXTexAddrModeToGLES2WrapMode[ GSYS.DrawSetting.TexAddressModeV[ i ] ] )
 				{
-					Graphics_iOS_DeviceState_SetTextureAddress( GSYS.DrawSetting.TexAddressModeU[ i ], i ) ;
+					Graphics_HTML5_DeviceState_SetTextureAddress( GSYS.DrawSetting.TexAddressModeU[ i ], i ) ;
 				}
 			}
 			else
 			{
-				if( GIOS.Device.State.TexAddressModeU[ i ] != g_DXTexAddrModeToGLES2WrapMode[ GSYS.DrawSetting.TexAddressModeU[ i ] ] )
+				if( GHTML5.Device.State.TexAddressModeU[ i ] != g_DXTexAddrModeToGLES2WrapMode[ GSYS.DrawSetting.TexAddressModeU[ i ] ] )
 				{
-					Graphics_iOS_DeviceState_SetTextureAddressU( GSYS.DrawSetting.TexAddressModeU[ i ], i ) ;
+					Graphics_HTML5_DeviceState_SetTextureAddressU( GSYS.DrawSetting.TexAddressModeU[ i ], i ) ;
 				}
 
-				if( GIOS.Device.State.TexAddressModeV[ i ] != g_DXTexAddrModeToGLES2WrapMode[ GSYS.DrawSetting.TexAddressModeV[ i ] ] )
+				if( GHTML5.Device.State.TexAddressModeV[ i ] != g_DXTexAddrModeToGLES2WrapMode[ GSYS.DrawSetting.TexAddressModeV[ i ] ] )
 				{
-					Graphics_iOS_DeviceState_SetTextureAddressV( GSYS.DrawSetting.TexAddressModeV[ i ], i ) ;
+					Graphics_HTML5_DeviceState_SetTextureAddressV( GSYS.DrawSetting.TexAddressModeV[ i ], i ) ;
 				}
 			}
 		}
@@ -7731,46 +7731,46 @@ extern	void	FASTCALL Graphics_iOS_DrawPreparation( int ParamFlag )
 	{
 		for( i = 0; i < 4; i++ )
 		{
-			if( GIOS.Device.State.TexAddressModeU[ i ] != GL_CLAMP_TO_EDGE ||
-				GIOS.Device.State.TexAddressModeV[ i ] != GL_CLAMP_TO_EDGE )
+			if( GHTML5.Device.State.TexAddressModeU[ i ] != GL_CLAMP_TO_EDGE ||
+				GHTML5.Device.State.TexAddressModeV[ i ] != GL_CLAMP_TO_EDGE )
 			{
-				Graphics_iOS_DeviceState_SetTextureAddress( DX_TEXADDRESS_CLAMP, i ) ;
+				Graphics_HTML5_DeviceState_SetTextureAddress( DX_TEXADDRESS_CLAMP, i ) ;
 			}
 		}
 	}
 
 	// RenderBegin を実行していなかったら実行する
-	if( GIOS.Device.DrawInfo.BeginSceneFlag == FALSE )
+	if( GHTML5.Device.DrawInfo.BeginSceneFlag == FALSE )
 	{
-		Graphics_iOS_RenderBegin() ;
+		Graphics_HTML5_RenderBegin() ;
 	}
 
 	// パラメータを保存
-	GIOS.Device.DrawSetting.DrawPrepParamFlag = ParamFlag ;
+	GHTML5.Device.DrawSetting.DrawPrepParamFlag = ParamFlag ;
 }
 
 
 // 描画コマンドを開始する
-extern	void	Graphics_iOS_RenderBegin( void )
+extern	void	Graphics_HTML5_RenderBegin( void )
 {
-	if( GIOS.Device.DrawInfo.BeginSceneFlag == TRUE )
+	if( GHTML5.Device.DrawInfo.BeginSceneFlag == TRUE )
 	{
 		return ;
 	}
 
-	GIOS.Device.DrawInfo.BeginSceneFlag = TRUE ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawInfo.BeginSceneFlag = TRUE ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 }
 
 // 描画コマンドを終了する
-extern	void	Graphics_iOS_RenderEnd( void )
+extern	void	Graphics_HTML5_RenderEnd( void )
 {
-	if( GIOS.Device.DrawInfo.BeginSceneFlag == FALSE )
+	if( GHTML5.Device.DrawInfo.BeginSceneFlag == FALSE )
 	{
 		return ;
 	}
 
-	GIOS.Device.DrawInfo.BeginSceneFlag = FALSE ;
+	GHTML5.Device.DrawInfo.BeginSceneFlag = FALSE ;
 }
 
 
@@ -7799,12 +7799,12 @@ extern	void	Graphics_iOS_RenderEnd( void )
 
 
 
-// iOS を使った描画関係
+// HTML5 を使った描画関係
 
 // 頂点バッファに溜まった頂点データをレンダリングする
 extern	int		Graphics_Hardware_RenderVertex( int ASyncThread )
 {
-	return Graphics_iOS_RenderVertex( -1, ASyncThread ) ;
+	return Graphics_HTML5_RenderVertex( -1, ASyncThread ) ;
 }
 
 // ハードウエアアクセラレータ使用版 DrawBillboard3D
@@ -7845,7 +7845,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 
 	Orig = Image->Orig ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -7853,8 +7853,8 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 	// 描画準備
 	if( DrawFlag )
 	{
-		Flag = TransFlag | DX_IOS_DRAWPREP_3D | DX_IOS_DRAWPREP_FOG | DX_IOS_DRAWPREP_TEXADDRESS ;
-		DX_IOS_DRAWPREP_TEX( Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+		Flag = TransFlag | DX_HTML5_DRAWPREP_3D | DX_HTML5_DRAWPREP_FOG | DX_HTML5_DRAWPREP_TEXADDRESS ;
+		DX_HTML5_DRAWPREP_TEX( Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 	}
 	else
 	{
@@ -7865,7 +7865,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 	}
 
 	// 頂点データを取得
-	DiffuseColor = GIOS.Device.DrawInfo.DiffuseColor ;
+	DiffuseColor = GHTML5.Device.DrawInfo.DiffuseColor ;
 
 	// 描画情報の数をセット
 	DrawTexNum = Image->Hard.DrawNum ;
@@ -7906,16 +7906,16 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 		// 描画するテクスチャーのセット
 		if( DrawFlag )
 		{
-			Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+			Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 
 			if( BlendDrawTex != NULL )
 			{
-				Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture );
+				Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture );
 			}
 
-			if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+			if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 			{
-				Graphics_iOS_DeviceState_NormalDrawSetup() ;
+				Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 			}
 		}
 
@@ -7926,7 +7926,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 		}
 
 		// ブレンドグラフィックを使用していなくて、且つ描画する場合は高速な処理を使用する
-		if( GIOS.Device.DrawInfo.VertexType != VERTEXTYPE_BLENDTEX && DrawFlag == TRUE )
+		if( GHTML5.Device.DrawInfo.VertexType != VERTEXTYPE_BLENDTEX && DrawFlag == TRUE )
 		{
 			GETVERTEX_BILLBOARD( DrawVert3D ) ;
 
@@ -8179,7 +8179,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 			}
 
 			// 頂点タイプによって処理を分岐
-			switch( GIOS.Device.DrawInfo.VertexType )
+			switch( GHTML5.Device.DrawInfo.VertexType )
 			{
 			case VERTEXTYPE_BLENDTEX :
 				// ブレンドテクスチャを使用する
@@ -8231,10 +8231,10 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 				{
 				default :
 				case DX_BLENDGRAPH_POSMODE_DRAWGRAPH:
-					u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u[ 1 ] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v[ 1 ] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u[ 1 ] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v[ 1 ] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					DrawVertB[0].u1 = u[ 0 ] ;
 					DrawVertB[0].v1 = v[ 0 ] ;
 					DrawVertB[1].u1 = u[ 1 ] ;
@@ -8250,18 +8250,18 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 					break ;
 
 				case DX_BLENDGRAPH_POSMODE_SCREEN :
-					DrawVertB[0].u1 = ( DrawPos[ 0 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[0].v1 = ( DrawPos[ 0 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[1].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[1].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[2].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[2].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[3].u1 = ( DrawPos[ 3 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[3].v1 = ( DrawPos[ 3 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[4].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[4].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[5].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[5].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[0].u1 = ( DrawPos[ 0 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[0].v1 = ( DrawPos[ 0 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[1].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[1].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[2].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[2].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[3].u1 = ( DrawPos[ 3 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[3].v1 = ( DrawPos[ 3 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[4].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[4].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[5].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[5].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					break ;
 				}
 
@@ -8506,7 +8506,7 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 
 	Orig = Image->Orig ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -8514,8 +8514,8 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 	// 描画準備
 	if( DrawFlag )
 	{
-		Flag = TransFlag | DX_IOS_DRAWPREP_3D | DX_IOS_DRAWPREP_FOG | DX_IOS_DRAWPREP_TEXADDRESS ;
-		DX_IOS_DRAWPREP_TEX( Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+		Flag = TransFlag | DX_HTML5_DRAWPREP_3D | DX_HTML5_DRAWPREP_FOG | DX_HTML5_DRAWPREP_TEXADDRESS ;
+		DX_HTML5_DRAWPREP_TEX( Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 	}
 	else
 	{
@@ -8526,7 +8526,7 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 	}
 
 	// 頂点データを取得
-	DiffuseColor = GIOS.Device.DrawInfo.DiffuseColor ;
+	DiffuseColor = GHTML5.Device.DrawInfo.DiffuseColor ;
 
 	// 描画情報の数をセット
 	DrawTexNum = Image->Hard.DrawNum ;
@@ -8552,16 +8552,16 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 		// 描画するテクスチャーのセット
 		if( DrawFlag )
 		{
-			Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+			Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 
 			if( BlendDrawTex != NULL )
 			{
-				Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture );
+				Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture );
 			}
 
-			if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+			if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 			{
-				Graphics_iOS_DeviceState_NormalDrawSetup() ;
+				Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 			}
 		}
 
@@ -8572,7 +8572,7 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 		}
 
 		// ブレンドグラフィックを使用していなくて、且つ描画する場合は高速な処理を使用する
-		if( GIOS.Device.DrawInfo.VertexType != VERTEXTYPE_BLENDTEX && DrawFlag == TRUE )
+		if( GHTML5.Device.DrawInfo.VertexType != VERTEXTYPE_BLENDTEX && DrawFlag == TRUE )
 		{
 			GETVERTEX_BILLBOARD( DrawVert3D ) ;
 
@@ -8649,7 +8649,7 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 			}
 
 			// 頂点タイプによって処理を分岐
-			switch( GIOS.Device.DrawInfo.VertexType )
+			switch( GHTML5.Device.DrawInfo.VertexType )
 			{
 			case VERTEXTYPE_BLENDTEX :
 				// ブレンドテクスチャを使用する
@@ -8694,10 +8694,10 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 				{
 				default :
 				case DX_BLENDGRAPH_POSMODE_DRAWGRAPH:
-					u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u[ 1 ] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v[ 1 ] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u[ 1 ] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v[ 1 ] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					DrawVertB[0].u1 = u[ 0 ] ;
 					DrawVertB[0].v1 = v[ 0 ] ;
 					DrawVertB[1].u1 = u[ 1 ] ;
@@ -8713,18 +8713,18 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 					break ;
 
 				case DX_BLENDGRAPH_POSMODE_SCREEN :
-					DrawVertB[0].u1 = ( DrawPos[ 0 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[0].v1 = ( DrawPos[ 0 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[1].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[1].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[2].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[2].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[3].u1 = ( DrawPos[ 3 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[3].v1 = ( DrawPos[ 3 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[4].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[4].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[5].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[5].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[0].u1 = ( DrawPos[ 0 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[0].v1 = ( DrawPos[ 0 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[1].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[1].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[2].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[2].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[3].u1 = ( DrawPos[ 3 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[3].v1 = ( DrawPos[ 3 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[4].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[4].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[5].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[5].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					break ;
 				}
 
@@ -8921,7 +8921,7 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 
 	Orig = Image->Orig ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -8932,10 +8932,10 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 
 	// 描画準備
 	Flag = TransFlag | ( IntFlag << 1 ) ;
-	DX_IOS_DRAWPREP_TEX( Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+	DX_HTML5_DRAWPREP_TEX( Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
 	// 頂点データを取得
-	DiffuseColor = GIOS.Device.DrawInfo.DiffuseColor ;
+	DiffuseColor = GHTML5.Device.DrawInfo.DiffuseColor ;
 
 	// 描画情報の数をセット
 	DrawTexNum = Image->Hard.DrawNum ;
@@ -8965,7 +8965,7 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 		// はみ出ていない場合
 
 		// 頂点タイプによって処理を分岐
-		if( GIOS.Device.DrawInfo.VertexType == VERTEXTYPE_BLENDTEX )
+		if( GHTML5.Device.DrawInfo.VertexType == VERTEXTYPE_BLENDTEX )
 		{
 			// ブレンドテクスチャを使用する
 
@@ -8973,12 +8973,12 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 			for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 			{
 				// 描画するテクスチャーのセット
-				Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-				Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
-				if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+				if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 				{
-					Graphics_iOS_DeviceState_NormalDrawSetup() ;
+					Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 				}
 
 				// 頂点バッファの取得
@@ -9025,10 +9025,10 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 					break ;
 				}
 
-				u[ 0 ] *= GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				u[ 1 ] *= GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 0 ] *= GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				v[ 1 ] *= GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 0 ] *= GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				u[ 1 ] *= GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 0 ] *= GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				v[ 1 ] *= GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 
 				DrawVertB[0].u1 = u[ 0 ] ;
 				DrawVertB[0].v1 = v[ 0 ] ;
@@ -9147,8 +9147,8 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 
 				// 描画するテクスチャーのセット
 				DrawTex ++ ;
-				Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-				Graphics_iOS_DeviceState_NormalDrawSetup() ;
+				Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 			}
 		}
 	}
@@ -9168,7 +9168,7 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 		bottom	= GSYS.DrawSetting.DrawAreaF.bottom ;
 
 		// 頂点タイプによって処理を分岐
-		switch( GIOS.Device.DrawInfo.VertexType )
+		switch( GHTML5.Device.DrawInfo.VertexType )
 		{
 		case VERTEXTYPE_BLENDTEX :
 			// ブレンドテクスチャを使用する
@@ -9183,12 +9183,12 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 				float v2[ 4 ] ;
 
 				// 描画するテクスチャーのセット
-				Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-				Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
-				if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+				if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 				{
-					Graphics_iOS_DeviceState_NormalDrawSetup() ;
+					Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 				}
 
 				// 頂点バッファの取得
@@ -9199,8 +9199,8 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 
 				Vx  = 1.0F / ( float )DrawTex->Tex->TexWidth  ;
 				Vy  = 1.0F / ( float )DrawTex->Tex->TexHeight ;
-				VBx = GIOS.Device.DrawSetting.InvBlendTextureWidth  ;
-				VBy = GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				VBx = GHTML5.Device.DrawSetting.InvBlendTextureWidth  ;
+				VBy = GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 
 				DrawVertB[0].color = ( DWORD )DiffuseColor ;
 				DrawVertB[1].color = ( DWORD )DiffuseColor ;
@@ -9227,17 +9227,17 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 				{
 				default :
 				case DX_BLENDGRAPH_POSMODE_DRAWGRAPH:
-					u1[2] = u1[0] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u1[3] = u1[1] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					v1[1] = v1[0] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v1[3] = v1[2] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					u1[2] = u1[0] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u1[3] = u1[1] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					v1[1] = v1[0] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v1[3] = v1[2] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					break ;
 
 				case DX_BLENDGRAPH_POSMODE_SCREEN :
-					u1[2] = u1[0] = ( ( xf + TexVert[0].x ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u1[3] = u1[1] = ( ( xf + TexVert[1].x ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					v1[1] = v1[0] = ( ( yf + TexVert[0].y ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v1[3] = v1[2] = ( ( yf + TexVert[2].y ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					u1[2] = u1[0] = ( ( xf + TexVert[0].x ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u1[3] = u1[1] = ( ( xf + TexVert[1].x ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					v1[1] = v1[0] = ( ( yf + TexVert[0].y ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v1[3] = v1[2] = ( ( yf + TexVert[2].y ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					break ;
 				}
 
@@ -9452,8 +9452,8 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 
 				// 描画するテクスチャーのセット
 				DrawTex ++ ;
-				Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-				Graphics_iOS_DeviceState_NormalDrawSetup() ;
+				Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 			}
 			break ;
 		}
@@ -9493,7 +9493,7 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 
 	Orig = Image->Orig ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -9505,11 +9505,11 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 	if( x1 == x2 || y1 == y2 ) return -1 ;
 
 	// 描画の準備
-	Flag = TransFlag | ( IntFlag ? ( GSYS.DrawSetting.DrawMode == DX_DRAWMODE_BILINEAR ? 0 : DX_IOS_DRAWPREP_VECTORINT ) : 0 ) ;
-	DX_IOS_DRAWPREP_TEX( Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+	Flag = TransFlag | ( IntFlag ? ( GSYS.DrawSetting.DrawMode == DX_DRAWMODE_BILINEAR ? 0 : DX_HTML5_DRAWPREP_VECTORINT ) : 0 ) ;
+	DX_HTML5_DRAWPREP_TEX( Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
 	// ディフューズカラーの取得
-	DiffuseColor = GIOS.Device.DrawInfo.DiffuseColor ;
+	DiffuseColor = GHTML5.Device.DrawInfo.DiffuseColor ;
 
 	// 描画情報の数をセット
 	DrawTexNum = Image->Hard.DrawNum ;
@@ -9546,19 +9546,19 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 	if( GSYS.DrawSetting.Valid2DMatrix || IN_DRAWAREA_CHECK( x1, y1, x2, y2 ) )
 	{
 		// 頂点タイプによって処理を分岐
-		switch( GIOS.Device.DrawInfo.VertexType )
+		switch( GHTML5.Device.DrawInfo.VertexType )
 		{
 		case VERTEXTYPE_BLENDTEX :	// ブレンドテクスチャを使用する
 			// テクスチャーの数だけ繰り返す
 			for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 			{
 				// 描画するテクスチャーのセット
-				Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-				Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
-				if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+				if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 				{
-					Graphics_iOS_DeviceState_NormalDrawSetup() ;
+					Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 				}
 
 				// 頂点データを初期化する
@@ -9609,10 +9609,10 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 					break ;
 				}
 
-				u[ 0 ] *= GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				u[ 1 ] *= GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 0 ] *= GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				v[ 1 ] *= GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 0 ] *= GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				u[ 1 ] *= GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 0 ] *= GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				v[ 1 ] *= GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 
 				DrawVertB[0].u1 = u[ 0 ] ;
 				DrawVertB[0].v1 = v[ 0 ] ;
@@ -9733,8 +9733,8 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 
 				// 描画するテクスチャーのセット
 				DrawTex ++ ;
-				Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-				Graphics_iOS_DeviceState_NormalDrawSetup() ;
+				Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 			}
 			break ;
 		}
@@ -9751,7 +9751,7 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 		bottom	= GSYS.DrawSetting.DrawAreaF.bottom ;
 
 		// 頂点タイプによって処理を分岐
-		switch( GIOS.Device.DrawInfo.VertexType )
+		switch( GHTML5.Device.DrawInfo.VertexType )
 		{
 		case VERTEXTYPE_BLENDTEX :	// ブレンドテクスチャを使用する
 			// テクスチャーの数だけ繰り返す
@@ -9764,20 +9764,20 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 				float v2[ 4 ] ;
 
 				// 描画するテクスチャーのセット
-				Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-				Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
-				if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+				if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 				{
-					Graphics_iOS_DeviceState_NormalDrawSetup() ;
+					Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 				}
 
 				GETVERTEX_QUAD( DrawVertB )
 				
 				Vx = 1.0F / ( DrawTex->Tex->TexWidth * GraphExRateX ) ;
 				Vy = 1.0F / ( DrawTex->Tex->TexHeight * GraphExRateY ) ;
-				VBx = GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				VBy = GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				VBx = GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				VBy = GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 
 				// 頂点データを初期化する
 				TexVert = DrawTex->Vertex ;
@@ -9807,17 +9807,17 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 				{
 				default :
 				case DX_BLENDGRAPH_POSMODE_DRAWGRAPH:
-					u1[2] = u1[0] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u1[3] = u1[1] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					v1[1] = v1[0] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v1[3] = v1[2] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					u1[2] = u1[0] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u1[3] = u1[1] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					v1[1] = v1[0] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v1[3] = v1[2] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					break ;
 
 				case DX_BLENDGRAPH_POSMODE_SCREEN :
-					u1[2] = u1[0] = ( XBuf[ 0 ] - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u1[3] = u1[1] = ( XBuf[ 1 ] - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					v1[1] = v1[0] = ( YBuf[ 0 ] - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v1[3] = v1[2] = ( YBuf[ 1 ] - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					u1[2] = u1[0] = ( XBuf[ 0 ] - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u1[3] = u1[1] = ( XBuf[ 1 ] - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					v1[1] = v1[0] = ( YBuf[ 0 ] - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v1[3] = v1[2] = ( YBuf[ 1 ] - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					break ;
 				}
 
@@ -10038,8 +10038,8 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 
 				// 描画するテクスチャーのセット
 				DrawTex ++ ;
-				Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-				Graphics_iOS_DeviceState_NormalDrawSetup() ;
+				Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 			}
 			break ;
 		}
@@ -10077,7 +10077,7 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 	int FastCode, SinCosNone, AngleCheck, AlwaysCheck ;
 	int Flag ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -10087,7 +10087,7 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 
 	// 描画の準備
 	Flag = TransFlag ;
-	DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+	DX_HTML5_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
 	// 回転要素が無いか調べる
 	if( Angle == 0.0 )
@@ -10192,7 +10192,7 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 	}
 
 	// 頂点データを取得（今のところ色情報のセットのみ）
-	DiffuseColor = GIOS.Device.DrawInfo.DiffuseColor ;
+	DiffuseColor = GHTML5.Device.DrawInfo.DiffuseColor ;
 
 	// 描画情報の数をセット
 	DrawTexNum = Image->Hard.DrawNum ;
@@ -10219,19 +10219,19 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 	ExtendRateY = ( ( ReverseYFlag == TRUE ) ? -1.0f : 1.0f ) * ExtendRate ;
 
 	// 頂点タイプによって処理を分岐
-	switch( GIOS.Device.DrawInfo.VertexType )
+	switch( GHTML5.Device.DrawInfo.VertexType )
 	{
 	case VERTEXTYPE_BLENDTEX :	// ブレンドテクスチャを使用する
 		// テクスチャーの数だけ繰り返す
 		if( DrawTexNum == 1 && FastCode == 1 )
 		{
 			// 描画するテクスチャーのセット
-			Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-			Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
+			Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+			Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
-			if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+			if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 			{
-				Graphics_iOS_DeviceState_NormalDrawSetup() ;
+				Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 			}
 
 			// 頂点データを初期化する
@@ -10274,10 +10274,10 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 			{
 			default :
 			case DX_BLENDGRAPH_POSMODE_DRAWGRAPH:
-				u[ 0 ] = TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				u[ 1 ] = TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 0 ] = TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				v[ 1 ] = TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 0 ] = TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				u[ 1 ] = TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 0 ] = TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				v[ 1 ] = TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 				DrawVertB[0].u1 = u[ 0 ] ;
 				DrawVertB[0].v1 = v[ 0 ] ;
 				DrawVertB[1].u1 = u[ 1 ] ;
@@ -10293,18 +10293,18 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 				break ;
 
 			case DX_BLENDGRAPH_POSMODE_SCREEN :
-				DrawVertB[0].u1 = ( (  XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[0].v1 = ( (  YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				DrawVertB[1].u1 = ( (  XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[1].v1 = ( (  YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				DrawVertB[2].u1 = ( ( -XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[2].v1 = ( ( -YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				DrawVertB[3].u1 = ( ( -XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[3].v1 = ( ( -YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				DrawVertB[4].u1 = ( ( -XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[4].v1 = ( ( -YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				DrawVertB[5].u1 = ( (  XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[5].v1 = ( (  YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[0].u1 = ( (  XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[0].v1 = ( (  YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[1].u1 = ( (  XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[1].v1 = ( (  YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[2].u1 = ( ( -XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[2].v1 = ( ( -YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[3].u1 = ( ( -XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[3].v1 = ( ( -YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[4].u1 = ( ( -XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[4].v1 = ( ( -YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[5].u1 = ( (  XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[5].v1 = ( (  YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 				break ;
 			}
 
@@ -10349,12 +10349,12 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 			for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 			{
 				// 描画するテクスチャーのセット
-				Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-				Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
-				if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+				if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 				{
-					Graphics_iOS_DeviceState_NormalDrawSetup() ;
+					Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 				}
 
 				// 頂点データを初期化する
@@ -10407,15 +10407,15 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 				{
 				default :
 				case DX_BLENDGRAPH_POSMODE_DRAWGRAPH:
-					u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u[ 1 ] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u[ 2 ] = ( TexVert[2].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u[ 3 ] = ( TexVert[3].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
+					u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u[ 1 ] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u[ 2 ] = ( TexVert[2].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u[ 3 ] = ( TexVert[3].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
 					
-					v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v[ 1 ] = ( TexVert[1].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v[ 2 ] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v[ 3 ] = ( TexVert[3].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v[ 1 ] = ( TexVert[1].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v[ 2 ] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v[ 3 ] = ( TexVert[3].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 
 					DrawVertB[0].u1 = u[ 0 ] ;
 					DrawVertB[0].v1 = v[ 0 ] ;
@@ -10432,18 +10432,18 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 					break ;
 
 				case DX_BLENDGRAPH_POSMODE_SCREEN :
-					DrawVertB[0].u1 = ( ( XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[0].v1 = ( ( YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[1].u1 = ( ( XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[1].v1 = ( ( YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[2].u1 = ( ( XBuf[5] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[2].v1 = ( ( YBuf[5] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[3].u1 = ( ( XBuf[7] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[3].v1 = ( ( YBuf[7] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[4].u1 = ( ( XBuf[5] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[4].v1 = ( ( YBuf[5] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[5].u1 = ( ( XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[5].v1 = ( ( YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[0].u1 = ( ( XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[0].v1 = ( ( YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[1].u1 = ( ( XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[1].v1 = ( ( YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[2].u1 = ( ( XBuf[5] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[2].v1 = ( ( YBuf[5] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[3].u1 = ( ( XBuf[7] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[3].v1 = ( ( YBuf[7] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[4].u1 = ( ( XBuf[5] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[4].v1 = ( ( YBuf[5] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[5].u1 = ( ( XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[5].v1 = ( ( YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					break ;
 				}
 
@@ -10945,8 +10945,8 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 
 					// 描画するテクスチャーのセット
 					DrawTex ++ ;
-					Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-					Graphics_iOS_DeviceState_NormalDrawSetup() ;
+					Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+					Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 				}
 			}
 			else
@@ -11024,8 +11024,8 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 
 					// 描画するテクスチャーのセット
 					DrawTex ++ ;
-					Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-					Graphics_iOS_DeviceState_NormalDrawSetup() ;
+					Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+					Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 				}
 			}
 		}
@@ -11062,7 +11062,7 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 	int SinCosNone ;
 	int Flag ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -11072,7 +11072,7 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 
 	// 描画の準備
 	Flag = TransFlag ;
-	DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+	DX_HTML5_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
 	// 回転要素が無いか調べる
 	if( Angle == 0.0f )
@@ -11090,7 +11090,7 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 	CenY = ( float )Image->HeightF * 0.5F ;
 
 	// 頂点データを取得（今のところ色情報のセットのみ）
-	DiffuseColor = GIOS.Device.DrawInfo.DiffuseColor ;
+	DiffuseColor = GHTML5.Device.DrawInfo.DiffuseColor ;
 
 	// 描画情報の数をセット
 	DrawTexNum = Image->Hard.DrawNum ;
@@ -11117,19 +11117,19 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 	ExtendRateY = ( ( ReverseYFlag == TRUE ) ? -1.0f : 1.0f ) * ExtendRate ;
 
 	// 頂点タイプによって処理を分岐
-	switch( GIOS.Device.DrawInfo.VertexType )
+	switch( GHTML5.Device.DrawInfo.VertexType )
 	{
 	case VERTEXTYPE_BLENDTEX :	// ブレンドテクスチャを使用する
 		// テクスチャーの数だけ繰り返す
 		if( DrawTexNum == 1 )
 		{
 			// 描画するテクスチャーのセット
-			Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-			Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
+			Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+			Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
-			if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+			if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 			{
-				Graphics_iOS_DeviceState_NormalDrawSetup() ;
+				Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 			}
 
 			// 頂点データを初期化する
@@ -11172,10 +11172,10 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 			{
 			default :
 			case DX_BLENDGRAPH_POSMODE_DRAWGRAPH:
-				u[ 0 ] = TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				u[ 1 ] = TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 0 ] = TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				v[ 1 ] = TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 0 ] = TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				u[ 1 ] = TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 0 ] = TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				v[ 1 ] = TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 				DrawVertB[0].u1 = u[ 0 ] ;
 				DrawVertB[0].v1 = v[ 0 ] ;
 				DrawVertB[1].u1 = u[ 1 ] ;
@@ -11191,18 +11191,18 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 				break ;
 
 			case DX_BLENDGRAPH_POSMODE_SCREEN :
-				DrawVertB[0].u1 = ( (  XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[0].v1 = ( (  YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				DrawVertB[1].u1 = ( (  XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[1].v1 = ( (  YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				DrawVertB[2].u1 = ( ( -XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[2].v1 = ( ( -YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				DrawVertB[3].u1 = ( ( -XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[3].v1 = ( ( -YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				DrawVertB[4].u1 = ( ( -XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[4].v1 = ( ( -YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				DrawVertB[5].u1 = ( (  XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				DrawVertB[5].v1 = ( (  YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[0].u1 = ( (  XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[0].v1 = ( (  YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[1].u1 = ( (  XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[1].v1 = ( (  YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[2].u1 = ( ( -XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[2].v1 = ( ( -YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[3].u1 = ( ( -XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[3].v1 = ( ( -YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[4].u1 = ( ( -XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[4].v1 = ( ( -YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				DrawVertB[5].u1 = ( (  XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				DrawVertB[5].v1 = ( (  YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 				break ;
 			}
 
@@ -11247,12 +11247,12 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 			for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 			{
 				// 描画するテクスチャーのセット
-				Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-				Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+				Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
-				if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+				if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 				{
-					Graphics_iOS_DeviceState_NormalDrawSetup() ;
+					Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 				}
 
 				// 頂点データを初期化する
@@ -11305,15 +11305,15 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 				{
 				default :
 				case DX_BLENDGRAPH_POSMODE_DRAWGRAPH:
-					u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u[ 1 ] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u[ 2 ] = ( TexVert[2].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					u[ 3 ] = ( TexVert[3].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
+					u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u[ 1 ] = ( TexVert[1].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u[ 2 ] = ( TexVert[2].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					u[ 3 ] = ( TexVert[3].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
 					
-					v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v[ 1 ] = ( TexVert[1].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v[ 2 ] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					v[ 3 ] = ( TexVert[3].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v[ 1 ] = ( TexVert[1].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v[ 2 ] = ( TexVert[2].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					v[ 3 ] = ( TexVert[3].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 
 					DrawVertB[0].u1 = u[ 0 ] ;
 					DrawVertB[0].v1 = v[ 0 ] ;
@@ -11330,18 +11330,18 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 					break ;
 
 				case DX_BLENDGRAPH_POSMODE_SCREEN :
-					DrawVertB[0].u1 = ( ( XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[0].v1 = ( ( YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[1].u1 = ( ( XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[1].v1 = ( ( YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[2].u1 = ( ( XBuf[5] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[2].v1 = ( ( YBuf[5] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[3].u1 = ( ( XBuf[7] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[3].v1 = ( ( YBuf[7] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[4].u1 = ( ( XBuf[5] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[4].v1 = ( ( YBuf[5] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[5].u1 = ( ( XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[5].v1 = ( ( YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[0].u1 = ( ( XBuf[1] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[0].v1 = ( ( YBuf[1] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[1].u1 = ( ( XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[1].v1 = ( ( YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[2].u1 = ( ( XBuf[5] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[2].v1 = ( ( YBuf[5] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[3].u1 = ( ( XBuf[7] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[3].v1 = ( ( YBuf[7] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[4].u1 = ( ( XBuf[5] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[4].v1 = ( ( YBuf[5] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[5].u1 = ( ( XBuf[3] + xf ) - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[5].v1 = ( ( YBuf[3] + yf ) - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					break ;
 				}
 
@@ -11606,8 +11606,8 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 
 					// 描画するテクスチャーのセット
 					DrawTex ++ ;
-					Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-					Graphics_iOS_DeviceState_NormalDrawSetup() ;
+					Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+					Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 				}
 			}
 			else
@@ -11685,8 +11685,8 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 
 					// 描画するテクスチャーのセット
 					DrawTex ++ ;
-					Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-					Graphics_iOS_DeviceState_NormalDrawSetup() ;
+					Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+					Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 				}
 			}
 		}
@@ -11704,7 +11704,7 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 
 	// もしブレンドテクスチャを使用せず、旧型関数を使用するフラグも立っていなければ
 	// 内部分割を行う描画関数を使用する
-	if( GIOS.Setting.UseOldDrawModiGraphCodeFlag == FALSE && GSYS.DrawSetting.BlendGraph <= 0 )
+	if( GHTML5.Setting.UseOldDrawModiGraphCodeFlag == FALSE && GSYS.DrawSetting.BlendGraph <= 0 )
 		return Graphics_Hardware_DrawModiGraphF_PF( (float)x1, (float)y1, (float)x2, (float)y2, (float)x3, (float)y3, (float)x4, (float)y4, Image, BlendImage, TransFlag, SimpleDrawFlag ) ;
 
 	VERTEX_2D           *DrawVert ;
@@ -11730,7 +11730,7 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 	DWORD drawz ;
 	int Flag ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -11739,8 +11739,8 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Flag = TransFlag | DX_IOS_DRAWPREP_VECTORINT ;
-	DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+	Flag = TransFlag | DX_HTML5_DRAWPREP_VECTORINT ;
+	DX_HTML5_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
 	GraphSizeX = ( float )Image->WidthF ;  GraphSizeY = ( float )Image->HeightF ;
 	ExRate1X1 = ( x2 - x1 ) /  GraphSizeX ;  ExRate1X2 = ( x3 - x1 ) /  GraphSizeY ;
@@ -11753,7 +11753,7 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 	xf4 = (float)x4 ; yf4 = (float)y4 ; 
 
 	// 頂点データを取得（今のところ色情報のセットのみ）
-	DiffuseColor = GIOS.Device.DrawInfo.DiffuseColor ;
+	DiffuseColor = GHTML5.Device.DrawInfo.DiffuseColor ;
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -11776,17 +11776,17 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 	}
 
 	// 頂点タイプによって処理を分岐
-	switch( GIOS.Device.DrawInfo.VertexType )
+	switch( GHTML5.Device.DrawInfo.VertexType )
 	{
 	case VERTEXTYPE_BLENDTEX :	// ブレンドテクスチャを使用する
 		// テクスチャーの数だけ繰り返す
 		for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 		{
 			// 描画するテクスチャーのセット
-			Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-			Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
+			Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+			Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
-			Graphics_iOS_DeviceState_NormalDrawSetup() ;
+			Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 
 			// 頂点バッファの取得
 			GETVERTEX_QUAD( DrawVertB )
@@ -11820,8 +11820,8 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 					DrawPos[ j ].y = ( YBuf * ExRate2Y1 ) + ( XBuf * ExRate2Y2 ) + yf4 ;
 				}
 
-				u[ j ] = ( TexVert->x - BlendTexVert->x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ j ] = ( TexVert->y - BlendTexVert->y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ j ] = ( TexVert->x - BlendTexVert->x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ j ] = ( TexVert->y - BlendTexVert->y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 			}
 
 			// 反転判定処理
@@ -11864,18 +11864,18 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 					break ;
 
 				case DX_BLENDGRAPH_POSMODE_SCREEN :
-					DrawVertB[ 0 ].u1 = ( DrawPos[ 0 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 0 ].v1 = ( DrawPos[ 0 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[ 1 ].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 1 ].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[ 2 ].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 2 ].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[ 3 ].u1 = ( DrawPos[ 3 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 3 ].v1 = ( DrawPos[ 3 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[ 4 ].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 4 ].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[ 5 ].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 5 ].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 0 ].u1 = ( DrawPos[ 0 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 0 ].v1 = ( DrawPos[ 0 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 1 ].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 1 ].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 2 ].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 2 ].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 3 ].u1 = ( DrawPos[ 3 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 3 ].v1 = ( DrawPos[ 3 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 4 ].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 4 ].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 5 ].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 5 ].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					break ;
 				}
 
@@ -11926,18 +11926,18 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 					break ;
 
 				case DX_BLENDGRAPH_POSMODE_SCREEN :
-					DrawVertB[ 0 ].u1 = ( DrawPos[ 0 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 0 ].v1 = ( DrawPos[ 0 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[ 1 ].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 1 ].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[ 2 ].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 2 ].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[ 3 ].u1 = ( DrawPos[ 3 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 3 ].v1 = ( DrawPos[ 3 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[ 4 ].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 4 ].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-					DrawVertB[ 5 ].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-					DrawVertB[ 5 ].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 0 ].u1 = ( DrawPos[ 0 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 0 ].v1 = ( DrawPos[ 0 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 1 ].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 1 ].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 2 ].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 2 ].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 3 ].u1 = ( DrawPos[ 3 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 3 ].v1 = ( DrawPos[ 3 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 4 ].u1 = ( DrawPos[ 2 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 4 ].v1 = ( DrawPos[ 2 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+					DrawVertB[ 5 ].u1 = ( DrawPos[ 1 ].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+					DrawVertB[ 5 ].v1 = ( DrawPos[ 1 ].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 					break ;
 				}
 
@@ -12099,8 +12099,8 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 
 			// 描画するテクスチャーのセット
 			DrawTex ++ ;
-			Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-			Graphics_iOS_DeviceState_NormalDrawSetup() ;
+			Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+			Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 		}
 		break ;
 	}
@@ -12110,11 +12110,11 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 }
 
 // ２次元配列的に配置された頂点データを頂点バッファに追加する
-static int IOS_Graphics_SetPlaneVertexHardware( VERTEX_2D *GraphVert, int xnum, int ynum )
+static int HTML5_Graphics_SetPlaneVertexHardware( VERTEX_2D *GraphVert, int xnum, int ynum )
 {
 	int i, j, k, l ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -12138,12 +12138,12 @@ static int IOS_Graphics_SetPlaneVertexHardware( VERTEX_2D *GraphVert, int xnum, 
 			if( k + xnum * 2 + 2 > MAX_POSNUM )
 			{
 				// Uniform の更新
-				Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+				Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 				// 頂点データのセットアップ
-				Graphics_iOS_DeviceState_SetupShaderVertexData(
-					GIOS.Device.State.SetShader,
-					&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_2D ].InputInfo,
+				Graphics_HTML5_DeviceState_SetupShaderVertexData(
+					GHTML5.Device.State.SetShader,
+					&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_2D ].InputInfo,
 					GraphVert
 				) ;
 
@@ -12176,12 +12176,12 @@ static int IOS_Graphics_SetPlaneVertexHardware( VERTEX_2D *GraphVert, int xnum, 
 		if( k != 0 )
 		{
 			// Uniform の更新
-			Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+			Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 			// 頂点データのセットアップ
-			Graphics_iOS_DeviceState_SetupShaderVertexData(
-				GIOS.Device.State.SetShader,
-				&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_2D ].InputInfo,
+			Graphics_HTML5_DeviceState_SetupShaderVertexData(
+				GHTML5.Device.State.SetShader,
+				&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_2D ].InputInfo,
 				GraphVert
 			) ;
 
@@ -12197,7 +12197,7 @@ static int IOS_Graphics_SetPlaneVertexHardware( VERTEX_2D *GraphVert, int xnum, 
 }
 
 // テクスチャを変形して描画する
-extern	void	Graphics_iOS_DrawModiTex( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, IMAGEDATA_HARD_DRAW *DrawTex, bool SimpleDrawFlag )
+extern	void	Graphics_HTML5_DrawModiTex( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, IMAGEDATA_HARD_DRAW *DrawTex, bool SimpleDrawFlag )
 {
 	IMAGEDATA_HARD_VERT *TexVert ;
 	VERTEX_2D *vec ; 
@@ -12210,20 +12210,20 @@ extern	void	Graphics_iOS_DrawModiTex( float x1, float y1, float x2, float y2, fl
 	float u[ 2 ] ;
 	float v[ 2 ] ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return ;
 	}
 
 	// 描画するテクスチャーのセット
-	Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-	if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+	Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+	if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 	{
-		Graphics_iOS_DeviceState_NormalDrawSetup() ;
+		Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 	}
 
 	// 頂点データを取得（今のところ色情報のセットのみ）
-	DiffuseColor = GIOS.Device.DrawInfo.DiffuseColor ;
+	DiffuseColor = GHTML5.Device.DrawInfo.DiffuseColor ;
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -12363,7 +12363,7 @@ extern	void	Graphics_iOS_DrawModiTex( float x1, float y1, float x2, float y2, fl
 		}
 
 		// 頂点追加処理
-		IOS_Graphics_SetPlaneVertexHardware( VectData2, tdn, tdn ) ;
+		HTML5_Graphics_SetPlaneVertexHardware( VectData2, tdn, tdn ) ;
 
 #undef TDIVNUM
 #undef TDN
@@ -12469,20 +12469,20 @@ extern	int		Graphics_Hardware_DrawModiGraphF_PF( float x1, float y1, float x2, f
 	// もしブレンドテクスチャ付の場合は内部分割を行わない描画関数を使用する
 	if( GSYS.DrawSetting.BlendGraph > 0 ) return Graphics_Hardware_DrawModiGraph_PF( _FTOL( x1 ), _FTOL( y1 ), _FTOL( x2 ), _FTOL( y2 ), _FTOL( x3 ), _FTOL( y3 ), _FTOL( x4 ), _FTOL( y4 ), Image, BlendImage, TransFlag, SimpleDrawFlag ) ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
 	// 描画の準備
 	Flag = TransFlag ;
-	DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+	DX_HTML5_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
 	// テクスチャーが１枚のみの場合は処理を分岐
 	if( Image->Hard.DrawNum == 1 )
 	{
 		// そのまま描画
-		Graphics_iOS_DrawModiTex( x1, y1, x2, y2, x3, y3, x4, y4, &Image->Hard.Draw[ 0 ], false ) ;
+		Graphics_HTML5_DrawModiTex( x1, y1, x2, y2, x3, y3, x4, y4, &Image->Hard.Draw[ 0 ], false ) ;
 	}
 	else
 	{
@@ -12532,7 +12532,7 @@ extern	int		Graphics_Hardware_DrawModiGraphF_PF( float x1, float y1, float x2, f
 			}
 
 			// 描画
-			Graphics_iOS_DrawModiTex( x[0], y[0], x[1], y[1], x[2], y[2], x[3], y[3], DrawTex, false ) ;
+			Graphics_HTML5_DrawModiTex( x[0], y[0], x[1], y[1], x[2], y[2], x[3], y[3], DrawTex, false ) ;
 		}
 	}
 
@@ -12557,7 +12557,7 @@ extern	int		Graphics_Hardware_DrawSimpleQuadrangleGraphF_PF( const GRAPHICS_DRAW
 	int i ;
 	const GRAPHICS_DRAW_DRAWSIMPLEANGLEGRAPHF_VERTEX *ParamV ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -12570,10 +12570,10 @@ extern	int		Graphics_Hardware_DrawSimpleQuadrangleGraphF_PF( const GRAPHICS_DRAW
 
 	// 描画の準備
 	Flag = Param->TransFlag ;
-	DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+	DX_HTML5_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
 	// 頂点データを取得（今のところ色情報のセットのみ）
-	DiffuseColor = GIOS.Device.DrawInfo.DiffuseColor ;
+	DiffuseColor = GHTML5.Device.DrawInfo.DiffuseColor ;
 
 	// 描画情報配列のアドレスをセットしておく
 	DrawTex = Image->Hard.Draw ;
@@ -12586,16 +12586,16 @@ extern	int		Graphics_Hardware_DrawSimpleQuadrangleGraphF_PF( const GRAPHICS_DRAW
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
 	// 頂点タイプによって処理を分岐
-	switch( GIOS.Device.DrawInfo.VertexType )
+	switch( GHTML5.Device.DrawInfo.VertexType )
 	{
 	case VERTEXTYPE_BLENDTEX :	// ブレンドテクスチャを使用する
 		// 描画するテクスチャーのセット
-		Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-		Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
+		Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+		Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
-		if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+		if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 		{
-			Graphics_iOS_DeviceState_NormalDrawSetup() ;
+			Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 		}
 
 		TexVert = DrawTex->Vertex ;
@@ -12631,25 +12631,25 @@ extern	int		Graphics_Hardware_DrawSimpleQuadrangleGraphF_PF( const GRAPHICS_DRAW
 			{
 			default :
 			case DX_BLENDGRAPH_POSMODE_DRAWGRAPH:
-				u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				u[ 1 ] = ( TexVert[1].x - BlendTexVert[1].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 1 ] = ( TexVert[1].y - BlendTexVert[1].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				u[ 2 ] = ( TexVert[2].x - BlendTexVert[2].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 2 ] = ( TexVert[2].y - BlendTexVert[2].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				u[ 3 ] = ( TexVert[3].x - BlendTexVert[3].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 3 ] = ( TexVert[3].y - BlendTexVert[3].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 1 ] = ( TexVert[1].x - BlendTexVert[1].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 1 ] = ( TexVert[1].y - BlendTexVert[1].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 2 ] = ( TexVert[2].x - BlendTexVert[2].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 2 ] = ( TexVert[2].y - BlendTexVert[2].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 3 ] = ( TexVert[3].x - BlendTexVert[3].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 3 ] = ( TexVert[3].y - BlendTexVert[3].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 				break ;
 
 			case DX_BLENDGRAPH_POSMODE_SCREEN :
-				u[ 0 ] = ( ParamV[0].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 0 ] = ( ParamV[0].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				u[ 1 ] = ( ParamV[1].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 1 ] = ( ParamV[1].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				u[ 2 ] = ( ParamV[2].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 2 ] = ( ParamV[2].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				u[ 3 ] = ( ParamV[3].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 3 ] = ( ParamV[3].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 0 ] = ( ParamV[0].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 0 ] = ( ParamV[0].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 1 ] = ( ParamV[1].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 1 ] = ( ParamV[1].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 2 ] = ( ParamV[2].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 2 ] = ( ParamV[2].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 3 ] = ( ParamV[3].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 3 ] = ( ParamV[3].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 				break ;
 			}
 
@@ -12781,7 +12781,7 @@ extern	int		Graphics_Hardware_DrawSimpleTriangleGraphF_PF( const GRAPHICS_DRAW_D
 	int i ;
 	const GRAPHICS_DRAW_DRAWSIMPLEANGLEGRAPHF_VERTEX *ParamV ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -12794,10 +12794,10 @@ extern	int		Graphics_Hardware_DrawSimpleTriangleGraphF_PF( const GRAPHICS_DRAW_D
 
 	// 描画の準備
 	Flag = Param->TransFlag ;
-	DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+	DX_HTML5_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
 	// 頂点データを取得（今のところ色情報のセットのみ）
-	DiffuseColor = GIOS.Device.DrawInfo.DiffuseColor ;
+	DiffuseColor = GHTML5.Device.DrawInfo.DiffuseColor ;
 
 	// 描画情報配列のアドレスをセットしておく
 	DrawTex = Image->Hard.Draw ;
@@ -12810,16 +12810,16 @@ extern	int		Graphics_Hardware_DrawSimpleTriangleGraphF_PF( const GRAPHICS_DRAW_D
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
 	// 頂点タイプによって処理を分岐
-	switch( GIOS.Device.DrawInfo.VertexType )
+	switch( GHTML5.Device.DrawInfo.VertexType )
 	{
 	case VERTEXTYPE_BLENDTEX :	// ブレンドテクスチャを使用する
 		// 描画するテクスチャーのセット
-		Graphics_iOS_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
-		Graphics_iOS_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
+		Graphics_HTML5_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
+		Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
-		if( GIOS.Device.DrawSetting.ChangeTextureFlag )
+		if( GHTML5.Device.DrawSetting.ChangeTextureFlag )
 		{
-			Graphics_iOS_DeviceState_NormalDrawSetup() ;
+			Graphics_HTML5_DeviceState_NormalDrawSetup() ;
 		}
 
 		TexVert = DrawTex->Vertex ;
@@ -12846,21 +12846,21 @@ extern	int		Graphics_Hardware_DrawSimpleTriangleGraphF_PF( const GRAPHICS_DRAW_D
 			{
 			default :
 			case DX_BLENDGRAPH_POSMODE_DRAWGRAPH:
-				u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				u[ 1 ] = ( TexVert[1].x - BlendTexVert[1].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 1 ] = ( TexVert[1].y - BlendTexVert[1].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				u[ 2 ] = ( TexVert[2].x - BlendTexVert[2].x + GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 2 ] = ( TexVert[2].y - BlendTexVert[2].y + GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 0 ] = ( TexVert[0].x - BlendTexVert[0].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 0 ] = ( TexVert[0].y - BlendTexVert[0].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 1 ] = ( TexVert[1].x - BlendTexVert[1].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 1 ] = ( TexVert[1].y - BlendTexVert[1].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 2 ] = ( TexVert[2].x - BlendTexVert[2].x + GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 2 ] = ( TexVert[2].y - BlendTexVert[2].y + GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 				break ;
 
 			case DX_BLENDGRAPH_POSMODE_SCREEN :
-				u[ 0 ] = ( ParamV[0].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 0 ] = ( ParamV[0].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				u[ 1 ] = ( ParamV[1].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 1 ] = ( ParamV[1].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
-				u[ 2 ] = ( ParamV[2].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GIOS.Device.DrawSetting.InvBlendTextureWidth ;
-				v[ 2 ] = ( ParamV[2].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GIOS.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 0 ] = ( ParamV[0].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 0 ] = ( ParamV[0].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 1 ] = ( ParamV[1].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 1 ] = ( ParamV[1].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
+				u[ 2 ] = ( ParamV[2].x - BlendTexVert[0].x - GSYS.DrawSetting.BlendGraphX ) * GHTML5.Device.DrawSetting.InvBlendTextureWidth ;
+				v[ 2 ] = ( ParamV[2].y - BlendTexVert[0].y - GSYS.DrawSetting.BlendGraphY ) * GHTML5.Device.DrawSetting.InvBlendTextureHeight ;
 				break ;
 			}
 
@@ -12944,7 +12944,7 @@ extern	int		Graphics_Hardware_DrawFillBox_PF( int x1, int y1, int x2, int y2, un
 	int Red, Green, Blue, Flag ;
 	DWORD drawz ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -12971,8 +12971,8 @@ extern	int		Graphics_Hardware_DrawFillBox_PF( int x1, int y1, int x2, int y2, un
 	}
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag ) ;
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag ) ;
 
 	// 色その他ステータスのセット
 	NS_GetColor2( Color, &Red, &Green, &Blue ) ;
@@ -13034,14 +13034,14 @@ extern	int		Graphics_Hardware_DrawLineBox_PF( int x1, int y1, int x2, int y2, un
 	int Flag;
 	DWORD drawz ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag ) ;
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag ) ;
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -13201,7 +13201,7 @@ extern	int		Graphics_Hardware_DrawLine_PF( int x1, int y1, int x2, int y2, unsig
 	int Red, Green, Blue, Flag ;
 	DWORD drawz ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -13209,8 +13209,8 @@ extern	int		Graphics_Hardware_DrawLine_PF( int x1, int y1, int x2, int y2, unsig
 	if( x2 - x1 == 0 && y2 - y1 == 0 ) return 0 ; 
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -13275,7 +13275,7 @@ extern	int		Graphics_Hardware_DrawLine3D_PF( VECTOR Pos1, VECTOR Pos2, unsigned 
 	VERTEX_NOTEX_3D *VectData ;
 	int Red, Green, Blue, Flag ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -13283,8 +13283,8 @@ extern	int		Graphics_Hardware_DrawLine3D_PF( VECTOR Pos1, VECTOR Pos2, unsigned 
 	if( DrawFlag )
 	{
 		// 描画の準備
-		Flag = DX_IOS_DRAWPREP_DIFFUSERGB | DX_IOS_DRAWPREP_3D | DX_IOS_DRAWPREP_FOG ;
-		DX_IOS_DRAWPREP_NOTEX( Flag )
+		Flag = DX_HTML5_DRAWPREP_DIFFUSERGB | DX_HTML5_DRAWPREP_3D | DX_HTML5_DRAWPREP_FOG ;
+		DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 		GETVERTEX_LINE3D( VectData ) ;
 
@@ -13356,9 +13356,9 @@ extern	int		Graphics_Hardware_DrawLine3D_PF( VECTOR Pos1, VECTOR Pos2, unsigned 
 
 
 
-#define IOS_CIRCLE_VERTEX_NUM			(2000)
+#define HTML5_CIRCLE_VERTEX_NUM			(2000)
 
-#define DX_IOS_CIRCLE_THICKNESS											\
+#define DX_HTML5_CIRCLE_THICKNESS											\
 	if( x1 < DrawRect.left      ) x1 = DrawRect.left ;						\
 	if( x2 > DrawRect.right - 1 ) x2 = DrawRect.right - 1 ;					\
 																			\
@@ -13376,15 +13376,15 @@ extern	int		Graphics_Hardware_DrawLine3D_PF( VECTOR Pos1, VECTOR Pos2, unsigned 
 	*((DWORD *)&VertBuf[ VectNum ].pos.z) = drawz ;							\
 	VectNum  ++ ;															\
 																			\
-	if( VectNum >= IOS_CIRCLE_VERTEX_NUM )								\
+	if( VectNum >= HTML5_CIRCLE_VERTEX_NUM )								\
 	{																		\
 		/* Uniform の更新 */												\
-		Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;\
+		Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;\
 																			\
 		/* 頂点データのセットアップ */										\
-		Graphics_iOS_DeviceState_SetupShaderVertexData(					\
-			GIOS.Device.State.SetShader,									\
-			&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,\
+		Graphics_HTML5_DeviceState_SetupShaderVertexData(					\
+			GHTML5.Device.State.SetShader,									\
+			&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,\
 			VertBuf															\
 		) ;																	\
 																			\
@@ -13409,7 +13409,7 @@ extern	int		Graphics_Hardware_DrawCircle_Thickness_PF( int x, int y, int r, unsi
 	int x1, x2 ;
 	float y1f ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -13424,15 +13424,15 @@ extern	int		Graphics_Hardware_DrawCircle_Thickness_PF( int x, int y, int r, unsi
 	DRAWSTOCKINFO
 
 	// 描画用メモリの確保
-	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * IOS_CIRCLE_VERTEX_NUM ) < 0 )
+	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * HTML5_CIRCLE_VERTEX_NUM ) < 0 )
 	{
 		return -1 ;
 	}
 	VertBuf = ( VERTEX_NOTEX_2D * )GSYS.Resource.CommonBuffer[ 0 ] ;
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -13469,28 +13469,28 @@ extern	int		Graphics_Hardware_DrawCircle_Thickness_PF( int x, int y, int r, unsi
 		{
 			x1 = CirclePos[ i ][ 0 ] ;
 			x2 = CirclePos[ i ][ 1 ] ;
-			DX_IOS_CIRCLE_THICKNESS
+			DX_HTML5_CIRCLE_THICKNESS
 		}
 		else
 		{
 			x1 = CirclePos[ i ][ 0 ] ;
 			x2 = CirclePos[ i ][ 2 ] ;
-			DX_IOS_CIRCLE_THICKNESS
+			DX_HTML5_CIRCLE_THICKNESS
 
 			x1 = CirclePos[ i ][ 3 ] ;
 			x2 = CirclePos[ i ][ 1 ] ;
-			DX_IOS_CIRCLE_THICKNESS
+			DX_HTML5_CIRCLE_THICKNESS
 		}
 	}
 	if( VectNum )
 	{
 		// Uniform の更新
-		Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+		Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 		// 頂点データのセットアップ
-		Graphics_iOS_DeviceState_SetupShaderVertexData(
-			GIOS.Device.State.SetShader,
-			&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
+		Graphics_HTML5_DeviceState_SetupShaderVertexData(
+			GHTML5.Device.State.SetShader,
+			&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 			VertBuf
 		) ;	
 
@@ -13517,7 +13517,7 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 	int x1, x2 ;
 	float y1f ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -13532,15 +13532,15 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 	DRAWSTOCKINFO
 
 	// 描画用メモリの確保
-	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * IOS_CIRCLE_VERTEX_NUM ) < 0 )
+	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * HTML5_CIRCLE_VERTEX_NUM ) < 0 )
 	{
 		return -1 ;
 	}
 	VertBuf = ( VERTEX_NOTEX_2D * )GSYS.Resource.CommonBuffer[ 0 ] ;
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -13580,28 +13580,28 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 		{
 			x1 = CirclePos[ i ][ 0 ] ;
 			x2 = CirclePos[ i ][ 1 ] ;
-			DX_IOS_CIRCLE_THICKNESS
+			DX_HTML5_CIRCLE_THICKNESS
 		}
 		else
 		{
 			x1 = CirclePos[ i ][ 0 ] ;
 			x2 = CirclePos[ i ][ 2 ] ;
-			DX_IOS_CIRCLE_THICKNESS
+			DX_HTML5_CIRCLE_THICKNESS
 
 			x1 = CirclePos[ i ][ 3 ] ;
 			x2 = CirclePos[ i ][ 1 ] ;
-			DX_IOS_CIRCLE_THICKNESS
+			DX_HTML5_CIRCLE_THICKNESS
 		}
 	}
 	if( VectNum )
 	{
 		// Uniform の更新
-		Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+		Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 		// 頂点データのセットアップ
-		Graphics_iOS_DeviceState_SetupShaderVertexData(
-			GIOS.Device.State.SetShader,
-			&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
+		Graphics_HTML5_DeviceState_SetupShaderVertexData(
+			GHTML5.Device.State.SetShader,
+			&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 			VertBuf
 		) ;	
 
@@ -13617,7 +13617,7 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 
 
 
-#define DX_IOS_CIRCLE																	\
+#define DX_HTML5_CIRCLE																	\
 			if( !( ( x2 < DrawRect.left ) || ( x1 >= DrawRect.right  ) ||				\
 			       ( y1 < DrawRect.top  ) || ( y1 >= DrawRect.bottom ) || LineDrawBuf[ y1 ] ) )		\
 			{																			\
@@ -13639,15 +13639,15 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 				*((DWORD *)&VertBuf[ VectNum ].pos.z) = drawz ;							\
 				VectNum  ++ ;															\
 																						\
-				if( VectNum >= IOS_CIRCLE_VERTEX_NUM )								\
+				if( VectNum >= HTML5_CIRCLE_VERTEX_NUM )								\
 				{																		\
 					/* Uniform の更新 */												\
-					Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;\
+					Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;\
 																						\
 					/* 頂点データのセットアップ */										\
-					Graphics_iOS_DeviceState_SetupShaderVertexData(					\
-						GIOS.Device.State.SetShader,									\
-						&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,\
+					Graphics_HTML5_DeviceState_SetupShaderVertexData(					\
+						GHTML5.Device.State.SetShader,									\
+						&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,\
 						VertBuf															\
 					) ;																	\
 																						\
@@ -13658,7 +13658,7 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 				}																		\
 			}
 
-#define DX_IOS_CIRCLE_PSET															\
+#define DX_HTML5_CIRCLE_PSET															\
 			if( !( ( x1 < DrawRect.left ) || ( x1 >= DrawRect.right  ) ||				\
 				   ( y1 < DrawRect.top  ) || ( y1 >= DrawRect.bottom ) ) )				\
 			{																			\
@@ -13669,15 +13669,15 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 				*((DWORD *)&VertBuf[ VectNum ].pos.z) = drawz ;							\
 				VectNum ++ ;															\
 																						\
-				if( VectNum >= IOS_CIRCLE_VERTEX_NUM )								\
+				if( VectNum >= HTML5_CIRCLE_VERTEX_NUM )								\
 				{																		\
 					/* Uniform の更新 */												\
-					Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;\
+					Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;\
 																						\
 					/* 頂点データのセットアップ */										\
-					Graphics_iOS_DeviceState_SetupShaderVertexData(					\
-						GIOS.Device.State.SetShader,									\
-						&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,\
+					Graphics_HTML5_DeviceState_SetupShaderVertexData(					\
+						GHTML5.Device.State.SetShader,									\
+						&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,\
 						VertBuf															\
 					) ;																	\
 																						\
@@ -13701,7 +13701,7 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 	RECT            DrawRect ;
 	DWORD           drawz ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -13713,15 +13713,15 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 	DRAWSTOCKINFO
 
 	// 描画用メモリの確保
-	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * IOS_CIRCLE_VERTEX_NUM ) < 0 )
+	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * HTML5_CIRCLE_VERTEX_NUM ) < 0 )
 	{
 		return -1 ;
 	}
 	VertBuf = ( VERTEX_NOTEX_2D * )GSYS.Resource.CommonBuffer[ 0 ] ;
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -13757,16 +13757,16 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 				if( Ry_One_Minus == FALSE )
 				{
 					x2 = Dx + x - Rx_One_Minus ; x1 = -Dx + x ; y1 = Dy + y ;
-					DX_IOS_CIRCLE ;
+					DX_HTML5_CIRCLE ;
 				}
 
 				// 座標データを進める
 				if( F >= 0 )
 				{
 					x2 = Dy + x - Rx_One_Minus ; x1 = -Dy + x ; y1 = Dx + y - Ry_One_Minus ;
-					DX_IOS_CIRCLE ;
+					DX_HTML5_CIRCLE ;
 					x2 = Dy + x - Rx_One_Minus ; x1 = -Dy + x ; y1 = -Dx + y;
-					DX_IOS_CIRCLE ;
+					DX_HTML5_CIRCLE ;
 
 					Dx -- ;
 					F -= 4 * Dx ;
@@ -13779,17 +13779,17 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 			while( Dx >= Dy )
 			{
 				x2 = Dx + x - Rx_One_Minus ; x1 = -Dx + x ; y1 = Dy + y - Ry_One_Minus ;
-				DX_IOS_CIRCLE ;
+				DX_HTML5_CIRCLE ;
 				x2 = Dx + x - Rx_One_Minus ; x1 = -Dx + x ; y1 = -Dy + y ;
-				DX_IOS_CIRCLE ;
+				DX_HTML5_CIRCLE ;
 
 				// 座標データを進める
 				if( F >= 0 )
 				{
 					x2 = Dy + x - Rx_One_Minus ; x1 = -Dy + x ; y1 = Dx + y - Ry_One_Minus ;
-					DX_IOS_CIRCLE ;
+					DX_HTML5_CIRCLE ;
 					x2 = Dy + x - Rx_One_Minus ; x1 = -Dy + x ; y1 = -Dx + y ;
-					DX_IOS_CIRCLE ;
+					DX_HTML5_CIRCLE ;
 
 					Dx -- ;
 					F -= 4 * Dx ;
@@ -13801,12 +13801,12 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 			if( VectNum )
 			{
 				// Uniform の更新
-				Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+				Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 				// 頂点データのセットアップ
-				Graphics_iOS_DeviceState_SetupShaderVertexData(
-					GIOS.Device.State.SetShader,
-					&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
+				Graphics_HTML5_DeviceState_SetupShaderVertexData(
+					GHTML5.Device.State.SetShader,
+					&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 					VertBuf
 				) ;	
 
@@ -13822,18 +13822,18 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 				if( Ry_One_Minus == FALSE )
 				{
 					x1 = -Dx + x ; y1 = Dy + y ;
-					DX_IOS_CIRCLE_PSET ;
+					DX_HTML5_CIRCLE_PSET ;
 					x1 = Dx + x - Rx_One_Minus ;  
-					DX_IOS_CIRCLE_PSET ;
+					DX_HTML5_CIRCLE_PSET ;
 				}
 
 				if( Rx_One_Minus == FALSE )
 				{
 					x1 = Dy + x ; y1 = Dx + y - Ry_One_Minus ;
-					DX_IOS_CIRCLE_PSET ;
+					DX_HTML5_CIRCLE_PSET ;
 
 					x1 = Dy + x ; y1 = -Dx + y;
-					DX_IOS_CIRCLE_PSET ;
+					DX_HTML5_CIRCLE_PSET ;
 				}
 
 				// 座標データを進める
@@ -13850,24 +13850,24 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 			while( Dx >= Dy )
 			{
 				x1 = -Dx + x ; y1 = Dy + y - Ry_One_Minus ;
-				DX_IOS_CIRCLE_PSET ;
+				DX_HTML5_CIRCLE_PSET ;
 				x1 = Dx + x - Rx_One_Minus ;  
-				DX_IOS_CIRCLE_PSET ;
+				DX_HTML5_CIRCLE_PSET ;
 
 				x1 = Dy + x - Rx_One_Minus ; y1 = Dx + y - Ry_One_Minus ;
-				DX_IOS_CIRCLE_PSET ;
+				DX_HTML5_CIRCLE_PSET ;
 				x1 = -Dy + x ; 
-				DX_IOS_CIRCLE_PSET ;
+				DX_HTML5_CIRCLE_PSET ;
 			
 				x1 = Dx + x - Rx_One_Minus ; y1 = -Dy + y ;
-				DX_IOS_CIRCLE_PSET ;
+				DX_HTML5_CIRCLE_PSET ;
 				x1 = -Dx + x ; 
-				DX_IOS_CIRCLE_PSET ;
+				DX_HTML5_CIRCLE_PSET ;
 
 				x1 = Dy + x - Rx_One_Minus ; y1 = -Dx + y ;
-				DX_IOS_CIRCLE_PSET ;
+				DX_HTML5_CIRCLE_PSET ;
 				x1 = -Dy + x ; 
-				DX_IOS_CIRCLE_PSET ;
+				DX_HTML5_CIRCLE_PSET ;
 
 				// 座標データを進める
 				if( F >= 0 )
@@ -13882,12 +13882,12 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 			if( VectNum )
 			{
 				// Uniform の更新
-				Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+				Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 				// 頂点データのセットアップ
-				Graphics_iOS_DeviceState_SetupShaderVertexData(
-					GIOS.Device.State.SetShader,
-					&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
+				Graphics_HTML5_DeviceState_SetupShaderVertexData(
+					GHTML5.Device.State.SetShader,
+					&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 					VertBuf
 				) ;	
 
@@ -13916,7 +13916,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 	RECT DrawRect ;
 	DWORD drawz ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -13930,15 +13930,15 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 	if( !rx || !ry ) return -1 ;
 
 	// 描画用メモリの確保
-	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * IOS_CIRCLE_VERTEX_NUM ) < 0 )
+	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * HTML5_CIRCLE_VERTEX_NUM ) < 0 )
 	{
 		return -1 ;
 	}
 	VertBuf = ( VERTEX_NOTEX_2D * )GSYS.Resource.CommonBuffer[ 0 ] ;
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 	// 補正
 	if( rx < 0 ) rx *= -1 ;
@@ -13989,7 +13989,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 					if( Ry_One_Minus == FALSE )
 					{
 						x1 = -Dx + x ; x2 = Dx + x - Rx_One_Minus ; y1 = Dy + y ;
-						DX_IOS_CIRCLE ;
+						DX_HTML5_CIRCLE ;
 					}
 
 					Df = 0 ;
@@ -14038,10 +14038,10 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 					if( Df )
 					{
 						x1 = -Dx + x ; x2 = Dx + x - Rx_One_Minus ; y1 = Dy + y - Ry_One_Minus ;
-						DX_IOS_CIRCLE ;
+						DX_HTML5_CIRCLE ;
 
 						y1 = -Dy + y ;
-						DX_IOS_CIRCLE ;
+						DX_HTML5_CIRCLE ;
 					}
 
 					Df = 0 ;
@@ -14085,7 +14085,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 
 				// 最後の線を描く
 				x1 = -Dx + x ; x2 = Dx + x - Rx_One_Minus ; y1 = -Dy + y;
-				DX_IOS_CIRCLE ;
+				DX_HTML5_CIRCLE ;
 			}
 			else
 			{
@@ -14154,10 +14154,10 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 					else
 					{
 						y1 = -Dy + y ; x1 = -Dx + x ; x2 = Dx + x - Rx_One_Minus ;
-						DX_IOS_CIRCLE ;
+						DX_HTML5_CIRCLE ;
 
 						y1 = Dy + y - Ry_One_Minus ;
-						DX_IOS_CIRCLE ;
+						DX_HTML5_CIRCLE ;
 
 						if( H>=0 )
 						{
@@ -14183,12 +14183,12 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 			if( VectNum )
 			{
 				// Uniform の更新
-				Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+				Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 				// 頂点データのセットアップ
-				Graphics_iOS_DeviceState_SetupShaderVertexData(
-					GIOS.Device.State.SetShader,
-					&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
+				Graphics_HTML5_DeviceState_SetupShaderVertexData(
+					GHTML5.Device.State.SetShader,
+					&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 					VertBuf
 				) ;	
 
@@ -14218,9 +14218,9 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 					if( Ry_One_Minus == FALSE )
 					{
 						x1 = -Dx + x ; y1 = Dy + y ;
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 						x1 = Dx + x - Rx_One_Minus ;  
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 					}
 
 					Df = 0 ;
@@ -14269,14 +14269,14 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 					if( Df )
 					{
 						x1 = -Dx + x ; y1 = Dy + y - Ry_One_Minus ;
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 						x1 = Dx + x - Rx_One_Minus ;
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 
 						x1 = -Dx + x ; y1 = -Dy + y ;
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 						x1 = Dx + x - Rx_One_Minus ;
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 					}
 
 					Df = 0 ;
@@ -14324,10 +14324,10 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 				if( Rx_One_Minus == FALSE )
 				{
 					x1 = Dx + x ; y1 = -Dy + y ;
-					DX_IOS_CIRCLE_PSET ;
+					DX_HTML5_CIRCLE_PSET ;
 
 					x1 = -Dx + x ; y1 = Dy + y - Ry_One_Minus ;
-					DX_IOS_CIRCLE_PSET ;
+					DX_HTML5_CIRCLE_PSET ;
 				}
 			}
 			else
@@ -14349,9 +14349,9 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 					if( Ry_One_Minus == FALSE )
 					{
 						y1 = -Dy + y ; x1 = Dx + x ;
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 						y1 = Dy + y - Ry_One_Minus ;  
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 					}
 
 					Df = 0 ;
@@ -14400,14 +14400,14 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 					if( Df )
 					{
 						y1 = -Dy + y ; x1 = Dx + x - Rx_One_Minus ;
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 						y1 = Dy + y - Ry_One_Minus ;
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 
 						y1 = -Dy + y ; x1 = -Dx + x ;
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 						y1 = Dy + y - Ry_One_Minus ;
-						DX_IOS_CIRCLE_PSET ;
+						DX_HTML5_CIRCLE_PSET ;
 					}
 
 					Df = 0 ;
@@ -14455,21 +14455,21 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 				if( Rx_One_Minus == FALSE )
 				{
 					y1 = Dy + y ; x1 = -Dx + x ;
-					DX_IOS_CIRCLE_PSET ;
+					DX_HTML5_CIRCLE_PSET ;
 
 					y1 = -Dy + y ; x1 = Dx + x - Rx_One_Minus ;
-					DX_IOS_CIRCLE_PSET ;
+					DX_HTML5_CIRCLE_PSET ;
 				}
 			}
 			if( VectNum )
 			{
 				// Uniform の更新
-				Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+				Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 				// 頂点データのセットアップ
-				Graphics_iOS_DeviceState_SetupShaderVertexData(
-					GIOS.Device.State.SetShader,
-					&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
+				Graphics_HTML5_DeviceState_SetupShaderVertexData(
+					GHTML5.Device.State.SetShader,
+					&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 					VertBuf
 				) ;	
 
@@ -14493,13 +14493,13 @@ extern	int		Graphics_Hardware_DrawTriangle_PF( int x1, int y1, int x2, int y2, i
 	int sx1, sx2, sy1, sy2 ;
 	DWORD drawz ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -14603,14 +14603,14 @@ extern	int		Graphics_Hardware_DrawTriangle3D_PF( VECTOR Pos1, VECTOR Pos2, VECTO
 
 	if( DrawFlag )
 	{
-		if( IOS_CHECKVALID_HARDWARE == FALSE )
+		if( HTML5_CHECKVALID_HARDWARE == FALSE )
 		{
 			return -1 ;
 		}
 
 		// 描画の準備
-		Flag = DX_IOS_DRAWPREP_DIFFUSERGB | DX_IOS_DRAWPREP_3D | DX_IOS_DRAWPREP_FOG | DX_IOS_DRAWPREP_CULLING ;
-		DX_IOS_DRAWPREP_NOTEX( Flag )
+		Flag = DX_HTML5_DRAWPREP_DIFFUSERGB | DX_HTML5_DRAWPREP_3D | DX_HTML5_DRAWPREP_FOG | DX_HTML5_DRAWPREP_CULLING ;
+		DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 		// 色その他ステータスのセット
 		NS_GetColor2( Color, &Red, &Green, &Blue ) ;
@@ -14726,14 +14726,14 @@ extern	int		Graphics_Hardware_DrawQuadrangle_PF( int x1, int y1, int x2, int y2,
 	int Flag ;
 	DWORD drawz ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -14881,14 +14881,14 @@ extern	int		Graphics_Hardware_DrawQuadrangleF_PF( float x1, float y1, float x2, 
 	int Flag ;
 	DWORD drawz ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -15034,19 +15034,19 @@ extern	int		Graphics_Hardware_DrawPixel_PF( int x, int y, unsigned int Color )
 	VERTEX_NOTEX_2D *VectData ;
 	int Red, Green, Blue, Flag ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 	// 色その他ステータスのセット
 	GETVERTEX_POINT( VectData ) ;
 
-	if( GIOS.Device.DrawInfo.DiffuseColor == 0xffffffff )
+	if( GHTML5.Device.DrawInfo.DiffuseColor == 0xffffffff )
 	{
 		NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 		if( GSYS.HardInfo.UseVertexColorBGRAFormat )
@@ -15086,20 +15086,20 @@ extern	int		Graphics_Hardware_DrawPixel3D_PF( VECTOR Pos, unsigned int Color, in
 
 	if( DrawFlag )
 	{
-		if( IOS_CHECKVALID_HARDWARE == FALSE )
+		if( HTML5_CHECKVALID_HARDWARE == FALSE )
 		{
 			return -1 ;
 		}
 
 		// 描画の準備
-		Flag = DX_IOS_DRAWPREP_DIFFUSERGB | DX_IOS_DRAWPREP_3D | DX_IOS_DRAWPREP_FOG ;
-		DX_IOS_DRAWPREP_NOTEX( Flag )
+		Flag = DX_HTML5_DRAWPREP_DIFFUSERGB | DX_HTML5_DRAWPREP_3D | DX_HTML5_DRAWPREP_FOG ;
+		DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 		// 色その他ステータスのセット
 		GETVERTEX_POINT3D( VectData ) ;
 
 		NS_GetColor2( Color, &Red, &Green, &Blue ) ;
-		if( GIOS.Device.DrawInfo.DiffuseColor == 0xffffffff )
+		if( GHTML5.Device.DrawInfo.DiffuseColor == 0xffffffff )
 		{
 			if( GSYS.HardInfo.UseVertexColorBGRAFormat )
 			{
@@ -15157,7 +15157,7 @@ extern	int		Graphics_Hardware_DrawPixelSet_PF( const POINTDATA *PointData, int N
 	int Flag ;
 	DWORD drawz ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -15166,8 +15166,8 @@ extern	int		Graphics_Hardware_DrawPixelSet_PF( const POINTDATA *PointData, int N
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -15213,7 +15213,7 @@ extern	int		Graphics_Hardware_DrawLineSet_PF( const LINEDATA *LineData, int Num 
 	int Flag ;
 	DWORD drawz ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -15222,8 +15222,8 @@ extern	int		Graphics_Hardware_DrawLineSet_PF( const LINEDATA *LineData, int Num 
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = DX_HTML5_DRAWPREP_DIFFUSERGB ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
 	// Ｚバッファに書き込むＺ値をセットする
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
@@ -15282,7 +15282,7 @@ extern	int		Graphics_Hardware_DrawLineSet_PF( const LINEDATA *LineData, int Num 
 
 
 // DrawPrimitive3D 系の共通の準備処理を行う関数
-__inline int Graphics_iOS_DrawPrimitive3DPreparation( int AddFlag, IMAGEDATA *Image, int TransFlag, int TextureNo = 0 )
+__inline int Graphics_HTML5_DrawPrimitive3DPreparation( int AddFlag, IMAGEDATA *Image, int TransFlag, int TextureNo = 0 )
 {
 	int Flag ;
 
@@ -15290,10 +15290,10 @@ __inline int Graphics_iOS_DrawPrimitive3DPreparation( int AddFlag, IMAGEDATA *Im
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Flag = TransFlag | DX_IOS_DRAWPREP_3D | DX_IOS_DRAWPREP_FOG | DX_IOS_DRAWPREP_TEXADDRESS | DX_IOS_DRAWPREP_CULLING | AddFlag ;
+	Flag = TransFlag | DX_HTML5_DRAWPREP_3D | DX_HTML5_DRAWPREP_FOG | DX_HTML5_DRAWPREP_TEXADDRESS | DX_HTML5_DRAWPREP_CULLING | AddFlag ;
 	if( Image )
 	{
-		DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ TextureNo ].Tex->PF->Texture, Flag )
+		DX_HTML5_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ TextureNo ].Tex->PF->Texture, Flag )
 	}
 	else
 	{
@@ -15304,8 +15304,8 @@ __inline int Graphics_iOS_DrawPrimitive3DPreparation( int AddFlag, IMAGEDATA *Im
 		{
 			return -1 ;
 		}
-//		DX_IOS_DRAWPREP_NOTEX( Flag )
-		DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+//		DX_HTML5_DRAWPREP_NOTEX( Flag )
+		DX_HTML5_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 	}
 
 	return 0 ;
@@ -15318,7 +15318,7 @@ extern	int		Graphics_Hardware_DrawPrimitive_PF( const VERTEX_3D *Vertex, int Ver
 	unsigned char tmp ;
 	int BackupUse3DVertex ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -15328,7 +15328,7 @@ extern	int		Graphics_Hardware_DrawPrimitive_PF( const VERTEX_3D *Vertex, int Ver
 		return -1 ;
 	}
 
-	if( Graphics_iOS_DrawPrimitive3DPreparation( 0, Image, TransFlag ) < 0 )
+	if( Graphics_HTML5_DrawPrimitive3DPreparation( 0, Image, TransFlag ) < 0 )
 	{
 		return -1 ;
 	}
@@ -15344,18 +15344,18 @@ extern	int		Graphics_Hardware_DrawPrimitive_PF( const VERTEX_3D *Vertex, int Ver
 		}
 	}
 
-	BackupUse3DVertex = GIOS.Device.DrawInfo.Use3DVertex ;
-	GIOS.Device.DrawInfo.Use3DVertex = 1 ;
-	Graphics_iOS_DeviceState_NormalDrawSetup() ;
-	GIOS.Device.DrawInfo.Use3DVertex = BackupUse3DVertex ;
+	BackupUse3DVertex = GHTML5.Device.DrawInfo.Use3DVertex ;
+	GHTML5.Device.DrawInfo.Use3DVertex = 1 ;
+	Graphics_HTML5_DeviceState_NormalDrawSetup() ;
+	GHTML5.Device.DrawInfo.Use3DVertex = BackupUse3DVertex ;
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_3D ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_3D ].InputInfo,
 		Vertex
 	) ;	
 
@@ -15385,7 +15385,7 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive_PF( const VERTEX_3D *Vertex, 
 	unsigned char tmp ;
 	int BackupUse3DVertex ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -15395,7 +15395,7 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive_PF( const VERTEX_3D *Vertex, 
 		return -1 ;
 	}
 
-	if( Graphics_iOS_DrawPrimitive3DPreparation( 0, Image, TransFlag ) < 0 )
+	if( Graphics_HTML5_DrawPrimitive3DPreparation( 0, Image, TransFlag ) < 0 )
 	{
 		return -1 ;
 	}
@@ -15411,18 +15411,18 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive_PF( const VERTEX_3D *Vertex, 
 		}
 	}
 
-	BackupUse3DVertex = GIOS.Device.DrawInfo.Use3DVertex ;
-	GIOS.Device.DrawInfo.Use3DVertex = 1 ;
-	Graphics_iOS_DeviceState_NormalDrawSetup() ;
-	GIOS.Device.DrawInfo.Use3DVertex = BackupUse3DVertex ;
+	BackupUse3DVertex = GHTML5.Device.DrawInfo.Use3DVertex ;
+	GHTML5.Device.DrawInfo.Use3DVertex = 1 ;
+	Graphics_HTML5_DeviceState_NormalDrawSetup() ;
+	GHTML5.Device.DrawInfo.Use3DVertex = BackupUse3DVertex ;
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_3D ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_3D ].InputInfo,
 		Vertex
 	) ;
 
@@ -15451,7 +15451,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveLight_PF( const VERTEX3D *Vertex, int
 	VERTEX3D *VertP ;
 	unsigned char tmp ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -15461,7 +15461,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveLight_PF( const VERTEX3D *Vertex, int
 		return -1 ;
 	}
 
-	if( Graphics_iOS_DrawPrimitive3DPreparation( DX_IOS_DRAWPREP_LIGHTING | DX_IOS_DRAWPREP_SPECULAR, Image, TransFlag ) < 0 )
+	if( Graphics_HTML5_DrawPrimitive3DPreparation( DX_HTML5_DRAWPREP_LIGHTING | DX_HTML5_DRAWPREP_SPECULAR, Image, TransFlag ) < 0 )
 	{
 		return -1 ;
 	}
@@ -15482,18 +15482,18 @@ extern	int		Graphics_Hardware_DrawPrimitiveLight_PF( const VERTEX3D *Vertex, int
 	}
 
 	// シェーダーをセット
-	if( Graphics_iOS_Shader_Normal3DDraw_Setup() == FALSE )
+	if( Graphics_HTML5_Shader_Normal3DDraw_Setup() == FALSE )
 	{
 		return -1 ;
 	}
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
 		Vertex
 	) ;	
 
@@ -15526,7 +15526,7 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_PF( const VERTEX3D *Vert
 	VERTEX3D *VertP ;
 	unsigned char tmp ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -15536,7 +15536,7 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_PF( const VERTEX3D *Vert
 		return -1 ;
 	}
 
-	if( Graphics_iOS_DrawPrimitive3DPreparation( DX_IOS_DRAWPREP_LIGHTING | DX_IOS_DRAWPREP_SPECULAR, Image, TransFlag ) < 0 )
+	if( Graphics_HTML5_DrawPrimitive3DPreparation( DX_HTML5_DRAWPREP_LIGHTING | DX_HTML5_DRAWPREP_SPECULAR, Image, TransFlag ) < 0 )
 	{
 		return -1 ;
 	}
@@ -15557,18 +15557,18 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_PF( const VERTEX3D *Vert
 	}
 
 	// シェーダーをセット
-	if( Graphics_iOS_Shader_Normal3DDraw_Setup() == FALSE )
+	if( Graphics_HTML5_Shader_Normal3DDraw_Setup() == FALSE )
 	{
 		return -1 ;
 	}
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
 		Vertex
 	) ;
 
@@ -15604,7 +15604,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveLight_UseVertexBuffer_PF(
 	int						TransFlag 
 )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -15620,24 +15620,24 @@ extern	int		Graphics_Hardware_DrawPrimitiveLight_UseVertexBuffer_PF(
 		return -1 ;
 	}
 
-	if( Graphics_iOS_DrawPrimitive3DPreparation( DX_IOS_DRAWPREP_LIGHTING | DX_IOS_DRAWPREP_SPECULAR, Image, TransFlag ) < 0 )
+	if( Graphics_HTML5_DrawPrimitive3DPreparation( DX_HTML5_DRAWPREP_LIGHTING | DX_HTML5_DRAWPREP_SPECULAR, Image, TransFlag ) < 0 )
 	{
 		return -1 ;
 	}
 
 	// 頂点シェーダーをセット
-	if( Graphics_iOS_Shader_Normal3DDraw_Setup() == FALSE )
+	if( Graphics_HTML5_Shader_Normal3DDraw_Setup() == FALSE )
 	{
 		return -1 ;
 	}
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
 		NULL,
 		VertexBuffer->PF->VertexBuffer
 	) ;
@@ -15666,7 +15666,7 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_UseVertexBuffer_PF(
 	GLenum IndexFormat ;
 	int    IndexSize ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -15701,25 +15701,25 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_UseVertexBuffer_PF(
 	}
 	IndexSize = IndexFormat == GL_UNSIGNED_SHORT ? 2 : 4 ;
 
-	if( Graphics_iOS_DrawPrimitive3DPreparation( DX_IOS_DRAWPREP_LIGHTING | DX_IOS_DRAWPREP_SPECULAR, Image, TransFlag ) < 0 )
+	if( Graphics_HTML5_DrawPrimitive3DPreparation( DX_HTML5_DRAWPREP_LIGHTING | DX_HTML5_DRAWPREP_SPECULAR, Image, TransFlag ) < 0 )
 	{
 		return -1 ;
 	}
 
 	// 頂点シェーダーをセット
-	if( Graphics_iOS_Shader_Normal3DDraw_Setup() == FALSE )
+	if( Graphics_HTML5_Shader_Normal3DDraw_Setup() == FALSE )
 	{
 		return -1 ;
 	}
 
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
 		NULL,
 		VertexBuffer->PF->VertexBuffer
 	) ;
@@ -15745,7 +15745,7 @@ extern	int		Graphics_Hardware_DrawPrimitive2D_PF( VERTEX_2D *Vertex, int VertexN
 	SHADOWMAPDATA *ShadowMap ;
 	VERTEX_2D *VertP ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -15761,11 +15761,11 @@ extern	int		Graphics_Hardware_DrawPrimitive2D_PF( VERTEX_2D *Vertex, int VertexN
 	// 描画の準備
 	if( BillboardFlag == TRUE )
 	{
-		Flag = TransFlag | ( Is3D ? DX_IOS_DRAWPREP_3D | DX_IOS_DRAWPREP_FOG : 0 ) | DX_IOS_DRAWPREP_TEXADDRESS ;
+		Flag = TransFlag | ( Is3D ? DX_HTML5_DRAWPREP_3D | DX_HTML5_DRAWPREP_FOG : 0 ) | DX_HTML5_DRAWPREP_TEXADDRESS ;
 	}
 	else
 	{
-		Flag = TransFlag | ( Is3D ? DX_IOS_DRAWPREP_3D | DX_IOS_DRAWPREP_FOG : 0 ) | DX_IOS_DRAWPREP_TEXADDRESS | DX_IOS_DRAWPREP_CULLING ;
+		Flag = TransFlag | ( Is3D ? DX_HTML5_DRAWPREP_3D | DX_HTML5_DRAWPREP_FOG : 0 ) | DX_HTML5_DRAWPREP_TEXADDRESS | DX_HTML5_DRAWPREP_CULLING ;
 	}
 
 	if( IsShadowMap )
@@ -15773,25 +15773,25 @@ extern	int		Graphics_Hardware_DrawPrimitive2D_PF( VERTEX_2D *Vertex, int VertexN
 		SmHandle = ( int )( DWORD_PTR )Image ;
 		if( !SHADOWMAPCHKFULL( SmHandle, ShadowMap ) )
 		{
-			Flag |= DX_IOS_DRAWPREP_TEXTURE ;
-			Graphics_iOS_DrawSetting_SetTexture( &ShadowMap->PF->Texture ) ;
+			Flag |= DX_HTML5_DRAWPREP_TEXTURE ;
+			Graphics_HTML5_DrawSetting_SetTexture( &ShadowMap->PF->Texture ) ;
 
 			if( GSYS.ChangeSettingFlag ||
-				GIOS.Device.DrawSetting.DrawPrepAlwaysFlag != FALSE ||
-				GIOS.Device.DrawSetting.DrawPrepParamFlag != Flag )
+				GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag != FALSE ||
+				GHTML5.Device.DrawSetting.DrawPrepParamFlag != Flag )
 			{
-				Graphics_iOS_DrawPreparation( Flag ) ;
+				Graphics_HTML5_DrawPreparation( Flag ) ;
 			}
 		}
 	}
 	else
 	if( Image )
 	{
-		DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ TextureNo ].Tex->PF->Texture, Flag )
+		DX_HTML5_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ TextureNo ].Tex->PF->Texture, Flag )
 	}
 	else
 	{
-		DX_IOS_DRAWPREP_NOTEX( Flag )
+		DX_HTML5_DRAWPREP_NOTEX( Flag )
 	}
 
 	// ビルボードの場合はＵＶ値をサーフェスデータから取得する
@@ -15856,12 +15856,12 @@ extern	int		Graphics_Hardware_DrawPrimitive2D_PF( VERTEX_2D *Vertex, int VertexN
 	}
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_2D ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_2D ].InputInfo,
 		Vertex
 	) ;	
 
@@ -15891,7 +15891,7 @@ extern	int		Graphics_Hardware_DrawPrimitive2DUser_PF( const VERTEX2D *Vertex, in
 	VERTEX2D *VertP ;
 	unsigned char tmp ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -15905,14 +15905,14 @@ extern	int		Graphics_Hardware_DrawPrimitive2DUser_PF( const VERTEX2D *Vertex, in
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Flag = TransFlag | ( Is3D ? DX_IOS_DRAWPREP_3D | DX_IOS_DRAWPREP_FOG : 0 ) | DX_IOS_DRAWPREP_TEXADDRESS | DX_IOS_DRAWPREP_CULLING ;
+	Flag = TransFlag | ( Is3D ? DX_HTML5_DRAWPREP_3D | DX_HTML5_DRAWPREP_FOG : 0 ) | DX_HTML5_DRAWPREP_TEXADDRESS | DX_HTML5_DRAWPREP_CULLING ;
 	if( Image )
 	{
-		DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ TextureNo ].Tex->PF->Texture, Flag )
+		DX_HTML5_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ TextureNo ].Tex->PF->Texture, Flag )
 	}
 	else
 	{
-		DX_IOS_DRAWPREP_NOTEX( Flag )
+		DX_HTML5_DRAWPREP_NOTEX( Flag )
 	}
 
 	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
@@ -15927,12 +15927,12 @@ extern	int		Graphics_Hardware_DrawPrimitive2DUser_PF( const VERTEX2D *Vertex, in
 	}
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_2D ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_2D ].InputInfo,
 		Vertex
 	) ;	
 
@@ -15962,7 +15962,7 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive2DUser_PF( const VERTEX2D *Ver
 	VERTEX2D *VertP ;
 	unsigned char tmp ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -15976,14 +15976,14 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive2DUser_PF( const VERTEX2D *Ver
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Flag = TransFlag | DX_IOS_DRAWPREP_TEXADDRESS | DX_IOS_DRAWPREP_CULLING ;
+	Flag = TransFlag | DX_HTML5_DRAWPREP_TEXADDRESS | DX_HTML5_DRAWPREP_CULLING ;
 	if( Image )
 	{
-		DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+		DX_HTML5_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 	}
 	else
 	{
-		DX_IOS_DRAWPREP_NOTEX( Flag )
+		DX_HTML5_DRAWPREP_NOTEX( Flag )
 	}
 
 	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
@@ -15998,12 +15998,12 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive2DUser_PF( const VERTEX2D *Ver
 	}
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_2D ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_2D ].InputInfo,
 		Vertex
 	) ;
 
@@ -16038,21 +16038,21 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive2DUser_PF( const VERTEX2D *Ver
 
 
 // シェーダー描画用描画前セットアップ関数
-extern void Graphics_iOS_DrawPreparationToShader( int ParamFlag, int Is2D )
+extern void Graphics_HTML5_DrawPreparationToShader( int ParamFlag, int Is2D )
 {
 	int Flag ;
 
 	// 基本的なセットアップ処理
-	Flag = ParamFlag | DX_IOS_DRAWPREP_SPECULAR | DX_IOS_DRAWPREP_TEXADDRESS | DX_IOS_DRAWPREP_NOBLENDSETTING | DX_IOS_DRAWPREP_CULLING | ( Is2D ? 0 : DX_IOS_DRAWPREP_3D ) ;
-	DX_IOS_DRAWPREP_NOTEX( Flag )
+	Flag = ParamFlag | DX_HTML5_DRAWPREP_SPECULAR | DX_HTML5_DRAWPREP_TEXADDRESS | DX_HTML5_DRAWPREP_NOBLENDSETTING | DX_HTML5_DRAWPREP_CULLING | ( Is2D ? 0 : DX_HTML5_DRAWPREP_3D ) ;
+	DX_HTML5_DRAWPREP_NOTEX( Flag )
 
-	Graphics_iOS_DeviceState_SetBlendMode( GSYS.DrawSetting.BlendMode, GIOS.Device.DrawSetting.NotWriteAlphaChannelFlag ) ;
+	Graphics_HTML5_DeviceState_SetBlendMode( GSYS.DrawSetting.BlendMode, GHTML5.Device.DrawSetting.NotWriteAlphaChannelFlag ) ;
 }
 
 // シェーダーを使って２Ｄプリミティブを描画する
 extern	int		Graphics_Hardware_DrawPrimitive2DToShader_PF(        const VERTEX2DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */ )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -16066,15 +16066,15 @@ extern	int		Graphics_Hardware_DrawPrimitive2DToShader_PF(        const VERTEX2DS
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Graphics_iOS_DrawPreparationToShader( 0, TRUE ) ;
+	Graphics_HTML5_DrawPreparationToShader( 0, TRUE ) ;
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_BLENDTEX_2D ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_BLENDTEX_2D ].InputInfo,
 		Vertex
 	) ;	
 
@@ -16089,7 +16089,7 @@ extern	int		Graphics_Hardware_DrawPrimitive2DToShader_PF(        const VERTEX2DS
 // シェーダーを使って３Ｄプリミティブを描画する
 extern	int		Graphics_Hardware_DrawPrimitive3DToShader_PF(        const VERTEX3DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */ )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -16103,7 +16103,7 @@ extern	int		Graphics_Hardware_DrawPrimitive3DToShader_PF(        const VERTEX3DS
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Graphics_iOS_DrawPreparationToShader( DX_IOS_DRAWPREP_LIGHTING | DX_IOS_DRAWPREP_FOG, FALSE ) ;
+	Graphics_HTML5_DrawPreparationToShader( DX_HTML5_DRAWPREP_LIGHTING | DX_HTML5_DRAWPREP_FOG, FALSE ) ;
 
 	// ３Ｄ行列をハードウエアに反映する
 	if( GSYS.DrawSetting.MatchHardware3DMatrix == FALSE )
@@ -16111,12 +16111,12 @@ extern	int		Graphics_Hardware_DrawPrimitive3DToShader_PF(        const VERTEX3DS
 
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
 		Vertex
 	) ;	
 
@@ -16131,7 +16131,7 @@ extern	int		Graphics_Hardware_DrawPrimitive3DToShader_PF(        const VERTEX3DS
 // シェーダーを使って２Ｄプリミティブを描画する( 頂点インデックスを使用する )
 extern	int		Graphics_Hardware_DrawPrimitiveIndexed2DToShader_PF( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */ )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -16145,15 +16145,15 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed2DToShader_PF( const VERTEX2DS
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Graphics_iOS_DrawPreparationToShader( 0, TRUE ) ;
+	Graphics_HTML5_DrawPreparationToShader( 0, TRUE ) ;
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_BLENDTEX_2D ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_BLENDTEX_2D ].InputInfo,
 		Vertex
 	) ;
 
@@ -16168,7 +16168,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed2DToShader_PF( const VERTEX2DS
 // シェーダーを使って３Ｄプリミティブを描画する( 頂点インデックスを使用する )
 extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_PF( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */ )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -16182,19 +16182,19 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_PF( const VERTEX3DS
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Graphics_iOS_DrawPreparationToShader( DX_IOS_DRAWPREP_LIGHTING | DX_IOS_DRAWPREP_FOG, FALSE ) ;
+	Graphics_HTML5_DrawPreparationToShader( DX_HTML5_DRAWPREP_LIGHTING | DX_HTML5_DRAWPREP_FOG, FALSE ) ;
 
 	// ３Ｄ行列をハードウエアに反映する
 	if( GSYS.DrawSetting.MatchHardware3DMatrix == FALSE )
 		Graphics_DrawSetting_ApplyLib3DMatrixToHardware() ;
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
 		Vertex
 	) ;
 
@@ -16216,7 +16216,7 @@ extern	int		Graphics_Hardware_DrawPrimitive3DToShader_UseVertexBuffer2_PF(
 {
 	VERTEXBUFFERHANDLEDATA *VertexBuffer ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -16246,16 +16246,16 @@ extern	int		Graphics_Hardware_DrawPrimitive3DToShader_UseVertexBuffer2_PF(
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Graphics_iOS_DrawPreparationToShader( DX_IOS_DRAWPREP_LIGHTING | DX_IOS_DRAWPREP_FOG, FALSE ) ;
+	Graphics_HTML5_DrawPreparationToShader( DX_HTML5_DRAWPREP_LIGHTING | DX_HTML5_DRAWPREP_FOG, FALSE ) ;
 
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
 		NULL,
 		VertexBuffer->PF->VertexBuffer
 	) ;
@@ -16284,11 +16284,11 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 	INDEXBUFFERHANDLEDATA  *IndexBuffer ;
 	GLenum					IndexFormat ;
 	int                     IndexSize ;
-	GRAPHICS_IOS_TEXTURE	*UseTexture[ USE_TEXTURESTAGE_NUM ] ;
+	GRAPHICS_HTML5_TEXTURE	*UseTexture[ USE_TEXTURESTAGE_NUM ] ;
 	int						 UseTextureNum = 0 ;
 	int i ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -16341,7 +16341,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 	DRAWSTOCKINFO
 
 	// 描画の準備
-	Graphics_iOS_DrawPreparationToShader( DX_IOS_DRAWPREP_LIGHTING | DX_IOS_DRAWPREP_FOG, FALSE ) ;
+	Graphics_HTML5_DrawPreparationToShader( DX_HTML5_DRAWPREP_LIGHTING | DX_HTML5_DRAWPREP_FOG, FALSE ) ;
 
 	// 使用するテクスチャを列挙
 	UseTextureNum = 0 ;
@@ -16372,17 +16372,17 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 	{
 		for( i = 0 ; i < UseTextureNum ; i ++ )
 		{
-			Graphics_iOS_DeviceState_SetTexture( i, UseTexture[ i ] ) ;
+			Graphics_HTML5_DeviceState_SetTexture( i, UseTexture[ i ] ) ;
 		}
 	}
 
 	// Uniform の更新
-	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader_Force != NULL ? GIOS.Device.State.SetShader_Force : GIOS.Device.State.SetShader, 3 ) ;
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader_Force != NULL ? GHTML5.Device.State.SetShader_Force : GHTML5.Device.State.SetShader, 3 ) ;
 
 	// 頂点データのセットアップ
-	Graphics_iOS_DeviceState_SetupShaderVertexData(
-		GIOS.Device.State.SetShader_Force != NULL ? GIOS.Device.State.SetShader_Force : GIOS.Device.State.SetShader,
-		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		GHTML5.Device.State.SetShader_Force != NULL ? GHTML5.Device.State.SetShader_Force : GHTML5.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ HTML5_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
 		NULL,
 		VertexBuffer->PF->VertexBuffer
 	) ;
@@ -16431,15 +16431,15 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 // 描画処理の環境依存部分の初期化を行う関数( 実行箇所区別０ )
 extern	int		Graphics_Initialize_Timing0_PF( void )
 {
-	// g_iOSSys.NativeWindow に値が代入されるまで待つ
-//	while( g_iOSSys.NativeWindow == NULL )
+	// g_HTML5Sys.NativeWindow に値が代入されるまで待つ
+//	while( g_HTML5Sys.NativeWindow == NULL )
 //	{
 //		NS_ProcessMessage() ;
 //		Thread_Sleep( 1 ) ;
 //	}
 
-	// iOS を使用したグラフィックス処理の初期化
-	if( Graphics_iOS_Initialize() == -1 )
+	// HTML5 を使用したグラフィックス処理の初期化
+	if( Graphics_HTML5_Initialize() == -1 )
 	{
 		return -1 ;
 	}
@@ -16452,7 +16452,7 @@ extern	int		Graphics_Initialize_Timing0_PF( void )
 extern	int		Graphics_Initialize_Timing1_PF( void )
 {
 	// デバイスの設定をリフレッシュ
-	Graphics_iOS_DeviceState_RefreshRenderState() ;
+	Graphics_HTML5_DeviceState_RefreshRenderState() ;
 
 	// 画面の初期化
 	Graphics_Hardware_ClearDrawScreen_PF( NULL ) ;
@@ -16464,21 +16464,21 @@ extern	int		Graphics_Initialize_Timing1_PF( void )
 // ハードウエアアクセラレータを使用する場合の環境依存の初期化処理を行う
 extern	int		Graphics_Hardware_Initialize_PF( void )
 {
-	return Graphics_iOS_Device_Initialize() ;
+	return Graphics_HTML5_Device_Initialize() ;
 }
 
 // 描画処理の環境依存部分の後始末を行う関数
 extern	int		Graphics_Terminate_PF( void )
 {
-	// iOS の描画処理の後始末
-	Graphics_iOS_Terminate() ;
+	// HTML5 の描画処理の後始末
+	Graphics_HTML5_Terminate() ;
 
 	// シェーダーコードの後始末
-	Graphics_iOS_ShaderCode_Base_Terminate() ;
-	Graphics_iOS_ShaderCode_Base3D_Terminate() ;
+	Graphics_HTML5_ShaderCode_Base_Terminate() ;
+	Graphics_HTML5_ShaderCode_Base3D_Terminate() ;
 
 #ifndef DX_NON_MODEL
-	Graphics_iOS_ShaderCode_Model_Terminate() ;
+	Graphics_HTML5_ShaderCode_Model_Terminate() ;
 #endif // DX_NON_MODEL
 
 	// 終了
@@ -16508,10 +16508,10 @@ extern	int		Graphics_RestoreOrChangeSetupGraphSystem_PF( int Change, int ScreenS
 //		SetMemImgDefaultColorType( ColorBitDepth == 32 ? 1 : 0 ) ;
 
 		// サブバックバッファの作り直しを行う
-		Graphics_iOS_TerminateSubBackBuffer() ;
+		Graphics_HTML5_TerminateSubBackBuffer() ;
 
 		// サブバックバッファの作成
-		if( Graphics_iOS_SetupSubBackBuffer() < 0 )
+		if( Graphics_HTML5_SetupSubBackBuffer() < 0 )
 		{
 			return -1 ;
 		}
@@ -16541,10 +16541,10 @@ extern	int		Graphics_RestoreOrChangeSetupGraphSystem_PF( int Change, int ScreenS
 
 		// OpenGL ES による描画処理の初期化
 		GSYS.Screen.FullScreenResolutionModeAct = GSYS.Screen.FullScreenResolutionMode ;
-		Graphics_iOS_Initialize() ;
+		Graphics_HTML5_Initialize() ;
 
 		// グラフィックハンドルが持つ OpenGL ES オブジェクトの再作成
-		Graphics_iOS_CreateObjectAll() ;
+		Graphics_HTML5_CreateObjectAll() ;
 
 #ifndef DX_NON_MASK
 		// マスクサーフェスの再作成
@@ -16561,7 +16561,7 @@ extern	int		Graphics_RestoreOrChangeSetupGraphSystem_PF( int Change, int ScreenS
 		NS_SetDrawScreen( GSYS.DrawSetting.TargetScreen[ 0 ] ) ;
 
 		// グラフィック関係の設定を初期化
-		Graphics_iOS_Device_ReInitialize() ;
+		Graphics_HTML5_Device_ReInitialize() ;
 
 		// 画面の初期化
 //		NS_ClearDrawScreen() ;
@@ -16576,19 +16576,19 @@ extern	int		Graphics_RestoreOrChangeSetupGraphSystem_PF( int Change, int ScreenS
 		NS_RunRestoreShred() ;
 
 		// グラフィックスデバイスのロストから復帰する前に呼ぶ関数が登録されていたら実行する
-		if( GIOS.Device.Setting.DeviceLostCallbackFunction )
+		if( GHTML5.Device.Setting.DeviceLostCallbackFunction )
 		{
-			GIOS.Device.Setting.DeviceLostCallbackFunction( GIOS.Device.Setting.DeviceLostCallbackData ) ;
+			GHTML5.Device.Setting.DeviceLostCallbackFunction( GHTML5.Device.Setting.DeviceLostCallbackData ) ;
 		}
 
 		// グラフィックスデバイスのロストから復帰したときに呼ぶ関数が登録されていたら実行する
-		if( GIOS.Device.Setting.DeviceRestoreCallbackFunction )
+		if( GHTML5.Device.Setting.DeviceRestoreCallbackFunction )
 		{
-			GIOS.Device.Setting.DeviceRestoreCallbackFunction( GIOS.Device.Setting.DeviceRestoreCallbackData ) ;
+			GHTML5.Device.Setting.DeviceRestoreCallbackFunction( GHTML5.Device.Setting.DeviceRestoreCallbackData ) ;
 		}
 
 		// ハードウエアの設定をリフレッシュ
-		Graphics_iOS_DeviceState_RefreshRenderState() ;
+		Graphics_HTML5_DeviceState_RefreshRenderState() ;
 
 #ifndef DX_NON_MODEL
 		// 頂点バッファのセットアップ
@@ -16622,7 +16622,7 @@ extern	int		Graphics_RestoreOrChangeSetupGraphSystem_PF( int Change, int ScreenS
 // 描画用デバイスが有効かどうかを取得する( 戻り値  TRUE:有効  FALSE:無効 )
 extern	int		Graphics_Hardware_CheckValid_PF( void )
 {
-	return IOS_CHECKVALID_HARDWARE ;
+	return HTML5_CHECKVALID_HARDWARE ;
 }
 
 
@@ -16686,7 +16686,7 @@ extern	int		Graphics_Hardware_SetRenderTargetToShader_PF( int TargetIndex, int D
 	DRAWSTOCKINFO
 
 	// セットしていたテクスチャーを外す
-	Graphics_iOS_DrawSetting_SetTexture( NULL ) ;
+	Graphics_HTML5_DrawSetting_SetTexture( NULL ) ;
 
 	// 今までの描画先の画像情報の取得
 	if( GRAPHCHKFULL( GSYS.DrawSetting.TargetScreen[ TargetIndex ], OldImage ) )
@@ -16700,7 +16700,7 @@ extern	int		Graphics_Hardware_SetRenderTargetToShader_PF( int TargetIndex, int D
 		// 画像ではない場合は描画対象を無効にする
 		GSYS.DrawSetting.TargetScreen[ TargetIndex ] = 0 ;
 		GSYS.DrawSetting.TargetScreenSurface[ TargetIndex ] = 0 ;
-//		Graphics_iOS_DeviceState_SetRenderTarget( 0, 0, 0 ) ;
+//		Graphics_HTML5_DeviceState_SetRenderTarget( 0, 0, 0 ) ;
 		return 0 ;
 	}
 
@@ -16711,7 +16711,7 @@ extern	int		Graphics_Hardware_SetRenderTargetToShader_PF( int TargetIndex, int D
 	}
 
 	// 描画先をセット
-	Graphics_iOS_DeviceState_SetRenderTarget( Image->Hard.Draw[ 0 ].Tex->PF->FrameBuffer, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Width, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
+	Graphics_HTML5_DeviceState_SetRenderTarget( Image->Hard.Draw[ 0 ].Tex->PF->FrameBuffer, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Width, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
 
 	// 正常終了
 	return 0 ;
@@ -16720,7 +16720,7 @@ extern	int		Graphics_Hardware_SetRenderTargetToShader_PF( int TargetIndex, int D
 // メインウインドウの背景色を設定する( Red,Green,Blue:それぞれ ０〜２５５ )
 extern	int		Graphics_Hardware_SetBackgroundColor_PF( int Red, int Green, int Blue, int Alpha )
 {
-	Graphics_iOS_DeviceState_SetBackgroundColor( Red, Green, Blue, Alpha ) ;
+	Graphics_HTML5_DeviceState_SetBackgroundColor( Red, Green, Blue, Alpha ) ;
 
 	return 0 ;
 }
@@ -16729,7 +16729,7 @@ extern	int		Graphics_Hardware_SetBackgroundColor_PF( int Red, int Green, int Blu
 extern	int		Graphics_Hardware_SetDrawBrightToOneParam_PF( DWORD Bright )
 {
 	// ディフーズカラーの更新
-	GIOS.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
+	GHTML5.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
 
 	// 正常終了
 	return 0 ;
@@ -16739,7 +16739,7 @@ extern	int		Graphics_Hardware_SetDrawBrightToOneParam_PF( DWORD Bright )
 extern	int		Graphics_Hardware_SetDrawBlendMode_PF( int BlendMode, int BlendParam )
 {
 	// ディフーズカラーの更新
-	GIOS.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
+	GHTML5.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
 
 	// 正常終了
 	return 0 ;
@@ -16749,7 +16749,7 @@ extern	int		Graphics_Hardware_SetDrawBlendMode_PF( int BlendMode, int BlendParam
 extern	int		Graphics_Hardware_SetDrawAlphaTest_PF( int TestMode, int TestParam )
 {
 	// ディフーズカラーの更新
-	GIOS.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
+	GHTML5.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
 
 	// 正常終了
 	return 0 ;
@@ -16758,7 +16758,7 @@ extern	int		Graphics_Hardware_SetDrawAlphaTest_PF( int TestMode, int TestParam )
 // 描画モードをセットする
 extern	int		Graphics_Hardware_SetDrawMode_PF( int DrawMode )
 {
-	Graphics_iOS_DeviceState_SetDrawMode( DrawMode ) ;
+	Graphics_HTML5_DeviceState_SetDrawMode( DrawMode ) ;
 
 	// 正常終了
 	return 0 ;
@@ -16768,7 +16768,7 @@ extern	int		Graphics_Hardware_SetDrawMode_PF( int DrawMode )
 extern	int		Graphics_Hardware_SetDrawBright_PF( int RedBright, int GreenBright, int BlueBright )
 {
 	// ディフーズカラーの更新
-	GIOS.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
+	GHTML5.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
 
 	// 正常終了
 	return 0 ;
@@ -16781,13 +16781,13 @@ extern	int		Graphics_Hardware_SetBlendGraphParamBase_PF( IMAGEDATA *BlendImage, 
 	if( BlendImage == NULL || BlendImage->Orig->FormatDesc.TextureFlag == FALSE )
 	{
 		GSYS.DrawSetting.BlendGraph = -1 ;
-		Graphics_iOS_DrawSetting_SetBlendTexture( NULL ) ;
+		Graphics_HTML5_DrawSetting_SetBlendTexture( NULL ) ;
 	}
 	else
 	{
 		// ブレンドパラメータをセットする
-		Graphics_iOS_DrawSetting_SetBlendTexture( &BlendImage->Hard.Draw[ 0 ].Tex[ 0 ].PF->Texture ) ;
-		Graphics_iOS_DrawSetting_SetBlendTextureParam( BlendType, Param ) ;
+		Graphics_HTML5_DrawSetting_SetBlendTexture( &BlendImage->Hard.Draw[ 0 ].Tex[ 0 ].PF->Texture ) ;
+		Graphics_HTML5_DrawSetting_SetBlendTextureParam( BlendType, Param ) ;
 	}
 
 	// 正常終了
@@ -16804,7 +16804,7 @@ extern	int		Graphics_Hardware_SetMaxAnisotropy_PF( int MaxAnisotropy )
 // ワールド変換用行列をセットする
 extern	int		Graphics_Hardware_SetTransformToWorld_PF( const MATRIX *Matrix )
 {
-	Graphics_iOS_DeviceState_SetWorldMatrix( Matrix ) ;
+	Graphics_HTML5_DeviceState_SetWorldMatrix( Matrix ) ;
 
 	// 正常終了
 	return 0 ;
@@ -16813,14 +16813,14 @@ extern	int		Graphics_Hardware_SetTransformToWorld_PF( const MATRIX *Matrix )
 // ビュー変換用行列をセットする
 extern	int		Graphics_Hardware_SetTransformToView_PF( const MATRIX *Matrix )
 {
-	Graphics_iOS_DeviceState_SetViewMatrix( Matrix ) ;
+	Graphics_HTML5_DeviceState_SetViewMatrix( Matrix ) ;
 
 	// 正常終了
 	return 0 ;
 }
 
-// iOS に設定する射影行列を更新する
-static void Graphics_Hardware_IOS_RefreshProjectionMatrix( void )
+// HTML5 に設定する射影行列を更新する
+static void Graphics_Hardware_HTML5_RefreshProjectionMatrix( void )
 {
 	MATRIX *UseProjectionMatrix ;
 	MATRIX *UseViewportMatrix ;
@@ -16856,13 +16856,13 @@ static void Graphics_Hardware_IOS_RefreshProjectionMatrix( void )
 		CreateMultiplyMatrix( &TempMatrix, &TempMatrix,         &GSYS.DrawSetting.Direct3DViewportMatrixAntiF ) ;
 	}
 
-	Graphics_iOS_DeviceState_SetProjectionMatrix( &TempMatrix ) ;
+	Graphics_HTML5_DeviceState_SetProjectionMatrix( &TempMatrix ) ;
 }
 
 // 投影変換用行列をセットする
 extern	int		Graphics_Hardware_SetTransformToProjection_PF( const MATRIX *Matrix )
 {
-	Graphics_Hardware_IOS_RefreshProjectionMatrix() ;
+	Graphics_Hardware_HTML5_RefreshProjectionMatrix() ;
 
 	// 正常終了
 	return 0 ;
@@ -16871,7 +16871,7 @@ extern	int		Graphics_Hardware_SetTransformToProjection_PF( const MATRIX *Matrix 
 // ビューポート行列をセットする
 extern	int		Graphics_Hardware_SetTransformToViewport_PF( const MATRIX * /* Matrix */ )
 {
-	Graphics_Hardware_IOS_RefreshProjectionMatrix() ;
+	Graphics_Hardware_HTML5_RefreshProjectionMatrix() ;
 
 	// 正常終了
 	return 0 ;
@@ -16880,7 +16880,7 @@ extern	int		Graphics_Hardware_SetTransformToViewport_PF( const MATRIX * /* Matri
 // テクスチャアドレスモードを設定する
 extern	int		Graphics_Hardware_SetTextureAddressMode_PF( int Mode /* DX_TEXADDRESS_WRAP 等 */, int Stage )
 {
-	Graphics_iOS_DeviceState_SetTextureAddress( Mode, Stage ) ;
+	Graphics_HTML5_DeviceState_SetTextureAddress( Mode, Stage ) ;
 
 	// 正常終了
 	return 0 ;
@@ -16889,8 +16889,8 @@ extern	int		Graphics_Hardware_SetTextureAddressMode_PF( int Mode /* DX_TEXADDRES
 // テクスチャアドレスモードを設定する
 extern	int		Graphics_Hardware_SetTextureAddressModeUV_PF( int ModeU, int ModeV, int Stage )
 {
-	Graphics_iOS_DeviceState_SetTextureAddressU( ModeU, Stage ) ;
-	Graphics_iOS_DeviceState_SetTextureAddressV( ModeV, Stage ) ;
+	Graphics_HTML5_DeviceState_SetTextureAddressU( ModeU, Stage ) ;
+	Graphics_HTML5_DeviceState_SetTextureAddressV( ModeV, Stage ) ;
 
 	// 正常終了
 	return 0 ;
@@ -16899,7 +16899,7 @@ extern	int		Graphics_Hardware_SetTextureAddressModeUV_PF( int ModeU, int ModeV, 
 // テクスチャ座標変換行列をセットする
 extern	int		Graphics_Hardware_SetTextureAddressTransformMatrix_PF( int UseFlag, MATRIX *Matrix, int Sampler )
 {
-	Graphics_iOS_DeviceState_SetTextureAddressTransformMatrix( UseFlag, Matrix ) ;
+	Graphics_HTML5_DeviceState_SetTextureAddressTransformMatrix( UseFlag, Matrix ) ;
 
 	// 正常終了
 	return 0 ;
@@ -16908,7 +16908,7 @@ extern	int		Graphics_Hardware_SetTextureAddressTransformMatrix_PF( int UseFlag, 
 // フォグを有効にするかどうかを設定する( TRUE:有効  FALSE:無効 )
 extern	int		Graphics_Hardware_SetFogEnable_PF( int Flag )
 {
-	Graphics_iOS_DeviceState_SetFogEnable( Flag ) ;
+	Graphics_HTML5_DeviceState_SetFogEnable( Flag ) ;
 
 	// 正常終了
 	return 0 ;
@@ -16917,7 +16917,7 @@ extern	int		Graphics_Hardware_SetFogEnable_PF( int Flag )
 // フォグモードを設定する
 extern	int		Graphics_Hardware_SetFogMode_PF( int Mode /* DX_FOGMODE_NONE 等 */ )
 {
-	Graphics_iOS_DeviceState_SetFogVertexMode( Mode ) ;
+	Graphics_HTML5_DeviceState_SetFogVertexMode( Mode ) ;
 
 	// 正常終了
 	return 0 ;
@@ -16926,7 +16926,7 @@ extern	int		Graphics_Hardware_SetFogMode_PF( int Mode /* DX_FOGMODE_NONE 等 */ 
 // フォグカラーを変更する
 extern	int		Graphics_Hardware_SetFogColor_PF( DWORD FogColor )
 {
-	Graphics_iOS_DeviceState_SetFogColor( FogColor ) ;
+	Graphics_HTML5_DeviceState_SetFogColor( FogColor ) ;
 
 	// 正常終了
 	return 0 ;
@@ -16935,7 +16935,7 @@ extern	int		Graphics_Hardware_SetFogColor_PF( DWORD FogColor )
 // フォグが始まる距離と終了する距離を設定する( 0.0f 〜 1.0f )
 extern	int		Graphics_Hardware_SetFogStartEnd_PF( float start, float end )
 {
-	Graphics_iOS_DeviceState_SetFogStartEnd( start, end ) ;
+	Graphics_HTML5_DeviceState_SetFogStartEnd( start, end ) ;
 
 	// 正常終了
 	return 0 ;
@@ -16944,7 +16944,7 @@ extern	int		Graphics_Hardware_SetFogStartEnd_PF( float start, float end )
 // フォグの密度を設定する( 0.0f 〜 1.0f )
 extern	int		Graphics_Hardware_SetFogDensity_PF( float density )
 {
-	Graphics_iOS_DeviceState_SetFogDensity( density ) ;
+	Graphics_HTML5_DeviceState_SetFogDensity( density ) ;
 
 	// 正常終了
 	return 0 ;
@@ -16953,27 +16953,27 @@ extern	int		Graphics_Hardware_SetFogDensity_PF( float density )
 // ワールド変換用行列をセットする
 extern	int		Graphics_Hardware_DeviceDirect_SetWorldMatrix_PF( const MATRIX *Matrix )
 {
-	return Graphics_iOS_DeviceState_SetWorldMatrix( Matrix ) ;
+	return Graphics_HTML5_DeviceState_SetWorldMatrix( Matrix ) ;
 }
 
 // ビュー変換用行列をセットする
 extern	int		Graphics_Hardware_DeviceDirect_SetViewMatrix_PF( const MATRIX *Matrix )
 {
-	return Graphics_iOS_DeviceState_SetViewMatrix( Matrix ) ;
+	return Graphics_HTML5_DeviceState_SetViewMatrix( Matrix ) ;
 }
 
 // 投影変換用行列をセットする
 extern	int		Graphics_Hardware_DeviceDirect_SetProjectionMatrix_PF( const MATRIX *Matrix )
 {
-	return Graphics_iOS_DeviceState_SetProjectionMatrix( Matrix ) ;
+	return Graphics_HTML5_DeviceState_SetProjectionMatrix( Matrix ) ;
 }
 
 // 基本データに設定されているフォグ情報をハードウェアに反映する
 extern	int		Graphics_Hardware_ApplyLigFogToHardware_PF( void )
 {
-	if( GIOS.Device.State.FogEnable != GSYS.DrawSetting.FogEnable )
+	if( GHTML5.Device.State.FogEnable != GSYS.DrawSetting.FogEnable )
 	{
-		Graphics_iOS_DeviceState_SetFogEnable( GSYS.DrawSetting.FogEnable ) ;
+		Graphics_HTML5_DeviceState_SetFogEnable( GSYS.DrawSetting.FogEnable ) ;
 	}
 
 	// 正常終了
@@ -16983,7 +16983,7 @@ extern	int		Graphics_Hardware_ApplyLigFogToHardware_PF( void )
 // 以前の DrawModiGraph 関数のコードを使用するかどうかのフラグをセットする
 extern	int		Graphics_Hardware_SetUseOldDrawModiGraphCodeFlag_PF( int Flag )
 {
-	GIOS.Setting.UseOldDrawModiGraphCodeFlag = Flag ;
+	GHTML5.Setting.UseOldDrawModiGraphCodeFlag = Flag ;
 	
 	// 終了
 	return 0 ;
@@ -17055,7 +17055,7 @@ END :
 	{
 		// フラグの保存
 		GSYS.DrawSetting.AlphaChDrawMode = NextFlag ;
-		GIOS.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
+		GHTML5.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 		GSYS.ChangeSettingFlag = TRUE ;
 	}
 
@@ -17097,7 +17097,7 @@ extern	int		Graphics_Hardware_SetUseHardwareVertexProcessing_PF( int Flag )
 // ピクセル単位でライティングを行うかどうかを設定する、要 ShaderModel 3.0( TRUE:ピクセル単位のライティングを行う  FALSE:頂点単位のライティングを行う( デフォルト ) )
 extern	int		Graphics_Hardware_SetUsePixelLighting_PF( int Flag )
 {
-	GIOS.UsePixelLightingShader = Flag ;
+	GHTML5.UsePixelLightingShader = Flag ;
 
 	// 終了
 	return 0 ;
@@ -17106,8 +17106,8 @@ extern	int		Graphics_Hardware_SetUsePixelLighting_PF( int Flag )
 // グラフィックスデバイスがロストから復帰した際に呼ばれるコールバック関数を設定する
 extern	int		Graphics_Hardware_SetGraphicsDeviceRestoreCallbackFunction_PF( void (* Callback )( void *Data ), void *CallbackData )
 {
-	GIOS.Device.Setting.DeviceRestoreCallbackFunction = Callback ;
-	GIOS.Device.Setting.DeviceRestoreCallbackData = CallbackData ;
+	GHTML5.Device.Setting.DeviceRestoreCallbackFunction = Callback ;
+	GHTML5.Device.Setting.DeviceRestoreCallbackData = CallbackData ;
 
 	// 終了
 	return 0 ;
@@ -17116,8 +17116,8 @@ extern	int		Graphics_Hardware_SetGraphicsDeviceRestoreCallbackFunction_PF( void 
 // グラフィックスデバイスがロストから復帰する前に呼ばれるコールバック関数を設定する
 extern	int		Graphics_Hardware_SetGraphicsDeviceLostCallbackFunction_PF( void (* Callback )( void *Data ), void *CallbackData )
 {
-	GIOS.Device.Setting.DeviceLostCallbackFunction = Callback ;
-	GIOS.Device.Setting.DeviceLostCallbackData = CallbackData ;
+	GHTML5.Device.Setting.DeviceLostCallbackFunction = Callback ;
+	GHTML5.Device.Setting.DeviceLostCallbackData = CallbackData ;
 
 	// 終了
 	return 0 ;
@@ -17190,7 +17190,7 @@ extern	int		Graphics_Hardware_SetupUseZBuffer_PF( void )
 // 画面のＺバッファの状態を初期化する
 extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -17199,11 +17199,11 @@ extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
 	DRAWSTOCKINFO
 
 	// 描画を終了しておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// 描画対象サーフェスを変更する
 #ifndef DX_NON_MASK
-	if( MASKD.MaskValidFlag && MASKIOS.MaskScreenFrameBuffer )
+	if( MASKD.MaskValidFlag && MASKHTML5.MaskScreenFrameBuffer )
 	{
 		IMAGEDATA           *Image = NULL ;
 		SHADOWMAPDATA       *ShadowMap = NULL ;
@@ -17215,7 +17215,7 @@ extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
 		// シャドウマップが有効な場合はシャドウマップを描画対象にする
 		if( ShadowMap )
 		{
-			Graphics_iOS_DeviceState_SetRenderTarget( ShadowMap->PF->FrameBuffer, ShadowMap->PF->Texture.Width, ShadowMap->PF->Texture.Height ) ;
+			Graphics_HTML5_DeviceState_SetRenderTarget( ShadowMap->PF->FrameBuffer, ShadowMap->PF->Texture.Width, ShadowMap->PF->Texture.Height ) ;
 		}
 		else
 		// 描画可能画像が有効な場合は描画可能画像を描画対象にする
@@ -17223,17 +17223,17 @@ extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
 		{
 			if( Image->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget != 0 )
 			{
-				Graphics_iOS_DeviceState_SetRenderTarget( Image->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Width, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
+				Graphics_HTML5_DeviceState_SetRenderTarget( Image->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Width, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
 			}
 			else
 			{
-				Graphics_iOS_DeviceState_SetRenderTarget( Image->Hard.Draw[ 0 ].Tex->PF->FrameBuffer, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Width, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
+				Graphics_HTML5_DeviceState_SetRenderTarget( Image->Hard.Draw[ 0 ].Tex->PF->FrameBuffer, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Width, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
 			}
 		}
 		else
 		// それ以外の場合はサブバックバッファを描画対象にする
 		{
-			Graphics_iOS_DeviceState_SetRenderTarget( GIOS.Device.Screen.SubBackBufferFrameBuffer, GIOS.Device.Screen.SubBackBufferTextureSizeX, GIOS.Device.Screen.SubBackBufferTextureSizeY ) ;
+			Graphics_HTML5_DeviceState_SetRenderTarget( GHTML5.Device.Screen.SubBackBufferFrameBuffer, GHTML5.Device.Screen.SubBackBufferTextureSizeX, GHTML5.Device.Screen.SubBackBufferTextureSizeY ) ;
 		}
 	}
 #endif
@@ -17245,9 +17245,9 @@ extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
 		_MEMSET( &Viewport, 0, sizeof( Viewport ) ) ;
 		Viewport.left	= 0 ;
 		Viewport.top	= 0 ;
-		Viewport.right	= GIOS.Device.State.TargetFrameBufferWidth ;
-		Viewport.bottom	= GIOS.Device.State.TargetFrameBufferHeight ;
-		Graphics_iOS_DeviceState_SetViewport( &Viewport ) ;
+		Viewport.right	= GHTML5.Device.State.TargetFrameBufferWidth ;
+		Viewport.bottom	= GHTML5.Device.State.TargetFrameBufferHeight ;
+		Graphics_HTML5_DeviceState_SetViewport( &Viewport ) ;
 	}
 
 	glClearColor(
@@ -17259,22 +17259,22 @@ extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
 
 	glDepthMask( GL_TRUE ) ;
     glClear( GL_DEPTH_BUFFER_BIT ) ;
-	glDepthMask( GIOS.Device.State.DepthWriteEnable ? GL_TRUE : GL_FALSE ) ;
+	glDepthMask( GHTML5.Device.State.DepthWriteEnable ? GL_TRUE : GL_FALSE ) ;
 
 	// 描画対象サーフェスを元に戻す
 #ifndef DX_NON_MASK
-	if( MASKD.MaskValidFlag && MASKIOS.MaskScreenFrameBuffer )
+	if( MASKD.MaskValidFlag && MASKHTML5.MaskScreenFrameBuffer )
 	{
-		Graphics_iOS_DeviceState_SetRenderTarget(
-			MASKIOS.MaskScreenFrameBuffer,
-			MASKIOS.MaskTextureSizeX,
-			MASKIOS.MaskTextureSizeY
+		Graphics_HTML5_DeviceState_SetRenderTarget(
+			MASKHTML5.MaskScreenFrameBuffer,
+			MASKHTML5.MaskTextureSizeX,
+			MASKHTML5.MaskTextureSizeY
 		) ;
 	}
 #endif
 
 	// ビューポートの範囲を元に戻す
-	Graphics_iOS_DeviceState_SetViewport( &GSYS.DrawSetting.DrawArea ) ;
+	Graphics_HTML5_DeviceState_SetViewport( &GSYS.DrawSetting.DrawArea ) ;
 
 	// 終了
 	return 0 ;
@@ -17283,7 +17283,7 @@ extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
 // 画面の状態を初期化する
 extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -17292,11 +17292,11 @@ extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
 	DRAWSTOCKINFO
 
 	// 描画を終了しておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// 描画対象サーフェスを変更する
 #ifndef DX_NON_MASK
-	if( MASKD.MaskValidFlag && MASKIOS.MaskScreenFrameBuffer )
+	if( MASKD.MaskValidFlag && MASKHTML5.MaskScreenFrameBuffer )
 	{
 		IMAGEDATA           *Image = NULL ;
 		SHADOWMAPDATA       *ShadowMap = NULL ;
@@ -17308,7 +17308,7 @@ extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
 		// シャドウマップが有効な場合はシャドウマップを描画対象にする
 		if( ShadowMap )
 		{
-			Graphics_iOS_DeviceState_SetRenderTarget( ShadowMap->PF->FrameBuffer, ShadowMap->PF->Texture.Width, ShadowMap->PF->Texture.Height ) ;
+			Graphics_HTML5_DeviceState_SetRenderTarget( ShadowMap->PF->FrameBuffer, ShadowMap->PF->Texture.Width, ShadowMap->PF->Texture.Height ) ;
 		}
 		else
 		// 描画可能画像が有効な場合は描画可能画像を描画対象にする
@@ -17316,17 +17316,17 @@ extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
 		{
 			if( Image->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget != 0 )
 			{
-				Graphics_iOS_DeviceState_SetRenderTarget( Image->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Width, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
+				Graphics_HTML5_DeviceState_SetRenderTarget( Image->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Width, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
 			}
 			else
 			{
-				Graphics_iOS_DeviceState_SetRenderTarget( Image->Hard.Draw[ 0 ].Tex->PF->FrameBuffer, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Width, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
+				Graphics_HTML5_DeviceState_SetRenderTarget( Image->Hard.Draw[ 0 ].Tex->PF->FrameBuffer, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Width, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
 			}
 		}
 		else
 		// それ以外の場合はサブバックバッファを描画対象にする
 		{
-			Graphics_iOS_DeviceState_SetRenderTarget( GIOS.Device.Screen.SubBackBufferFrameBuffer, GIOS.Device.Screen.SubBackBufferTextureSizeX, GIOS.Device.Screen.SubBackBufferTextureSizeY ) ;
+			Graphics_HTML5_DeviceState_SetRenderTarget( GHTML5.Device.Screen.SubBackBufferFrameBuffer, GHTML5.Device.Screen.SubBackBufferTextureSizeX, GHTML5.Device.Screen.SubBackBufferTextureSizeY ) ;
 		}
 	}
 #endif
@@ -17338,9 +17338,9 @@ extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
 		_MEMSET( &Viewport, 0, sizeof( Viewport ) ) ;
 		Viewport.left	= 0 ;
 		Viewport.top	= 0 ;
-		Viewport.right	= GIOS.Device.State.TargetFrameBufferWidth ;
-		Viewport.bottom	= GIOS.Device.State.TargetFrameBufferHeight ;
-		Graphics_iOS_DeviceState_SetViewport( &Viewport ) ;
+		Viewport.right	= GHTML5.Device.State.TargetFrameBufferWidth ;
+		Viewport.bottom	= GHTML5.Device.State.TargetFrameBufferHeight ;
+		Graphics_HTML5_DeviceState_SetViewport( &Viewport ) ;
 	}
 
 	glClearColor(
@@ -17352,22 +17352,22 @@ extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
 
 	glDepthMask( GL_TRUE ) ;
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ) ;
-	glDepthMask( GIOS.Device.State.DepthWriteEnable ? GL_TRUE : GL_FALSE ) ;
+	glDepthMask( GHTML5.Device.State.DepthWriteEnable ? GL_TRUE : GL_FALSE ) ;
 
 	// 描画対象サーフェスを元に戻す
 #ifndef DX_NON_MASK
-	if( MASKD.MaskValidFlag && MASKIOS.MaskScreenFrameBuffer )
+	if( MASKD.MaskValidFlag && MASKHTML5.MaskScreenFrameBuffer )
 	{
-		Graphics_iOS_DeviceState_SetRenderTarget(
-			MASKIOS.MaskScreenFrameBuffer,
-			MASKIOS.MaskTextureSizeX,
-			MASKIOS.MaskTextureSizeY
+		Graphics_HTML5_DeviceState_SetRenderTarget(
+			MASKHTML5.MaskScreenFrameBuffer,
+			MASKHTML5.MaskTextureSizeX,
+			MASKHTML5.MaskTextureSizeY
 		) ;
 	}
 #endif
 
 	// ビューポートの範囲を元に戻す
-	Graphics_iOS_DeviceState_SetViewport( &GSYS.DrawSetting.DrawArea ) ;
+	Graphics_HTML5_DeviceState_SetViewport( &GSYS.DrawSetting.DrawArea ) ;
 
 	// 終了
 	return 0 ;
@@ -17382,29 +17382,29 @@ extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSur
 	DRAWSTOCKINFO
 
 	// 描画を終了しておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// セットしていたテクスチャーを外す
-	Graphics_iOS_DrawSetting_SetTexture( NULL ) ;
+	Graphics_HTML5_DrawSetting_SetTexture( NULL ) ;
 	for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 	{
-		Graphics_iOS_DeviceState_SetTexture( 0, NULL ) ;
+		Graphics_HTML5_DeviceState_SetTexture( 0, NULL ) ;
 	}
 	
 	// 描画先の変更
 
 	// マスクサーフェスが存在していて且つ有効な場合はマスクサーフェスを描画対象にする
 #ifndef DX_NON_MASK
-	if( MASKD.MaskValidFlag && MASKIOS.MaskScreenFrameBuffer )
+	if( MASKD.MaskValidFlag && MASKHTML5.MaskScreenFrameBuffer )
 	{
-		Graphics_iOS_DeviceState_SetRenderTarget( MASKIOS.MaskScreenFrameBuffer, MASKIOS.MaskTextureSizeX, MASKIOS.MaskTextureSizeY ) ;
+		Graphics_HTML5_DeviceState_SetRenderTarget( MASKHTML5.MaskScreenFrameBuffer, MASKHTML5.MaskTextureSizeX, MASKHTML5.MaskTextureSizeY ) ;
 	}
 	else
 #endif
 	// シャドウマップが有効な場合はシャドウマップを描画対象にする
 	if( NewTargetShadowMap )
 	{
-		Graphics_iOS_DeviceState_SetRenderTarget( NewTargetShadowMap->PF->FrameBuffer, NewTargetShadowMap->PF->Texture.Width, NewTargetShadowMap->PF->Texture.Height ) ;
+		Graphics_HTML5_DeviceState_SetRenderTarget( NewTargetShadowMap->PF->FrameBuffer, NewTargetShadowMap->PF->Texture.Width, NewTargetShadowMap->PF->Texture.Height ) ;
 	}
 	else
 	// 描画可能画像が有効な場合は描画可能画像を描画対象にする
@@ -17412,17 +17412,17 @@ extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSur
 	{
 		if( NewTargetImage->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget != 0 )
 		{
-			Graphics_iOS_DeviceState_SetRenderTarget( NewTargetImage->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget, NewTargetImage->Hard.Draw[ 0 ].Tex->PF->Texture.Width, NewTargetImage->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
+			Graphics_HTML5_DeviceState_SetRenderTarget( NewTargetImage->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget, NewTargetImage->Hard.Draw[ 0 ].Tex->PF->Texture.Width, NewTargetImage->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
 		}
 		else
 		{
-			Graphics_iOS_DeviceState_SetRenderTarget( NewTargetImage->Hard.Draw[ 0 ].Tex->PF->FrameBuffer, NewTargetImage->Hard.Draw[ 0 ].Tex->PF->Texture.Width, NewTargetImage->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
+			Graphics_HTML5_DeviceState_SetRenderTarget( NewTargetImage->Hard.Draw[ 0 ].Tex->PF->FrameBuffer, NewTargetImage->Hard.Draw[ 0 ].Tex->PF->Texture.Width, NewTargetImage->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
 		}
 	}
 	else
 	// それ以外の場合はサブバックバッファを描画対象にする
 	{
-		Graphics_iOS_DeviceState_SetRenderTarget( GIOS.Device.Screen.SubBackBufferFrameBuffer, GIOS.Device.Screen.SubBackBufferTextureSizeX, GIOS.Device.Screen.SubBackBufferTextureSizeY ) ;
+		Graphics_HTML5_DeviceState_SetRenderTarget( GHTML5.Device.Screen.SubBackBufferFrameBuffer, GHTML5.Device.Screen.SubBackBufferTextureSizeX, GHTML5.Device.Screen.SubBackBufferTextureSizeY ) ;
 	}
 	
 	// 使用するＺバッファのセットアップ
@@ -17455,14 +17455,14 @@ extern	int		Graphics_Hardware_SetDrawArea_PF( int x1, int y1, int x2, int y2 )
 	Viewport.top	= GSYS.DrawSetting.DrawArea.top ;
 	Viewport.right	= GSYS.DrawSetting.DrawArea.right  ;
 	Viewport.bottom	= GSYS.DrawSetting.DrawArea.bottom ;
-	Graphics_iOS_DeviceState_SetViewport( &Viewport ) ;
+	Graphics_HTML5_DeviceState_SetViewport( &Viewport ) ;
 
 	// 射影行列とビューポート行列の逆行列を乗算したものをセット
-	Graphics_Hardware_IOS_RefreshProjectionMatrix() ;
+	Graphics_Hardware_HTML5_RefreshProjectionMatrix() ;
 	GSYS.DrawSetting.MatchHardwareProjectionMatrix = TRUE ;
 
 	// アンチビューポート行列を更新
-	Graphics_iOS_DeviceState_SetAntiViewportMatrix( &GSYS.DrawSetting.Direct3DViewportMatrixAntiF ) ;
+	Graphics_HTML5_DeviceState_SetAntiViewportMatrix( &GSYS.DrawSetting.Direct3DViewportMatrixAntiF ) ;
 
 	// 正常終了
 	return 0 ;
@@ -17481,7 +17481,7 @@ extern	int		Graphics_Hardware_LockDrawScreenBuffer_PF( RECT *LockRect, BASEIMAGE
 	DRAWSTOCKINFO
 
 	// 描画を終了しておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// 取り込み元となるサーフェスの決定
 
@@ -17495,10 +17495,10 @@ extern	int		Graphics_Hardware_LockDrawScreenBuffer_PF( RECT *LockRect, BASEIMAGE
 	}
 	else
 	{
-		TargetFrameBuffer = GIOS.Device.Screen.SubBackBufferFrameBuffer ;
-		TargetTexture     = GIOS.Device.Screen.SubBackBufferTexture ;
-		TargetWidth       = GIOS.Device.Screen.SubBackBufferTextureSizeX ;
-		TargetHeight      = GIOS.Device.Screen.SubBackBufferTextureSizeY ;
+		TargetFrameBuffer = GHTML5.Device.Screen.SubBackBufferFrameBuffer ;
+		TargetTexture     = GHTML5.Device.Screen.SubBackBufferTexture ;
+		TargetWidth       = GHTML5.Device.Screen.SubBackBufferTextureSizeX ;
+		TargetHeight      = GHTML5.Device.Screen.SubBackBufferTextureSizeY ;
 	}
 
 //	BaseImage->ColorData      = *TargetColorData ;
@@ -17510,7 +17510,7 @@ extern	int		Graphics_Hardware_LockDrawScreenBuffer_PF( RECT *LockRect, BASEIMAGE
 //	BaseImage->GraphDataCount = 0 ;
 
 	// マップ
-	if( Graphics_iOS_Texture_Map( TargetTexture, TargetFrameBuffer, TargetWidth, TargetHeight, LockRect, BaseImage, &GIOS.Device.Screen.DrawScreenLockImage ) < 0 )
+	if( Graphics_HTML5_Texture_Map( TargetTexture, TargetFrameBuffer, TargetWidth, TargetHeight, LockRect, BaseImage, &GHTML5.Device.Screen.DrawScreenLockImage ) < 0 )
 	{
 		DXST_LOGFILE_ADDUTF16LE( "\xcf\x63\x3b\x75\xfe\x5b\x61\x8c\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x6e\x30\xed\x30\xc3\x30\xaf\x30\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"描画対象バッファのロックに失敗しました\n" @*/ ) ;
 		return -1 ;
@@ -17524,7 +17524,7 @@ extern	int		Graphics_Hardware_LockDrawScreenBuffer_PF( RECT *LockRect, BASEIMAGE
 extern	int		Graphics_Hardware_UnlockDrawScreenBuffer_PF( void )
 {
 	// マップを解除
-	Graphics_iOS_Texture_Unmap( GIOS.Device.Screen.DrawScreenLockImage ) ;
+	Graphics_HTML5_Texture_Unmap( GHTML5.Device.Screen.DrawScreenLockImage ) ;
 
 	// 正常終了
 	return 0 ;
@@ -17561,7 +17561,7 @@ extern	int		Graphics_SetWaitVSyncFlag_PF( int Flag )
 // 裏画面と表画面を交換する
 extern	int		Graphics_ScreenFlipBase_PF( void )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -17570,7 +17570,7 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 	DRAWSTOCKINFO
 
 	// 描画を終了する
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// サブバックバッファの内容を実バッファに転送する
 	{
@@ -17590,75 +17590,75 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		} ;
 		
 		glGetIntegerv(GL_RENDERBUFFER_BINDING, &RenderBuffer);
-		GetGraphicsViewFramebufferInfo( ( unsigned int * )&ViewFrameBuffer, ( int * )&GIOS.Device.Screen.Width, ( int * )&GIOS.Device.Screen.Height );
+		GetGraphicsViewFramebufferInfo( ( unsigned int * )&ViewFrameBuffer, ( int * )&GHTML5.Device.Screen.Width, ( int * )&GHTML5.Device.Screen.Height );
 
 		if( GSYS.Screen.FullScreenFitScalingFlag )
 		{
-			DestW = GIOS.Device.Screen.Width ;
-			DestH = GIOS.Device.Screen.Height ;
+			DestW = GHTML5.Device.Screen.Width ;
+			DestH = GHTML5.Device.Screen.Height ;
 		}
 		else
 		{
-			DestW = GIOS.Device.Screen.Width ;
-			DestH = GIOS.Device.Screen.Width * GIOS.Device.Screen.SubBackBufferTextureSizeY / GIOS.Device.Screen.SubBackBufferTextureSizeX ;
-			if( DestH > GIOS.Device.Screen.Height )
+			DestW = GHTML5.Device.Screen.Width ;
+			DestH = GHTML5.Device.Screen.Width * GHTML5.Device.Screen.SubBackBufferTextureSizeY / GHTML5.Device.Screen.SubBackBufferTextureSizeX ;
+			if( DestH > GHTML5.Device.Screen.Height )
 			{
-				DestW = GIOS.Device.Screen.Height * GIOS.Device.Screen.SubBackBufferTextureSizeX / GIOS.Device.Screen.SubBackBufferTextureSizeY ;
-				DestH = GIOS.Device.Screen.Height ;
+				DestW = GHTML5.Device.Screen.Height * GHTML5.Device.Screen.SubBackBufferTextureSizeX / GHTML5.Device.Screen.SubBackBufferTextureSizeY ;
+				DestH = GHTML5.Device.Screen.Height ;
 			}
 		}
 
-		DestRect.left   = ( GIOS.Device.Screen.Width  - DestW ) / 2 ;
-		DestRect.top    = ( GIOS.Device.Screen.Height - DestH ) / 2 ;
+		DestRect.left   = ( GHTML5.Device.Screen.Width  - DestW ) / 2 ;
+		DestRect.top    = ( GHTML5.Device.Screen.Height - DestH ) / 2 ;
 		DestRect.right  = DestRect.left + DestW ;
 		DestRect.bottom = DestRect.top  + DestH ;
 
 		// ブレンドモードをブレンド無しに変更
-		BlendMode = GIOS.Device.State.BlendMode ;
-		NotWriteAlphaChannelFlag = GIOS.Device.State.NotWriteAlphaChannelFlag ;
-		Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE ) ;
+		BlendMode = GHTML5.Device.State.BlendMode ;
+		NotWriteAlphaChannelFlag = GHTML5.Device.State.NotWriteAlphaChannelFlag ;
+		Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE ) ;
 
-		// 描画先をフレームバッファに変更( 設定は Graphics_iOS_DeviceState_RefreshRenderState で戻す )
+		// 描画先をフレームバッファに変更( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
 		// glBindFramebuffer( GL_FRAMEBUFFER, ViewFrameBuffer ) ;
 		glBindFramebuffer( GL_FRAMEBUFFER, 0 ) ;
 
-		// ビューポートをセット( 設定は Graphics_iOS_DeviceState_RefreshRenderState で戻す )
+		// ビューポートをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
 		glViewport( DestRect.left, DestRect.top, DestRect.right - DestRect.left, DestRect.bottom - DestRect.top ) ;
 
 		// Ｚバッファを無効にする
-		Graphics_iOS_DeviceState_SetDepthEnable( FALSE ) ;
-		Graphics_iOS_DeviceState_SetDepthWriteEnable( FALSE ) ;
+		Graphics_HTML5_DeviceState_SetDepthEnable( FALSE ) ;
+		Graphics_HTML5_DeviceState_SetDepthWriteEnable( FALSE ) ;
 
 		// カリングを無効にする
-		Graphics_iOS_DeviceState_SetCullMode( DX_CULLING_NONE ) ;
+		Graphics_HTML5_DeviceState_SetCullMode( DX_CULLING_NONE ) ;
 
-		// 画面をクリア( 設定は Graphics_iOS_DeviceState_RefreshRenderState で戻す )
+		// 画面をクリア( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
 		glClearColor( 0.0f, 0.0f, 0.0f, 0.0f ) ;
 		glClear( GL_COLOR_BUFFER_BIT ) ;
 
 		// 単純転送シェーダーをセット
-		Graphics_iOS_DeviceState_SetShader( &GIOS.Device.Shader.Base.StretchRect_Shader, FALSE ) ;
+		Graphics_HTML5_DeviceState_SetShader( &GHTML5.Device.Shader.Base.StretchRect_Shader, FALSE ) ;
 
 		// Uniform の更新
-		Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 0 ) ;
+		Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 0 ) ;
 
-		// テクスチャをセット( 設定は Graphics_iOS_DeviceState_RefreshRenderState で戻す )
+		// テクスチャをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
 		glActiveTexture( GL_TEXTURE0 ) ;
-		glBindTexture( GL_TEXTURE_2D, GIOS.Device.Screen.SubBackBufferTexture ) ;
+		glBindTexture( GL_TEXTURE_2D, GHTML5.Device.Screen.SubBackBufferTexture ) ;
 
 		// ユーザー指定のメモリイメージがあるかどうかで処理を分岐
 		if( GSYS.Screen.UserScreenImage != NULL )
 		{
 			BYTE *Src = ( BYTE * )GSYS.Screen.UserScreenImage ;
-			BYTE *Dst = ( BYTE * )GIOS.Device.Screen.SubBackBufferTextureTempBuffer ;
+			BYTE *Dst = ( BYTE * )GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ;
 			DWORD i ;
 			DWORD Bytes ;
 
 			// ネイティブに対応していない場合は変換してから転送
 			if( GSYS.Screen.UserScreenImagePixelFormat == DX_USER_SCREEN_PIXEL_FORMAT_X8R8G8B8 &&
-				GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] == FALSE )
+				GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] == FALSE )
 			{
-				Bytes = GIOS.Device.Screen.SubBackBufferTextureSizeX * GIOS.Device.Screen.SubBackBufferTextureSizeY * 4 ;
+				Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 4 ;
 				for( i = 0 ; i < Bytes ; i += 4 )
 				{
 					Dst[ i + 2 ] = Src[ i + 0 ] ;
@@ -17671,17 +17671,17 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 					0,
 					0,
 					0,
-					GIOS.Device.Screen.SubBackBufferTextureSizeX,
-					GIOS.Device.Screen.SubBackBufferTextureSizeY,
-					GIOS.Device.Screen.SubBackBufferTexturePixelFormat,
-					GIOS.Device.Screen.SubBackBufferTexturePixelType,
-					GIOS.Device.Screen.SubBackBufferTextureTempBuffer
+					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+					GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
 				) ;
 			}
 			else
 			if( GSYS.Screen.UserScreenImagePixelFormat == DX_USER_SCREEN_PIXEL_FORMAT_X1R5G5B5 )
 			{
-				Bytes = GIOS.Device.Screen.SubBackBufferTextureSizeX * GIOS.Device.Screen.SubBackBufferTextureSizeY * 2 ;
+				Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 2 ;
 				for( i = 0 ; i < Bytes ; i += 2 )
 				{
 					*( ( WORD * )&Dst[ i ] ) = ( WORD )( ( *( ( WORD * )&Src[ i ] ) << 1 ) | 1 ) ;
@@ -17692,11 +17692,11 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 					0,
 					0,
 					0,
-					GIOS.Device.Screen.SubBackBufferTextureSizeX,
-					GIOS.Device.Screen.SubBackBufferTextureSizeY,
-					GIOS.Device.Screen.SubBackBufferTexturePixelFormat,
-					GIOS.Device.Screen.SubBackBufferTexturePixelType,
-					GIOS.Device.Screen.SubBackBufferTextureTempBuffer
+					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+					GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
 				) ;
 			}
 			else
@@ -17706,10 +17706,10 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 					0,
 					0,
 					0,
-					GIOS.Device.Screen.SubBackBufferTextureSizeX,
-					GIOS.Device.Screen.SubBackBufferTextureSizeY,
-					GIOS.Device.Screen.SubBackBufferTexturePixelFormat,
-					GIOS.Device.Screen.SubBackBufferTexturePixelType,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
 					GSYS.Screen.UserScreenImage
 				) ;
 			}
@@ -17719,17 +17719,17 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		if( GSYS.Setting.NotUseHardware )
 		{
 			// ネイティブに対応している場合は単純転送
-			if( GSYS.Screen.MainScreenColorBitDepth == 16 || GIOS.Device.Caps.Extensions[ IOS_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] )
+			if( GSYS.Screen.MainScreenColorBitDepth == 16 || GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] )
 			{
 				glTexSubImage2D(
 					GL_TEXTURE_2D,
 					0,
 					0,
 					0,
-					GIOS.Device.Screen.SubBackBufferTextureSizeX,
-					GIOS.Device.Screen.SubBackBufferTextureSizeY,
-					GIOS.Device.Screen.SubBackBufferTexturePixelFormat,
-					GIOS.Device.Screen.SubBackBufferTexturePixelType,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
 					GSYS.SoftRender.MainBufferMemImg.UseImage
 				) ;
 			}
@@ -17742,8 +17742,8 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 
 				// 対応していない場合は変換してから転送
 				Src = GSYS.SoftRender.MainBufferMemImg.UseImage ;
-				Dst = ( BYTE * )GIOS.Device.Screen.SubBackBufferTextureTempBuffer ;
-				Bytes = GIOS.Device.Screen.SubBackBufferTextureSizeX * GIOS.Device.Screen.SubBackBufferTextureSizeY * 4 ;
+				Dst = ( BYTE * )GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ;
+				Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 4 ;
 				for( i = 0 ; i < Bytes ; i += 4 )
 				{
 					Dst[ i + 2 ] = Src[ i + 0 ] ;
@@ -17756,11 +17756,11 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 					0,
 					0,
 					0,
-					GIOS.Device.Screen.SubBackBufferTextureSizeX,
-					GIOS.Device.Screen.SubBackBufferTextureSizeY,
-					GIOS.Device.Screen.SubBackBufferTexturePixelFormat,
-					GIOS.Device.Screen.SubBackBufferTexturePixelType,
-					GIOS.Device.Screen.SubBackBufferTextureTempBuffer
+					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+					GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
 				) ;
 			}
 		}
@@ -17781,8 +17781,8 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE ) ;
 
 		// 頂点データのセットアップ
-		Graphics_iOS_DeviceState_SetupShaderVertexData(
-			&GIOS.Device.Shader.Base.StretchRect_Shader,
+		Graphics_HTML5_DeviceState_SetupShaderVertexData(
+			&GHTML5.Device.Shader.Base.StretchRect_Shader,
 			&g_StretchRectVertexInputInfo,
 			VertexData
 		) ;
@@ -17792,23 +17792,23 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 		// ブレンドモードを元に戻す
-		Graphics_iOS_DeviceState_SetBlendMode( BlendMode, NotWriteAlphaChannelFlag ) ;
+		Graphics_HTML5_DeviceState_SetBlendMode( BlendMode, NotWriteAlphaChannelFlag ) ;
 	}
 
 	// ＶＳＹＮＣ待ちフラグを立てる
-	GIOS.Device.Screen.WaitVSyncFlag = TRUE ;
+	GHTML5.Device.Screen.WaitVSyncFlag = TRUE ;
 
 	// スワップする
     GraphicsViewRenderBufferPresent() ;
 
 	// 今までの設定を復帰する
-	Graphics_iOS_DeviceState_RefreshRenderState() ;
+	Graphics_HTML5_DeviceState_RefreshRenderState() ;
 
 	// ＶＳＹＮＣ待ちする
 	if( GSYS.Screen.NotWaitVSyncFlag == FALSE )
 	{
 		// emscriten では Vsync解除未実装
-		// while( GIOS.Device.Screen.WaitVSyncFlag == TRUE )
+		// while( GHTML5.Device.Screen.WaitVSyncFlag == TRUE )
 		// {
 		// 	usleep( 50 ) ;
 		// }
@@ -17865,13 +17865,13 @@ extern	int		Graphics_GetRefreshRate_PF( void )
 // GetColor や GetColor2 で使用するカラーデータを取得する
 extern const COLORDATA *Graphics_Hardware_GetMainColorData_PF( void )
 {
-	return Graphics_iOS_GetDataFormatColorData( IOS_PIXEL_FORMAT_R8G8B8A8 ) ;
+	return Graphics_HTML5_GetDataFormatColorData( HTML5_PIXEL_FORMAT_R8G8B8A8 ) ;
 }
 
 // ディスプレーのカラーデータポインタを得る
 extern	const COLORDATA *Graphics_Hardware_GetDispColorData_PF( void )
 {
-	return Graphics_iOS_GetDataFormatColorData( GIOS.Device.Caps.ScreenFormat ) ;
+	return Graphics_HTML5_GetDataFormatColorData( GHTML5.Device.Caps.ScreenFormat ) ;
 }
 
 // 指定座標の色を取得する
@@ -17887,7 +17887,7 @@ extern	DWORD Graphics_Hardware_GetPixel_PF( int x, int y )
 	DRAWSTOCKINFO
 
 	// 描画を終了しておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// 描画先バッファをロック
 	SrcRect.left   = x ;
@@ -17960,7 +17960,7 @@ extern COLOR_F Graphics_Hardware_GetPixelF_PF( int x, int y )
 	DRAWSTOCKINFO
 
 	// 描画を終了しておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// 描画先バッファをロック
 	SrcRect.left   = x ;
@@ -18061,10 +18061,10 @@ extern	int		Graphics_Hardware_GraphLock_PF( IMAGEDATA *Image, COLORDATA **ColorD
 	DRAWSTOCKINFO
 
 	// 描画を終了しておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// カラーフォーマットを取得する
-	TargetColorData = Graphics_iOS_GetDataFormatColorData( GIOS.Device.Caps.TextureFormat[ Image->Orig->ColorFormat ] ) ;
+	TargetColorData = Graphics_HTML5_GetDataFormatColorData( GHTML5.Device.Caps.TextureFormat[ Image->Orig->ColorFormat ] ) ;
 
 	// 標準フォーマット以外ではロックできない
 	if( TargetColorData->Format != DX_BASEIMAGE_FORMAT_NORMAL )
@@ -18102,7 +18102,7 @@ extern	int		Graphics_Hardware_GraphLock_PF( IMAGEDATA *Image, COLORDATA **ColorD
 		for( i = 0 ; i < Image->Hard.DrawNum ; i ++, DrawTex ++ )
 		{
 			// マップ
-			if( Graphics_iOS_Texture_Map(
+			if( Graphics_HTML5_Texture_Map(
 				DrawTex->Tex->PF->Texture.TextureBuffer,
 				DrawTex->Tex->PF->FrameBuffer,
 				DrawTex->Tex->PF->Texture.Width,
@@ -18134,7 +18134,7 @@ extern	int		Graphics_Hardware_GraphLock_PF( IMAGEDATA *Image, COLORDATA **ColorD
 			) ;
 
 			// マップの解除
-			Graphics_iOS_Texture_Unmap( MapTempImage ) ;
+			Graphics_HTML5_Texture_Unmap( MapTempImage ) ;
 		}
 	}
 
@@ -18168,7 +18168,7 @@ extern	int		Graphics_Hardware_GraphUnlock_PF( IMAGEDATA *Image )
 	DRAWSTOCKINFO
 
 	// カラーフォーマットを取得する
-	ColorData = Graphics_iOS_GetDataFormatColorData( GIOS.Device.Caps.TextureFormat[ Image->Orig->ColorFormat ] ) ;
+	ColorData = Graphics_HTML5_GetDataFormatColorData( GHTML5.Device.Caps.TextureFormat[ Image->Orig->ColorFormat ] ) ;
 
 	// 基本イメージを構築する
 	_MEMSET( &AlphaBaseImage, 0, sizeof( AlphaBaseImage ) ) ;
@@ -18231,7 +18231,7 @@ extern	int		Graphics_Hardware_GetDrawScreenGraphBase_PF( IMAGEDATA *Image, IMAGE
 	DRAWSTOCKINFO
 
 	// 描画を終了しておく
-	Graphics_iOS_RenderEnd() ;
+	Graphics_HTML5_RenderEnd() ;
 
 	// 幅と高さを計算
 	Width  = x2 - x1 ;
@@ -18257,10 +18257,10 @@ extern	int		Graphics_Hardware_GetDrawScreenGraphBase_PF( IMAGEDATA *Image, IMAGE
 		}
 		else
 		{
-			TargetFrameBuffer = GIOS.Device.Screen.SubBackBufferFrameBuffer ;
-			TargetTexture     = GIOS.Device.Screen.SubBackBufferTexture ;
-			TargetWidth       = GIOS.Device.Screen.SubBackBufferTextureSizeX ;
-			TargetHeight      = GIOS.Device.Screen.SubBackBufferTextureSizeY ;
+			TargetFrameBuffer = GHTML5.Device.Screen.SubBackBufferFrameBuffer ;
+			TargetTexture     = GHTML5.Device.Screen.SubBackBufferTexture ;
+			TargetWidth       = GHTML5.Device.Screen.SubBackBufferTextureSizeX ;
+			TargetHeight      = GHTML5.Device.Screen.SubBackBufferTextureSizeY ;
 		}
 
 		SrcRect.left    = x1 ;
@@ -18273,7 +18273,7 @@ extern	int		Graphics_Hardware_GetDrawScreenGraphBase_PF( IMAGEDATA *Image, IMAGE
 		DestRect.right  = destX + Width ;
 		DestRect.bottom = destY + Height ;
 
-		Graphics_iOS_StretchRect(
+		Graphics_HTML5_StretchRect(
 			TargetTexture, TargetWidth, TargetHeight, &SrcRect,
 			Image->Orig->Hard.Tex[ 0 ].PF->FrameBuffer,
 			Image->Orig->Hard.Tex[ 0 ].PF->Texture.Width,
@@ -18282,7 +18282,7 @@ extern	int		Graphics_Hardware_GetDrawScreenGraphBase_PF( IMAGEDATA *Image, IMAGE
 		) ; 
 
 		// 描画を終了しておく
-		Graphics_iOS_RenderEnd() ;
+		Graphics_HTML5_RenderEnd() ;
 	}
 	else
 	// 通常のテクスチャだった場合は最初にロックを試す
@@ -18321,7 +18321,7 @@ extern	int		Graphics_Hardware_GetDrawScreenGraphBase_PF( IMAGEDATA *Image, IMAGE
 	return 0 ;
 }
 
-static int Graphics_iOS_BltBmpOrBaseImageToGraph3_MipMapBlt(
+static int Graphics_HTML5_BltBmpOrBaseImageToGraph3_MipMapBlt(
 	      IMAGEDATA_ORIG	*Orig,
 	const RECT				*SrcRect,
 	const RECT				*DestRect,
@@ -18343,16 +18343,16 @@ static int Graphics_iOS_BltBmpOrBaseImageToGraph3_MipMapBlt(
 	int			j ;
 	DWORD		MipMapCount ;
 	const COLORDATA			*DestColor ;
-	PIXELFORMAT_INFO_IOS	*PixelFormat ;
+	PIXELFORMAT_INFO_HTML5	*PixelFormat ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
 	// テクスチャのカラー情報を取得する
-	DestColor = Graphics_iOS_GetDataFormatColorData( DestColorFormat ) ;
-	PixelFormat = &g_iOSPixelFormat[ DestColorFormat ] ;
+	DestColor = Graphics_HTML5_GetDataFormatColorData( DestColorFormat ) ;
+	PixelFormat = &g_HTML5PixelFormat[ DestColorFormat ] ;
 
 	MipMapCount = Orig->Hard.MipMapCount > 16 ? 16 : Orig->Hard.MipMapCount ;
 
@@ -18450,11 +18450,11 @@ static int Graphics_iOS_BltBmpOrBaseImageToGraph3_MipMapBlt(
 		}
 		else
 		{
-			if( Graphics_iOS_Texture_SetupCommonBuffer( ( unsigned int )( ImageSize * 2 ) ) < 0 )
+			if( Graphics_HTML5_Texture_SetupCommonBuffer( ( unsigned int )( ImageSize * 2 ) ) < 0 )
 			{
 				return -1 ;
 			}
-			ImageBuffer = GIOS.Texture.CommonBuffer ;
+			ImageBuffer = GHTML5.Texture.CommonBuffer ;
 		}
 		Image1      = ImageBuffer ;
 		Image2      = ( BYTE * )Image1 + ImageSize ;
@@ -18562,7 +18562,7 @@ static int Graphics_iOS_BltBmpOrBaseImageToGraph3_MipMapBlt(
 	return 0 ;
 }
 
-extern int Graphics_iOS_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
+extern int Graphics_HTML5_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 	const RECT				*SrcRect,
 	const RECT				*DestRect,
 	      GLuint			UseTex,
@@ -18592,21 +18592,21 @@ extern int Graphics_iOS_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 	DWORD			ImageSize ;
 	DWORD			AlphaImageSize ;
 	const COLORDATA *DestColor ;
-	PIXELFORMAT_INFO_IOS	*PixelFormat ;
+	PIXELFORMAT_INFO_HTML5	*PixelFormat ;
 	void			*TempBuffer = NULL ;
 	unsigned int	TempBufferWidth ;
 	unsigned int	TempBufferHeight ;
 	unsigned int	TempBufferSize ;
 	int				TempBufferPitch = 0 ;
 
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
 
 	// テクスチャのカラー情報を取得する
-	DestColor = Graphics_iOS_GetDataFormatColorData( DestColorFormat ) ;
-	PixelFormat = &g_iOSPixelFormat[ DestColorFormat ] ;
+	DestColor = Graphics_HTML5_GetDataFormatColorData( DestColorFormat ) ;
+	PixelFormat = &g_HTML5PixelFormat[ DestColorFormat ] ;
 
 	DestPoint.x = 0 ;
 	DestPoint.y = 0 ;
@@ -18636,17 +18636,17 @@ extern int Graphics_iOS_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 		TempBuffer      = DXALLOC( TempBufferSize ) ;
 		if( TempBuffer == NULL )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6b\x30\x3b\x75\xcf\x50\x92\x30\xe2\x8e\x01\x90\x59\x30\x8b\x30\x5f\x30\x81\x30\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x5b\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x50\x00\x53\x00\x34\x00\x5f\x00\x42\x00\x6c\x00\x74\x00\x42\x00\x6d\x00\x70\x00\x4f\x00\x72\x00\x42\x00\x61\x00\x73\x00\x65\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x54\x00\x6f\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x33\x00\x5f\x00\x4e\x00\x6f\x00\x4d\x00\x69\x00\x70\x00\x4d\x00\x61\x00\x70\x00\x42\x00\x6c\x00\x74\x00\x5d\x00\x0a\x00\x00"/*@ L"テクスチャに画像を転送するためのメモリの確保に失敗しました[Graphics_iOS_BltBmpOrBaseImageToGraph3_NoMipMapBlt]\n" @*/ )) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6b\x30\x3b\x75\xcf\x50\x92\x30\xe2\x8e\x01\x90\x59\x30\x8b\x30\x5f\x30\x81\x30\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x5b\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x50\x00\x53\x00\x34\x00\x5f\x00\x42\x00\x6c\x00\x74\x00\x42\x00\x6d\x00\x70\x00\x4f\x00\x72\x00\x42\x00\x61\x00\x73\x00\x65\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x54\x00\x6f\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x33\x00\x5f\x00\x4e\x00\x6f\x00\x4d\x00\x69\x00\x70\x00\x4d\x00\x61\x00\x70\x00\x42\x00\x6c\x00\x74\x00\x5d\x00\x0a\x00\x00"/*@ L"テクスチャに画像を転送するためのメモリの確保に失敗しました[Graphics_HTML5_BltBmpOrBaseImageToGraph3_NoMipMapBlt]\n" @*/ )) ;
 			return -1 ;
 		}
 	}
 	else
 	{
-		if( Graphics_iOS_Texture_SetupCommonBuffer( TempBufferSize ) < 0 )
+		if( Graphics_HTML5_Texture_SetupCommonBuffer( TempBufferSize ) < 0 )
 		{
 			return -1 ;
 		}
-		TempBuffer      = GIOS.Texture.CommonBuffer ;
+		TempBuffer      = GHTML5.Texture.CommonBuffer ;
 	}
 
 	for( i = 0 ; i < ImageNum ; i ++ )
@@ -18740,7 +18740,7 @@ extern int Graphics_iOS_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 	return 0 ;
 }
 
-// iOS のグラフィックハンドルに画像データを転送するための関数
+// HTML5 のグラフィックハンドルに画像データを転送するための関数
 extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 	const RECT		*SrcRect,
 	      int		DestX,
@@ -18842,7 +18842,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 			// ミップマップかどうかで処理を分岐
 			if( Orig->Hard.MipMapCount > 1 )
 			{
-				if( Graphics_iOS_BltBmpOrBaseImageToGraph3_MipMapBlt(
+				if( Graphics_HTML5_BltBmpOrBaseImageToGraph3_MipMapBlt(
 						Orig,
 						&MoveRect,
 						&DestRect,
@@ -18851,7 +18851,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 						OrigTex->TexHeight,
 						RgbBaseImage,
 						AlphaBaseImage,
-						GIOS.Device.Caps.TextureFormat[ Orig->ColorFormat ],
+						GHTML5.Device.Caps.TextureFormat[ Orig->ColorFormat ],
 						RedIsAlphaFlag,
 						UseTransColorConvAlpha,
 						ASyncThread ) < 0 )
@@ -18859,7 +18859,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 			}
 			else
 			{
-				if( Graphics_iOS_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
+				if( Graphics_HTML5_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 						&MoveRect,
 						&DestRect,
 						UseTex,
@@ -18870,7 +18870,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 						OrigTex->UseHeight,
 						RgbBaseImage,
 						AlphaBaseImage,
-						GIOS.Device.Caps.TextureFormat[ Orig->ColorFormat ],
+						GHTML5.Device.Caps.TextureFormat[ Orig->ColorFormat ],
 						RedIsAlphaFlag,
 						UseTransColorConvAlpha,
 						Orig->TransCode,
@@ -18909,7 +18909,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 			// ミップマップかどうかで処理を分岐
 			if( Orig->Hard.MipMapCount > 1 )
 			{
-				if( Graphics_iOS_BltBmpOrBaseImageToGraph3_MipMapBlt(
+				if( Graphics_HTML5_BltBmpOrBaseImageToGraph3_MipMapBlt(
 						Orig,
 						&MoveRect,
 						&DestRect,
@@ -18918,7 +18918,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 						DrawTex->Tex->TexHeight,
 						RgbBaseImage,
 						AlphaBaseImage,
-						GIOS.Device.Caps.TextureFormat[ Orig->ColorFormat ],
+						GHTML5.Device.Caps.TextureFormat[ Orig->ColorFormat ],
 						RedIsAlphaFlag,
 						UseTransColorConvAlpha,
 						ASyncThread ) < 0 )
@@ -18926,7 +18926,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 			}
 			else
 			{
-				if( Graphics_iOS_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
+				if( Graphics_HTML5_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 						&MoveRect,
 						&DestRect,
 						UseTex,
@@ -18937,7 +18937,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 						DrawTex->Tex->UseHeight,
 						RgbBaseImage,
 						AlphaBaseImage,
-						GIOS.Device.Caps.TextureFormat[ Orig->ColorFormat ],
+						GHTML5.Device.Caps.TextureFormat[ Orig->ColorFormat ],
 						RedIsAlphaFlag,
 						UseTransColorConvAlpha,
 						Orig->TransCode,
@@ -18993,10 +18993,10 @@ extern	int		Graphics_Hardware_CreateOrigTexture_PF(  IMAGEDATA_ORIG *Orig, int A
 		// テクスチャを作成
 		if( OrigTex->PF->Texture.TextureBuffer == 0 )
 		{
-			PIXELFORMAT_INFO_IOS *PixelFormat ;
+			PIXELFORMAT_INFO_HTML5 *PixelFormat ;
 
-			OrigTex->PF->Texture.PixelFormat = GIOS.Device.Caps.TextureFormat[ Orig->ColorFormat ] ;
-			PixelFormat = &g_iOSPixelFormat[ OrigTex->PF->Texture.PixelFormat ] ;
+			OrigTex->PF->Texture.PixelFormat = GHTML5.Device.Caps.TextureFormat[ Orig->ColorFormat ] ;
+			PixelFormat = &g_HTML5PixelFormat[ OrigTex->PF->Texture.PixelFormat ] ;
 			glGenTextures( 1, &OrigTex->PF->Texture.TextureBuffer ) ;
 			glBindTexture( GL_TEXTURE_2D, OrigTex->PF->Texture.TextureBuffer ) ;
 
@@ -19074,7 +19074,7 @@ extern	int		Graphics_Hardware_CreateOrigTexture_PF(  IMAGEDATA_ORIG *Orig, int A
 				// 深度バッファを作成
 				glGenRenderbuffers( 1, &OrigTex->PF->DepthBuffer ) ;
 				glBindRenderbuffer( GL_RENDERBUFFER, OrigTex->PF->DepthBuffer ) ;
-				glRenderbufferStorage( GL_RENDERBUFFER, GIOS.Device.Caps.DepthBufferFormat[ Orig->ZBufferBitDepthIndex ], OrigTex->TexWidth, OrigTex->TexHeight ) ;
+				glRenderbufferStorage( GL_RENDERBUFFER, GHTML5.Device.Caps.DepthBufferFormat[ Orig->ZBufferBitDepthIndex ], OrigTex->TexWidth, OrigTex->TexHeight ) ;
 
 				// 深度バッファとテクスチャをフレームバッファにアタッチ
 				glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,  GL_RENDERBUFFER, OrigTex->PF->DepthBuffer ) ;
@@ -19088,7 +19088,7 @@ extern	int		Graphics_Hardware_CreateOrigTexture_PF(  IMAGEDATA_ORIG *Orig, int A
 }
 
 // テクスチャを解放する
-static int Graphics_Hardware_iOS_DeleteTexture( GLuint Texture )
+static int Graphics_Hardware_HTML5_DeleteTexture( GLuint Texture )
 {
 	int i ;
 	int Flag ;
@@ -19097,8 +19097,8 @@ static int Graphics_Hardware_iOS_DeleteTexture( GLuint Texture )
 	Flag = FALSE ;
 	for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 	{
-		if( GIOS.Device.State.SetTexture[ i ] == NULL ||
-			GIOS.Device.State.SetTexture[ i ]->TextureBuffer != Texture )
+		if( GHTML5.Device.State.SetTexture[ i ] == NULL ||
+			GHTML5.Device.State.SetTexture[ i ]->TextureBuffer != Texture )
 		{
 			continue ;
 		}
@@ -19110,13 +19110,13 @@ static int Graphics_Hardware_iOS_DeleteTexture( GLuint Texture )
 			Flag = TRUE ;
 		}
 
-		Graphics_iOS_DeviceState_SetTexture( i, NULL ) ;
+		Graphics_HTML5_DeviceState_SetTexture( i, NULL ) ;
 	}
 
 	// どこかのスロットにセットされていたら描画用テクスチャも解除
 	if( Flag )
 	{
-		Graphics_iOS_DrawSetting_SetTexture( NULL ) ;
+		Graphics_HTML5_DrawSetting_SetTexture( NULL ) ;
 	}
 
 	// テクスチャを削除する
@@ -19148,7 +19148,7 @@ extern int Graphics_Hardware_ReleaseOrigTexture_PF( IMAGEDATA_ORIG *Orig )
 
 		if( OrigTex->PF->Texture.TextureBuffer != 0 )
 		{
-			Graphics_Hardware_iOS_DeleteTexture( OrigTex->PF->Texture.TextureBuffer ) ;
+			Graphics_Hardware_HTML5_DeleteTexture( OrigTex->PF->Texture.TextureBuffer ) ;
 			OrigTex->PF->Texture.TextureBuffer = 0 ;
 		}
 
@@ -19291,25 +19291,25 @@ extern	int		Graphics_Hardware_IndexBuffer_SetData_PF( INDEXBUFFERHANDLEDATA *Ind
 // ライティングを行うかどうかを設定する
 extern	int		Graphics_Hardware_Light_SetUse_PF( int Flag )
 {
-	return Graphics_iOS_DeviceState_SetLighting( Flag ) ;
+	return Graphics_HTML5_DeviceState_SetLighting( Flag ) ;
 }
 
 // グローバルアンビエントライトカラーを設定する
 extern	int		Graphics_Hardware_Light_GlobalAmbient_PF( COLOR_F *Color )
 {
-	return Graphics_iOS_DeviceState_SetAmbient( Color ) ;
+	return Graphics_HTML5_DeviceState_SetAmbient( Color ) ;
 }
 
 // ライトパラメータをセット
 extern	int		Graphics_Hardware_Light_SetState_PF( int LightNumber, LIGHTPARAM *LightParam )
 {
-	return Graphics_iOS_DeviceState_SetLightState( LightNumber, LightParam ) ;
+	return Graphics_HTML5_DeviceState_SetLightState( LightNumber, LightParam ) ;
 }
 
 // ライトの有効、無効を変更
 extern	int		Graphics_Hardware_Light_SetEnable_PF( int LightNumber, int EnableState )
 {
-	return Graphics_iOS_DeviceState_SetLightEnable( LightNumber, EnableState ) ;
+	return Graphics_HTML5_DeviceState_SetLightEnable( LightNumber, EnableState ) ;
 }
 
 
@@ -19344,7 +19344,7 @@ extern	int		Graphics_Hardware_Light_SetEnable_PF( int LightNumber, int EnableSta
 // シャドウマップデータに必要なテクスチャを作成する
 extern	int		Graphics_Hardware_ShadowMap_CreateTexture_PF( SHADOWMAPDATA *ShadowMap, int ASyncThread )
 {
-	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	if( HTML5_CHECKVALID_HARDWARE == FALSE )
 	{
 		return -1 ;
 	}
@@ -19378,7 +19378,7 @@ extern	int		Graphics_Hardware_ShadowMap_CreateTexture_PF( SHADOWMAPDATA *ShadowM
 	}
 
 //	// 決定したフォーマットが作成できない場合は失敗
-//	if( GIOS.Device.Caps.TextureFormat[ ShadowMap->ColorFormat ] == D_DXGI_FORMAT_UNKNOWN )
+//	if( GHTML5.Device.Caps.TextureFormat[ ShadowMap->ColorFormat ] == D_DXGI_FORMAT_UNKNOWN )
 //	{
 //		DXST_LOGFILE_ADDUTF16LE( "\xb7\x30\xe3\x30\xc9\x30\xa6\x30\xde\x30\xc3\x30\xd7\x30\xc7\x30\xfc\x30\xbf\x30\x28\x75\x6e\x30\xd5\x30\xa9\x30\xfc\x30\xde\x30\xc3\x30\xc8\x30\x67\x30\x5c\x4f\x10\x62\x67\x30\x4d\x30\x8b\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xd5\x30\xa9\x30\xfc\x30\xde\x30\xc3\x30\xc8\x30\x4c\x30\x42\x30\x8a\x30\x7e\x30\x5b\x30\x93\x30\x67\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"シャドウマップデータ用のフォーマットで作成できるテクスチャフォーマットがありませんでした\n" @*/ ) ;
 //		return -1 ;
@@ -19386,10 +19386,10 @@ extern	int		Graphics_Hardware_ShadowMap_CreateTexture_PF( SHADOWMAPDATA *ShadowM
 
 	// テクスチャを作成
 	{
-		PIXELFORMAT_INFO_IOS *PixelFormat ;
+		PIXELFORMAT_INFO_HTML5 *PixelFormat ;
 
-		ShadowMap->PF->Texture.PixelFormat = GIOS.Device.Caps.TextureFormat[ ShadowMap->ColorFormat ] ;
-		PixelFormat = &g_iOSPixelFormat[ ShadowMap->PF->Texture.PixelFormat ] ;
+		ShadowMap->PF->Texture.PixelFormat = GHTML5.Device.Caps.TextureFormat[ ShadowMap->ColorFormat ] ;
+		PixelFormat = &g_HTML5PixelFormat[ ShadowMap->PF->Texture.PixelFormat ] ;
 		if( ShadowMap->PF->Texture.TextureBuffer == 0 )
 		{
 			glGenTextures( 1, &ShadowMap->PF->Texture.TextureBuffer ) ;
@@ -19452,7 +19452,7 @@ extern	int		Graphics_Hardware_ShadowMap_CreateTexture_PF( SHADOWMAPDATA *ShadowM
 		glGenRenderbuffers( 1, &ShadowMap->PF->DepthBuffer ) ;
 	}
 	glBindRenderbuffer( GL_RENDERBUFFER, ShadowMap->PF->DepthBuffer ) ;
-	glRenderbufferStorage( GL_RENDERBUFFER, GIOS.Device.Caps.DepthBufferFormat[ ShadowMap->ZBufferFormat ], ShadowMap->BaseSizeX, ShadowMap->BaseSizeY ) ;
+	glRenderbufferStorage( GL_RENDERBUFFER, GHTML5.Device.Caps.DepthBufferFormat[ ShadowMap->ZBufferFormat ], ShadowMap->BaseSizeX, ShadowMap->BaseSizeY ) ;
 
 	// 深度バッファとテクスチャをフレームバッファにアタッチ
 	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,  GL_RENDERBUFFER, ShadowMap->PF->DepthBuffer ) ;
@@ -19473,7 +19473,7 @@ extern	int		Graphics_Hardware_ShadowMap_ReleaseTexture_PF( SHADOWMAPDATA *Shadow
 
 	if( ShadowMap->PF->Texture.TextureBuffer != 0 )
 	{
-		Graphics_Hardware_iOS_DeleteTexture( ShadowMap->PF->Texture.TextureBuffer ) ;
+		Graphics_Hardware_HTML5_DeleteTexture( ShadowMap->PF->Texture.TextureBuffer ) ;
 		ShadowMap->PF->Texture.TextureBuffer = 0 ;
 	}
 
@@ -19505,27 +19505,27 @@ extern	void	Graphics_Hardware_ShadowMap_RefreshVSParam_PF( void )
 		// アドレスの取得
 		if( SHADOWMAPCHKFULL( GSYS.DrawSetting.ShadowMap[ i ], ShadowMap ) )
 		{
-			_MEMCPY( GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 ], TranspMatDef, sizeof( TranspMatDef ) ) ;
+			_MEMCPY( GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 ], TranspMatDef, sizeof( TranspMatDef ) ) ;
 		}
 		else
 		{
 			// 行列のセット
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 0 ][ 0 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 0 ][ 0 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 0 ][ 1 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 1 ][ 0 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 0 ][ 2 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 2 ][ 0 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 0 ][ 3 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 3 ][ 0 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 1 ][ 0 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 0 ][ 1 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 1 ][ 1 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 1 ][ 1 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 1 ][ 2 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 2 ][ 1 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 1 ][ 3 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 3 ][ 1 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 2 ][ 0 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 0 ][ 2 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 2 ][ 1 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 1 ][ 2 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 2 ][ 2 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 2 ][ 2 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 2 ][ 3 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 3 ][ 2 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 3 ][ 0 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 0 ][ 3 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 3 ][ 1 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 1 ][ 3 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 3 ][ 2 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 2 ][ 3 ] ;
-			GIOS.Device.Shader.Constant.uSMLVPMat[ i * 4 + 3 ][ 3 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 3 ][ 3 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 0 ][ 0 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 0 ][ 0 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 0 ][ 1 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 1 ][ 0 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 0 ][ 2 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 2 ][ 0 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 0 ][ 3 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 3 ][ 0 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 1 ][ 0 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 0 ][ 1 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 1 ][ 1 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 1 ][ 1 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 1 ][ 2 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 2 ][ 1 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 1 ][ 3 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 3 ][ 1 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 2 ][ 0 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 0 ][ 2 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 2 ][ 1 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 1 ][ 2 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 2 ][ 2 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 2 ][ 2 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 2 ][ 3 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 3 ][ 2 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 3 ][ 0 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 0 ][ 3 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 3 ][ 1 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 1 ][ 3 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 3 ][ 2 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 2 ][ 3 ] ;
+			GHTML5.Device.Shader.Constant.uSMLVPMat[ i * 4 + 3 ][ 3 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 3 ][ 3 ] ;
 		}
 	}
 }
@@ -19543,20 +19543,20 @@ extern	void	Graphics_Hardware_ShadowMap_RefreshPSParam_PF( void )
 
 	for( i = 0 ; i < MAX_USE_SHADOWMAP_NUM ; i ++ )
 	{
-		GIOS.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 0 ] = 1.0f ;
-		GIOS.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 1 ] = 1.0f ;
-		GIOS.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 2 ] = 1.0f ;
+		GHTML5.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 0 ] = 1.0f ;
+		GHTML5.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 1 ] = 1.0f ;
+		GHTML5.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 2 ] = 1.0f ;
 
 		// アドレスの取得
 		if( SHADOWMAPCHKFULL( GSYS.DrawSetting.ShadowMap[ i ], ShadowMap ) )
 		{
-			GIOS.Device.Shader.Constant.uShadowMap_DAdj_Grad[ i ][ 0 ] = 1.0f ;
-			GIOS.Device.Shader.Constant.uShadowMap_DAdj_Grad[ i ][ 1 ] = 0.0f ;
+			GHTML5.Device.Shader.Constant.uShadowMap_DAdj_Grad[ i ][ 0 ] = 1.0f ;
+			GHTML5.Device.Shader.Constant.uShadowMap_DAdj_Grad[ i ][ 1 ] = 0.0f ;
 		}
 		else
 		{
-			GIOS.Device.Shader.Constant.uShadowMap_DAdj_Grad[ i ][ 0 ] = ShadowMap->AdjustDepth ;
-			GIOS.Device.Shader.Constant.uShadowMap_DAdj_Grad[ i ][ 1 ] = ShadowMap->GradationParam ;
+			GHTML5.Device.Shader.Constant.uShadowMap_DAdj_Grad[ i ][ 0 ] = ShadowMap->AdjustDepth ;
+			GHTML5.Device.Shader.Constant.uShadowMap_DAdj_Grad[ i ][ 1 ] = ShadowMap->GradationParam ;
 
 			for( j = 0 ; j < CheckNum ; j ++ )
 			{
@@ -19566,15 +19566,15 @@ extern	void	Graphics_Hardware_ShadowMap_RefreshPSParam_PF( void )
 					switch( j )
 					{
 					case 0 :
-						GIOS.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 0 ] = 0.0f ;
+						GHTML5.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 0 ] = 0.0f ;
 						break ;
 
 					case 1 :
-						GIOS.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 1 ] = 0.0f ;
+						GHTML5.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 1 ] = 0.0f ;
 						break ;
 
 					case 2 :
-						GIOS.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 2 ] = 0.0f ;
+						GHTML5.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 2 ] = 0.0f ;
 						break ;
 					}
 				}
@@ -19649,7 +19649,7 @@ extern	int		Graphics_Hardware_Shader_Create_PF(
 	SHADERHANDLEDATA   *pShader ;
 	GLuint FragmentShader = 0 ;
 	GLuint VertexShader = 0 ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO ShaderCodeInfo ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO ShaderCodeInfo ;
 	int Result ;
 
 	// エラー判定
@@ -19670,7 +19670,7 @@ extern	int		Graphics_Hardware_Shader_Create_PF(
 	switch( ShaderType )
 	{
 	case DX_SHADERTYPE_VERTEX :
-		Result = Graphics_iOS_VertexShader_Create( &ShaderCodeInfo, &VertexShader, 1 ) ;
+		Result = Graphics_HTML5_VertexShader_Create( &ShaderCodeInfo, &VertexShader, 1 ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILE_ADDUTF16LE( "\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"頂点シェーダーの作成に失敗しました\n" @*/ ) ;
@@ -19679,7 +19679,7 @@ extern	int		Graphics_Hardware_Shader_Create_PF(
 		break ;
 
 	case DX_SHADERTYPE_PIXEL :
-		Result = Graphics_iOS_FragmentShader_Create( &ShaderCodeInfo, &FragmentShader, 1 ) ;
+		Result = Graphics_HTML5_FragmentShader_Create( &ShaderCodeInfo, &FragmentShader, 1 ) ;
 		if( Result < 0 )
 		{
 			DXST_LOGFILE_ADDUTF16LE( "\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"フラグメントシェーダーの作成に失敗しました\n" @*/ ) ;
@@ -19730,8 +19730,8 @@ extern	int		Graphics_Hardware_Shader_Create_PF(
 
 ERR :
 
-	Graphics_iOS_VertexShaderArray_Release( &VertexShader, 1 ) ;
-	Graphics_iOS_FragmentShaderArray_Release(  &FragmentShader,  1 ) ;
+	Graphics_HTML5_VertexShaderArray_Release( &VertexShader, 1 ) ;
+	Graphics_HTML5_FragmentShaderArray_Release(  &FragmentShader,  1 ) ;
 
 	// 処理後に解放すべしのフラグが立っていたら解放する
 	if( ImageAfterFree )
@@ -19748,11 +19748,11 @@ extern	int		Graphics_Hardware_Shader_TerminateHandle_PF( SHADERHANDLEDATA *Shade
 	// シェーダーの解放
 	if( Shader->ShaderType == DX_SHADERTYPE_VERTEX )
 	{
-		Graphics_iOS_VertexShaderArray_Release( &Shader->PF->Shader, 1 ) ;
+		Graphics_HTML5_VertexShaderArray_Release( &Shader->PF->Shader, 1 ) ;
 	}
 	else
 	{
-		Graphics_iOS_FragmentShaderArray_Release(  &Shader->PF->Shader,  1 ) ;
+		Graphics_HTML5_FragmentShaderArray_Release(  &Shader->PF->Shader,  1 ) ;
 	}
 
 	// 正常終了
@@ -19801,7 +19801,7 @@ extern	int		Graphics_Hardware_Shader_ResetConst_PF( int TypeIndex, int SetIndex,
 // ３Ｄモデル用のシェーダーコードの初期化を行う
 extern	int		Graphics_Hardware_Shader_ModelCode_Init_PF( void )
 {
-	if( Graphics_iOS_ShaderCode_Model_Initialize() == FALSE )
+	if( Graphics_HTML5_ShaderCode_Model_Initialize() == FALSE )
 	{
 		return -1 ;
 	}
@@ -19948,19 +19948,19 @@ extern int GetOpenGLInfo(
 	int *Shader_Max_Fragment_Uniform_Vectors			// GL_MAX_FRAGMENT_UNIFORM_VECTORS
 )
 {
-	if( Version										!= NULL ) *Version									= GIOS.Device.Caps.Version	;
-	if( Renderer									!= NULL ) *Renderer									= GIOS.Device.Caps.Renderer ;
-	if( Vendor										!= NULL ) *Vendor									= GIOS.Device.Caps.Vendor ;
-	if( ExtensionNames								!= NULL ) *ExtensionNames							= GIOS.Device.Caps.ExtensionNames ;
-	if( Shading_Language_Version					!= NULL ) *Shading_Language_Version					= GIOS.Device.Caps.Shading_Language_Version ;
+	if( Version										!= NULL ) *Version									= GHTML5.Device.Caps.Version	;
+	if( Renderer									!= NULL ) *Renderer									= GHTML5.Device.Caps.Renderer ;
+	if( Vendor										!= NULL ) *Vendor									= GHTML5.Device.Caps.Vendor ;
+	if( ExtensionNames								!= NULL ) *ExtensionNames							= GHTML5.Device.Caps.ExtensionNames ;
+	if( Shading_Language_Version					!= NULL ) *Shading_Language_Version					= GHTML5.Device.Caps.Shading_Language_Version ;
 
-	if( Shader_Max_Vertex_Attribs					!= NULL ) *Shader_Max_Vertex_Attribs				= GIOS.Device.Caps.Shader_Max_Vertex_Attribs ;
-	if( Shader_Max_Vertex_Uniform_Vectors			!= NULL ) *Shader_Max_Vertex_Uniform_Vectors		= GIOS.Device.Caps.Shader_Max_Vertex_Uniform_Vectors ;
-	if( Shader_Max_Varying_Vectors					!= NULL ) *Shader_Max_Varying_Vectors				= GIOS.Device.Caps.Shader_Max_Varying_Vectors ;
-	if( Shader_Max_Combined_Texture_Image_Units		!= NULL ) *Shader_Max_Combined_Texture_Image_Units	= GIOS.Device.Caps.Shader_Max_Combined_Texture_Image_Units ;
-	if( Shader_Max_Vertex_Texture_Image_Units		!= NULL ) *Shader_Max_Vertex_Texture_Image_Units	= GIOS.Device.Caps.Shader_Max_Vertex_Texture_Image_Units ;
-	if( Shader_Max_Texture_Image_Units				!= NULL ) *Shader_Max_Texture_Image_Units			= GIOS.Device.Caps.Shader_Max_Texture_Image_Units ;
-	if( Shader_Max_Fragment_Uniform_Vectors			!= NULL ) *Shader_Max_Fragment_Uniform_Vectors		= GIOS.Device.Caps.Shader_Max_Fragment_Uniform_Vectors ;
+	if( Shader_Max_Vertex_Attribs					!= NULL ) *Shader_Max_Vertex_Attribs				= GHTML5.Device.Caps.Shader_Max_Vertex_Attribs ;
+	if( Shader_Max_Vertex_Uniform_Vectors			!= NULL ) *Shader_Max_Vertex_Uniform_Vectors		= GHTML5.Device.Caps.Shader_Max_Vertex_Uniform_Vectors ;
+	if( Shader_Max_Varying_Vectors					!= NULL ) *Shader_Max_Varying_Vectors				= GHTML5.Device.Caps.Shader_Max_Varying_Vectors ;
+	if( Shader_Max_Combined_Texture_Image_Units		!= NULL ) *Shader_Max_Combined_Texture_Image_Units	= GHTML5.Device.Caps.Shader_Max_Combined_Texture_Image_Units ;
+	if( Shader_Max_Vertex_Texture_Image_Units		!= NULL ) *Shader_Max_Vertex_Texture_Image_Units	= GHTML5.Device.Caps.Shader_Max_Vertex_Texture_Image_Units ;
+	if( Shader_Max_Texture_Image_Units				!= NULL ) *Shader_Max_Texture_Image_Units			= GHTML5.Device.Caps.Shader_Max_Texture_Image_Units ;
+	if( Shader_Max_Fragment_Uniform_Vectors			!= NULL ) *Shader_Max_Fragment_Uniform_Vectors		= GHTML5.Device.Caps.Shader_Max_Fragment_Uniform_Vectors ;
 
 	// 終了
 	return 0 ;
@@ -20037,10 +20037,10 @@ static int glTexSubImage2D_ASync(
     
     
 // 画面のサイズをセットする
-extern void Graphics_iOS_SetScreenSize( int Width, int Height )
+extern void Graphics_HTML5_SetScreenSize( int Width, int Height )
 {
-    GIOS.Device.Screen.Width = Width ;
-    GIOS.Device.Screen.Height = Height ;
+    GHTML5.Device.Screen.Width = Width ;
+    GHTML5.Device.Screen.Height = Height ;
 }
 
 
@@ -20050,9 +20050,9 @@ extern void Graphics_iOS_SetScreenSize( int Width, int Height )
 
 
  // VSYNC待ちのフラグを倒す
- extern void Graphics_iOS_ResetWaitVSyncFlag( void )
+ extern void Graphics_HTML5_ResetWaitVSyncFlag( void )
  {
- 	GIOS.Device.Screen.WaitVSyncFlag = FALSE ;
+ 	GHTML5.Device.Screen.WaitVSyncFlag = FALSE ;
  }
 
 

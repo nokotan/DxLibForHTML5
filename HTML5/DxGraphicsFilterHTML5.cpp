@@ -38,19 +38,19 @@ namespace DxLib
 
 // データ定義 -----------------------------------------------------------------
 
-GRAPHFILTER_SYSTEMIFNO_IOS GraphFilterSystemInfoiOS ;
+GRAPHFILTER_SYSTEMIFNO_HTML5 GraphFilterSystemInfoHTML5 ;
 
 // 関数宣言 -------------------------------------------------------------------
 
-static int		IOS_GraphFilter_GetWorkTexture( int IsFloatType, DWORD TexSizeW, DWORD TexSizeH, DWORD HandleIndex ) ;	// フィルター作業用のテクスチャハンドルを取得する
-static int		IOS_MemLoadShaderCode( const char *ShaderName, int ShaderType /* DX_SHADERTYPE_VERTEX 等 */ ) ;			// 指定名の事前用意シェーダーを読み込む
-static GLuint	IOS_GetFragmentShader( int PixelShaderHandle ) ;														// ピクセルシェーダーハンドルの中のフラグメントシェーダーを取得する
-static int		IOS_FilterStretchBlt( GRAPHICS_IOS_SHADER *UseShader, GRAPHFILTER_INFO *Info, int IsLinearFilter = TRUE, int ScaleDivNum = 1, int SubImageHandle = -1, VERTEX_TEX8_2D *Texcoord8Vertex = NULL ) ;
+static int		HTML5_GraphFilter_GetWorkTexture( int IsFloatType, DWORD TexSizeW, DWORD TexSizeH, DWORD HandleIndex ) ;	// フィルター作業用のテクスチャハンドルを取得する
+static int		HTML5_MemLoadShaderCode( const char *ShaderName, int ShaderType /* DX_SHADERTYPE_VERTEX 等 */ ) ;			// 指定名の事前用意シェーダーを読み込む
+static GLuint	HTML5_GetFragmentShader( int PixelShaderHandle ) ;														// ピクセルシェーダーハンドルの中のフラグメントシェーダーを取得する
+static int		HTML5_FilterStretchBlt( GRAPHICS_HTML5_SHADER *UseShader, GRAPHFILTER_INFO *Info, int IsLinearFilter = TRUE, int ScaleDivNum = 1, int SubImageHandle = -1, VERTEX_TEX8_2D *Texcoord8Vertex = NULL ) ;
 
 // プログラム -----------------------------------------------------------------
 
 // フィルター作業用のテクスチャハンドルを取得する
-static int	IOS_GraphFilter_GetWorkTexture( int IsFloatType, DWORD TexSizeW, DWORD TexSizeH, DWORD HandleIndex )
+static int	HTML5_GraphFilter_GetWorkTexture( int IsFloatType, DWORD TexSizeW, DWORD TexSizeH, DWORD HandleIndex )
 {
 	IMAGEDATA *BaseImage ;
 	DWORD       NPowW ;
@@ -63,43 +63,43 @@ static int	IOS_GraphFilter_GetWorkTexture( int IsFloatType, DWORD TexSizeW, DWOR
 	WorkTexSizeW = ( int )( 1 << NPowW ) ;
 	WorkTexSizeH = ( int )( 1 << NPowH ) ;
 
-	if( GRAPHCHK( GraphFilterSystemInfoiOS.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ], BaseImage ) )
+	if( GRAPHCHK( GraphFilterSystemInfoHTML5.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ], BaseImage ) )
 	{
 		SETUP_GRAPHHANDLE_GPARAM GParam ;
 
 		Graphics_Image_InitSetupGraphHandleGParam_Normal_DrawValid_NoneZBuffer( &GParam, 32, TRUE ) ;
 		GParam.DrawValidFloatTypeGraphCreateFlag = IsFloatType ;
 
-		GraphFilterSystemInfoiOS.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ] = Graphics_Image_MakeGraph_UseGParam( &GParam, WorkTexSizeW, WorkTexSizeH, FALSE, FALSE, 0, FALSE ) ;
-		if( GraphFilterSystemInfoiOS.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ] < 0 )
+		GraphFilterSystemInfoHTML5.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ] = Graphics_Image_MakeGraph_UseGParam( &GParam, WorkTexSizeW, WorkTexSizeH, FALSE, FALSE, 0, FALSE ) ;
+		if( GraphFilterSystemInfoHTML5.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ] < 0 )
 		{
 			DXST_LOGFILEFMT_ADDUTF16LE(( "\x5c\x4f\x6d\x69\x28\x75\xcf\x63\x3b\x75\xef\x53\xfd\x80\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x20\x00\x53\x00\x69\x00\x7a\x00\x65\x00\x3a\x00\x25\x00\x64\x00\x78\x00\x25\x00\x64\x00\x00"/*@ L"作業用描画可能テクスチャの作成に失敗しました Size:%dx%d" @*/, WorkTexSizeW, WorkTexSizeH )) ;
 			return -1 ;
 		}
-		NS_SetDeleteHandleFlag( GraphFilterSystemInfoiOS.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ], &GraphFilterSystemInfoiOS.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ] ) ;
+		NS_SetDeleteHandleFlag( GraphFilterSystemInfoHTML5.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ], &GraphFilterSystemInfoHTML5.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ] ) ;
 	}
 
-	return GraphFilterSystemInfoiOS.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ] ;
+	return GraphFilterSystemInfoHTML5.WorkDrawValidGrHandle[ IsFloatType ][ NPowW ][ NPowH ][ HandleIndex ] ;
 }
 
 // 指定名の事前用意シェーダーを読み込む
-static int IOS_MemLoadShaderCode( const char *ShaderName, int ShaderType /* DX_SHADERTYPE_VERTEX 等 */ )
+static int HTML5_MemLoadShaderCode( const char *ShaderName, int ShaderType /* DX_SHADERTYPE_VERTEX 等 */ )
 {
 	int Addr, Size ;
 	BYTE *FileImage ;
 	int Ret ;
 
-	if( GIOS.ShaderCode.Base.BaseShaderInitializeFlag == FALSE )
+	if( GHTML5.ShaderCode.Base.BaseShaderInitializeFlag == FALSE )
 	{
 		return -1 ;
 	}
 
-	if( DXA_GetFileInfo( &GIOS.ShaderCode.Base.FilterShaderBinDxa, DX_CHARCODEFORMAT_ASCII, ShaderName, &Addr, &Size ) < 0 )
+	if( DXA_GetFileInfo( &GHTML5.ShaderCode.Base.FilterShaderBinDxa, DX_CHARCODEFORMAT_ASCII, ShaderName, &Addr, &Size ) < 0 )
 	{
 		return -1 ;
 	}
 
-	FileImage = ( BYTE * )DXA_GetFileImage( &GIOS.ShaderCode.Base.FilterShaderBinDxa ) + Addr ;
+	FileImage = ( BYTE * )DXA_GetFileImage( &GHTML5.ShaderCode.Base.FilterShaderBinDxa ) + Addr ;
 
 	Ret = Graphics_Shader_CreateHandle_UseGParam( ShaderType, FileImage, Size, FALSE, FALSE ) ;
 
@@ -107,7 +107,7 @@ static int IOS_MemLoadShaderCode( const char *ShaderName, int ShaderType /* DX_S
 }
 
 // ピクセルシェーダーハンドルの中のフラグメントシェーダーを取得する
-static GLuint IOS_GetFragmentShader( int PixelShaderHandle )
+static GLuint HTML5_GetFragmentShader( int PixelShaderHandle )
 {
 	SHADERHANDLEDATA   *pShader ;
 
@@ -117,7 +117,7 @@ static GLuint IOS_GetFragmentShader( int PixelShaderHandle )
 	return pShader->PF->Shader ;
 }
 
-static int IOS_FilterStretchBlt( GRAPHICS_IOS_SHADER *UseShader, GRAPHFILTER_INFO *Info, int IsLinearFilter, int ScaleDivNum, int SubImageHandle, VERTEX_TEX8_2D *Texcoord8Vertex )
+static int HTML5_FilterStretchBlt( GRAPHICS_HTML5_SHADER *UseShader, GRAPHFILTER_INFO *Info, int IsLinearFilter, int ScaleDivNum, int SubImageHandle, VERTEX_TEX8_2D *Texcoord8Vertex )
 {
 	IMAGEDATA *          SrcImage              = NULL ;
 	IMAGEDATA *          BlendImage            = NULL ;
@@ -226,7 +226,7 @@ static int IOS_FilterStretchBlt( GRAPHICS_IOS_SHADER *UseShader, GRAPHFILTER_INF
 	}
 
 	// 転送
-	Graphics_iOS_StretchRect(
+	Graphics_HTML5_StretchRect(
 		SrcTexture,      SrcTextureWidth,      SrcTextureHeight,      &SrcRect,
 		DestFrameBuffer, DestFrameBufferWidth, DestFrameBufferHeight, &DestRect,
 		IsLinearFilter ? GL_LINEAR : GL_NEAREST,
@@ -262,7 +262,7 @@ extern int	GraphFilter_Initialize_PF( void )
 extern int	GraphFilter_Terminate_PF( void )
 {
 	// 全てのシェーダーを解放する
-	GraphFilter_iOS_ReleaseShaderAll() ;
+	GraphFilter_HTML5_ReleaseShaderAll() ;
 
 	return 0 ;
 }
@@ -273,13 +273,13 @@ extern int	GraphFilter_Mono_PF(       GRAPHFILTER_INFO *Info, float Cb, float Cr
 	{
 		"Mono.flag",
 	};
-	DX_IOS_SHADER_FLOAT4 ParamF4[ 2 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4 ParamF4[ 2 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	// 使用するシェーダーのセットアップ
 	if( GraphFilterShaderHandle.MonoPS < 0 )
 	{
-		GraphFilterShaderHandle.MonoPS = IOS_MemLoadShaderCode( FlagFileName[ 0 ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.MonoPS = HTML5_MemLoadShaderCode( FlagFileName[ 0 ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.MonoPS < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -290,11 +290,11 @@ extern int	GraphFilter_Mono_PF(       GRAPHFILTER_INFO *Info, float Cb, float Cr
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.MonoPS, &GraphFilterShaderHandle.MonoPS ) ;
 	}
-	if( GraphFilterSystemInfoiOS.Mono.Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.Mono.Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.Mono, GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.MonoPS ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.Mono, GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.MonoPS ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.Mono ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.Mono ;
 
 	ParamF4[ 0 ][ 0 ] = 0.29900f ;
 	ParamF4[ 0 ][ 1 ] = 0.58700f ;
@@ -306,14 +306,14 @@ extern int	GraphFilter_Mono_PF(       GRAPHFILTER_INFO *Info, float Cb, float Cr
 	ParamF4[ 1 ][ 3 ] = 0.0f ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"     ), 0            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uRGBToY"     ), ParamF4[ 0 ] ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uYCbCrToRGB" ), ParamF4[ 1 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"     ), 0            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uRGBToY"     ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uYCbCrToRGB" ), ParamF4[ 1 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE ) ;
 
 	// 正常終了
 	return 0 ;
@@ -371,27 +371,27 @@ extern int	GraphFilter_Gauss_PF(      GRAPHFILTER_INFO *Info, int PixelWidth, fl
 
 		if( DestShadowMap )
 		{
-			Graphics_iOS_StretchRect(
+			Graphics_HTML5_StretchRect(
 				SrcImage->Hard.Draw[ 0 ].Tex->PF->D3D11.Texture, SrcImage->Hard.Draw[ 0 ].Tex->PF->D3D11.TextureSRV, &BltRect,
 				DestShadowMap->PF->D3D11.DepthTexture,           DestShadowMap->PF->D3D11.DepthTextureRTV,           &BltRect ) ;
 		}
 		else
 		{
-			Graphics_iOS_StretchRect(
+			Graphics_HTML5_StretchRect(
 				SrcImage->Hard.Draw[ 0 ].Tex->PF->D3D11.Texture,  SrcImage->Hard.Draw[ 0 ].Tex->PF->D3D11.TextureSRV,  &BltRect,
 				DestImage->Hard.Draw[ 0 ].Tex->PF->D3D11.Texture, DestImage->Hard.Draw[ 0 ].Tex->PF->D3D11.TextureRTV, &BltRect ) ;
 		}
 	}
 	else */
 	{
-		DX_IOS_SHADER_FLOAT4 ParamF4Buf[ 12 ] ;
-		DX_IOS_SHADER_FLOAT4 *ParamF4 = ParamF4Buf ;
-		GRAPHICS_IOS_SHADER *UseAndrShader ;
+		DX_HTML5_SHADER_FLOAT4 ParamF4Buf[ 12 ] ;
+		DX_HTML5_SHADER_FLOAT4 *ParamF4 = ParamF4Buf ;
+		GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 		// 使用するシェーダーのセットアップ
 		if( GraphFilterShaderHandle.Gauss_PS[ UseShader ] < 0 )
 		{
-			GraphFilterShaderHandle.Gauss_PS[ UseShader ] = IOS_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
+			GraphFilterShaderHandle.Gauss_PS[ UseShader ] = HTML5_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
 			if( GraphFilterShaderHandle.Gauss_PS[ UseShader ] < 0 )
 			{
 				char PathUTF16LE[ 128 ] ;
@@ -402,11 +402,11 @@ extern int	GraphFilter_Gauss_PF(      GRAPHFILTER_INFO *Info, int PixelWidth, fl
 			}
 			NS_SetDeleteHandleFlag( GraphFilterShaderHandle.Gauss_PS[ UseShader ], &GraphFilterShaderHandle.Gauss_PS[ UseShader ] ) ;
 		}
-		if( GraphFilterSystemInfoiOS.Gauss[ UseShader ].Shader == 0 )
+		if( GraphFilterSystemInfoHTML5.Gauss[ UseShader ].Shader == 0 )
 		{
-			Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.Gauss[ UseShader ], GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.Gauss_PS[ UseShader ] ) ) ;
+			Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.Gauss[ UseShader ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.Gauss_PS[ UseShader ] ) ) ;
 		}
-		UseAndrShader = &GraphFilterSystemInfoiOS.Gauss[ UseShader ] ;
+		UseHTML5Shader = &GraphFilterSystemInfoHTML5.Gauss[ UseShader ] ;
 
 		ParamF4[ 0 ][ 0 ] = Table[ 0 ] ;
 		ParamF4[ 0 ][ 1 ] = Table[ 1 ] ;
@@ -469,14 +469,14 @@ extern int	GraphFilter_Gauss_PF(      GRAPHFILTER_INFO *Info, int PixelWidth, fl
 		}
 
 		// シェーダーを使用状態にセット
-		glUseProgram( UseAndrShader->Shader ) ;
+		glUseProgram( UseHTML5Shader->Shader ) ;
 
 		// Uniform の値をセット
-		UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"      ), 0            ) ;
-		glUniform4fv( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uPixelWeight" ), 4, ParamF4Buf[ 0 ] ) ;
-		glUniform4fv( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uPixelOffset" ), 8, ParamF4Buf[ 4 ] ) ;
+		UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"      ), 0            ) ;
+		glUniform4fv( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uPixelWeight" ), 4, ParamF4Buf[ 0 ] ) ;
+		glUniform4fv( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uPixelOffset" ), 8, ParamF4Buf[ 4 ] ) ;
 
-		IOS_FilterStretchBlt( UseAndrShader, Info ) ;
+		HTML5_FilterStretchBlt( UseHTML5Shader, Info ) ;
 
 		if( Info->Pass == 0 )
 		{
@@ -547,7 +547,7 @@ extern int	GraphFilter_Gauss_PF(      GRAPHFILTER_INFO *Info, int PixelWidth, fl
 
 			if( DestRect.top != DestRect.bottom )
 			{
-				Graphics_iOS_StretchRect(
+				Graphics_HTML5_StretchRect(
 					SrcTexture,      SrcTextureWidth,      SrcTextureHeight,      &SrcRect,
 					DestFrameBuffer, DestFrameBufferWidth, DestFrameBufferHeight, &DestRect
 				) ;
@@ -570,13 +570,13 @@ extern int	GraphFilter_Down_Scale_PF(  GRAPHFILTER_INFO *Info, int DivNum )
 	IMAGEDATA              *SrcImage ;
 	int                    UseShader = 0 ;
 	int                    UseConstNum = 0 ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 8 ] ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 8 ] ;
 	int                    TextureW ;
 	int                    TextureH ;
 	float                  TextureWF ;
 	float                  TextureHF ;
 	int                    i ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	if( GRAPHCHK( Info->SrcGrHandle, SrcImage ) )
 	{
@@ -592,7 +592,7 @@ extern int	GraphFilter_Down_Scale_PF(  GRAPHFILTER_INFO *Info, int DivNum )
 	}
 	if( GraphFilterShaderHandle.DownScalePS[ UseShader ] < 0 )
 	{
-		GraphFilterShaderHandle.DownScalePS[ UseShader ] = IOS_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.DownScalePS[ UseShader ] = HTML5_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.DownScalePS[ UseShader ] < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -603,11 +603,11 @@ extern int	GraphFilter_Down_Scale_PF(  GRAPHFILTER_INFO *Info, int DivNum )
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.DownScalePS[ UseShader ], &GraphFilterShaderHandle.DownScalePS[ UseShader ] ) ;
 	}
-	if( GraphFilterSystemInfoiOS.DownScale[ UseShader ].Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.DownScale[ UseShader ].Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.DownScale[ UseShader ], GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.DownScalePS[ UseShader ] ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.DownScale[ UseShader ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.DownScalePS[ UseShader ] ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.DownScale[ UseShader ] ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.DownScale[ UseShader ] ;
 
 	switch( DivNum )
 	{
@@ -662,13 +662,13 @@ extern int	GraphFilter_Down_Scale_PF(  GRAPHFILTER_INFO *Info, int DivNum )
 	}
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"      ), 0               ) ;
-	glUniform4fv(       Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uPixelOffset" ), 8, ParamF4[ 0 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"      ), 0               ) ;
+	glUniform4fv(       Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uPixelOffset" ), 8, ParamF4[ 0 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, TRUE, DivNum ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, TRUE, DivNum ) ;
 
 	// 正常終了
 	return 0 ;
@@ -701,8 +701,8 @@ extern int	GraphFilter_Bright_Clip_PF( GRAPHFILTER_INFO *Info, int CmpType, floa
 	} ;
 	int UseShader = 0 ;
 	int UseFill ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 3 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 3 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	// 使用するシェーダーのセットアップ
 	UseFill = ClipFillFlag == TRUE ? 1 : 0 ;
@@ -718,7 +718,7 @@ extern int	GraphFilter_Bright_Clip_PF( GRAPHFILTER_INFO *Info, int CmpType, floa
 	}
 	if( GraphFilterShaderHandle.BrightClipPS[ UseShader ][ UseFill ][ IsPMA ] < 0 )
 	{
-		GraphFilterShaderHandle.BrightClipPS[ UseShader ][ UseFill ][ IsPMA ] = IOS_MemLoadShaderCode( FlagFileName[ UseShader ][ UseFill ][ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.BrightClipPS[ UseShader ][ UseFill ][ IsPMA ] = HTML5_MemLoadShaderCode( FlagFileName[ UseShader ][ UseFill ][ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.BrightClipPS[ UseShader ][ UseFill ][ IsPMA ] < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -729,11 +729,11 @@ extern int	GraphFilter_Bright_Clip_PF( GRAPHFILTER_INFO *Info, int CmpType, floa
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.BrightClipPS[ UseShader ][ UseFill ][ IsPMA ], &GraphFilterShaderHandle.BrightClipPS[ UseShader ][ UseFill ][ IsPMA ] ) ;
 	}
-	if( GraphFilterSystemInfoiOS.BrightClip[ UseShader ][ UseFill ][ IsPMA ].Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.BrightClip[ UseShader ][ UseFill ][ IsPMA ].Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.BrightClip[ UseShader ][ UseFill ][ IsPMA ], GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.BrightClipPS[ UseShader ][ UseFill ][ IsPMA ] ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.BrightClip[ UseShader ][ UseFill ][ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.BrightClipPS[ UseShader ][ UseFill ][ IsPMA ] ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.BrightClip[ UseShader ][ UseFill ][ IsPMA ] ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.BrightClip[ UseShader ][ UseFill ][ IsPMA ] ;
 
 	ParamF4[  0 ][ 0 ] = CmpParam ;
 	ParamF4[  0 ][ 1 ] = CmpParam ;
@@ -752,15 +752,15 @@ extern int	GraphFilter_Bright_Clip_PF( GRAPHFILTER_INFO *Info, int CmpType, floa
 	}
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"         ), 0            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uClipBrightness" ), ParamF4[ 0 ] ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uRGBToY"         ), ParamF4[ 1 ] ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uClipFillColor"  ), ParamF4[ 2 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"         ), 0            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uClipBrightness" ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uRGBToY"         ), ParamF4[ 1 ] ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uClipFillColor"  ), ParamF4[ 2 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE ) ;
 
 	// 正常終了
 	return 0 ;
@@ -773,13 +773,13 @@ extern int	GraphFilter_Bright_Scale_PF( GRAPHFILTER_INFO *Info, int BrightMin, i
 		"BrightnessScale.flag",
 		"BrightnessScale_PMA.flag",
 	} ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 1 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 1 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	// 使用するシェーダーのセットアップ
 	if( GraphFilterShaderHandle.BrightScalePS[ IsPMA ] < 0 )
 	{
-		GraphFilterShaderHandle.BrightScalePS[ IsPMA ] = IOS_MemLoadShaderCode( FlagFileName[ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.BrightScalePS[ IsPMA ] = HTML5_MemLoadShaderCode( FlagFileName[ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.BrightScalePS[ IsPMA ] < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -790,11 +790,11 @@ extern int	GraphFilter_Bright_Scale_PF( GRAPHFILTER_INFO *Info, int BrightMin, i
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.BrightScalePS[ IsPMA ], &GraphFilterShaderHandle.BrightScalePS[ IsPMA ] ) ;
 	}
-	if( GraphFilterSystemInfoiOS.BrightScale[ IsPMA ].Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.BrightScale[ IsPMA ].Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.BrightScale[ IsPMA ], GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.BrightScalePS[ IsPMA ] ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.BrightScale[ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.BrightScalePS[ IsPMA ] ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.BrightScale[ IsPMA ] ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.BrightScale[ IsPMA ] ;
 
 	ParamF4[  0 ][ 0 ] = BrightMin / 255.0f ;
 	ParamF4[  0 ][ 1 ] = 255.0f / ( float )( BrightMax - BrightMin ) ;
@@ -802,13 +802,13 @@ extern int	GraphFilter_Bright_Scale_PF( GRAPHFILTER_INFO *Info, int BrightMin, i
 	ParamF4[  0 ][ 3 ] = 0.0f ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"      ), 0            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uMinB_ScaleB" ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"      ), 0            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uMinB_ScaleB" ), ParamF4[ 0 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE ) ;
 
 	// 正常終了
 	return 0 ;
@@ -828,14 +828,14 @@ extern int	GraphFilter_HSB_PF(         GRAPHFILTER_INFO *Info, int HueType, floa
 		},
 	} ;
 	int                    UseShader ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 1 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 1 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	// 使用するシェーダーのセットアップ
 	UseShader = HueType ;
 	if( GraphFilterShaderHandle.HsbPS[ UseShader ][ IsPMA ] < 0 )
 	{
-		GraphFilterShaderHandle.HsbPS[ UseShader ][ IsPMA ] = IOS_MemLoadShaderCode( FlagFileName[ UseShader ][ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.HsbPS[ UseShader ][ IsPMA ] = HTML5_MemLoadShaderCode( FlagFileName[ UseShader ][ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.HsbPS[ UseShader ][ IsPMA ] < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -846,11 +846,11 @@ extern int	GraphFilter_HSB_PF(         GRAPHFILTER_INFO *Info, int HueType, floa
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.HsbPS[ UseShader ][ IsPMA ], &GraphFilterShaderHandle.HsbPS[ UseShader ][ IsPMA ] ) ;
 	}
-	if( GraphFilterSystemInfoiOS.Hsb[ UseShader ][ IsPMA ].Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.Hsb[ UseShader ][ IsPMA ].Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.Hsb[ UseShader ][ IsPMA ], GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.HsbPS[ UseShader ][ IsPMA ] ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.Hsb[ UseShader ][ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.HsbPS[ UseShader ][ IsPMA ] ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.Hsb[ UseShader ][ IsPMA ] ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.Hsb[ UseShader ][ IsPMA ] ;
 
 	ParamF4[ 0 ][ 0 ] = Hue ;
 	ParamF4[ 0 ][ 1 ] = Saturation > 0.0f ? Saturation * 5.0f : Saturation ;
@@ -858,13 +858,13 @@ extern int	GraphFilter_HSB_PF(         GRAPHFILTER_INFO *Info, int HueType, floa
 	ParamF4[ 0 ][ 3 ] = 0.0f ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex" ), 0            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uParam"  ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex" ), 0            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uParam"  ), ParamF4[ 0 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE ) ;
 
 	// 正常終了
 	return 0 ;
@@ -877,12 +877,12 @@ extern int	GraphFilter_Invert_PF(      GRAPHFILTER_INFO *Info, int IsPMA )
 		"Invert.flag",
 		"Invert_PMA.flag",
 	} ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	// 使用するシェーダーのセットアップ
 	if( GraphFilterShaderHandle.InvertPS[ IsPMA ] < 0 )
 	{
-		GraphFilterShaderHandle.InvertPS[ IsPMA ] = IOS_MemLoadShaderCode( FlagFileName[ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.InvertPS[ IsPMA ] = HTML5_MemLoadShaderCode( FlagFileName[ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.InvertPS[ IsPMA ] < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -893,19 +893,19 @@ extern int	GraphFilter_Invert_PF(      GRAPHFILTER_INFO *Info, int IsPMA )
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.InvertPS[ IsPMA ], &GraphFilterShaderHandle.InvertPS[ IsPMA ] ) ;
 	}
-	if( GraphFilterSystemInfoiOS.Invert[ IsPMA ].Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.Invert[ IsPMA ].Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.Invert[ IsPMA ], GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.InvertPS[ IsPMA ] ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.Invert[ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.InvertPS[ IsPMA ] ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.Invert[ IsPMA ] ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.Invert[ IsPMA ] ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"      ), 0            ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"      ), 0            ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE ) ;
 
 	// 正常終了
 	return 0 ;
@@ -918,13 +918,13 @@ extern int	GraphFilter_Level_PF(       GRAPHFILTER_INFO *Info, float Min, float 
 		"Level.flag",
 		"Level_PMA.flag",
 	} ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 1 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 1 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	// 使用するシェーダーのセットアップ
 	if( GraphFilterShaderHandle.LevelPS[ IsPMA ] < 0 )
 	{
-		GraphFilterShaderHandle.LevelPS[ IsPMA ] = IOS_MemLoadShaderCode( FlagFileName[ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.LevelPS[ IsPMA ] = HTML5_MemLoadShaderCode( FlagFileName[ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.LevelPS[ IsPMA ] < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -935,11 +935,11 @@ extern int	GraphFilter_Level_PF(       GRAPHFILTER_INFO *Info, float Min, float 
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.LevelPS[ IsPMA ], &GraphFilterShaderHandle.LevelPS[ IsPMA ] ) ;
 	}
-	if( GraphFilterSystemInfoiOS.Level[ IsPMA ].Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.Level[ IsPMA ].Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.Level[ IsPMA ], GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.LevelPS[ IsPMA ] ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.Level[ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.LevelPS[ IsPMA ] ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.Level[ IsPMA ] ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.Level[ IsPMA ] ;
 
 	ParamF4[ 0 ][ 0 ] = Min ;
 	ParamF4[ 0 ][ 1 ] = 1.0f / ( Max - Min ) ;
@@ -947,14 +947,14 @@ extern int	GraphFilter_Level_PF(       GRAPHFILTER_INFO *Info, float Min, float 
 	ParamF4[ 0 ][ 3 ] = AfterMax ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"                       ), 0            ) ;
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uGammaTex"                     ), 1            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uMin_LenRev_AfterMin_AfterMax" ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"                       ), 0            ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uGammaTex"                     ), 1            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uMin_LenRev_AfterMin_AfterMax" ), ParamF4[ 0 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, TRUE, 1, GraphFilterShaderHandle.GammaTex ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, TRUE, 1, GraphFilterShaderHandle.GammaTex ) ;
 
 	// 正常終了
 	return 0 ;
@@ -969,13 +969,13 @@ extern int	GraphFilter_TwoColor_PF(    GRAPHFILTER_INFO *Info, float Threshold, 
 		"TwoColor.flag",
 		"TwoColor_PMA.flag",
 	} ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 3 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 3 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	// 使用するシェーダーのセットアップ
 	if( GraphFilterShaderHandle.TwoColorPS[ IsPMA ] < 0 )
 	{
-		GraphFilterShaderHandle.TwoColorPS[ IsPMA ] = IOS_MemLoadShaderCode( FlagFileName[ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.TwoColorPS[ IsPMA ] = HTML5_MemLoadShaderCode( FlagFileName[ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.TwoColorPS[ IsPMA ] < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -986,11 +986,11 @@ extern int	GraphFilter_TwoColor_PF(    GRAPHFILTER_INFO *Info, float Threshold, 
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.TwoColorPS[ IsPMA ], &GraphFilterShaderHandle.TwoColorPS[ IsPMA ] ) ;
 	}
-	if( GraphFilterSystemInfoiOS.TwoColor[ IsPMA ].Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.TwoColor[ IsPMA ].Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.TwoColor[ IsPMA ], GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.TwoColorPS[ IsPMA ] ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.TwoColor[ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.TwoColorPS[ IsPMA ] ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.TwoColor[ IsPMA ] ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.TwoColor[ IsPMA ] ;
 
 	ParamF4[ 0 ][ 0 ] = 0.29900f ;
 	ParamF4[ 0 ][ 1 ] = 0.58700f ;
@@ -1006,15 +1006,15 @@ extern int	GraphFilter_TwoColor_PF(    GRAPHFILTER_INFO *Info, float Threshold, 
 	ParamF4[ 2 ][ 3 ] = HighColor->a ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"     ), 0            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uRGBToY_Cmp" ), ParamF4[ 0 ] ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uLowColor"   ), ParamF4[ 1 ] ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uHighColor"  ), ParamF4[ 2 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"     ), 0            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uRGBToY_Cmp" ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uLowColor"   ), ParamF4[ 1 ] ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uHighColor"  ), ParamF4[ 2 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE ) ;
 
 	// 正常終了
 	return 0 ;
@@ -1034,14 +1034,14 @@ extern int	GraphFilter_GradientMap_PF( GRAPHFILTER_INFO *Info, int MapGrHandle, 
 		}
 	} ;
 	int                    UseShader ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 1 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 1 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	// 使用するシェーダーのセットアップ
 	UseShader = Reverse ? 1 : 0 ;
 	if( GraphFilterShaderHandle.GradientMapPS[ UseShader ][ IsPMA ] < 0 )
 	{
-		GraphFilterShaderHandle.GradientMapPS[ UseShader ][ IsPMA ] = IOS_MemLoadShaderCode( FlagFileName[ UseShader ][ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.GradientMapPS[ UseShader ][ IsPMA ] = HTML5_MemLoadShaderCode( FlagFileName[ UseShader ][ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.GradientMapPS[ UseShader ][ IsPMA ] < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -1052,11 +1052,11 @@ extern int	GraphFilter_GradientMap_PF( GRAPHFILTER_INFO *Info, int MapGrHandle, 
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.GradientMapPS[ UseShader ][ IsPMA ], &GraphFilterShaderHandle.GradientMapPS[ UseShader ][ IsPMA ] ) ;
 	}
-	if( GraphFilterSystemInfoiOS.GradientMap[ UseShader ][ IsPMA ].Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.GradientMap[ UseShader ][ IsPMA ].Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.GradientMap[ UseShader ][ IsPMA ], GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.GradientMapPS[ UseShader ][ IsPMA ] ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.GradientMap[ UseShader ][ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.GradientMapPS[ UseShader ][ IsPMA ] ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.GradientMap[ UseShader ][ IsPMA ] ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.GradientMap[ UseShader ][ IsPMA ] ;
 
 	ParamF4[ 0 ][ 0 ] = 0.29900f ;
 	ParamF4[ 0 ][ 1 ] = 0.58700f ;
@@ -1064,14 +1064,14 @@ extern int	GraphFilter_GradientMap_PF( GRAPHFILTER_INFO *Info, int MapGrHandle, 
 	ParamF4[ 0 ][ 3 ] = 0.0f ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"     ), 0            ) ;
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uGradMapTex" ), 1            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uRGBToY"     ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"     ), 0            ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uGradMapTex" ), 1            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uRGBToY"     ), ParamF4[ 0 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE, 1, MapGrHandle ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE, 1, MapGrHandle ) ;
 
 	// 正常終了
 	return 0 ;
@@ -1084,13 +1084,13 @@ extern int	GraphFilter_PremulAlpha_PF( GRAPHFILTER_INFO *Info )
 		"PremultipliedAlpha.flag",
 	} ;
 	int UseShader ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	// 使用するシェーダーのセットアップ
 	UseShader = 0 ;
 	if( GraphFilterShaderHandle.PreMulAlphaPS < 0 )
 	{
-		GraphFilterShaderHandle.PreMulAlphaPS = IOS_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.PreMulAlphaPS = HTML5_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.PreMulAlphaPS < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -1101,19 +1101,19 @@ extern int	GraphFilter_PremulAlpha_PF( GRAPHFILTER_INFO *Info )
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.PreMulAlphaPS, &GraphFilterShaderHandle.PreMulAlphaPS ) ;
 	}
-	if( GraphFilterSystemInfoiOS.PreMulAlpha.Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.PreMulAlpha.Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.PreMulAlpha, GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.PreMulAlphaPS ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.PreMulAlpha, GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.PreMulAlphaPS ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.PreMulAlpha ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.PreMulAlpha ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"      ), 0            ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"      ), 0            ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE ) ;
 
 	// 正常終了
 	return 0 ;
@@ -1126,13 +1126,13 @@ extern int	GraphFilter_InterpAlpha_PF( GRAPHFILTER_INFO *Info )
 		"InterpolatedAlpha.flag",
 	} ;
 	int UseShader ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	// 使用するシェーダーのセットアップ
 	UseShader = 0 ;
 	if( GraphFilterShaderHandle.InterpAlphaPS < 0 )
 	{
-		GraphFilterShaderHandle.InterpAlphaPS = IOS_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.InterpAlphaPS = HTML5_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.InterpAlphaPS < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -1143,19 +1143,19 @@ extern int	GraphFilter_InterpAlpha_PF( GRAPHFILTER_INFO *Info )
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.InterpAlphaPS, &GraphFilterShaderHandle.InterpAlphaPS ) ;
 	}
-	if( GraphFilterSystemInfoiOS.InterpAlpha.Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.InterpAlpha.Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.InterpAlpha, GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.InterpAlphaPS ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.InterpAlpha, GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.InterpAlphaPS ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.InterpAlpha ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.InterpAlpha ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"      ), 0            ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"      ), 0            ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE ) ;
 
 	// 正常終了
 	return 0 ;
@@ -1172,15 +1172,15 @@ extern int	GraphFilter_YUVtoRGB_PF( GRAPHFILTER_INFO *Info, int UVGrHandle )
 		"Y2uv1ToRgb_RRA.flag",
 	} ;
 	int                    UseShader ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 1 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 1 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 	int RRAFlag = ( Info->FilterOrBlendType == DX_GRAPH_FILTER_YUV_TO_RGB_RRA || Info->FilterOrBlendType == DX_GRAPH_FILTER_Y2UV1_TO_RGB_RRA ) ? TRUE : FALSE ;
 
 	// 使用するシェーダーのセットアップ
 	UseShader = ( UVGrHandle < 0 ? 0 : 1 ) + ( RRAFlag ? 2 : 0 ) ;
 	if( GraphFilterShaderHandle.YUVtoRGBPS[ UseShader ] < 0 )
 	{
-		GraphFilterShaderHandle.YUVtoRGBPS[ UseShader ] = IOS_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.YUVtoRGBPS[ UseShader ] = HTML5_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.YUVtoRGBPS[ UseShader ] < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -1191,11 +1191,11 @@ extern int	GraphFilter_YUVtoRGB_PF( GRAPHFILTER_INFO *Info, int UVGrHandle )
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.YUVtoRGBPS[ UseShader ], &GraphFilterShaderHandle.YUVtoRGBPS[ UseShader ] ) ;
 	}
-	if( GraphFilterSystemInfoiOS.YUVtoRGB[ UseShader ].Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.YUVtoRGB[ UseShader ].Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.YUVtoRGB[ UseShader ], GraphicsHardDataiOS.Device.Shader.Base.StretchRect_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.YUVtoRGBPS[ UseShader ] ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.YUVtoRGB[ UseShader ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.YUVtoRGBPS[ UseShader ] ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.YUVtoRGB[ UseShader ] ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.YUVtoRGB[ UseShader ] ;
 
 	if( UVGrHandle >= 0 )
 	{
@@ -1223,14 +1223,14 @@ extern int	GraphFilter_YUVtoRGB_PF( GRAPHFILTER_INFO *Info, int UVGrHandle )
 	}
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"                 ), 0            ) ;
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uUVTex"                  ), 1            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uUVTexUVScale_RRA_Add_U" ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"                 ), 0            ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uUVTex"                  ), 1            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uUVTexUVScale_RRA_Add_U" ), ParamF4[ 0 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE, 1, UVGrHandle ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE, 1, UVGrHandle ) ;
 
 	// 正常終了
 	return 0 ;
@@ -1243,15 +1243,15 @@ extern int	GraphFilter_BicubicScale_PF( GRAPHFILTER_INFO *Info, int DestSizeX, i
 		"Bicubic.flag",
 	} ;
 	int UseShader ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 1 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 1 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 	VERTEX_TEX8_2D VertexTex8[ 4 ] ;
 
 	// 使用するシェーダーのセットアップ
 	UseShader = 0 ;
 	if( GraphFilterShaderHandle.BicubicPS < 0 )
 	{
-		GraphFilterShaderHandle.BicubicPS = IOS_MemLoadShaderCode( PsoFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.BicubicPS = HTML5_MemLoadShaderCode( PsoFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.BicubicPS < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -1262,11 +1262,11 @@ extern int	GraphFilter_BicubicScale_PF( GRAPHFILTER_INFO *Info, int DestSizeX, i
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.BicubicPS, &GraphFilterShaderHandle.BicubicPS ) ;
 	}
-	if( GraphFilterSystemInfoiOS.Bicubic.Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.Bicubic.Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.Bicubic, GraphicsHardDataiOS.Device.Shader.Base.StretchRectTex8_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.BicubicPS ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.Bicubic, GraphicsHardDataHTML5.Device.Shader.Base.StretchRectTex8_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.BicubicPS ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.Bicubic ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.Bicubic ;
 
 	int TexW, TexH ;
 	NS_GetGraphTextureSize( Info->SrcGrHandle, &TexW, &TexH ) ;
@@ -1332,13 +1332,13 @@ extern int	GraphFilter_BicubicScale_PF( GRAPHFILTER_INFO *Info, int DestSizeX, i
 	VertexTex8[ 3 ].u7 = 1.0f - 0.5f * du ;	VertexTex8[ 3 ].v7 = 1.0f + 1.5f * dv ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"           ), 0            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uTexSize_X2PixelU" ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"           ), 0            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uTexSize_X2PixelU" ), ParamF4[ 0 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE, 1, -1, VertexTex8 ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE, 1, -1, VertexTex8 ) ;
 
 	// 正常終了
 	return 0 ;
@@ -1351,15 +1351,15 @@ extern int	GraphFilter_Lanczos3Scale_PF( GRAPHFILTER_INFO *Info, int DestSizeX, 
 		"Lanczos3.flag",
 	} ;
 	int UseShader ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 1 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 1 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 	VERTEX_TEX8_2D VertexTex8[ 4 ] ;
 
 	// 使用するシェーダーのセットアップ
 	UseShader = 0 ;
 	if( GraphFilterShaderHandle.Lanczos3PS < 0 )
 	{
-		GraphFilterShaderHandle.Lanczos3PS = IOS_MemLoadShaderCode( PsoFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.Lanczos3PS = HTML5_MemLoadShaderCode( PsoFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.Lanczos3PS < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -1370,11 +1370,11 @@ extern int	GraphFilter_Lanczos3Scale_PF( GRAPHFILTER_INFO *Info, int DestSizeX, 
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.Lanczos3PS, &GraphFilterShaderHandle.Lanczos3PS ) ;
 	}
-	if( GraphFilterSystemInfoiOS.Lanczos3.Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.Lanczos3.Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.Lanczos3, GraphicsHardDataiOS.Device.Shader.Base.StretchRectTex8_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.Lanczos3PS ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.Lanczos3, GraphicsHardDataHTML5.Device.Shader.Base.StretchRectTex8_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.Lanczos3PS ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.Lanczos3 ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.Lanczos3 ;
 
 	int TexW, TexH ;
 	NS_GetGraphTextureSize( Info->SrcGrHandle, &TexW, &TexH ) ;
@@ -1432,13 +1432,13 @@ extern int	GraphFilter_Lanczos3Scale_PF( GRAPHFILTER_INFO *Info, int DestSizeX, 
 	VertexTex8[ 3 ].u5 = 1.0f - 0.5f * du ;	VertexTex8[ 3 ].v5 = 1.0f + 2.5f * dv ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"           ), 0            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uTexSize_X1PixelU" ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"           ), 0            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uTexSize_X1PixelU" ), ParamF4[ 0 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE, 1, -1, VertexTex8 ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE, 1, -1, VertexTex8 ) ;
 
 	// 正常終了
 	return 0 ;
@@ -1594,7 +1594,7 @@ extern int GraphFilter_DestGraphSetup_PF( GRAPHFILTER_INFO *Info, int *UseSrcGrH
 			NS_GetGraphTextureSize( Info->SrcGrHandle, &TexSizeW, &TexSizeH ) ;
 		}
 
-		*UseDestGrHandle = IOS_GraphFilter_GetWorkTexture( DestTexFloatType, ( DWORD )TexSizeW, ( DWORD )TexSizeH, ( DWORD )UseDestWorkHandleIndex ) ;
+		*UseDestGrHandle = HTML5_GraphFilter_GetWorkTexture( DestTexFloatType, ( DWORD )TexSizeW, ( DWORD )TexSizeH, ( DWORD )UseDestWorkHandleIndex ) ;
 		if( *UseDestGrHandle < 0 )
 		{
 			return -1 ;
@@ -1614,7 +1614,7 @@ extern int GraphFilter_DestGraphSetup_PF( GRAPHFILTER_INFO *Info, int *UseSrcGrH
 		TexSizeW = SrcImage->WidthI ;
 		TexSizeH = SrcImage->HeightI ;
 
-		*UseSrcGrHandle = IOS_GraphFilter_GetWorkTexture( SrcTexFloatType, ( DWORD )TexSizeW, ( DWORD )TexSizeH, ( DWORD )UseSrcWorkHandleIndex ) ;
+		*UseSrcGrHandle = HTML5_GraphFilter_GetWorkTexture( SrcTexFloatType, ( DWORD )TexSizeW, ( DWORD )TexSizeH, ( DWORD )UseSrcWorkHandleIndex ) ;
 		if( *UseSrcGrHandle < 0 )
 		{
 			return -1 ;
@@ -1634,7 +1634,7 @@ extern int GraphFilter_DestGraphSetup_PF( GRAPHFILTER_INFO *Info, int *UseSrcGrH
 			DestRect.right  = SrcImage->Hard.Draw[ i ].DrawPosXI + SrcImage->Hard.Draw[ i ].WidthI ;
 			DestRect.bottom = SrcImage->Hard.Draw[ i ].DrawPosYI + SrcImage->Hard.Draw[ i ].HeightI ;
 
-			Graphics_iOS_StretchRect(
+			Graphics_HTML5_StretchRect(
 				SrcImage->Hard.Draw[ 0 ].Tex->PF->Texture.TextureBuffer,
 				SrcImage->Hard.Draw[ 0 ].Tex->PF->Texture.Width,
 				SrcImage->Hard.Draw[ 0 ].Tex->PF->Texture.Height,
@@ -1721,14 +1721,14 @@ extern int	GraphBlend_Basic_PF(           GRAPHFILTER_INFO *Info, int IsPMA )
 		"BasBF_Multiple_AOnly_PMA.flag",	// DX_GRAPH_BLEND_PMA_MULTIPLE_A_ONLY
 	} ;
 	int                    UseShader ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 1 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 1 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 
 	// 使用するシェーダーのセットアップ
 	UseShader = Info->FilterOrBlendType ;
 	if( GraphFilterShaderHandle.BasicBlendPS[ UseShader ] < 0 )
 	{
-		GraphFilterShaderHandle.BasicBlendPS[ UseShader ] = IOS_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
+		GraphFilterShaderHandle.BasicBlendPS[ UseShader ] = HTML5_MemLoadShaderCode( FlagFileName[ UseShader ], DX_SHADERTYPE_PIXEL ) ;
 		if( GraphFilterShaderHandle.BasicBlendPS[ UseShader ] < 0 )
 		{
 			char PathUTF16LE[ 128 ] ;
@@ -1739,11 +1739,11 @@ extern int	GraphBlend_Basic_PF(           GRAPHFILTER_INFO *Info, int IsPMA )
 		}
 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.BasicBlendPS[ UseShader ], &GraphFilterShaderHandle.BasicBlendPS[ UseShader ] ) ;
 	}
-	if( GraphFilterSystemInfoiOS.BasicBlend[ UseShader ].Shader == 0 )
+	if( GraphFilterSystemInfoHTML5.BasicBlend[ UseShader ].Shader == 0 )
 	{
-		Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.BasicBlend[ UseShader ], GraphicsHardDataiOS.Device.Shader.Base.StretchRectTex2_VS, IOS_GetFragmentShader( GraphFilterShaderHandle.BasicBlendPS[ UseShader ] ) ) ;
+		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.BasicBlend[ UseShader ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRectTex2_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.BasicBlendPS[ UseShader ] ) ) ;
 	}
-	UseAndrShader = &GraphFilterSystemInfoiOS.BasicBlend[ UseShader ] ;
+	UseHTML5Shader = &GraphFilterSystemInfoHTML5.BasicBlend[ UseShader ] ;
 	
 	ParamF4[ 0 ][ 0 ] = Info->BlendRatio ;
 	ParamF4[ 0 ][ 1 ] = Info->BlendRatio ;
@@ -1751,14 +1751,14 @@ extern int	GraphBlend_Basic_PF(           GRAPHFILTER_INFO *Info, int IsPMA )
 	ParamF4[ 0 ][ 3 ] = Info->BlendRatio ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"     ), 0            ) ;
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uBlendTex"   ), 1            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uBlendRatio" ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"     ), 0            ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uBlendTex"   ), 1            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uBlendRatio" ), ParamF4[ 0 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info ) ;
 
 	// 正常終了
 	return 0 ;
@@ -1776,8 +1776,8 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 		"R", "G", "B", "A"
 	};
 	int                    *PixelShaderHandle ;
-	DX_IOS_SHADER_FLOAT4  ParamF4[ 1 ] ;
-	GRAPHICS_IOS_SHADER *UseAndrShader ;
+	DX_HTML5_SHADER_FLOAT4  ParamF4[ 1 ] ;
+	GRAPHICS_HTML5_SHADER *UseHTML5Shader ;
 	char                   FileName[ 64 ] ;
 	int                    SrcBlendReverse = FALSE ;
 	int                    HandleTemp ;
@@ -1816,9 +1816,9 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 		PixelShaderHandle = &GraphFilterShaderHandle.RgbaMixS[ SelectR ][ SelectG ][ SelectB ][ SelectA ][ IsPMA ] ;
 		if( *PixelShaderHandle < 0 )
 		{
-			if( GIOS.ShaderCode.Base.RGBAMixS_ShaderPackImage != NULL )
+			if( GHTML5.ShaderCode.Base.RGBAMixS_ShaderPackImage != NULL )
 			{
-				*PixelShaderHandle = NS_LoadPixelShaderFromMem( GIOS.ShaderCode.Base.RGBAMixS_FS_Code[ SelectR ][ SelectG ][ SelectB ][ SelectA ][ IsPMA ].Binary, GIOS.ShaderCode.Base.RGBAMixS_FS_Code[ SelectR ][ SelectG ][ SelectB ][ SelectA ][ IsPMA ].Size ) ;
+				*PixelShaderHandle = NS_LoadPixelShaderFromMem( GHTML5.ShaderCode.Base.RGBAMixS_FS_Code[ SelectR ][ SelectG ][ SelectB ][ SelectA ][ IsPMA ].Binary, GHTML5.ShaderCode.Base.RGBAMixS_FS_Code[ SelectR ][ SelectG ][ SelectB ][ SelectA ][ IsPMA ].Size ) ;
 				if( *PixelShaderHandle < 0 )
 				{
 					DXST_LOGFILEFMT_ADDUTF16LE(( "\x52\x00\x47\x00\x42\x00\x41\x00\x4d\x00\x69\x00\x78\x00\x53\x00\x20\x00\xd5\x30\xa3\x30\xeb\x30\xbf\x30\xfc\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x00"/*@ L"RGBAMixS フィルター用シェーダーの作成に失敗しました" @*/ )) ;
@@ -1827,11 +1827,11 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 				NS_SetDeleteHandleFlag( *PixelShaderHandle, PixelShaderHandle ) ;
 			}
 		}
-		if( GraphFilterSystemInfoiOS.RgbaMixS[ SelectR ][ SelectG ][ SelectB ][ SelectA ][ IsPMA ].Shader == 0 )
+		if( GraphFilterSystemInfoHTML5.RgbaMixS[ SelectR ][ SelectG ][ SelectB ][ SelectA ][ IsPMA ].Shader == 0 )
 		{
-			Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.RgbaMixS[ SelectR ][ SelectG ][ SelectB ][ SelectA ][ IsPMA ], GraphicsHardDataiOS.Device.Shader.Base.StretchRectTex2_VS, IOS_GetFragmentShader( *PixelShaderHandle ) ) ;
+			Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.RgbaMixS[ SelectR ][ SelectG ][ SelectB ][ SelectA ][ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRectTex2_VS, HTML5_GetFragmentShader( *PixelShaderHandle ) ) ;
 		}
-		UseAndrShader = &GraphFilterSystemInfoiOS.RgbaMixS[ SelectR ][ SelectG ][ SelectB ][ SelectA ][ IsPMA ] ;
+		UseHTML5Shader = &GraphFilterSystemInfoHTML5.RgbaMixS[ SelectR ][ SelectG ][ SelectB ][ SelectA ][ IsPMA ] ;
 	}
 	else
 	if( SelectR == SelectG && SelectR == SelectB && SelectR != DX_RGBA_SELECT_BLEND_A && SelectR != DX_RGBA_SELECT_SRC_A )
@@ -1854,7 +1854,7 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 		if( *PixelShaderHandle < 0 )
 		{
 			_SNPRINTF( FileName, sizeof( FileName ), "RGBAMix_S%sS%sS%sB%s%s.flag", CharTable[ SelectR ], CharTable[ SelectG ], CharTable[ SelectB ], CharTable[ SelectA - DX_RGBA_SELECT_BLEND_R ], IsPMA ? "_PMA" : "" ) ;
-			*PixelShaderHandle = IOS_MemLoadShaderCode( FileName, DX_SHADERTYPE_PIXEL ) ;
+			*PixelShaderHandle = HTML5_MemLoadShaderCode( FileName, DX_SHADERTYPE_PIXEL ) ;
 			if( *PixelShaderHandle < 0 )
 			{
 				ConvString( FileName, -1, DX_CHARCODEFORMAT_ASCII, ( char * )PathUTF16LE, sizeof( PathUTF16LE ), DX_CHARCODEFORMAT_UTF16LE ) ;
@@ -1863,11 +1863,11 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 			}
 			NS_SetDeleteHandleFlag( *PixelShaderHandle, PixelShaderHandle ) ;
 		}
-		if( GraphFilterSystemInfoiOS.RgbaMixSRRRB[ SelectR ][ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ].Shader == 0 )
+		if( GraphFilterSystemInfoHTML5.RgbaMixSRRRB[ SelectR ][ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ].Shader == 0 )
 		{
-			Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.RgbaMixSRRRB[ SelectR ][ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ], GraphicsHardDataiOS.Device.Shader.Base.StretchRectTex2_VS, IOS_GetFragmentShader( *PixelShaderHandle ) ) ;
+			Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.RgbaMixSRRRB[ SelectR ][ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRectTex2_VS, HTML5_GetFragmentShader( *PixelShaderHandle ) ) ;
 		}
-		UseAndrShader = &GraphFilterSystemInfoiOS.RgbaMixSRRRB[ SelectR ][ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ] ;
+		UseHTML5Shader = &GraphFilterSystemInfoHTML5.RgbaMixSRRRB[ SelectR ][ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ] ;
 	}
 	else
 	if( ( SelectR == DX_RGBA_SELECT_SRC_R   && SelectG == DX_RGBA_SELECT_SRC_G   && SelectB == DX_RGBA_SELECT_SRC_B   ) ||
@@ -1891,7 +1891,7 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 		if( *PixelShaderHandle < 0 )
 		{
 			_SNPRINTF( FileName, sizeof( FileName ), "RGBAMix_S%sS%sS%sB%s%s.flag", CharTable[ SelectR ], CharTable[ SelectG ], CharTable[ SelectB ], CharTable[ SelectA - DX_RGBA_SELECT_BLEND_R ], IsPMA ? "_PMA" : "" ) ;
-			*PixelShaderHandle = IOS_MemLoadShaderCode( FileName, DX_SHADERTYPE_PIXEL ) ;
+			*PixelShaderHandle = HTML5_MemLoadShaderCode( FileName, DX_SHADERTYPE_PIXEL ) ;
 			if( *PixelShaderHandle < 0 )
 			{
 				ConvString( FileName, -1, DX_CHARCODEFORMAT_ASCII, ( char * )PathUTF16LE, sizeof( PathUTF16LE ), DX_CHARCODEFORMAT_UTF16LE ) ;
@@ -1900,18 +1900,18 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 			}
 			NS_SetDeleteHandleFlag( *PixelShaderHandle, PixelShaderHandle ) ;
 		}
-		if( GraphFilterSystemInfoiOS.RgbaMixSRGBB[ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ].Shader == 0 )
+		if( GraphFilterSystemInfoHTML5.RgbaMixSRGBB[ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ].Shader == 0 )
 		{
-			Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.RgbaMixSRGBB[ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ], GraphicsHardDataiOS.Device.Shader.Base.StretchRectTex2_VS, IOS_GetFragmentShader( *PixelShaderHandle ) ) ;
+			Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.RgbaMixSRGBB[ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRectTex2_VS, HTML5_GetFragmentShader( *PixelShaderHandle ) ) ;
 		}
-		UseAndrShader = &GraphFilterSystemInfoiOS.RgbaMixSRGBB[ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ] ;
+		UseHTML5Shader = &GraphFilterSystemInfoHTML5.RgbaMixSRGBB[ SelectA - DX_RGBA_SELECT_BLEND_R ][ IsPMA ] ;
 	}
 	else
 	{
 		PixelShaderHandle = &GraphFilterShaderHandle.RgbaMixBasePS[ IsPMA ] ;
 		if( *PixelShaderHandle < 0 )
 		{
-			*PixelShaderHandle = IOS_MemLoadShaderCode( FlagFileName[ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
+			*PixelShaderHandle = HTML5_MemLoadShaderCode( FlagFileName[ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
 			if( *PixelShaderHandle < 0 )
 			{
 				ConvString( FlagFileName[ IsPMA ], -1, DX_CHARCODEFORMAT_ASCII, ( char * )PathUTF16LE, sizeof( PathUTF16LE ), DX_CHARCODEFORMAT_UTF16LE ) ;
@@ -1920,11 +1920,11 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 			}
 			NS_SetDeleteHandleFlag( *PixelShaderHandle, PixelShaderHandle ) ;
 		}
-		if( GraphFilterSystemInfoiOS.RgbaMixBase[ IsPMA ].Shader == 0 )
+		if( GraphFilterSystemInfoHTML5.RgbaMixBase[ IsPMA ].Shader == 0 )
 		{
-			Graphics_iOS_Shader_Create( &GraphFilterSystemInfoiOS.RgbaMixBase[ IsPMA ], GraphicsHardDataiOS.Device.Shader.Base.StretchRectTex2_VS, IOS_GetFragmentShader( *PixelShaderHandle ) ) ;
+			Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.RgbaMixBase[ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRectTex2_VS, HTML5_GetFragmentShader( *PixelShaderHandle ) ) ;
 		}
-		UseAndrShader = &GraphFilterSystemInfoiOS.RgbaMixBase[ IsPMA ] ;
+		UseHTML5Shader = &GraphFilterSystemInfoHTML5.RgbaMixBase[ IsPMA ] ;
 	}
 
 	ParamF4[ 0 ][ 0 ] = ( float )SelectR + 0.5f ;
@@ -1933,14 +1933,14 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 	ParamF4[ 0 ][ 3 ] = ( float )SelectA + 0.5f ;
 
 	// シェーダーを使用状態にセット
-	glUseProgram( UseAndrShader->Shader ) ;
+	glUseProgram( UseHTML5Shader->Shader ) ;
 
 	// Uniform の値をセット
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"     ), 0            ) ;
-	UNIFORM_SET_INT1(   Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uBlendTex"   ), 1            ) ;
-	UNIFORM_SET_FLOAT4( Graphics_iOS_Shader_GetUniformIndex( UseAndrShader, "uRGBASelect" ), ParamF4[ 0 ] ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uSrcTex"     ), 0            ) ;
+	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uBlendTex"   ), 1            ) ;
+	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uRGBASelect" ), ParamF4[ 0 ] ) ;
 
-	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE ) ;
 
 	if( SrcBlendReverse )
 	{
@@ -1954,28 +1954,28 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 }
 
 // フィルターで使用している全てのシェーダーを解放する
-extern int GraphFilter_iOS_ReleaseShaderAll( void )
+extern int GraphFilter_HTML5_ReleaseShaderAll( void )
 {
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.Gauss,			sizeof( GraphFilterSystemInfoiOS.Gauss			) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.BrightClip,		sizeof( GraphFilterSystemInfoiOS.BrightClip		) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.BrightScale,	sizeof( GraphFilterSystemInfoiOS.BrightScale	) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.DownScale,		sizeof( GraphFilterSystemInfoiOS.DownScale		) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.Hsb,			sizeof( GraphFilterSystemInfoiOS.Hsb			) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )&GraphFilterSystemInfoiOS.Mono,			sizeof( GraphFilterSystemInfoiOS.Mono			) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.Invert,			sizeof( GraphFilterSystemInfoiOS.Invert			) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.Level,			sizeof( GraphFilterSystemInfoiOS.Level			) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.TwoColor,		sizeof( GraphFilterSystemInfoiOS.TwoColor		) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.GradientMap,	sizeof( GraphFilterSystemInfoiOS.GradientMap	) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )&GraphFilterSystemInfoiOS.PreMulAlpha,	sizeof( GraphFilterSystemInfoiOS.PreMulAlpha	) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )&GraphFilterSystemInfoiOS.InterpAlpha,	sizeof( GraphFilterSystemInfoiOS.InterpAlpha	) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.YUVtoRGB,		sizeof( GraphFilterSystemInfoiOS.YUVtoRGB		) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )&GraphFilterSystemInfoiOS.Bicubic,		sizeof( GraphFilterSystemInfoiOS.Bicubic		) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )&GraphFilterSystemInfoiOS.Lanczos3,		sizeof( GraphFilterSystemInfoiOS.Lanczos3		) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.BasicBlend,		sizeof( GraphFilterSystemInfoiOS.BasicBlend		) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.RgbaMixBase,	sizeof( GraphFilterSystemInfoiOS.RgbaMixBase	) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.RgbaMixSRGBB,	sizeof( GraphFilterSystemInfoiOS.RgbaMixSRGBB	) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.RgbaMixSRRRB,	sizeof( GraphFilterSystemInfoiOS.RgbaMixSRRRB	) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
-	Graphics_iOS_ShaderArray_Release( ( GRAPHICS_IOS_SHADER * )GraphFilterSystemInfoiOS.RgbaMixS,		sizeof( GraphFilterSystemInfoiOS.RgbaMixS		) / sizeof( GRAPHICS_IOS_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.Gauss,			sizeof( GraphFilterSystemInfoHTML5.Gauss			) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.BrightClip,		sizeof( GraphFilterSystemInfoHTML5.BrightClip		) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.BrightScale,	sizeof( GraphFilterSystemInfoHTML5.BrightScale	) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.DownScale,		sizeof( GraphFilterSystemInfoHTML5.DownScale		) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.Hsb,			sizeof( GraphFilterSystemInfoHTML5.Hsb			) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )&GraphFilterSystemInfoHTML5.Mono,			sizeof( GraphFilterSystemInfoHTML5.Mono			) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.Invert,			sizeof( GraphFilterSystemInfoHTML5.Invert			) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.Level,			sizeof( GraphFilterSystemInfoHTML5.Level			) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.TwoColor,		sizeof( GraphFilterSystemInfoHTML5.TwoColor		) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.GradientMap,	sizeof( GraphFilterSystemInfoHTML5.GradientMap	) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )&GraphFilterSystemInfoHTML5.PreMulAlpha,	sizeof( GraphFilterSystemInfoHTML5.PreMulAlpha	) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )&GraphFilterSystemInfoHTML5.InterpAlpha,	sizeof( GraphFilterSystemInfoHTML5.InterpAlpha	) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.YUVtoRGB,		sizeof( GraphFilterSystemInfoHTML5.YUVtoRGB		) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )&GraphFilterSystemInfoHTML5.Bicubic,		sizeof( GraphFilterSystemInfoHTML5.Bicubic		) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )&GraphFilterSystemInfoHTML5.Lanczos3,		sizeof( GraphFilterSystemInfoHTML5.Lanczos3		) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.BasicBlend,		sizeof( GraphFilterSystemInfoHTML5.BasicBlend		) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.RgbaMixBase,	sizeof( GraphFilterSystemInfoHTML5.RgbaMixBase	) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.RgbaMixSRGBB,	sizeof( GraphFilterSystemInfoHTML5.RgbaMixSRGBB	) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.RgbaMixSRRRB,	sizeof( GraphFilterSystemInfoHTML5.RgbaMixSRRRB	) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.RgbaMixS,		sizeof( GraphFilterSystemInfoHTML5.RgbaMixS		) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
 
 	return 0 ;
 }

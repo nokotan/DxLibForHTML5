@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_NETWORKANDROID_H
-#define DX_NETWORKANDROID_H
+#ifndef DX_NETWORKHTML5_H
+#define DX_NETWORKHTML5_H
 
 // インクルード ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
@@ -35,4 +35,4 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-#endif // DX_NETWORKANDROID_H
+#endif // DX_NETWORKHTML5_H

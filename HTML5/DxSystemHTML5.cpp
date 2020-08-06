@@ -73,15 +73,15 @@ namespace DxLib
 
 // 内部大域変数宣言 --------------------------------------------------------------
 
-DXLIB_IOS_SYSTEMINFO g_iOSSys ;
-int g_iOSRunFlag ;
+DXLIB_HTML5_SYSTEMINFO g_HTML5Sys ;
+int g_HTML5RunFlag ;
 
 // 関数プロトタイプ宣言-----------------------------------------------------------
    
 // プログラム --------------------------------------------------------------------
 
 // UTF16LE の書式文字列と UTF8 のパラメータ文字列をログ出力する
-static void OutputiOSOSInfo_LogAddUTF8( const char *UTF16LEFormatStr, const char *UTF8Str )
+static void OutputHTML5OSInfo_LogAddUTF8( const char *UTF16LEFormatStr, const char *UTF8Str )
 {
 //	char TempStr[ 1024 ] ;
 //
@@ -871,7 +871,7 @@ extern int NS_ProcessMessage( void )
 
 #ifndef DX_NON_GRAPHICS
 	// 画面関係の周期処理を行う
-	Graphics_iOS_FrontScreenProcess() ;
+	Graphics_HTML5_FrontScreenProcess() ;
 #endif // DX_NON_GRAPHICS
 
 #ifndef DX_NON_KEYEX
@@ -898,26 +898,26 @@ extern int NS_ProcessMessage( void )
 extern int NS_SetAlwaysRunFlag( int Flag )
 {
 	// フラグをセット
-	g_iOSSys.NonActiveRunFlag = Flag ;
+	g_HTML5Sys.NonActiveRunFlag = Flag ;
 	
 	// 終了
 	return 0 ;
 }
 
 // ソフトが非アクティブになった際に呼ばれるコールバック関数を登録する
-extern int SetiOSLostFocusCallbackFunction( void (* Callback )( void *Data ), void *CallbackData )
+extern int SetHTML5LostFocusCallbackFunction( void (* Callback )( void *Data ), void *CallbackData )
 {
-	g_iOSSys.LostFocusCallbackFunction     = ( volatile void ( * )( void * ) )Callback ;
-	g_iOSSys.LostFocusCallbackFunctionData = ( volatile void * )CallbackData ;
+	g_HTML5Sys.LostFocusCallbackFunction     = ( volatile void ( * )( void * ) )Callback ;
+	g_HTML5Sys.LostFocusCallbackFunctionData = ( volatile void * )CallbackData ;
 
 	return 0 ;
 }
 
 // ソフトがアクティブになった際に呼ばれるコールバック関数を登録する
-extern int SetiOSGainedFocusCallbackFunction( void (* Callback )( void *Data ), void *CallbackData )
+extern int SetHTML5GainedFocusCallbackFunction( void (* Callback )( void *Data ), void *CallbackData )
 {
-	g_iOSSys.GainedFocusCallbackFunction     = ( volatile void ( * )( void * ) )Callback ;
-	g_iOSSys.GainedFocusCallbackFunctionData = ( volatile void * )CallbackData ;
+	g_HTML5Sys.GainedFocusCallbackFunction     = ( volatile void ( * )( void * ) )Callback ;
+	g_HTML5Sys.GainedFocusCallbackFunctionData = ( volatile void * )CallbackData ;
 
 	return 0 ;
 }
@@ -938,37 +938,37 @@ extern int ConvScreenPositionToDxScreenPosition( int ScreenX, int ScreenY, int *
 	{
 		if( DxScreenX != NULL )
 		{
-			*DxScreenX = ScreenX * GIOS.Device.Screen.SubBackBufferTextureSizeX / GIOS.Device.Screen.Width ;
+			*DxScreenX = ScreenX * GHTML5.Device.Screen.SubBackBufferTextureSizeX / GHTML5.Device.Screen.Width ;
 		}
 
 		if( DxScreenY != NULL )
 		{
-			*DxScreenY = ScreenY * GIOS.Device.Screen.SubBackBufferTextureSizeY / GIOS.Device.Screen.Height ;
+			*DxScreenY = ScreenY * GHTML5.Device.Screen.SubBackBufferTextureSizeY / GHTML5.Device.Screen.Height ;
 		}
 	}
 	else
 	{
-		DestW = GIOS.Device.Screen.Width ;
-		DestH = GIOS.Device.Screen.Width * GIOS.Device.Screen.SubBackBufferTextureSizeY / GIOS.Device.Screen.SubBackBufferTextureSizeX ;
-		if( DestH > GIOS.Device.Screen.Height )
+		DestW = GHTML5.Device.Screen.Width ;
+		DestH = GHTML5.Device.Screen.Width * GHTML5.Device.Screen.SubBackBufferTextureSizeY / GHTML5.Device.Screen.SubBackBufferTextureSizeX ;
+		if( DestH > GHTML5.Device.Screen.Height )
 		{
-			DestW = GIOS.Device.Screen.Height * GIOS.Device.Screen.SubBackBufferTextureSizeX / GIOS.Device.Screen.SubBackBufferTextureSizeY ;
-			DestH = GIOS.Device.Screen.Height ;
+			DestW = GHTML5.Device.Screen.Height * GHTML5.Device.Screen.SubBackBufferTextureSizeX / GHTML5.Device.Screen.SubBackBufferTextureSizeY ;
+			DestH = GHTML5.Device.Screen.Height ;
 		}
 
-		DestRect.left   = ( GIOS.Device.Screen.Width  - DestW ) / 2 ;
-		DestRect.top    = ( GIOS.Device.Screen.Height - DestH ) / 2 ;
+		DestRect.left   = ( GHTML5.Device.Screen.Width  - DestW ) / 2 ;
+		DestRect.top    = ( GHTML5.Device.Screen.Height - DestH ) / 2 ;
 		DestRect.right  = DestRect.left + DestW ;
 		DestRect.bottom = DestRect.top  + DestH ;
 
 		if( DxScreenX != NULL )
 		{
-			*DxScreenX = ( ScreenX - DestRect.left ) * GIOS.Device.Screen.SubBackBufferTextureSizeX / ( int )DestW ;
+			*DxScreenX = ( ScreenX - DestRect.left ) * GHTML5.Device.Screen.SubBackBufferTextureSizeX / ( int )DestW ;
 		}
 
 		if( DxScreenY != NULL )
 		{
-			*DxScreenY = ( ScreenY - DestRect.top  ) * GIOS.Device.Screen.SubBackBufferTextureSizeY / ( int )DestH ;
+			*DxScreenY = ( ScreenY - DestRect.top  ) * GHTML5.Device.Screen.SubBackBufferTextureSizeY / ( int )DestH ;
 		}
 	}
 
@@ -979,10 +979,10 @@ extern int ConvScreenPositionToDxScreenPosition( int ScreenX, int ScreenY, int *
 }
 
 // アクティブになるまで何もしない
-extern void DxActiveWait_iOS( void )
+extern void DxActiveWait_HTML5( void )
 {
 //	while(
-//		g_iOSSys.NonActiveRunFlag == FALSE
+//		g_HTML5Sys.NonActiveRunFlag == FALSE
 //		)
 //	)
 //	{
@@ -1132,51 +1132,51 @@ extern int GetTmpDirPathForChar( char *PathBuffer, size_t PathBufferBytes )
 
 static int SetupViewBuffer( void )
 {
-	if( g_iOSSys.ViewFrameBuffer == 0 )
+	if( g_HTML5Sys.ViewFrameBuffer == 0 )
 	{
-		// glGenFramebuffers( 1, &g_iOSSys.ViewFrameBuffer ) ;
-		// glBindFramebuffer( GL_FRAMEBUFFER, g_iOSSys.ViewFrameBuffer ) ;
+		// glGenFramebuffers( 1, &g_HTML5Sys.ViewFrameBuffer ) ;
+		// glBindFramebuffer( GL_FRAMEBUFFER, g_HTML5Sys.ViewFrameBuffer ) ;
 
-		// glGenRenderbuffers( 1, &g_iOSSys.ViewDepthBuffer ) ;
-		// glBindRenderbuffer( GL_RENDERBUFFER, g_iOSSys.ViewDepthBuffer ) ;
+		// glGenRenderbuffers( 1, &g_HTML5Sys.ViewDepthBuffer ) ;
+		// glBindRenderbuffer( GL_RENDERBUFFER, g_HTML5Sys.ViewDepthBuffer ) ;
 		// glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, GLsizei(canvas_width()), GLsizei(canvas_height()) );
 
-		// glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, g_iOSSys.ViewDepthBuffer ) ;
+		// glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, g_HTML5Sys.ViewDepthBuffer ) ;
 
-		// glGenRenderbuffers( 1, &g_iOSSys.ViewRenderBuffer ) ;
-		// glBindRenderbuffer( GL_RENDERBUFFER, g_iOSSys.ViewRenderBuffer ) ;
+		// glGenRenderbuffers( 1, &g_HTML5Sys.ViewRenderBuffer ) ;
+		// glBindRenderbuffer( GL_RENDERBUFFER, g_HTML5Sys.ViewRenderBuffer ) ;
 
 		// glRenderbufferStorage( GL_RENDERBUFFER, GL_RGBA4, GLsizei(canvas_width()), GLsizei(canvas_height()) );
-		// glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, g_iOSSys.ViewRenderBuffer ) ;
+		// glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, g_HTML5Sys.ViewRenderBuffer ) ;
 	}
 
 	return 0;
 }
 
 extern int GetGraphicsViewFramebufferInfo( unsigned int *ViewFrameBuffer, int *Width, int *Height ) {
-	if( g_iOSSys.ViewWidth != GLsizei(canvas_width()) ||
-		g_iOSSys.ViewHeight != GLsizei(canvas_height()) )
+	if( g_HTML5Sys.ViewWidth != GLsizei(canvas_width()) ||
+		g_HTML5Sys.ViewHeight != GLsizei(canvas_height()) )
 	{
 		// TerminateViewBuffer() ;
 
 		SetupViewBuffer() ;
 
-		g_iOSSys.ViewWidth = GLsizei(canvas_width());
-		g_iOSSys.ViewHeight = GLsizei(canvas_height()) ;
+		g_HTML5Sys.ViewWidth = GLsizei(canvas_width());
+		g_HTML5Sys.ViewHeight = GLsizei(canvas_height()) ;
 
-		Graphics_iOS_SetScreenSize( g_iOSSys.ViewWidth, g_iOSSys.ViewHeight );
+		Graphics_HTML5_SetScreenSize( g_HTML5Sys.ViewWidth, g_HTML5Sys.ViewHeight );
 	}
 
-    if( ViewFrameBuffer ) *ViewFrameBuffer = g_iOSSys.ViewFrameBuffer;
-    if( Width ) *Width = g_iOSSys.ViewWidth;
-    if( Height ) *Height = g_iOSSys.ViewHeight;
+    if( ViewFrameBuffer ) *ViewFrameBuffer = g_HTML5Sys.ViewFrameBuffer;
+    if( Width ) *Width = g_HTML5Sys.ViewWidth;
+    if( Height ) *Height = g_HTML5Sys.ViewHeight;
     
 	
     return 0;
 }
 
 extern void GraphicsViewRenderBufferPresent( void ) {
-	glBindRenderbuffer( GL_RENDERBUFFER, g_iOSSys.ViewRenderBuffer ) ;
+	glBindRenderbuffer( GL_RENDERBUFFER, g_HTML5Sys.ViewRenderBuffer ) ;
 }
 
 #endif

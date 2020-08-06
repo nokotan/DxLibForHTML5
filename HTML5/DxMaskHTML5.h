@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_MASKIOS_H
-#define DX_MASKIOS_H
+#ifndef DX_MASKHTML5_H
+#define DX_MASKHTML5_H
 
 #include "../DxCompileConfig.h"
 
@@ -28,12 +28,12 @@ namespace DxLib
 
 // マクロ定義 --------------------------------------------------------------------
 
-#define MASKIOS					MaskManageData_iOS
+#define MASKHTML5					MaskManageData_HTML5
 
 // 構造体定義 --------------------------------------------------------------------
 
-// iOS 用のマスク処理情報構造体
-struct MASKMANAGEDATA_IOS
+// HTML5 用のマスク処理情報構造体
+struct MASKMANAGEDATA_HTML5
 {
 	int								MaskTextureSizeX ;				// マスクテクスチャのサイズ
 	int								MaskTextureSizeY ;
@@ -57,7 +57,7 @@ struct MASKMANAGEDATA_IOS
 
 // 内部大域変数宣言 --------------------------------------------------------------
 
-extern MASKMANAGEDATA_IOS MaskManageData_iOS ;
+extern MASKMANAGEDATA_HTML5 MaskManageData_HTML5 ;
 
 // 関数プロトタイプ宣言-----------------------------------------------------------
 
@@ -69,4 +69,4 @@ extern MASKMANAGEDATA_IOS MaskManageData_iOS ;
 
 #endif // DX_NON_MASK
 
-#endif // DX_MASKIOS_H
+#endif // DX_MASKHTML5_H

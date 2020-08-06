@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_MEMORYANDROID_H
-#define DX_MEMORYANDROID_H
+#ifndef DX_MEMORYHTML5_H
+#define DX_MEMORYHTML5_H
 
 // インクルード ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
@@ -35,7 +35,7 @@ namespace DxLib
 #endif // DX_NON_NAMESPACE
 
 // HTML5用ヒープの情報
-struct PLATFORMHEAP_ANDR
+struct PLATFORMHEAP_HTML5
 {
 	void *					AllocAddress ;						// 確保したメモリ領域のアドレス
 	size_t					AllocSize ;							// 確保したメモリ領域のサイズ
@@ -61,4 +61,4 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-#endif // DX_MEMORYANDROID_H
+#endif // DX_MEMORYHTML5_H

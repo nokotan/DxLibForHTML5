@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_LOGANDROID_H
-#define DX_LOGANDROID_H
+#ifndef DX_LOGHTML5_H
+#define DX_LOGHTML5_H
 
 // インクルード ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
@@ -47,4 +47,4 @@ struct LOGDATA_PF
 
 #endif // DX_NON_LOG
 
-#endif // DX_LOGANDROID_H
+#endif // DX_LOGHTML5_H

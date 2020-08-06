@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_FILEANDROID_H
-#define DX_FILEANDROID_H
+#ifndef DX_FILEHTML5_H
+#define DX_FILEHTML5_H
 
 // インクルード ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
@@ -61,4 +61,4 @@ struct FILEMANAGEDATA_PF
 
 #endif // DX_NON_NAMESPACE
 
-#endif // DX_FILEANDROID_H
+#endif // DX_FILEHTML5_H

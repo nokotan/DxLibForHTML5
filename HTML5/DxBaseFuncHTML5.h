@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_BASEFUNCANDROID_H
-#define DX_BASEFUNCANDROID_H
+#ifndef DX_BASEFUNCHTML5_H
+#define DX_BASEFUNCHTML5_H
 
 // インクルード ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
@@ -22,7 +22,7 @@ namespace DxLib
 
 // マクロ定義 --------------------------------------------------------------------
 
-#define ANDROID_WCHAR_CHARCODEFORMAT		(DX_CHARCODEFORMAT_UTF32LE)
+#define HTML5_WCHAR_CHARCODEFORMAT		(DX_CHARCODEFORMAT_UTF32LE)
 
 // 構造体定義 --------------------------------------------------------------------
 
@@ -39,4 +39,4 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-#endif // DX_BASEFUNCANDROID_H
+#endif // DX_BASEFUNCHTML5_H

@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_THREADANDROID_H
-#define DX_THREADANDROID_H
+#ifndef DX_THREADHTML5_H
+#define DX_THREADHTML5_H
 
 // インクルード ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
@@ -68,4 +68,4 @@ struct THREAD_INFO
 
 #endif // DX_NON_NAMESPACE
 
-#endif // DX_THREADANDROID_H
+#endif // DX_THREADHTML5_H

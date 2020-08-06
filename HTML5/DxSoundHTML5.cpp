@@ -1581,7 +1581,7 @@ extern int MidiCallBackProcess( void )
 
 
 // ALデバイスとALコンテキストをセットする
-extern void SoundSystem_iOS_SetALDeviceAndALContext( void *ALCDevice, void *ALCContext )
+extern void SoundSystem_HTML5_SetALDeviceAndALContext( void *ALCDevice, void *ALCContext )
 {
 	SoundSysData.PF.ALCdeviceObject = ( ALCdevice * )ALCDevice ;
 	SoundSysData.PF.ALCcontectObject = ( ALCcontext * )ALCContext ;
@@ -1595,7 +1595,7 @@ extern void SoundSystem_iOS_SetALDeviceAndALContext( void *ALCDevice, void *ALCC
 
 
 // 再生中の ALBuffer を再作成して再再生する
-extern void SoundSystem_iOS_ALBuffer_RePlay( void )
+extern void SoundSystem_HTML5_ALBuffer_RePlay( void )
 {
 	SOUNDBUFFER *RePlayBufferFirst ;
 	SOUNDBUFFER *Buffer ;

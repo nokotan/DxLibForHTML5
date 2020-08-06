@@ -35,7 +35,7 @@ namespace DxLib
 
 // マクロ定義------------------------------------------------------------------
 
-#define MV1_IOS_COMMONBUFFER_ADDSIZE			(16 * 1024)
+#define MV1_HTML5_COMMONBUFFER_ADDSIZE			(16 * 1024)
 
 #define WORD_MAX								0x10000
 
@@ -71,7 +71,7 @@ static GLenum DrawModeToFilterTable[ 2 ][ 3 ] =
 
 // [ バンプマップ情報付きかどうか( 1:バンプマップ付き 0:付いてない ) ]
 // [ スキニングメッシュかどうか( 0:剛体メッシュ 1:4ボーン内スキニングメッシュ 2:8ボーン内スキニングメッシュ ) ]
-VERTEXBUFFER_INPUT_INFO_IOS g_Model_VertexFormat[ 2 ][ 3 ] =
+VERTEXBUFFER_INPUT_INFO_HTML5 g_Model_VertexFormat[ 2 ][ 3 ] =
 {
 	// バンプマップなし
 	{
@@ -80,12 +80,12 @@ VERTEXBUFFER_INPUT_INFO_IOS g_Model_VertexFormat[ 2 ][ 3 ] =
 			64,
 			6,
 			{
-				{ IOS_VERTEX_ATTR_POS_F3,       NULL,  0 },
-				{ IOS_VERTEX_ATTR_NRM,		    NULL, 12 },
-				{ IOS_VERTEX_ATTR_DIF,		    NULL, 24 },
-				{ IOS_VERTEX_ATTR_SPC,		    NULL, 28 },
-				{ IOS_VERTEX_ATTR_TEXUV0_F4,    NULL, 32 },
-				{ IOS_VERTEX_ATTR_TEXUV1_F4,    NULL, 48 },
+				{ HTML5_VERTEX_ATTR_POS_F3,       NULL,  0 },
+				{ HTML5_VERTEX_ATTR_NRM,		    NULL, 12 },
+				{ HTML5_VERTEX_ATTR_DIF,		    NULL, 24 },
+				{ HTML5_VERTEX_ATTR_SPC,		    NULL, 28 },
+				{ HTML5_VERTEX_ATTR_TEXUV0_F4,    NULL, 32 },
+				{ HTML5_VERTEX_ATTR_TEXUV1_F4,    NULL, 48 },
 			},
 		},
 
@@ -94,14 +94,14 @@ VERTEXBUFFER_INPUT_INFO_IOS g_Model_VertexFormat[ 2 ][ 3 ] =
 			96,
 			8,
 			{
-				{ IOS_VERTEX_ATTR_POS_F3,       NULL,  0 },
-				{ IOS_VERTEX_ATTR_NRM,		    NULL, 12 },
-				{ IOS_VERTEX_ATTR_DIF,		    NULL, 24 },
-				{ IOS_VERTEX_ATTR_SPC,		    NULL, 28 },
-				{ IOS_VERTEX_ATTR_TEXUV0_F4,    NULL, 32 },
-				{ IOS_VERTEX_ATTR_TEXUV1_F4,    NULL, 48 },
-				{ IOS_VERTEX_ATTR_BLENDIND0,    NULL, 64 },
-				{ IOS_VERTEX_ATTR_BLENDWEIGHT0, NULL, 80 },
+				{ HTML5_VERTEX_ATTR_POS_F3,       NULL,  0 },
+				{ HTML5_VERTEX_ATTR_NRM,		    NULL, 12 },
+				{ HTML5_VERTEX_ATTR_DIF,		    NULL, 24 },
+				{ HTML5_VERTEX_ATTR_SPC,		    NULL, 28 },
+				{ HTML5_VERTEX_ATTR_TEXUV0_F4,    NULL, 32 },
+				{ HTML5_VERTEX_ATTR_TEXUV1_F4,    NULL, 48 },
+				{ HTML5_VERTEX_ATTR_BLENDIND0,    NULL, 64 },
+				{ HTML5_VERTEX_ATTR_BLENDWEIGHT0, NULL, 80 },
 			},
 		},
 
@@ -110,16 +110,16 @@ VERTEXBUFFER_INPUT_INFO_IOS g_Model_VertexFormat[ 2 ][ 3 ] =
 			128,
 			10,
 			{
-				{ IOS_VERTEX_ATTR_POS_F3,       NULL,  0 },
-				{ IOS_VERTEX_ATTR_NRM,		    NULL, 12 },
-				{ IOS_VERTEX_ATTR_DIF,		    NULL, 24 },
-				{ IOS_VERTEX_ATTR_SPC,		    NULL, 28 },
-				{ IOS_VERTEX_ATTR_TEXUV0_F4,    NULL, 32 },
-				{ IOS_VERTEX_ATTR_TEXUV1_F4,    NULL, 48 },
-				{ IOS_VERTEX_ATTR_BLENDIND0,    NULL, 64 },
-				{ IOS_VERTEX_ATTR_BLENDWEIGHT0, NULL, 80 },
-				{ IOS_VERTEX_ATTR_BLENDIND1,    NULL, 96 },
-				{ IOS_VERTEX_ATTR_BLENDWEIGHT1, NULL, 112 },
+				{ HTML5_VERTEX_ATTR_POS_F3,       NULL,  0 },
+				{ HTML5_VERTEX_ATTR_NRM,		    NULL, 12 },
+				{ HTML5_VERTEX_ATTR_DIF,		    NULL, 24 },
+				{ HTML5_VERTEX_ATTR_SPC,		    NULL, 28 },
+				{ HTML5_VERTEX_ATTR_TEXUV0_F4,    NULL, 32 },
+				{ HTML5_VERTEX_ATTR_TEXUV1_F4,    NULL, 48 },
+				{ HTML5_VERTEX_ATTR_BLENDIND0,    NULL, 64 },
+				{ HTML5_VERTEX_ATTR_BLENDWEIGHT0, NULL, 80 },
+				{ HTML5_VERTEX_ATTR_BLENDIND1,    NULL, 96 },
+				{ HTML5_VERTEX_ATTR_BLENDWEIGHT1, NULL, 112 },
 			},
 		},
 	},
@@ -131,14 +131,14 @@ VERTEXBUFFER_INPUT_INFO_IOS g_Model_VertexFormat[ 2 ][ 3 ] =
 			86,
 			8,
 			{
-				{ IOS_VERTEX_ATTR_POS_F3,       NULL,  0 },
-				{ IOS_VERTEX_ATTR_NRM,		    NULL, 12 },
-				{ IOS_VERTEX_ATTR_DIF,		    NULL, 24 },
-				{ IOS_VERTEX_ATTR_SPC,		    NULL, 28 },
-				{ IOS_VERTEX_ATTR_TEXUV0_F4,    NULL, 32 },
-				{ IOS_VERTEX_ATTR_TEXUV1_F4,    NULL, 48 },
-				{ IOS_VERTEX_ATTR_TAN,          NULL, 64 },
-				{ IOS_VERTEX_ATTR_BIN,          NULL, 76 },
+				{ HTML5_VERTEX_ATTR_POS_F3,       NULL,  0 },
+				{ HTML5_VERTEX_ATTR_NRM,		    NULL, 12 },
+				{ HTML5_VERTEX_ATTR_DIF,		    NULL, 24 },
+				{ HTML5_VERTEX_ATTR_SPC,		    NULL, 28 },
+				{ HTML5_VERTEX_ATTR_TEXUV0_F4,    NULL, 32 },
+				{ HTML5_VERTEX_ATTR_TEXUV1_F4,    NULL, 48 },
+				{ HTML5_VERTEX_ATTR_TAN,          NULL, 64 },
+				{ HTML5_VERTEX_ATTR_BIN,          NULL, 76 },
 			},
 		},
 
@@ -147,16 +147,16 @@ VERTEXBUFFER_INPUT_INFO_IOS g_Model_VertexFormat[ 2 ][ 3 ] =
 			120,
 			10,
 			{
-				{ IOS_VERTEX_ATTR_POS_F3,       NULL,  0 },
-				{ IOS_VERTEX_ATTR_NRM,		    NULL, 12 },
-				{ IOS_VERTEX_ATTR_DIF,		    NULL, 24 },
-				{ IOS_VERTEX_ATTR_SPC,		    NULL, 28 },
-				{ IOS_VERTEX_ATTR_TEXUV0_F4,    NULL, 32 },
-				{ IOS_VERTEX_ATTR_TEXUV1_F4,    NULL, 48 },
-				{ IOS_VERTEX_ATTR_TAN,          NULL, 64 },
-				{ IOS_VERTEX_ATTR_BIN,          NULL, 76 },
-				{ IOS_VERTEX_ATTR_BLENDIND0,    NULL, 88 },
-				{ IOS_VERTEX_ATTR_BLENDWEIGHT0, NULL, 104 },
+				{ HTML5_VERTEX_ATTR_POS_F3,       NULL,  0 },
+				{ HTML5_VERTEX_ATTR_NRM,		    NULL, 12 },
+				{ HTML5_VERTEX_ATTR_DIF,		    NULL, 24 },
+				{ HTML5_VERTEX_ATTR_SPC,		    NULL, 28 },
+				{ HTML5_VERTEX_ATTR_TEXUV0_F4,    NULL, 32 },
+				{ HTML5_VERTEX_ATTR_TEXUV1_F4,    NULL, 48 },
+				{ HTML5_VERTEX_ATTR_TAN,          NULL, 64 },
+				{ HTML5_VERTEX_ATTR_BIN,          NULL, 76 },
+				{ HTML5_VERTEX_ATTR_BLENDIND0,    NULL, 88 },
+				{ HTML5_VERTEX_ATTR_BLENDWEIGHT0, NULL, 104 },
 			},
 		},
 
@@ -165,24 +165,24 @@ VERTEXBUFFER_INPUT_INFO_IOS g_Model_VertexFormat[ 2 ][ 3 ] =
 			152,
 			12,
 			{
-				{ IOS_VERTEX_ATTR_POS_F3,	    NULL,   0 },
-				{ IOS_VERTEX_ATTR_NRM,		    NULL,  12 },
-				{ IOS_VERTEX_ATTR_DIF,		    NULL,  24 },
-				{ IOS_VERTEX_ATTR_SPC,		    NULL,  28 },
-				{ IOS_VERTEX_ATTR_TEXUV0_F4,    NULL,  32 },
-				{ IOS_VERTEX_ATTR_TEXUV1_F4,    NULL,  48 },
-				{ IOS_VERTEX_ATTR_TAN,          NULL,  64 },
-				{ IOS_VERTEX_ATTR_BIN,          NULL,  76 },
-				{ IOS_VERTEX_ATTR_BLENDIND0,    NULL,  88 },
-				{ IOS_VERTEX_ATTR_BLENDWEIGHT0, NULL, 104 },
-				{ IOS_VERTEX_ATTR_BLENDIND1,    NULL, 120 },
-				{ IOS_VERTEX_ATTR_BLENDWEIGHT1, NULL, 136 },
+				{ HTML5_VERTEX_ATTR_POS_F3,	    NULL,   0 },
+				{ HTML5_VERTEX_ATTR_NRM,		    NULL,  12 },
+				{ HTML5_VERTEX_ATTR_DIF,		    NULL,  24 },
+				{ HTML5_VERTEX_ATTR_SPC,		    NULL,  28 },
+				{ HTML5_VERTEX_ATTR_TEXUV0_F4,    NULL,  32 },
+				{ HTML5_VERTEX_ATTR_TEXUV1_F4,    NULL,  48 },
+				{ HTML5_VERTEX_ATTR_TAN,          NULL,  64 },
+				{ HTML5_VERTEX_ATTR_BIN,          NULL,  76 },
+				{ HTML5_VERTEX_ATTR_BLENDIND0,    NULL,  88 },
+				{ HTML5_VERTEX_ATTR_BLENDWEIGHT0, NULL, 104 },
+				{ HTML5_VERTEX_ATTR_BLENDIND1,    NULL, 120 },
+				{ HTML5_VERTEX_ATTR_BLENDWEIGHT1, NULL, 136 },
 			},
 		},
 	}
 } ;
 
-MV1_MODEL_MANAGE_IOS MV1Man_iOS ;
+MV1_MODEL_MANAGE_HTML5 MV1Man_HTML5 ;
 
 // 関数プロトタイプ宣言 -------------------------------------------------------
 
@@ -225,43 +225,43 @@ static int glSubDataVertexAndIndexBuffer_ASync(
 // 汎用バッファ関数
 
 // 指定サイズの汎用バッファの準備を行う
-extern int MV1_IOS_CommonBuffer_Setup( int Size )
+extern int MV1_HTML5_CommonBuffer_Setup( int Size )
 {
-	if( Size <= MV1Man_iOS.CommonBufferSize )
+	if( Size <= MV1Man_HTML5.CommonBufferSize )
 	{
 		return 0 ;
 	}
 
-	MV1_IOS_CommonBuffer_Terminate() ;
+	MV1_HTML5_CommonBuffer_Terminate() ;
 
-	Size += MV1_IOS_COMMONBUFFER_ADDSIZE ;
+	Size += MV1_HTML5_COMMONBUFFER_ADDSIZE ;
 	Size = ( Size + 15 ) / 16 * 16 ;
 
-	MV1Man_iOS.CommonBuffer = DXALLOC( ( size_t )Size ) ;
-	if( MV1Man_iOS.CommonBuffer == NULL )
+	MV1Man_HTML5.CommonBuffer = DXALLOC( ( size_t )Size ) ;
+	if( MV1Man_HTML5.CommonBuffer == NULL )
 	{
 		DXST_LOGFILEFMT_ADDUTF16LE(( "\xe2\x30\xc7\x30\xeb\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\x4e\x6c\x28\x75\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x28\x00\x20\x00\xb5\x30\xa4\x30\xba\x30\x20\x00\x25\x00\x64\x00\x20\x00\x62\x00\x79\x00\x74\x00\x65\x00\x20\x00\x29\x00\x0a\x00\x00"/*@ L"モデル処理用の汎用バッファの作成に失敗しました( サイズ %d byte )\n" @*/, Size ) ) ;
 		return -1 ;
 	}
 
-	MV1Man_iOS.CommonBufferSize = Size ;
+	MV1Man_HTML5.CommonBufferSize = Size ;
 
 	// 正常終了
 	return 0 ;
 }
 
 // 汎用バッファの後始末を行う
-extern int MV1_IOS_CommonBuffer_Terminate( void )
+extern int MV1_HTML5_CommonBuffer_Terminate( void )
 {
-	if( MV1Man_iOS.CommonBuffer == NULL )
+	if( MV1Man_HTML5.CommonBuffer == NULL )
 	{
 		return 0 ;
 	}
 
-	DXFREE( MV1Man_iOS.CommonBuffer ) ;
-	MV1Man_iOS.CommonBuffer = NULL ;
+	DXFREE( MV1Man_HTML5.CommonBuffer ) ;
+	MV1Man_HTML5.CommonBuffer = NULL ;
 
-	MV1Man_iOS.CommonBufferSize = 0 ;
+	MV1Man_HTML5.CommonBufferSize = 0 ;
 
 	return 0 ;
 }
@@ -279,7 +279,7 @@ extern int MV1_IOS_CommonBuffer_Terminate( void )
 extern int MV1_Terminate_PF( void )
 {
 	// 汎用バッファの解放
-	MV1_IOS_CommonBuffer_Terminate() ;
+	MV1_HTML5_CommonBuffer_Terminate() ;
 
 	return 0 ;
 }
@@ -325,7 +325,7 @@ extern void MV1_SetupPackDrawInfo_PF( MV1_MODEL_BASE *ModelBase )
 		ModelBase->PackDrawMaxNum = MaxPackDrawNum ;
 	}
 
-	MaxPackDrawNum = DX_IOS_VS_CONST_WORLD_MAT_NUM / ModelBase->TriangleListMinMatrixNum ;
+	MaxPackDrawNum = DX_HTML5_VS_CONST_WORLD_MAT_NUM / ModelBase->TriangleListMinMatrixNum ;
 	if( ModelBase->PackDrawMaxNum > MaxPackDrawNum )
 	{
 		ModelBase->PackDrawMaxNum = MaxPackDrawNum ;
@@ -356,7 +356,7 @@ extern void MV1_SetupPackDrawInfo_PF( MV1_MODEL_BASE *ModelBase )
 			MBTList->PackDrawMaxNum = MaxPackDrawNum ;
 		}
 
-		MaxPackDrawNum = DX_IOS_VS_CONST_WORLD_MAT_NUM / UseBoneNum ;
+		MaxPackDrawNum = DX_HTML5_VS_CONST_WORLD_MAT_NUM / UseBoneNum ;
 		if( MBTList->PackDrawMaxNum > MaxPackDrawNum )
 		{
 			MBTList->PackDrawMaxNum = MaxPackDrawNum ;
@@ -364,8 +364,8 @@ extern void MV1_SetupPackDrawInfo_PF( MV1_MODEL_BASE *ModelBase )
 	}
 }
 
-// MV1_IOS_SetupVertexBufferBase_PF の頂点データ作成用の補助関数
-__inline void MV1_IOS_SetVertexData(
+// MV1_HTML5_SetupVertexBufferBase_PF の頂点データ作成用の補助関数
+__inline void MV1_HTML5_SetVertexData(
 	      BYTE **		DestP,
 	const VECTOR *		Position,
 	const VECTOR *		Normal,
@@ -475,23 +475,23 @@ __inline void MV1_IOS_SetVertexData(
 }
 
 // 頂点データのサイズを取得する
-static DWORD MV1_IOS_GetVertexSize( int Bump, int Type /* 0:剛体  1:4ボーン  2:8ボーン */  )
+static DWORD MV1_HTML5_GetVertexSize( int Bump, int Type /* 0:剛体  1:4ボーン  2:8ボーン */  )
 {
 	DWORD Result ;
 
 	Result = 
-		sizeof( VECTOR ) +				//	{ "POSITION",     0, D_DXGI_FORMAT_R32G32B32_FLOAT,    0,  0, D_IOS_INPUT_PER_VERTEX_DATA, 0 },
-		sizeof( VECTOR ) +				//	{ "NORMAL",       0, D_DXGI_FORMAT_R32G32B32_FLOAT,    0, 12, D_IOS_INPUT_PER_VERTEX_DATA, 0 },
-		sizeof( COLOR_U8 ) +			//	{ "COLOR",        0, D_DXGI_FORMAT_B8G8R8A8_UNORM,     0, 24, D_IOS_INPUT_PER_VERTEX_DATA, 0 },
-		sizeof( COLOR_U8 ) +			//	{ "COLOR",        1, D_DXGI_FORMAT_B8G8R8A8_UNORM,     0, 28, D_IOS_INPUT_PER_VERTEX_DATA, 0 },
-		sizeof( FLOAT4 ) +				//	{ "TEXCOORD",     0, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 32, D_IOS_INPUT_PER_VERTEX_DATA, 0 },
-		sizeof( FLOAT4 ) ;				//	{ "TEXCOORD",     1, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 48, D_IOS_INPUT_PER_VERTEX_DATA, 0 },
+		sizeof( VECTOR ) +				//	{ "POSITION",     0, D_DXGI_FORMAT_R32G32B32_FLOAT,    0,  0, D_HTML5_INPUT_PER_VERTEX_DATA, 0 },
+		sizeof( VECTOR ) +				//	{ "NORMAL",       0, D_DXGI_FORMAT_R32G32B32_FLOAT,    0, 12, D_HTML5_INPUT_PER_VERTEX_DATA, 0 },
+		sizeof( COLOR_U8 ) +			//	{ "COLOR",        0, D_DXGI_FORMAT_B8G8R8A8_UNORM,     0, 24, D_HTML5_INPUT_PER_VERTEX_DATA, 0 },
+		sizeof( COLOR_U8 ) +			//	{ "COLOR",        1, D_DXGI_FORMAT_B8G8R8A8_UNORM,     0, 28, D_HTML5_INPUT_PER_VERTEX_DATA, 0 },
+		sizeof( FLOAT4 ) +				//	{ "TEXCOORD",     0, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 32, D_HTML5_INPUT_PER_VERTEX_DATA, 0 },
+		sizeof( FLOAT4 ) ;				//	{ "TEXCOORD",     1, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 48, D_HTML5_INPUT_PER_VERTEX_DATA, 0 },
 
 	if( Bump != 0 )
 	{
 		Result +=
-			sizeof( VECTOR ) +			//	MakeIOSInputElement( "TANGENT",      0, D_DXGI_FORMAT_R32G32B32_FLOAT,    0, offset ) ;
-			sizeof( VECTOR ) ;			//	MakeIOSInputElement( "BINORMAL",     0, D_DXGI_FORMAT_R32G32B32_FLOAT,    0, offset ) ;
+			sizeof( VECTOR ) +			//	MakeHTML5InputElement( "TANGENT",      0, D_DXGI_FORMAT_R32G32B32_FLOAT,    0, offset ) ;
+			sizeof( VECTOR ) ;			//	MakeHTML5InputElement( "BINORMAL",     0, D_DXGI_FORMAT_R32G32B32_FLOAT,    0, offset ) ;
 	}
 
 	switch( Type )
@@ -502,15 +502,15 @@ static DWORD MV1_IOS_GetVertexSize( int Bump, int Type /* 0:剛体  1:4ボーン
 	case 1 :	// ４ボーン以内スキニングメッシュ
 	case 2 :	// ８ボーン以内スキニングメッシュ
 		Result +=
-			sizeof( FLOAT4 ) +			//	MakeIOSInputElement( "BLENDINDICES", 0, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset ) ;
-			sizeof( FLOAT4 ) ;			//	MakeIOSInputElement( "BLENDWEIGHT",  0, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset ) ;
+			sizeof( FLOAT4 ) +			//	MakeHTML5InputElement( "BLENDINDICES", 0, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset ) ;
+			sizeof( FLOAT4 ) ;			//	MakeHTML5InputElement( "BLENDWEIGHT",  0, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset ) ;
 
 		// ８ボーン以内スキニングメッシュ
 		if( Type == 2 )
 		{
 			Result +=
-				sizeof( FLOAT4 ) +		//	MakeIOSInputElement( "BLENDINDICES", 1, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset ) ;
-				sizeof( FLOAT4 ) ;		//	MakeIOSInputElement( "BLENDWEIGHT",  1, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset ) ;
+				sizeof( FLOAT4 ) +		//	MakeHTML5InputElement( "BLENDINDICES", 1, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset ) ;
+				sizeof( FLOAT4 ) ;		//	MakeHTML5InputElement( "BLENDWEIGHT",  1, D_DXGI_FORMAT_R32G32B32A32_FLOAT, 0, offset ) ;
 		}
 		break ;
 	}
@@ -877,7 +877,7 @@ extern	int	MV1_SetupVertexBufferBase_PF( int MV1ModelBaseHandle, int DuplicateNu
 				for( TVBuf = VBuf[ i ][ j ][ k ] ; TVBuf ; TVBuf = TVBuf->DataNext )
 				{
 					// １頂点あたりのサイズを取得
-					TVBuf->UnitSize = MV1_IOS_GetVertexSize( j, i ) ;
+					TVBuf->UnitSize = MV1_HTML5_GetVertexSize( j, i ) ;
 
 					// 頂点バッファとインデックスバッファを作成
 					glGenVertexAndIndexBuffer_ASync(
@@ -958,7 +958,7 @@ extern	int	MV1_SetupVertexBufferBase_PF( int MV1ModelBaseHandle, int DuplicateNu
 						MVert = ( MV1_MESH_VERTEX * )( ( BYTE * )MeshVert + MeshVertSize * *MVInd ) ;
 						MNorm = MeshNorm + MVert->NormalIndex ;
 
-						MV1_IOS_SetVertexData(
+						MV1_HTML5_SetVertexData(
 							&Dest,
 							( VECTOR * )&Src->Position,
 							&MNorm->Normal,
@@ -985,7 +985,7 @@ extern	int	MV1_SetupVertexBufferBase_PF( int MV1ModelBaseHandle, int DuplicateNu
 
 							BlendIndicesTemp[ 0 ] = ( BYTE )BaseMatrixIndex ;
 
-							MV1_IOS_SetVertexData(
+							MV1_HTML5_SetVertexData(
 								&Dest,
 								( VECTOR * )&Src->Position,
 								&MNorm->Normal,
@@ -1011,7 +1011,7 @@ extern	int	MV1_SetupVertexBufferBase_PF( int MV1ModelBaseHandle, int DuplicateNu
 						MVert = ( MV1_MESH_VERTEX   * )( ( BYTE * )MeshVert + MeshVertSize * *MVInd ) ;
 						MNorm = MeshNorm + MVert->NormalIndex ;
 
-						MV1_IOS_SetVertexData(
+						MV1_HTML5_SetVertexData(
 							&Dest,
 							( VECTOR * )&Src->Position,
 							&MNorm->Normal,
@@ -1040,7 +1040,7 @@ extern	int	MV1_SetupVertexBufferBase_PF( int MV1ModelBaseHandle, int DuplicateNu
 					MVert = ( MV1_MESH_VERTEX   * )( ( BYTE * )MeshVert + MeshVertSize * *MVInd ) ;
 					MNorm = MeshNorm + MVert->NormalIndex ;
 
-					MV1_IOS_SetVertexData(
+					MV1_HTML5_SetVertexData(
 						&Dest,
 						( VECTOR * )&Src->Position,
 						&MNorm->Normal,
@@ -1072,7 +1072,7 @@ extern	int	MV1_SetupVertexBufferBase_PF( int MV1ModelBaseHandle, int DuplicateNu
 							BlendIndicesTemp[ 2 ] = ( BYTE )( Src->MatrixIndex[ 2 ] + BaseMatrixIndex ) ;
 							BlendIndicesTemp[ 3 ] = ( BYTE )( Src->MatrixIndex[ 3 ] + BaseMatrixIndex ) ;
 
-							MV1_IOS_SetVertexData(
+							MV1_HTML5_SetVertexData(
 								&Dest,
 								( VECTOR * )&Src->Position,
 								&MNorm->Normal,
@@ -1104,7 +1104,7 @@ extern	int	MV1_SetupVertexBufferBase_PF( int MV1ModelBaseHandle, int DuplicateNu
 					MVert = ( MV1_MESH_VERTEX   * )( ( BYTE * )MeshVert + MeshVertSize * *MVInd ) ;
 					MNorm = MeshNorm + MVert->NormalIndex ;
 
-					MV1_IOS_SetVertexData(
+					MV1_HTML5_SetVertexData(
 						&Dest,
 						( VECTOR * )&Src->Position,
 						&MNorm->Normal,
@@ -1143,7 +1143,7 @@ extern	int	MV1_SetupVertexBufferBase_PF( int MV1ModelBaseHandle, int DuplicateNu
 							BlendIndicesTemp2[ 2 ] = ( BYTE )( Src->MatrixIndex2[ 2 ] + BaseMatrixIndex ) ;
 							BlendIndicesTemp2[ 3 ] = ( BYTE )( Src->MatrixIndex2[ 3 ] + BaseMatrixIndex ) ;
 
-							MV1_IOS_SetVertexData(
+							MV1_HTML5_SetVertexData(
 								&Dest,
 								( VECTOR * )&Src->Position,
 								&MNorm->Normal,
@@ -1182,7 +1182,7 @@ extern	int	MV1_SetupVertexBufferBase_PF( int MV1ModelBaseHandle, int DuplicateNu
 						MVert = ( MV1_MESH_VERTEX   * )( ( BYTE * )MeshVert + MeshVertSize * *MVInd ) ;
 						MNorm = MeshNorm + MVert->NormalIndex ;
 
-						MV1_IOS_SetVertexData(
+						MV1_HTML5_SetVertexData(
 							&Dest,
 							( VECTOR * )&Src->Position,
 							&MNorm->Normal,
@@ -1837,12 +1837,12 @@ extern int MV1_SetupShapeVertex_PF( int MHandle )
 					}
 
 					// テンポラリバッファの準備
-					if( MV1_IOS_CommonBuffer_Setup( ( int )( MBTList->VertexBuffer->UnitSize * MBTList->VertexNum ) ) < 0 )
+					if( MV1_HTML5_CommonBuffer_Setup( ( int )( MBTList->VertexBuffer->UnitSize * MBTList->VertexNum ) ) < 0 )
 					{
 						continue ;
 					}
 
-					Dest = ( BYTE * )MV1Man_iOS.CommonBuffer ;
+					Dest = ( BYTE * )MV1Man_HTML5.CommonBuffer ;
 				}
 
 				DestUnitSize = MBTList->VertexBuffer->UnitSize ;
@@ -1855,7 +1855,7 @@ extern int MV1_SetupShapeVertex_PF( int MHandle )
 						MNorm = MeshNorm + MVert->NormalIndex ;
 						SVert = ShapeVertex + *MVInd ;
 
-						MV1_IOS_SetVertexData(
+						MV1_HTML5_SetVertexData(
 							&Dest,
 							&SVert->Position,
 							&MNorm->Normal,
@@ -1880,7 +1880,7 @@ extern int MV1_SetupShapeVertex_PF( int MHandle )
 							MNorm = MeshNorm + MVert->NormalIndex ;
 							SVert = ShapeVertex + *MVInd ;
 
-							MV1_IOS_SetVertexData(
+							MV1_HTML5_SetVertexData(
 								&Dest,
 								&SVert->Position,
 								&MNorm->Normal,
@@ -1908,7 +1908,7 @@ extern int MV1_SetupShapeVertex_PF( int MHandle )
 							MNorm = MeshNorm + MVert->NormalIndex ;
 							SVert = ShapeVertex + *MVInd ;
 
-							MV1_IOS_SetVertexData(
+							MV1_HTML5_SetVertexData(
 								&Dest,
 								&SVert->Position,
 								&MNorm->Normal,
@@ -1948,7 +1948,7 @@ extern int MV1_SetupShapeVertex_PF( int MHandle )
 				{
 					// 頂点データを更新
 					glBindBuffer( GL_ARRAY_BUFFER, TList->PF->VertexBufferObject ) ;
-					glBufferSubData( GL_ARRAY_BUFFER, 0, MBTList->VertexBuffer->UnitSize * MBTList->VertexNum, MV1Man_iOS.CommonBuffer ) ;
+					glBufferSubData( GL_ARRAY_BUFFER, 0, MBTList->VertexBuffer->UnitSize * MBTList->VertexNum, MV1Man_HTML5.CommonBuffer ) ;
 				}
 			}
 		}
@@ -1968,10 +1968,10 @@ extern int MV1_BeginRender_PF( MV1_MODEL *Model )
 	// バッファにたまっている頂点を出力
 	NS_RenderVertex() ;
 
-	// Graphics_iOS_RenderBegin を実行していなかったら実行する
-	if( GIOS.Device.DrawInfo.BeginSceneFlag == FALSE )
+	// Graphics_HTML5_RenderBegin を実行していなかったら実行する
+	if( GHTML5.Device.DrawInfo.BeginSceneFlag == FALSE )
 	{
-		Graphics_iOS_RenderBegin() ;
+		Graphics_HTML5_RenderBegin() ;
 	}
 
 	// ライトの設定が変更されていたら反映する
@@ -1980,10 +1980,10 @@ extern int MV1_BeginRender_PF( MV1_MODEL *Model )
 	MV1Man.WorldMatrixIsIdentity = FALSE ;
 
 	// 深度バッファ設定を反映する
-	Graphics_iOS_DeviceState_SetDepthEnable(      Model->EnableZBufferFlag ) ;
-	Graphics_iOS_DeviceState_SetDepthWriteEnable( Model->WriteZBufferFlag ) ;
-	Graphics_iOS_DeviceState_SetDepthFunc(        g_DXCmpModeToGLES2CompareFunc[ Model->ZBufferCmpType ] ) ;
-	Graphics_iOS_DeviceState_SetDepthBias(        Model->ZBias ) ;
+	Graphics_HTML5_DeviceState_SetDepthEnable(      Model->EnableZBufferFlag ) ;
+	Graphics_HTML5_DeviceState_SetDepthWriteEnable( Model->WriteZBufferFlag ) ;
+	Graphics_HTML5_DeviceState_SetDepthFunc(        g_DXCmpModeToGLES2CompareFunc[ Model->ZBufferCmpType ] ) ;
+	Graphics_HTML5_DeviceState_SetDepthBias(        Model->ZBias ) ;
 
 	// フォグの設定を反映する
 	Graphics_DrawSetting_ApplyLibFogToHardware() ;
@@ -1991,7 +1991,7 @@ extern int MV1_BeginRender_PF( MV1_MODEL *Model )
 	// 異方性フィルタリングの最大次数を設定する
 	for( i = 0 ; i < 3 ; i ++ )
 	{
-		Graphics_iOS_DeviceState_SetMaxAnisotropy( Model->MaxAnisotropy, i ) ;
+		Graphics_HTML5_DeviceState_SetMaxAnisotropy( Model->MaxAnisotropy, i ) ;
 	}
 
 	// ３Ｄ行列をハードウエアに反映する
@@ -2001,14 +2001,14 @@ extern int MV1_BeginRender_PF( MV1_MODEL *Model )
 	GSYS.DrawSetting.MatchHardwareWorldMatrix    = FALSE ;
 	GSYS.DrawSetting.MatchHardware3DMatrix       = FALSE ;
 
-	GIOS.Device.State.DrawMode                 = DX_DRAWMODE_OTHER ;
-	GIOS.Device.DrawSetting.AlphaTestMode      = -1 ;
-	GIOS.Device.DrawSetting.AlphaTestParam     = 0 ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
-	GIOS.Device.DrawSetting.ChangeTextureFlag  = TRUE ;
+	GHTML5.Device.State.DrawMode                 = DX_DRAWMODE_OTHER ;
+	GHTML5.Device.DrawSetting.AlphaTestMode      = -1 ;
+	GHTML5.Device.DrawSetting.AlphaTestParam     = 0 ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	GHTML5.Device.DrawSetting.ChangeTextureFlag  = TRUE ;
 
 	// カラーにアルファ値を乗算するかどうかの情報をセットする
-	Graphics_iOS_DeviceState_SetMulAlphaColor( Model->UseDrawMulAlphaColor ) ;
+	Graphics_HTML5_DeviceState_SetMulAlphaColor( Model->UseDrawMulAlphaColor ) ;
 
 	// 終了
 	return 0 ;
@@ -2018,14 +2018,14 @@ extern int MV1_BeginRender_PF( MV1_MODEL *Model )
 extern int MV1_EndRender_PF( void )
 {
 	// ワールド行列を元に戻す
-	Graphics_iOS_DeviceState_SetWorldMatrix( &GSYS.DrawSetting.WorldMatrixF ) ;
+	Graphics_HTML5_DeviceState_SetWorldMatrix( &GSYS.DrawSetting.WorldMatrixF ) ;
 
 	// 終了
 	return 0 ;
 }
 
 // 指定のメッシュの基本部分のマテリアルをセットアップする
-static bool MV1_IOS_SetupMeshDrawMaterialCommon( MV1_MESH *Mesh )
+static bool MV1_HTML5_SetupMeshDrawMaterialCommon( MV1_MESH *Mesh )
 {
 	MV1_MESH_BASE     *MBMesh ;
 	MATERIALPARAM     Material ;
@@ -2081,17 +2081,17 @@ static bool MV1_IOS_SetupMeshDrawMaterialCommon( MV1_MESH *Mesh )
 	Material.Power = MMaterial->Power ;
 	_MEMCPY( GSYS.Light.MaterialTypeParam , MMaterial->TypeParam, sizeof( MMaterial->TypeParam ) ) ;
 	GSYS.Light.ChangeMaterial = 1 ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
-	Graphics_iOS_DeviceState_SetMaterial( &Material ) ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	Graphics_HTML5_DeviceState_SetMaterial( &Material ) ;
 
 	// カリング設定
-	Graphics_iOS_DeviceState_SetCullMode( GSYS.DrawSetting.ShadowMapDraw ? FALSE : MBMesh->BackCulling ) ; 
+	Graphics_HTML5_DeviceState_SetCullMode( GSYS.DrawSetting.ShadowMapDraw ? FALSE : MBMesh->BackCulling ) ; 
 
 	// アルファテスト設定
 //	if( MMaterial->UseAlphaTest )
 //	{
-//		Graphics_iOS_DeviceState_SetAlphaTestCmpMode( MMaterial->AlphaFunc ) ;
-//		Graphics_iOS_DeviceState_SetAlphaTestRef(     MMaterial->AlphaRef ) ;
+//		Graphics_HTML5_DeviceState_SetAlphaTestCmpMode( MMaterial->AlphaFunc ) ;
+//		Graphics_HTML5_DeviceState_SetAlphaTestRef(     MMaterial->AlphaRef ) ;
 //	}
 
 	// FactorColor の設定
@@ -2102,7 +2102,7 @@ static bool MV1_IOS_SetupMeshDrawMaterialCommon( MV1_MESH *Mesh )
 		FloatFactorColor[ 1 ] = 1.0f ;
 		FloatFactorColor[ 2 ] = 1.0f ;
 		FloatFactorColor[ 3 ] = Mesh->SetupDrawMaterial.OpacityRate * ( Mesh->DrawBlendParam != -1 ? Mesh->DrawBlendParam : MMaterial->DrawBlendParam ) / 255.0f ;
-		Graphics_iOS_DeviceState_SetFactorColor( &FloatFactorColor ) ;
+		Graphics_HTML5_DeviceState_SetFactorColor( &FloatFactorColor ) ;
 	}
 
 	// ブレンドモードの設定
@@ -2114,50 +2114,50 @@ static bool MV1_IOS_SetupMeshDrawMaterialCommon( MV1_MESH *Mesh )
 	case DX_BLENDMODE_MULA :
 	case DX_BLENDMODE_SRCCOLOR :
 	case DX_BLENDMODE_NOBLEND :
-		Graphics_iOS_DeviceState_SetBlendMode( BlendMode, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+		Graphics_HTML5_DeviceState_SetBlendMode( BlendMode, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		break ;
 
 	case DX_BLENDMODE_ALPHA :
 		if( Frame->Container->UseDrawMulAlphaColor )
 		{
-			Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		else
 		{
-			Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		break ;
 
 	case DX_BLENDMODE_ADD :
 		if( Frame->Container->UseDrawMulAlphaColor )
 		{
-			Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		else
 		{
-			Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		break ;
 	}
 
 	// スペキュラが有効かどうかをセットする
-	Graphics_iOS_DeviceState_SetSpecularEnable(
+	Graphics_HTML5_DeviceState_SetSpecularEnable(
 		MBMesh->UseVertexSpecularColor ||
 		Material.Specular.r > 0.00001f ||
 		Material.Specular.g > 0.00001f ||
 		Material.Specular.b > 0.00001f ? TRUE : FALSE ) ;
 
 	// ディフューズマテリアルとして頂点カラーを使用するかどうかをセット
-	Graphics_iOS_DeviceState_SetUseVertexDiffuseColor( MBMesh->UseVertexDiffuseColor ) ;
+	Graphics_HTML5_DeviceState_SetUseVertexDiffuseColor( MBMesh->UseVertexDiffuseColor ) ;
 
 	// スペキュラマテリアルとして頂点カラーを使用するかどうかをセット
-	Graphics_iOS_DeviceState_SetUseVertexSpecularColor( MBMesh->UseVertexSpecularColor ) ;
+	Graphics_HTML5_DeviceState_SetUseVertexSpecularColor( MBMesh->UseVertexSpecularColor ) ;
 
 	return true ;
 }
 
 // トゥーンの為のマテリアルをセットアップする
-static void MV1_IOS_SetupToonOutLineMeshDrawMaterialCommon( MV1_MESH *Mesh, float OutLineWidth )
+static void MV1_HTML5_SetupToonOutLineMeshDrawMaterialCommon( MV1_MESH *Mesh, float OutLineWidth )
 {
 	MV1_MESH_BASE     *MBMesh ;
 	MATERIALPARAM     Material ;
@@ -2182,14 +2182,14 @@ static void MV1_IOS_SetupToonOutLineMeshDrawMaterialCommon( MV1_MESH *Mesh, floa
 	Material.Ambient    = Material.Specular ;
 	Material.Power      = 0.0f ;
 	GSYS.Light.ChangeMaterial = 1 ;
-	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
-	Graphics_iOS_DeviceState_SetMaterial( &Material ) ;
+	GHTML5.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
+	Graphics_HTML5_DeviceState_SetMaterial( &Material ) ;
 
 	// 輪郭線の太さをセットする
-	Graphics_iOS_DeviceState_SetToonOutLineSize( OutLineWidth ) ;
+	Graphics_HTML5_DeviceState_SetToonOutLineSize( OutLineWidth ) ;
 
 	// カリング設定
-	Graphics_iOS_DeviceState_SetCullMode( 2 ) ; 
+	Graphics_HTML5_DeviceState_SetCullMode( 2 ) ; 
 
 	// FactorColor の設定
 	{
@@ -2199,7 +2199,7 @@ static void MV1_IOS_SetupToonOutLineMeshDrawMaterialCommon( MV1_MESH *Mesh, floa
 		FloatFactorColor[ 1 ] = 1.0f ;
 		FloatFactorColor[ 2 ] = 1.0f ;
 		FloatFactorColor[ 3 ] = ( Mesh->SetupDrawMaterial.OpacityRate * ( Mesh->DrawBlendParam != -1 ? Mesh->DrawBlendParam : MMaterial->DrawBlendParam ) ) / 255.0f ;
-		Graphics_iOS_DeviceState_SetFactorColor( &FloatFactorColor ) ;
+		Graphics_HTML5_DeviceState_SetFactorColor( &FloatFactorColor ) ;
 	}
 
 	// ブレンドモードの設定
@@ -2211,38 +2211,38 @@ static void MV1_IOS_SetupToonOutLineMeshDrawMaterialCommon( MV1_MESH *Mesh, floa
 	case DX_BLENDMODE_MULA :
 	case DX_BLENDMODE_SRCCOLOR :
 	case DX_BLENDMODE_NOBLEND :
-		Graphics_iOS_DeviceState_SetBlendMode( BlendMode, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+		Graphics_HTML5_DeviceState_SetBlendMode( BlendMode, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		break ;
 
 	case DX_BLENDMODE_ALPHA :
 		if( Frame->Container->UseDrawMulAlphaColor )
 		{
-			Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		else
 		{
-			Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		break ;
 
 	case DX_BLENDMODE_ADD :
 		if( Frame->Container->UseDrawMulAlphaColor )
 		{
-			Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		else
 		{
-			Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		break ;
 	}
 
 	// スペキュラを無効にする
-	Graphics_iOS_DeviceState_SetSpecularEnable( FALSE ) ;
+	Graphics_HTML5_DeviceState_SetSpecularEnable( FALSE ) ;
 }
 
 // グラフィックハンドルからテクスチャを取得する
-static GRAPHICS_IOS_TEXTURE	*MV1_IOS_GetGraphHandleTexture( int GraphHandle )
+static GRAPHICS_HTML5_TEXTURE	*MV1_HTML5_GetGraphHandleTexture( int GraphHandle )
 {
 	IMAGEDATA *Image ;
 
@@ -2256,7 +2256,7 @@ static GRAPHICS_IOS_TEXTURE	*MV1_IOS_GetGraphHandleTexture( int GraphHandle )
 }
 
 // シャドウマップハンドルからテクスチャを取得する
-static GRAPHICS_IOS_TEXTURE	*MV1_IOS_GetShadowMapHandleTexture( int ShadowMapHandle )
+static GRAPHICS_HTML5_TEXTURE	*MV1_HTML5_GetShadowMapHandleTexture( int ShadowMapHandle )
 {
 	SHADOWMAPDATA *ShadowMap ;
 
@@ -2270,7 +2270,7 @@ static GRAPHICS_IOS_TEXTURE	*MV1_IOS_GetShadowMapHandleTexture( int ShadowMapHan
 }
 
 // MV1_TEXTURE からテクスチャを取得する
-static GRAPHICS_IOS_TEXTURE	*MV1_IOS_GetTextureTexture( MV1_TEXTURE *Tex )
+static GRAPHICS_HTML5_TEXTURE	*MV1_HTML5_GetTextureTexture( MV1_TEXTURE *Tex )
 {
 	MV1_TEXTURE_BASE *TexBase ;
 	int               GraphHandle ;
@@ -2295,22 +2295,22 @@ static GRAPHICS_IOS_TEXTURE	*MV1_IOS_GetTextureTexture( MV1_TEXTURE *Tex )
 		GraphHandle = TexBase->GraphHandle ;
 	}
 
-	return MV1_IOS_GetGraphHandleTexture( GraphHandle ) ;
+	return MV1_HTML5_GetGraphHandleTexture( GraphHandle ) ;
 }
 
 // テクスチャが無かった場合にセットするテクスチャを取得する
-static GRAPHICS_IOS_TEXTURE	*MV1_IOS_GetNoneGraphHandleTexture( void )
+static GRAPHICS_HTML5_TEXTURE	*MV1_HTML5_GetNoneGraphHandleTexture( void )
 {
 	// デフォルトテクスチャハンドルの初期化チェック
 	if( MV1Man.TexNoneHandle < 0 )
 	{
 		MV1SetupTexNoneHandle() ;
 	}
-	return MV1_IOS_GetGraphHandleTexture( MV1Man.TexNoneHandle ) ;
+	return MV1_HTML5_GetGraphHandleTexture( MV1Man.TexNoneHandle ) ;
 }
 
 // 指定のメッシュのマテリアルをセットアップする
-static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
+static void MV1_HTML5_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 {
 	MV1_TEXTURE_BASE			*TexBase ;
 	MV1_TEXTURE					*Tex ;
@@ -2321,7 +2321,7 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 	int							TextureUVScaling ;
 	float						TextureScaleU ;
 	float						TextureScaleV ;
-	GRAPHICS_IOS_TEXTURE	*SetTexture[ 16 ] = { NULL } ;
+	GRAPHICS_HTML5_TEXTURE	*SetTexture[ 16 ] = { NULL } ;
 	int							SetTextureNum = 0 ;
 	int							IsToon ;
 
@@ -2355,7 +2355,7 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 			GSYS.DrawSetting.MatchHardwareTextureAddressTransformMatrix = FALSE ;
 		}
 
-		Graphics_iOS_DeviceState_SetTextureAddressTransformMatrix( FALSE, NULL ) ;
+		Graphics_HTML5_DeviceState_SetTextureAddressTransformMatrix( FALSE, NULL ) ;
 	}
 	else
 	{
@@ -2369,11 +2369,11 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 			TempMatrix.m[ 0 ][ 0 ] *= TextureScaleU ;
 			TempMatrix.m[ 1 ][ 1 ] *= TextureScaleV ;
 
-			Graphics_iOS_DeviceState_SetTextureAddressTransformMatrix( TRUE, &TempMatrix ) ;
+			Graphics_HTML5_DeviceState_SetTextureAddressTransformMatrix( TRUE, &TempMatrix ) ;
 		}
 		else
 		{
-			Graphics_iOS_DeviceState_SetTextureAddressTransformMatrix( TRUE, &Frame->TextureAddressTransformMatrix ) ;
+			Graphics_HTML5_DeviceState_SetTextureAddressTransformMatrix( TRUE, &Frame->TextureAddressTransformMatrix ) ;
 		}
 	}
 
@@ -2382,14 +2382,14 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 		if( Mesh->Material->DiffuseLayerNum )
 		{
 			Tex = &Model->Texture[ Mesh->Material->DiffuseLayer[ 0 ].Texture ] ;
-			SetTexture[ 0 ] = MV1_IOS_GetTextureTexture( Tex ) ;
-			Graphics_iOS_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 0 ) ;
-			Graphics_iOS_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 0 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 0 ) ;
+			SetTexture[ 0 ] = MV1_HTML5_GetTextureTexture( Tex ) ;
+			Graphics_HTML5_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 0 ) ;
+			Graphics_HTML5_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 0 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 0 ) ;
 		}
 		else
 		{
-			SetTexture[ 0 ] = MV1_IOS_GetNoneGraphHandleTexture() ;
-			Graphics_iOS_DeviceState_SetSampleFilterMode( GL_NEAREST, 0 ) ;
+			SetTexture[ 0 ] = MV1_HTML5_GetNoneGraphHandleTexture() ;
+			Graphics_HTML5_DeviceState_SetSampleFilterMode( GL_NEAREST, 0 ) ;
 		}
 		SetTextureNum = 1 ;
 
@@ -2398,9 +2398,9 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 			SetTextureNum = 2 ;
 
 			Tex = &Model->Texture[ Mesh->BaseData->Material->NormalLayer[ 0 ].Texture ] ;
-			SetTexture[ 1 ] = MV1_IOS_GetTextureTexture( Tex ) ;
-			Graphics_iOS_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 1 ) ;
-			Graphics_iOS_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 1 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 1 ) ;
+			SetTexture[ 1 ] = MV1_HTML5_GetTextureTexture( Tex ) ;
+			Graphics_HTML5_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 1 ) ;
+			Graphics_HTML5_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 1 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 1 ) ;
 		}
 
 		if( Mesh->Material->SpecularLayerNum )
@@ -2408,16 +2408,16 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 			SetTextureNum = 3 ;
 
 			Tex = &Model->Texture[ Mesh->Material->SpecularLayer[ 0 ].Texture ] ;
-			SetTexture[ 2 ] = MV1_IOS_GetTextureTexture( Tex ) ;
-			Graphics_iOS_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 2 ) ;
-			Graphics_iOS_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 2 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 2 ) ;
+			SetTexture[ 2 ] = MV1_HTML5_GetTextureTexture( Tex ) ;
+			Graphics_HTML5_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 2 ) ;
+			Graphics_HTML5_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 2 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 2 ) ;
 		}
 		else
 		{
 			SetTextureNum = 3 ;
 
-			SetTexture[ 2 ] = MV1_IOS_GetNoneGraphHandleTexture() ;
-			Graphics_iOS_DeviceState_SetSampleFilterMode( GL_NEAREST, 2 ) ;
+			SetTexture[ 2 ] = MV1_HTML5_GetNoneGraphHandleTexture() ;
+			Graphics_HTML5_DeviceState_SetSampleFilterMode( GL_NEAREST, 2 ) ;
 		}
 
 		if( IsToon )
@@ -2427,33 +2427,33 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 			if( Mesh->Material->DiffuseGradTexture >= 0 )
 			{
 				Tex = &Model->Texture[ Mesh->Material->DiffuseGradTexture ] ;
-				SetTexture[ 3 ] = MV1_IOS_GetTextureTexture( Tex ) ;
-				Graphics_iOS_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 3 ) ;
-				Graphics_iOS_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 3 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 3 ) ;
+				SetTexture[ 3 ] = MV1_HTML5_GetTextureTexture( Tex ) ;
+				Graphics_HTML5_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 3 ) ;
+				Graphics_HTML5_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 3 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 3 ) ;
 			}
 			else
 			if( Mesh->Material->BaseData->Type == DX_MATERIAL_TYPE_TOON )
 			{
-				SetTexture[ 3 ] = MV1_IOS_GetGraphHandleTexture( MV1GetDefaultToonTexture( Mesh->Material->DiffuseGradTexture ) ) ;
-				Graphics_iOS_DeviceState_SetSampleFilterMode( GL_LINEAR, 3 ) ;
+				SetTexture[ 3 ] = MV1_HTML5_GetGraphHandleTexture( MV1GetDefaultToonTexture( Mesh->Material->DiffuseGradTexture ) ) ;
+				Graphics_HTML5_DeviceState_SetSampleFilterMode( GL_LINEAR, 3 ) ;
 			}
 			else
 			{
-				SetTexture[ 3 ] = MV1_IOS_GetNoneGraphHandleTexture() ;
-				Graphics_iOS_DeviceState_SetSampleFilterMode( GL_NEAREST, 3 ) ;
+				SetTexture[ 3 ] = MV1_HTML5_GetNoneGraphHandleTexture() ;
+				Graphics_HTML5_DeviceState_SetSampleFilterMode( GL_NEAREST, 3 ) ;
 			}
 
 			if( Mesh->Material->SpecularGradTexture >= 0 )
 			{
 				Tex = &Model->Texture[ Mesh->Material->SpecularGradTexture ] ;
-				SetTexture[ 4 ] = MV1_IOS_GetTextureTexture( Tex ) ;
-				Graphics_iOS_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 4 ) ;
-				Graphics_iOS_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 4 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 4 ) ;
+				SetTexture[ 4 ] = MV1_HTML5_GetTextureTexture( Tex ) ;
+				Graphics_HTML5_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 4 ) ;
+				Graphics_HTML5_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 4 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 4 ) ;
 			}
 			else
 			{
-				SetTexture[ 4 ] = MV1_IOS_GetGraphHandleTexture( MV1GetDefaultToonTexture( Mesh->Material->SpecularGradTexture ) ) ;
-				Graphics_iOS_DeviceState_SetSampleFilterMode( GL_LINEAR, 4 ) ;
+				SetTexture[ 4 ] = MV1_HTML5_GetGraphHandleTexture( MV1GetDefaultToonTexture( Mesh->Material->SpecularGradTexture ) ) ;
+				Graphics_HTML5_DeviceState_SetSampleFilterMode( GL_LINEAR, 4 ) ;
 			}
 
 			if( Mesh->Material->SphereMapTexture >= 0 )
@@ -2464,22 +2464,22 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 				TexBase = Tex->BaseData ;
 				if( Tex->UseUserGraphHandle )
 				{
-					SetTexture[ 5 ] = MV1_IOS_GetGraphHandleTexture( Tex->UserGraphHandle ) ;
+					SetTexture[ 5 ] = MV1_HTML5_GetGraphHandleTexture( Tex->UserGraphHandle ) ;
 				}
 				else
 				if( Tex->UseGraphHandle && Tex->IsDefaultTexture == FALSE )
 				{
-					SetTexture[ 5 ] = MV1_IOS_GetGraphHandleTexture( Tex->GraphHandle ) ;
+					SetTexture[ 5 ] = MV1_HTML5_GetGraphHandleTexture( Tex->GraphHandle ) ;
 				}
 				else
 				if( TexBase->UseUserGraphHandle )
 				{
-					SetTexture[ 5 ] = MV1_IOS_GetGraphHandleTexture( TexBase->UserGraphHandle ) ;
+					SetTexture[ 5 ] = MV1_HTML5_GetGraphHandleTexture( TexBase->UserGraphHandle ) ;
 				}
 				else
 				if( TexBase->IsDefaultTexture == FALSE )
 				{
-					SetTexture[ 5 ] = MV1_IOS_GetGraphHandleTexture( TexBase->GraphHandle ) ;
+					SetTexture[ 5 ] = MV1_HTML5_GetGraphHandleTexture( TexBase->GraphHandle ) ;
 				}
 				else
 				{
@@ -2490,22 +2490,22 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 
 					if( Mesh->Material->SphereMapBlendType == DX_MATERIAL_BLENDTYPE_MODULATE )
 					{
-						SetTexture[ 5 ] = MV1_IOS_GetGraphHandleTexture( MV1Man.TexNoneHandle ) ;
+						SetTexture[ 5 ] = MV1_HTML5_GetGraphHandleTexture( MV1Man.TexNoneHandle ) ;
 					}
 					else
 					{
-						SetTexture[ 5 ] = MV1_IOS_GetGraphHandleTexture( MV1Man.TexNoneBlackHandle ) ;
+						SetTexture[ 5 ] = MV1_HTML5_GetGraphHandleTexture( MV1Man.TexNoneBlackHandle ) ;
 					}
 				}
-				Graphics_iOS_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 5 ) ;
-				Graphics_iOS_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 5 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 5 ) ;
+				Graphics_HTML5_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 5 ) ;
+				Graphics_HTML5_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 5 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 5 ) ;
 			}
 
 
 //			SetTextureNum = 7 ;
-//			SetTexture[ 6 ] = &GIOS.RGBtoVMaxRGBVolumeTexture ;
-//			Graphics_iOS_DeviceState_SetTextureAddressUVW( DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP, 6 ) ;
-//			Graphics_iOS_DeviceState_SetSampleFilterMode( Gnm::kFilterModeBilinear, 6 ) ;
+//			SetTexture[ 6 ] = &GHTML5.RGBtoVMaxRGBVolumeTexture ;
+//			Graphics_HTML5_DeviceState_SetTextureAddressUVW( DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP, 6 ) ;
+//			Graphics_HTML5_DeviceState_SetSampleFilterMode( Gnm::kFilterModeBilinear, 6 ) ;
 		}
 
 		if( Mesh->Material->DiffuseLayerNum > 1 )
@@ -2513,9 +2513,9 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 			SetTextureNum = 8 ;
 
 			Tex = &Model->Texture[ Mesh->Material->DiffuseLayer[ 1 ].Texture ] ;
-			SetTexture[ 7 ] = MV1_IOS_GetTextureTexture( Tex ) ;
-			Graphics_iOS_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 7 ) ;
-			Graphics_iOS_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 7 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 7 ) ;
+			SetTexture[ 7 ] = MV1_HTML5_GetTextureTexture( Tex ) ;
+			Graphics_HTML5_DeviceState_SetTextureAddressUVW( Tex->AddressModeU, Tex->AddressModeV, DX_TEXADDRESS_CLAMP, 7 ) ;
+			Graphics_HTML5_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ 7 ]->MipMapCount <= 1 ? 0 : 1 ][ Tex->FilterMode ], 7 ) ;
 		}
 
 		// シャドウマップの設定
@@ -2526,9 +2526,9 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 			{
 				if( GSYS.DrawSetting.ShadowMap[ i ] > 0 )
 				{
-					SetTexture[ 8 + i ] = MV1_IOS_GetShadowMapHandleTexture( GSYS.DrawSetting.ShadowMap[ i ])  ;
-					Graphics_iOS_DeviceState_SetTextureAddressUVW( DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP, 8 + i ) ;
-					Graphics_iOS_DeviceState_SetSampleFilterMode( GL_LINEAR, 8 + i ) ;
+					SetTexture[ 8 + i ] = MV1_HTML5_GetShadowMapHandleTexture( GSYS.DrawSetting.ShadowMap[ i ])  ;
+					Graphics_HTML5_DeviceState_SetTextureAddressUVW( DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP, DX_TEXADDRESS_CLAMP, 8 + i ) ;
+					Graphics_HTML5_DeviceState_SetSampleFilterMode( GL_LINEAR, 8 + i ) ;
 				}
 				else
 				{
@@ -2565,8 +2565,8 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 				}
 
 				LastNo = i ;
-				Graphics_iOS_DeviceState_SetTextureAddressUVW( GSYS.DrawSetting.TexAddressModeU[ i ], GSYS.DrawSetting.TexAddressModeV[ i ], GSYS.DrawSetting.TexAddressModeW[ i ], i ) ;
-				Graphics_iOS_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ i ]->MipMapCount <= 1 ? 0 : 1 ][ GSYS.DrawSetting.DrawMode ], i ) ;
+				Graphics_HTML5_DeviceState_SetTextureAddressUVW( GSYS.DrawSetting.TexAddressModeU[ i ], GSYS.DrawSetting.TexAddressModeV[ i ], GSYS.DrawSetting.TexAddressModeW[ i ], i ) ;
+				Graphics_HTML5_DeviceState_SetSampleFilterMode( DrawModeToFilterTable[ SetTexture[ i ]->MipMapCount <= 1 ? 0 : 1 ][ GSYS.DrawSetting.DrawMode ], i ) ;
 			}
 
 			if( LastNo > 0 && LastNo + 1 > SetTextureNum )
@@ -2581,20 +2581,20 @@ static void MV1_IOS_SetupMeshDrawMaterial( MV1_MESH *Mesh )
 
 			for( i = 0 ; i < SetTextureNum ; i ++ )
 			{
-				Graphics_iOS_DeviceState_SetTexture( i, SetTexture[ i ] ) ;
+				Graphics_HTML5_DeviceState_SetTexture( i, SetTexture[ i ] ) ;
 			}
 		}
 	}
 }
 
 // 指定のメッシュのトゥーンレンダリングの輪郭線用のマテリアルをセットアップする
-static void MV1_IOS_SetupToonOutLineMeshDrawMaterial(	MV1_MESH *Mesh )
+static void MV1_HTML5_SetupToonOutLineMeshDrawMaterial(	MV1_MESH *Mesh )
 {
 	MV1_FRAME					*Frame ;
 	MV1_MODEL					*Model ;
 	MV1_MATERIAL				* RST MMaterial ;
 	int							BlendMode ;
-	GRAPHICS_IOS_TEXTURE	*SetTexture = NULL ;
+	GRAPHICS_HTML5_TEXTURE	*SetTexture = NULL ;
 
 	// 共通部分のセット
 
@@ -2610,28 +2610,28 @@ static void MV1_IOS_SetupToonOutLineMeshDrawMaterial(	MV1_MESH *Mesh )
 	}
 
 	// テクスチャのセットアップ
-	SetTexture = MV1_IOS_GetNoneGraphHandleTexture() ;
+	SetTexture = MV1_HTML5_GetNoneGraphHandleTexture() ;
 
 	// テクスチャをセット
-	Graphics_iOS_DeviceState_SetTexture( 0, SetTexture ) ;
+	Graphics_HTML5_DeviceState_SetTexture( 0, SetTexture ) ;
 }
 
 // 指定のモデル描画用シェーダーをセットアップする( TRUE:成功  FALSE:失敗 )
-static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLine )
+static int  MV1_HTML5_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLine )
 {
-	GRAPHICS_HARDWARE_IOS_SHADER_MODEL		*SM           = &GIOS.Device.Shader.Model ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_MODEL	*SCM          = &GIOS.ShaderCode.Model ;
+	GRAPHICS_HARDWARE_HTML5_SHADER_MODEL		*SM           = &GHTML5.Device.Shader.Model ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_MODEL	*SCM          = &GHTML5.ShaderCode.Model ;
 	int											ValidPL ;
-	GRAPHICS_IOS_SHADER						**Shader_PL   = NULL ;
+	GRAPHICS_HTML5_SHADER						**Shader_PL   = NULL ;
 	GLuint										*VS_PL        = NULL ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO	*VSAddress_PL = NULL ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*VSAddress_PL = NULL ;
 	GLuint										*FS_PL        = NULL ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO	*FSAddress_PL = NULL ;
-	GRAPHICS_IOS_SHADER						**Shader      = NULL ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*FSAddress_PL = NULL ;
+	GRAPHICS_HTML5_SHADER						**Shader      = NULL ;
 	GLuint										*VS           = NULL ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO	*VSAddress    = NULL ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*VSAddress    = NULL ;
 	GLuint										*FS           = NULL ;
-	GRAPHICS_HARDWARE_IOS_SHADERCODE_INFO	*FSAddress    = NULL ;
+	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*FSAddress    = NULL ;
 	MV1_MATERIAL_BASE                       * RST MBMaterial ;
 	MV1_MATERIAL                            * RST MMaterial ;
 	int										ShadowMap ;
@@ -2650,13 +2650,13 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 	MMaterial  = Mesh->Material ;
 	MBMaterial = MMaterial->BaseData ;
 
-	if( GIOS.ShaderCode.Model.ModelShaderInitializeFlag == FALSE &&
-		Graphics_iOS_ShaderCode_Model_Initialize()   == FALSE )
+	if( GHTML5.ShaderCode.Model.ModelShaderInitializeFlag == FALSE &&
+		Graphics_HTML5_ShaderCode_Model_Initialize()   == FALSE )
 	{
 		return FALSE ;
 	}
 
-	MV1Man_iOS.EnableLightNum = 0 ;
+	MV1Man_HTML5.EnableLightNum = 0 ;
 
 	// ９ボーン以上の場合は剛体メッシュとして処理
 	if( VertexType == MV1_VERTEX_TYPE_SKIN_FREEBONE )
@@ -2666,16 +2666,16 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 
 	if( MMaterial->UseAlphaTest )
 	{
-		AlphaTestMode = Graphics_iOS_Shader_GetAlphaTestModeIndex( MMaterial->UseAlphaTest, MMaterial->AlphaFunc ) ;
-		Graphics_iOS_DeviceState_SetAlphaTestRef( MMaterial->AlphaRef ) ;
+		AlphaTestMode = Graphics_HTML5_Shader_GetAlphaTestModeIndex( MMaterial->UseAlphaTest, MMaterial->AlphaFunc ) ;
+		Graphics_HTML5_DeviceState_SetAlphaTestRef( MMaterial->AlphaRef ) ;
 	}
 	else
 	{
-		AlphaTestMode = IOS_FS_ALPHATEST_CMP_GREATER ;
-		Graphics_iOS_DeviceState_SetAlphaTestRef( -1 ) ;
+		AlphaTestMode = HTML5_FS_ALPHATEST_CMP_GREATER ;
+		Graphics_HTML5_DeviceState_SetAlphaTestRef( -1 ) ;
 	}
 	ShadowMap     = GSYS.DrawSetting.UseShadowMapNum != 0 ? 1 : 0 ;
-	FogType       = GIOS.Device.State.FogEnable ? GIOS.Device.State.FogMode : DX_FOGMODE_NONE ;
+	FogType       = GHTML5.Device.State.FogEnable ? GHTML5.Device.State.FogMode : DX_FOGMODE_NONE ;
 	IsToon        = MMaterial->BaseData->Type == DX_MATERIAL_TYPE_TOON || MMaterial->BaseData->Type == DX_MATERIAL_TYPE_TOON_2 ;
 	BumpMap       = MBMaterial->NormalLayerNum  > 0 ;
 	MultiTexMode  = MBMaterial->DiffuseLayerNum > 1 ? MBMaterial->DiffuseLayer[ 1 ].BlendType + 1 : 0 ;
@@ -2780,7 +2780,7 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 		Shader    =  &SM->MV1_MaterialType_Shader[ VertexType ][ BumpMap ][ MMaterial->BaseData->Type ][ AlphaTestMode ] ;
 	}
 	else
-	if( GIOS.Device.State.Lighting )
+	if( GHTML5.Device.State.Lighting )
 	{
 		// ライティングあり描画
 
@@ -2789,9 +2789,9 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 
 		for( i = 0 ; i < DX_PIXELLIGHTING_LIGHT_NUM ; i ++ )
 		{
-			if( GIOS.Device.State.LightEnableFlag[ i ] )
+			if( GHTML5.Device.State.LightEnableFlag[ i ] )
 			{
-				LightMode[ i ] = GIOS.Device.State.LightParam[ i ].LightType ;
+				LightMode[ i ] = GHTML5.Device.State.LightParam[ i ].LightType ;
 				EnableLightNum ++ ;
 			}
 			else
@@ -2800,9 +2800,9 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 			}
 		}
 
-		LightIndex84 = GIOS.ShaderCode.Base.LightIndexList84[ LightMode[ 0 ] ][ LightMode[ 1 ] ][ LightMode[ 2 ] ][ LightMode[ 3 ] ][ LightMode[ 4 ] ][ LightMode[ 5 ] ] ;
-		LightIndex20 = GIOS.ShaderCode.Base.LightIndexList20[ LightMode[ 0 ] ][ LightMode[ 1 ] ][ LightMode[ 2 ] ] ;
-		LightIndex10 = GIOS.ShaderCode.Base.LightIndexList10
+		LightIndex84 = GHTML5.ShaderCode.Base.LightIndexList84[ LightMode[ 0 ] ][ LightMode[ 1 ] ][ LightMode[ 2 ] ][ LightMode[ 3 ] ][ LightMode[ 4 ] ][ LightMode[ 5 ] ] ;
+		LightIndex20 = GHTML5.ShaderCode.Base.LightIndexList20[ LightMode[ 0 ] ][ LightMode[ 1 ] ][ LightMode[ 2 ] ] ;
+		LightIndex10 = GHTML5.ShaderCode.Base.LightIndexList10
 				[ LightMode[ 0 ] == DX_LIGHTTYPE_D3DLIGHT_DIRECTIONAL ? 2 : ( LightMode[ 0 ] ? 1 : 0 ) ]
 				[ LightMode[ 1 ] == DX_LIGHTTYPE_D3DLIGHT_DIRECTIONAL ? 2 : ( LightMode[ 1 ] ? 1 : 0 ) ]
 				[ LightMode[ 2 ] == DX_LIGHTTYPE_D3DLIGHT_DIRECTIONAL ? 2 : ( LightMode[ 2 ] ? 1 : 0 ) ] ;
@@ -2944,7 +2944,7 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 //		// 頂点シェーダーのセットアップ
 //		if( GSYS.DrawSetting.UserShaderRenderInfo.SetVertexShaderHandle > 0 )
 //		{
-//			if( Graphics_iOS_DeviceState_SetVertexShaderToHandle( GSYS.DrawSetting.UserShaderRenderInfo.SetVertexShaderHandle ) < 0 )
+//			if( Graphics_HTML5_DeviceState_SetVertexShaderToHandle( GSYS.DrawSetting.UserShaderRenderInfo.SetVertexShaderHandle ) < 0 )
 //			{
 //				UseOrigShader = FALSE ;
 //			}
@@ -2953,7 +2953,7 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 //		// フラグメントシェーダーのセットアップ
 //		if( GSYS.DrawSetting.UserShaderRenderInfo.SetPixelShaderHandle > 0 )
 //		{
-//			if( Graphics_iOS_DeviceState_SetPixelShaderToHandle( GSYS.DrawSetting.UserShaderRenderInfo.SetPixelShaderHandle ) < 0 )
+//			if( Graphics_HTML5_DeviceState_SetPixelShaderToHandle( GSYS.DrawSetting.UserShaderRenderInfo.SetPixelShaderHandle ) < 0 )
 //			{
 //				UseOrigShader = FALSE ;
 //			}
@@ -2963,15 +2963,15 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 	// オリジナルシェーダーを使用しないか、オリジナルシェーダーのセットアップに失敗したらデフォルトシェーダーをセットアップする
 	if( UseOrigShader == FALSE )
 	{
-		if( ( GSYS.Light.EnableNum > DX_VERTEXLIGHTING_LIGHT_NUM || GIOS.UsePixelLightingShader ) && ValidPL )
+		if( ( GSYS.Light.EnableNum > DX_VERTEXLIGHTING_LIGHT_NUM || GHTML5.UsePixelLightingShader ) && ValidPL )
 		{
 			// 頂点シェーダーがあるかどうかを調べる
 			if( *VS_PL == 0 )
 			{
 				// 頂点シェーダーの作成を試みる
-				if( Graphics_iOS_VertexShader_Create( VSAddress_PL, VS_PL, 1 ) != 0 )
+				if( Graphics_HTML5_VertexShader_Create( VSAddress_PL, VS_PL, 1 ) != 0 )
 				{
-					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_IOS_ShaderSetup でピクセルライティング用頂点シェーダーの作成に失敗しました\n" @*/ )) ;
+					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_HTML5_ShaderSetup でピクセルライティング用頂点シェーダーの作成に失敗しました\n" @*/ )) ;
 					return FALSE ;
 				}
 			}
@@ -2980,9 +2980,9 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 			if( *FS_PL == 0 )
 			{
 				// フラグメントシェーダーの作成を試みる
-				if( Graphics_iOS_FragmentShader_Create( FSAddress_PL, FS_PL, 1 ) != 0 )
+				if( Graphics_HTML5_FragmentShader_Create( FSAddress_PL, FS_PL, 1 ) != 0 )
 				{
-					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_IOS_ShaderSetup でピクセルライティング用フラグメントシェーダーの作成に失敗しました\n" @*/ )) ;
+					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_HTML5_ShaderSetup でピクセルライティング用フラグメントシェーダーの作成に失敗しました\n" @*/ )) ;
 					return FALSE ;
 				}
 			}
@@ -2990,7 +2990,7 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 			// シェーダーがあるかどうかを調べる
 			if( *Shader_PL == NULL )
 			{
-				*Shader_PL = Graphics_iOS_GetShaderStruct() ;
+				*Shader_PL = Graphics_HTML5_GetShaderStruct() ;
 				if( *Shader_PL == NULL )
 				{
 					return FALSE ;
@@ -2999,17 +2999,17 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 			if( ( *Shader_PL )->Shader == 0 )
 			{
 				// シェーダーの作成を試みる
-				if( Graphics_iOS_Shader_Create( *Shader_PL, *VS_PL, *FS_PL ) != 0 )
+				if( Graphics_HTML5_Shader_Create( *Shader_PL, *VS_PL, *FS_PL ) != 0 )
 				{
-					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_IOS_ShaderSetup でピクセルライティング用シェーダーの作成に失敗しました\n" @*/ )) ;
+					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_HTML5_ShaderSetup でピクセルライティング用シェーダーの作成に失敗しました\n" @*/ )) ;
 					return FALSE ;
 				}
 			}
 
-			MV1Man_iOS.EnableLightNum = EnableLightNum ;
+			MV1Man_HTML5.EnableLightNum = EnableLightNum ;
 
 			// シェーダーのセットアップ
-			Graphics_iOS_DeviceState_SetShader( *Shader_PL, FALSE ) ;
+			Graphics_HTML5_DeviceState_SetShader( *Shader_PL, FALSE ) ;
 		}
 		else
 		{
@@ -3017,9 +3017,9 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 			if( *VS == 0 )
 			{
 				// シェーダーの作成を試みる
-				if( Graphics_iOS_VertexShader_Create( VSAddress, VS, 1 ) != 0 )
+				if( Graphics_HTML5_VertexShader_Create( VSAddress, VS, 1 ) != 0 )
 				{
-					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_IOS_ShaderSetup で頂点ライティング用頂点シェーダーの作成に失敗しました\n" @*/ )) ;
+					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_HTML5_ShaderSetup で頂点ライティング用頂点シェーダーの作成に失敗しました\n" @*/ )) ;
 					return FALSE ;
 				}
 			}
@@ -3028,9 +3028,9 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 			if( *FS == 0 )
 			{
 				// シェーダーの作成を試みる
-				if( Graphics_iOS_FragmentShader_Create( FSAddress, FS, 1 ) != 0 )
+				if( Graphics_HTML5_FragmentShader_Create( FSAddress, FS, 1 ) != 0 )
 				{
-					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_IOS_ShaderSetup で頂点ライティング用フラグメントシェーダーの作成に失敗しました\n" @*/ )) ;
+					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_HTML5_ShaderSetup で頂点ライティング用フラグメントシェーダーの作成に失敗しました\n" @*/ )) ;
 					return FALSE ;
 				}
 			}
@@ -3038,7 +3038,7 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 			// シェーダーがあるかどうかを調べる
 			if( *Shader == NULL )
 			{
-				*Shader = Graphics_iOS_GetShaderStruct() ;
+				*Shader = Graphics_HTML5_GetShaderStruct() ;
 				if( *Shader == NULL )
 				{
 					return FALSE ;
@@ -3047,17 +3047,17 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 			if( ( *Shader )->Shader == 0 )
 			{
 				// シェーダーの作成を試みる
-				if( Graphics_iOS_Shader_Create( *Shader, *VS, *FS ) != 0 )
+				if( Graphics_HTML5_Shader_Create( *Shader, *VS, *FS ) != 0 )
 				{
-					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_IOS_ShaderSetup で頂点ライティング用シェーダーの作成に失敗しました\n" @*/ )) ;
+					DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x56\x00\x31\x00\x5f\x00\x41\x00\x4e\x00\x44\x00\x52\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"MV1_HTML5_ShaderSetup で頂点ライティング用シェーダーの作成に失敗しました\n" @*/ )) ;
 					return FALSE ;
 				}
 			}
 
-			MV1Man_iOS.EnableLightNum = EnableLightNum > 3 ? 3 : EnableLightNum ;
+			MV1Man_HTML5.EnableLightNum = EnableLightNum > 3 ? 3 : EnableLightNum ;
 
 			// シェーダーのセットアップ
-			Graphics_iOS_DeviceState_SetShader( *Shader, FALSE ) ;
+			Graphics_HTML5_DeviceState_SetShader( *Shader, FALSE ) ;
 		}
 	}
 
@@ -3066,25 +3066,25 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 }
 
 // ローカル　→　ワールド行列に MATRIX_4X4CT を設定する
-static void MV1_IOS_SetWorldMatrix_MATRIX_4X4CT( const MATRIX_4X4CT *Matrix, int UseWorldViewMatrix )
+static void MV1_HTML5_SetWorldMatrix_MATRIX_4X4CT( const MATRIX_4X4CT *Matrix, int UseWorldViewMatrix )
 {
 	// 定数データに反映
 	if( GSYS.DrawSetting.Large3DPositionSupport )
 	{
 		if( UseWorldViewMatrix )
 		{
-			GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 0 ] = ( float )Matrix->md.m[ 0 ][ 0 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 1 ] = ( float )Matrix->md.m[ 0 ][ 1 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 2 ] = ( float )Matrix->md.m[ 0 ][ 2 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 3 ] = ( float )Matrix->md.m[ 0 ][ 3 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 0 ] = ( float )Matrix->md.m[ 1 ][ 0 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 1 ] = ( float )Matrix->md.m[ 1 ][ 1 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 2 ] = ( float )Matrix->md.m[ 1 ][ 2 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 3 ] = ( float )Matrix->md.m[ 1 ][ 3 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 0 ] = ( float )Matrix->md.m[ 2 ][ 0 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 1 ] = ( float )Matrix->md.m[ 2 ][ 1 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 2 ] = ( float )Matrix->md.m[ 2 ][ 2 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 3 ] = ( float )Matrix->md.m[ 2 ][ 3 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 0 ] = ( float )Matrix->md.m[ 0 ][ 0 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 1 ] = ( float )Matrix->md.m[ 0 ][ 1 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 2 ] = ( float )Matrix->md.m[ 0 ][ 2 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 3 ] = ( float )Matrix->md.m[ 0 ][ 3 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 0 ] = ( float )Matrix->md.m[ 1 ][ 0 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 1 ] = ( float )Matrix->md.m[ 1 ][ 1 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 2 ] = ( float )Matrix->md.m[ 1 ][ 2 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 3 ] = ( float )Matrix->md.m[ 1 ][ 3 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 0 ] = ( float )Matrix->md.m[ 2 ][ 0 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 1 ] = ( float )Matrix->md.m[ 2 ][ 1 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 2 ] = ( float )Matrix->md.m[ 2 ][ 2 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 3 ] = ( float )Matrix->md.m[ 2 ][ 3 ] ;
 		}
 		else
 		{
@@ -3094,50 +3094,50 @@ static void MV1_IOS_SetWorldMatrix_MATRIX_4X4CT( const MATRIX_4X4CT *Matrix, int
 			ConvertMatrixDToMatrix4x4cD( &ViewMat.md, &GSYS.DrawSetting.ViewMatrix ) ;
 			UnSafeMultiplyMatrix4X4CTD( &TempMat.md, &Matrix->md, &ViewMat.md ) ;
 
-			GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 0 ] = ( float )TempMat.md.m[ 0 ][ 0 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 1 ] = ( float )TempMat.md.m[ 0 ][ 1 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 2 ] = ( float )TempMat.md.m[ 0 ][ 2 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 3 ] = ( float )TempMat.md.m[ 0 ][ 3 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 0 ] = ( float )TempMat.md.m[ 1 ][ 0 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 1 ] = ( float )TempMat.md.m[ 1 ][ 1 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 2 ] = ( float )TempMat.md.m[ 1 ][ 2 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 3 ] = ( float )TempMat.md.m[ 1 ][ 3 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 0 ] = ( float )TempMat.md.m[ 2 ][ 0 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 1 ] = ( float )TempMat.md.m[ 2 ][ 1 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 2 ] = ( float )TempMat.md.m[ 2 ][ 2 ] ;
-			GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 3 ] = ( float )TempMat.md.m[ 2 ][ 3 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 0 ] = ( float )TempMat.md.m[ 0 ][ 0 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 1 ] = ( float )TempMat.md.m[ 0 ][ 1 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 2 ] = ( float )TempMat.md.m[ 0 ][ 2 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 3 ] = ( float )TempMat.md.m[ 0 ][ 3 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 0 ] = ( float )TempMat.md.m[ 1 ][ 0 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 1 ] = ( float )TempMat.md.m[ 1 ][ 1 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 2 ] = ( float )TempMat.md.m[ 1 ][ 2 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 3 ] = ( float )TempMat.md.m[ 1 ][ 3 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 0 ] = ( float )TempMat.md.m[ 2 ][ 0 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 1 ] = ( float )TempMat.md.m[ 2 ][ 1 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 2 ] = ( float )TempMat.md.m[ 2 ][ 2 ] ;
+			GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 3 ] = ( float )TempMat.md.m[ 2 ][ 3 ] ;
 
-			Graphics_iOS_DeviceState_SetViewMatrix( &IdentityMat ) ;
+			Graphics_HTML5_DeviceState_SetViewMatrix( &IdentityMat ) ;
 		}
 	}
 	else
 	{
-		GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 0 ] = Matrix->mf.m[ 0 ][ 0 ] ;
-		GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 1 ] = Matrix->mf.m[ 0 ][ 1 ] ;
-		GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 2 ] = Matrix->mf.m[ 0 ][ 2 ] ;
-		GIOS.Device.Shader.Constant.uLWMat[ 0 ][ 3 ] = Matrix->mf.m[ 0 ][ 3 ] ;
-		GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 0 ] = Matrix->mf.m[ 1 ][ 0 ] ;
-		GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 1 ] = Matrix->mf.m[ 1 ][ 1 ] ;
-		GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 2 ] = Matrix->mf.m[ 1 ][ 2 ] ;
-		GIOS.Device.Shader.Constant.uLWMat[ 1 ][ 3 ] = Matrix->mf.m[ 1 ][ 3 ] ;
-		GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 0 ] = Matrix->mf.m[ 2 ][ 0 ] ;
-		GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 1 ] = Matrix->mf.m[ 2 ][ 1 ] ;
-		GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 2 ] = Matrix->mf.m[ 2 ][ 2 ] ;
-		GIOS.Device.Shader.Constant.uLWMat[ 2 ][ 3 ] = Matrix->mf.m[ 2 ][ 3 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 0 ] = Matrix->mf.m[ 0 ][ 0 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 1 ] = Matrix->mf.m[ 0 ][ 1 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 2 ] = Matrix->mf.m[ 0 ][ 2 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 0 ][ 3 ] = Matrix->mf.m[ 0 ][ 3 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 0 ] = Matrix->mf.m[ 1 ][ 0 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 1 ] = Matrix->mf.m[ 1 ][ 1 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 2 ] = Matrix->mf.m[ 1 ][ 2 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 1 ][ 3 ] = Matrix->mf.m[ 1 ][ 3 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 0 ] = Matrix->mf.m[ 2 ][ 0 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 1 ] = Matrix->mf.m[ 2 ][ 1 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 2 ] = Matrix->mf.m[ 2 ][ 2 ] ;
+		GHTML5.Device.Shader.Constant.uLWMat[ 2 ][ 3 ] = Matrix->mf.m[ 2 ][ 3 ] ;
 	}
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 }
 
 // モデル描画専用の ローカル　→　ワールド行列をセットアップする
-static void MV1_IOS_SetupModelDrawWorldMatrix( MV1_FRAME *Frame, MV1_TRIANGLE_LIST_BASE *MBTList, int UseWorldViewMatrix )
+static void MV1_HTML5_SetupModelDrawWorldMatrix( MV1_FRAME *Frame, MV1_TRIANGLE_LIST_BASE *MBTList, int UseWorldViewMatrix )
 {
 	MATRIX_4X4CT * RST SrcMatrix ;
-	DX_IOS_SHADER_FLOAT4 *Dest ;
+	DX_HTML5_SHADER_FLOAT4 *Dest ;
 	int i ;
 
 	// 定数データに反映
-	Dest = GIOS.Device.Shader.Constant.uLWMat ;
+	Dest = GHTML5.Device.Shader.Constant.uLWMat ;
 	if( GSYS.DrawSetting.Large3DPositionSupport )
 	{
 		if( UseWorldViewMatrix )
@@ -3186,7 +3186,7 @@ static void MV1_IOS_SetupModelDrawWorldMatrix( MV1_FRAME *Frame, MV1_TRIANGLE_LI
 				Dest += 3 ;
 			}
 
-			Graphics_iOS_DeviceState_SetViewMatrix( &IdentityMat ) ;
+			Graphics_HTML5_DeviceState_SetViewMatrix( &IdentityMat ) ;
 		}
 	}
 	else
@@ -3211,11 +3211,11 @@ static void MV1_IOS_SetupModelDrawWorldMatrix( MV1_FRAME *Frame, MV1_TRIANGLE_LI
 		}
 	}
 
-	GIOS.Device.Shader.Constant.UpdateCount ++ ;
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 }
 
 // ９ボーン以上メッシュの頂点情報を更新する
-static int MV1_IOS_UpdateSkinFreeBoneMeshVertexData(
+static int MV1_HTML5_UpdateSkinFreeBoneMeshVertexData(
 	MV1_FRAME_BASE         *MBFrame,
 	MV1_TRIANGLE_LIST_BASE *MBTList,
 	MV1_FRAME              *Frame,
@@ -3283,7 +3283,7 @@ static int MV1_IOS_UpdateSkinFreeBoneMeshVertexData(
 			MVert = ( MV1_MESH_VERTEX   * )( ( BYTE * )MeshVert + MeshVertSize * *MVInd ) ;
 			MNorm = MeshNorm + MVert->NormalIndex ;
 
-			MV1_IOS_SetVertexData(
+			MV1_HTML5_SetVertexData(
 				&Dest,
 				( VECTOR * )&PosSKFB->Position,
 				&MNorm->Normal,
@@ -3608,13 +3608,13 @@ extern	void			MV1_DrawMesh_PF( MV1_MESH *Mesh, int TriangleListIndex )
 	}
 
 	// マテリアルの共通部分のセットアップ
-	if( MV1_IOS_SetupMeshDrawMaterialCommon( Mesh ) == false )
+	if( MV1_HTML5_SetupMeshDrawMaterialCommon( Mesh ) == false )
 	{
 		return ;
 	}
 
 	// マテリアルのセットアップ
-	MV1_IOS_SetupMeshDrawMaterial( Mesh ) ;
+	MV1_HTML5_SetupMeshDrawMaterial( Mesh ) ;
 
 	// ９ボーン以上のスキニングメッシュの更新をしたかどうかのフラグを倒す
 	MBTList = MBMesh->TriangleList ;
@@ -3643,14 +3643,14 @@ extern	void			MV1_DrawMesh_PF( MV1_MESH *Mesh, int TriangleListIndex )
 			// シェーダーのセットアップ
 			if( MBTList->VertexType == MV1_VERTEX_TYPE_NORMAL && MBase->UsePackDraw )
 			{
-				if( MV1_IOS_ShaderSetup( Mesh, MV1_VERTEX_TYPE_SKIN_4BONE, FALSE ) == FALSE )
+				if( MV1_HTML5_ShaderSetup( Mesh, MV1_VERTEX_TYPE_SKIN_4BONE, FALSE ) == FALSE )
 				{
 					continue ;
 				}
 			}
 			else
 			{
-				if( MV1_IOS_ShaderSetup( Mesh, MBTList->VertexType, FALSE ) == FALSE )
+				if( MV1_HTML5_ShaderSetup( Mesh, MBTList->VertexType, FALSE ) == FALSE )
 				{
 					continue ;
 				}
@@ -3659,8 +3659,8 @@ extern	void			MV1_DrawMesh_PF( MV1_MESH *Mesh, int TriangleListIndex )
 			// 頂点バッファのセットアップ
 			if( TList->PF->VertexBufferObject )
 			{
-				Graphics_iOS_DeviceState_SetupShaderVertexData(
-					GIOS.Device.State.SetShader,
+				Graphics_HTML5_DeviceState_SetupShaderVertexData(
+					GHTML5.Device.State.SetShader,
 					&g_Model_VertexFormat[ MBTList->Container->Material->NormalLayerNum ? 1 : 0 ][ MBTList->VertexType ],
 					NULL,
 					TList->PF->VertexBufferObject
@@ -3668,8 +3668,8 @@ extern	void			MV1_DrawMesh_PF( MV1_MESH *Mesh, int TriangleListIndex )
 			}
 			else
 			{
-				Graphics_iOS_DeviceState_SetupShaderVertexData(
-					GIOS.Device.State.SetShader,
+				Graphics_HTML5_DeviceState_SetupShaderVertexData(
+					GHTML5.Device.State.SetShader,
 					&g_Model_VertexFormat[ MBTList->Container->Material->NormalLayerNum ? 1 : 0 ][ MBTList->VertexType ],
 					NULL,
 					MBTList->VertexBuffer->PF->VertexBufferObject
@@ -3688,11 +3688,11 @@ extern	void			MV1_DrawMesh_PF( MV1_MESH *Mesh, int TriangleListIndex )
 				}
 
 				// 使用するローカル→ワールド行列の用意
-				MV1_IOS_SetWorldMatrix_MATRIX_4X4CT( &Frame->LocalWorldMatrix, UseWorldViewMatrix ) ;
+				MV1_HTML5_SetWorldMatrix_MATRIX_4X4CT( &Frame->LocalWorldMatrix, UseWorldViewMatrix ) ;
 
 #ifndef NOT_RENDER
 				// ステートと定数バッファの更新
-				Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, MV1Man_iOS.EnableLightNum ) ;
+				Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, MV1Man_HTML5.EnableLightNum ) ;
 
 				// 描画
 				glDrawElements(
@@ -3704,12 +3704,12 @@ extern	void			MV1_DrawMesh_PF( MV1_MESH *Mesh, int TriangleListIndex )
 				GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 				// 描画を終了する
-//				Graphics_IOS_RenderEnd() ;
+//				Graphics_HTML5_RenderEnd() ;
 #endif // NOT_RENDER
 
 				if( GSYS.DrawSetting.Large3DPositionSupport && UseWorldViewMatrix == FALSE )
 				{
-					Graphics_iOS_DeviceState_SetViewMatrix( &GSYS.DrawSetting.ViewMatrixF ) ;
+					Graphics_HTML5_DeviceState_SetViewMatrix( &GSYS.DrawSetting.ViewMatrixF ) ;
 				}
 				break ;
 
@@ -3723,7 +3723,7 @@ SD4BONESKIN:
 					// 同時複数描画かどうかで処理を分岐
 					if( MBase->UsePackDraw )
 					{
-						DX_IOS_SHADER_FLOAT4 *Dest ;
+						DX_HTML5_SHADER_FLOAT4 *Dest ;
 						int l ;
 						int UsePackIndex ;
 						int TotalDrawStockNum ;
@@ -3750,7 +3750,7 @@ SD4BONESKIN:
 
 							if( MBTList->VertexType == MV1_VERTEX_TYPE_NORMAL )
 							{
-								Dest = GIOS.Device.Shader.Constant.uLWMat ;
+								Dest = GHTML5.Device.Shader.Constant.uLWMat ;
 								for( l = 0 ; l < DrawStockNum ; l ++, PackDrawMatrix += MBase->PackDrawMatrixUnitNum )
 								{
 									Dest[ 0 ][ 0 ] = PackDrawMatrix->m[ 0 ][ 0 ] ;
@@ -3779,7 +3779,7 @@ SD4BONESKIN:
 									for( n = 0 ; n < MBTList->UseBoneNum ; n ++, MatrixIndex ++ )
 									{
 										Src  = &PackDrawMatrix[ Frame->UseSkinBoneMatrix[ MBTList->UseBone[ n ] ] - Model->SkinBoneMatrix ] ;
-										Dest = &GIOS.Device.Shader.Constant.uLWMat[ MatrixIndex * 3 ] ;
+										Dest = &GHTML5.Device.Shader.Constant.uLWMat[ MatrixIndex * 3 ] ;
 
 										Dest[ 0 ][ 0 ] = Src->m[ 0 ][ 0 ] ;
 										Dest[ 0 ][ 1 ] = Src->m[ 0 ][ 1 ] ;
@@ -3797,11 +3797,11 @@ SD4BONESKIN:
 								}
 							}
 
-							GIOS.Device.Shader.Constant.UpdateCount ++ ;
+							GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 #ifndef NOT_RENDER
 							// ステートと定数バッファの更新
-							Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, MV1Man_iOS.EnableLightNum, 162 ) ;
+							Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, MV1Man_HTML5.EnableLightNum, 162 ) ;
 
 							// 描画
 							glDrawElements(
@@ -3813,7 +3813,7 @@ SD4BONESKIN:
 							GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 							// 描画を終了する
-//							Graphics_IOS_RenderEnd() ;
+//							Graphics_HTML5_RenderEnd() ;
 #endif
 
 							TotalDrawStockNum -= DrawStockNum ;
@@ -3822,10 +3822,10 @@ SD4BONESKIN:
 					}
 					else
 					{
-						MV1_IOS_SetupModelDrawWorldMatrix( Frame, MBTList, UseWorldViewMatrix ) ;
+						MV1_HTML5_SetupModelDrawWorldMatrix( Frame, MBTList, UseWorldViewMatrix ) ;
 #ifndef NOT_RENDER
 						// ステートと定数バッファの更新
-						Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, MV1Man_iOS.EnableLightNum, MBTList->UseBoneNum * 3 ) ;
+						Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, MV1Man_HTML5.EnableLightNum, MBTList->UseBoneNum * 3 ) ;
 
 						// 描画
 						glDrawElements(
@@ -3837,11 +3837,11 @@ SD4BONESKIN:
 						GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 						// 描画を終了する
-//						Graphics_IOS_RenderEnd() ;
+//						Graphics_HTML5_RenderEnd() ;
 #endif
 						if( GSYS.DrawSetting.Large3DPositionSupport && UseWorldViewMatrix == FALSE )
 						{
-							Graphics_iOS_DeviceState_SetViewMatrix( &GSYS.DrawSetting.ViewMatrixF ) ;
+							Graphics_HTML5_DeviceState_SetViewMatrix( &GSYS.DrawSetting.ViewMatrixF ) ;
 						}
 					}
 				}
@@ -3850,14 +3850,14 @@ SD4BONESKIN:
 				// ボーン数無制限トライアングルリスト
 			case MV1_VERTEX_TYPE_SKIN_FREEBONE :
 				// ローカル→ワールド行列は単位行列にする
-				Graphics_iOS_DeviceState_SetWorldMatrix( &IdentityMat ) ;
+				Graphics_HTML5_DeviceState_SetWorldMatrix( &IdentityMat ) ;
 
 #ifndef NOT_RENDER
 				// 頂点データを更新する
-				MV1_IOS_UpdateSkinFreeBoneMeshVertexData( MBFrame, MBTList, Frame, TList ) ;
+				MV1_HTML5_UpdateSkinFreeBoneMeshVertexData( MBFrame, MBTList, Frame, TList ) ;
 
 				// ステートと定数バッファの更新
-				Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, MV1Man_iOS.EnableLightNum ) ;
+				Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, MV1Man_HTML5.EnableLightNum ) ;
 
 				// 描画
 				glDrawElements(
@@ -3869,7 +3869,7 @@ SD4BONESKIN:
 				GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 				// 描画を終了する
-//				Graphics_IOS_RenderEnd() ;
+//				Graphics_HTML5_RenderEnd() ;
 #endif // NOT_RENDER
 				break ;
 			}
@@ -3941,10 +3941,10 @@ SD4BONESKIN:
 			}
 
 			// マテリアルの共通部分のセットアップ
-			MV1_IOS_SetupToonOutLineMeshDrawMaterialCommon( Mesh, OutLineWidth ) ;
+			MV1_HTML5_SetupToonOutLineMeshDrawMaterialCommon( Mesh, OutLineWidth ) ;
 
 			// 描画マテリアルのセットアップ
-			MV1_IOS_SetupToonOutLineMeshDrawMaterial( Mesh ) ;
+			MV1_HTML5_SetupToonOutLineMeshDrawMaterial( Mesh ) ;
 
 			// トライアングルリストの数だけ繰り返し
 			TList   = Mesh->TriangleList ;
@@ -3969,14 +3969,14 @@ SD4BONESKIN:
 				// シェーダーのセットアップ
 				if( MBTList->VertexType == MV1_VERTEX_TYPE_NORMAL && MBase->UsePackDraw )
 				{
-					if( MV1_IOS_ShaderSetup( Mesh, MV1_VERTEX_TYPE_SKIN_4BONE, TRUE ) == FALSE )
+					if( MV1_HTML5_ShaderSetup( Mesh, MV1_VERTEX_TYPE_SKIN_4BONE, TRUE ) == FALSE )
 					{
 						continue ;
 					}
 				}
 				else
 				{
-					if( MV1_IOS_ShaderSetup( Mesh, MBTList->VertexType, TRUE ) == FALSE )
+					if( MV1_HTML5_ShaderSetup( Mesh, MBTList->VertexType, TRUE ) == FALSE )
 					{
 						continue ;
 					}
@@ -3985,8 +3985,8 @@ SD4BONESKIN:
 				// 頂点バッファのセットアップ
 				if( TList->PF->VertexBufferObject )
 				{
-					Graphics_iOS_DeviceState_SetupShaderVertexData(
-						GIOS.Device.State.SetShader,
+					Graphics_HTML5_DeviceState_SetupShaderVertexData(
+						GHTML5.Device.State.SetShader,
 						&g_Model_VertexFormat[ MBTList->Container->Material->NormalLayerNum ? 1 : 0 ][ MBTList->VertexType ],
 						NULL,
 						TList->PF->VertexBufferObject
@@ -3994,8 +3994,8 @@ SD4BONESKIN:
 				}
 				else
 				{
-					Graphics_iOS_DeviceState_SetupShaderVertexData(
-						GIOS.Device.State.SetShader,
+					Graphics_HTML5_DeviceState_SetupShaderVertexData(
+						GHTML5.Device.State.SetShader,
 						&g_Model_VertexFormat[ MBTList->Container->Material->NormalLayerNum ? 1 : 0 ][ MBTList->VertexType ],
 						NULL,
 						MBTList->VertexBuffer->PF->VertexBufferObject
@@ -4015,10 +4015,10 @@ SD4BONESKIN:
 						}
 
 						// 使用するローカル→ワールド行列の用意
-						MV1_IOS_SetWorldMatrix_MATRIX_4X4CT( &Frame->LocalWorldMatrix, UseWorldViewMatrix ) ;
+						MV1_HTML5_SetWorldMatrix_MATRIX_4X4CT( &Frame->LocalWorldMatrix, UseWorldViewMatrix ) ;
 #ifndef NOT_RENDER
 						// ステートと定数バッファの更新
-						Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, MV1Man_iOS.EnableLightNum ) ;
+						Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, MV1Man_HTML5.EnableLightNum ) ;
 
 						// 描画
 						glDrawElements(
@@ -4030,11 +4030,11 @@ SD4BONESKIN:
 						GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 						// 描画を終了する
-//						Graphics_IOS_RenderEnd() ;
+//						Graphics_HTML5_RenderEnd() ;
 #endif // NOT_RENDER
 						if( GSYS.DrawSetting.Large3DPositionSupport && UseWorldViewMatrix == FALSE )
 						{
-							Graphics_iOS_DeviceState_SetViewMatrix( &GSYS.DrawSetting.ViewMatrixF ) ;
+							Graphics_HTML5_DeviceState_SetViewMatrix( &GSYS.DrawSetting.ViewMatrixF ) ;
 						}
 					}
 					break ;
@@ -4049,7 +4049,7 @@ T_SD4BONESKIN:
 						// 同時複数描画かどうかで処理を分岐
 						if( MBase->UsePackDraw )
 						{
-							DX_IOS_SHADER_FLOAT4 *Dest ;
+							DX_HTML5_SHADER_FLOAT4 *Dest ;
 							int l ;
 							int UsePackIndex ;
 							int TotalDrawStockNum ;
@@ -4076,7 +4076,7 @@ T_SD4BONESKIN:
 
 								if( MBTList->VertexType == MV1_VERTEX_TYPE_NORMAL )
 								{
-									Dest = GIOS.Device.Shader.Constant.uLWMat ;
+									Dest = GHTML5.Device.Shader.Constant.uLWMat ;
 									for( l = 0 ; l < DrawStockNum ; l ++, PackDrawMatrix += MBase->PackDrawMatrixUnitNum )
 									{
 										Dest[ 0 ][ 0 ] = PackDrawMatrix->m[ 0 ][ 0 ] ;
@@ -4105,7 +4105,7 @@ T_SD4BONESKIN:
 										for( n = 0 ; n < MBTList->UseBoneNum ; n ++, MatrixIndex ++ )
 										{
 											Src  = &PackDrawMatrix[ Frame->UseSkinBoneMatrix[ MBTList->UseBone[ n ] ] - Model->SkinBoneMatrix ] ;
-											Dest = &GIOS.Device.Shader.Constant.uLWMat[ MatrixIndex * 3 ] ;
+											Dest = &GHTML5.Device.Shader.Constant.uLWMat[ MatrixIndex * 3 ] ;
 
 											Dest[ 0 ][ 0 ] = Src->m[ 0 ][ 0 ] ;
 											Dest[ 0 ][ 1 ] = Src->m[ 0 ][ 1 ] ;
@@ -4123,11 +4123,11 @@ T_SD4BONESKIN:
 									}
 								}
 
-								GIOS.Device.Shader.Constant.UpdateCount ++ ;
+								GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 #ifndef NOT_RENDER
 								// ステートと定数バッファの更新
-								Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, MV1Man_iOS.EnableLightNum, 162 ) ;
+								Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, MV1Man_HTML5.EnableLightNum, 162 ) ;
 
 								// 描画
 								glDrawElements(
@@ -4139,7 +4139,7 @@ T_SD4BONESKIN:
 								GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 								// 描画を終了する
-//								Graphics_IOS_RenderEnd() ;
+//								Graphics_HTML5_RenderEnd() ;
 #endif
 
 								TotalDrawStockNum -= DrawStockNum ;
@@ -4148,10 +4148,10 @@ T_SD4BONESKIN:
 						}
 						else
 						{
-							MV1_IOS_SetupModelDrawWorldMatrix( Frame, MBTList, UseWorldViewMatrix ) ;
+							MV1_HTML5_SetupModelDrawWorldMatrix( Frame, MBTList, UseWorldViewMatrix ) ;
 #ifndef NOT_RENDER
 							// ステートと定数バッファの更新
-							Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, MV1Man_iOS.EnableLightNum, MBTList->UseBoneNum * 3 ) ;
+							Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, MV1Man_HTML5.EnableLightNum, MBTList->UseBoneNum * 3 ) ;
 
 							// 描画
 							glDrawElements(
@@ -4163,11 +4163,11 @@ T_SD4BONESKIN:
 							GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 							// 描画を終了する
-//							Graphics_IOS_RenderEnd() ;
+//							Graphics_HTML5_RenderEnd() ;
 #endif	// NOT_RENDER
 							if( GSYS.DrawSetting.Large3DPositionSupport && UseWorldViewMatrix == FALSE )
 							{
-								Graphics_iOS_DeviceState_SetViewMatrix( &GSYS.DrawSetting.ViewMatrixF ) ;
+								Graphics_HTML5_DeviceState_SetViewMatrix( &GSYS.DrawSetting.ViewMatrixF ) ;
 							}
 						}
 					}
@@ -4176,14 +4176,14 @@ T_SD4BONESKIN:
 					// ボーン数無制限トライアングルリスト
 				case MV1_VERTEX_TYPE_SKIN_FREEBONE :
 					// ローカル→ワールド行列は単位行列にする
-					Graphics_iOS_DeviceState_SetWorldMatrix( &IdentityMat ) ;
+					Graphics_HTML5_DeviceState_SetWorldMatrix( &IdentityMat ) ;
 
 #ifndef NOT_RENDER
 					// 頂点データを更新する
-					MV1_IOS_UpdateSkinFreeBoneMeshVertexData( MBFrame, MBTList, Frame, TList ) ;
+					MV1_HTML5_UpdateSkinFreeBoneMeshVertexData( MBFrame, MBTList, Frame, TList ) ;
 
 					// ステートと定数バッファの更新
-					Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, MV1Man_iOS.EnableLightNum ) ;
+					Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, MV1Man_HTML5.EnableLightNum ) ;
 
 					// 描画
 					glDrawElements(
@@ -4195,7 +4195,7 @@ T_SD4BONESKIN:
 					GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 					// 描画を終了する
-//					Graphics_IOS_RenderEnd() ;
+//					Graphics_HTML5_RenderEnd() ;
 
 #endif // NOT_RENDER
 					break ;

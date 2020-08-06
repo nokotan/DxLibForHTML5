@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_LIVE2DCUBISM4ANDROID_H
-#define DX_LIVE2DCUBISM4ANDROID_H
+#ifndef DX_LIVE2DCUBISM4HTML5_H
+#define DX_LIVE2DCUBISM4HTML5_H
 
 #include "../DxCompileConfig.h"
 
@@ -42,7 +42,7 @@
 // Live2D Cubism4 システム環境依存用データ構造体
 struct LIVE2DCUBISM4SYSTEMDATA_PF
 {
-	GRAPHICS_ANDROID_SHADER Shader[ LIVE2D_SHADER_Num ] ;
+	GRAPHICS_HTML5_SHADER Shader[ LIVE2D_SHADER_Num ] ;
 } ;
 
 // 内部大域変数宣言 --------------------------------------------------------------
@@ -50,7 +50,7 @@ struct LIVE2DCUBISM4SYSTEMDATA_PF
 // 関数プロトタイプ宣言-----------------------------------------------------------
 
 // Live2D Cubism4 で使用している全てのシェーダーを開放する
-extern int Live2D_Cubism4_Android_ReleaseShaderAll( void ) ;
+extern int Live2D_Cubism4_HTML5_ReleaseShaderAll( void ) ;
 
 // #ifndef DX_NON_NAMESPACE
 // 
@@ -60,4 +60,4 @@ extern int Live2D_Cubism4_Android_ReleaseShaderAll( void ) ;
 
 #endif // DX_NON_LIVE2D_CUBISM4
 
-#endif // DX_LIVE2DCUBISM4ANDROID_H
+#endif // DX_LIVE2DCUBISM4HTML5_H

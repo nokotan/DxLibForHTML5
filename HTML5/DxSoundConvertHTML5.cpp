@@ -34,7 +34,7 @@ namespace DxLib
 
 // データ宣言------------------------------------------------------------------
 
-SOUNDCONVERTDATA_IOS GSoundConvertData_iOS ;
+SOUNDCONVERTDATA_HTML5 GSoundConvertData_HTML5 ;
 
 // 関数プロトタイプ宣言 -------------------------------------------------------
 

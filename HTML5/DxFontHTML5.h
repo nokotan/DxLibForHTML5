@@ -6,8 +6,8 @@
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_FONTANDROID_H
-#define DX_FONTANDROID_H
+#ifndef DX_FONTHTML5_H
+#define DX_FONTHTML5_H
 
 #include "../DxCompileConfig.h"
 
@@ -113,4 +113,4 @@ extern FONTSYSTEM_HTML5 FontSystemHTML5 ;
 
 #endif // DX_NON_FONT
 
-#endif // DX_FONTANDROID_H
+#endif // DX_FONTHTML5_H
