@@ -51,14 +51,14 @@ namespace DxLib
 
 // データ定義 -----------------------------------------------------------------
 
-FONTSYSTEM_ANDR FontSystemAndroid ;
+FONTSYSTEM_HTML5 FontSystemHTML5 ;
 
 // 関数宣言 -------------------------------------------------------------------
 
 // プログラム -----------------------------------------------------------------
 
-// フォントの Android 専用データを解放する
-static int TerminateFontHandle_Android( FONTMANAGE *ManageData )
+// フォントの HTML5 専用データを解放する
+static int TerminateFontHandle_HTML5( FONTMANAGE *ManageData )
 {
 	FONTMANAGE_PF* font = ManageData->PF;
     
@@ -76,20 +76,20 @@ static int TerminateFontHandle_Android( FONTMANAGE *ManageData )
 // InitFontManage の環境依存処理を行う関数
 extern int InitFontManage_PF( void )
 {
-	FT_Error error = FT_Init_FreeType( &FontSystemAndroid.library );
+	FT_Error error = FT_Init_FreeType( &FontSystemHTML5.library );
 	
 	if (error) {
 		return -1;
 	}
 
-	FontSystemAndroid.initialized = TRUE;
+	FontSystemHTML5.initialized = TRUE;
     return 0;
 }
 
 // TermFontManage の環境依存処理を行う関数
 extern int TermFontManage_PF( void )
 {
-	FT_Done_FreeType( FontSystemAndroid.library );
+	FT_Done_FreeType( FontSystemHTML5.library );
 	return 0 ;
 }
 
@@ -131,7 +131,7 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
 	int ptsize = ManageData->BaseInfo.FontSize;
 	FONTMANAGE_PF* font = ManageData->PF;
 
-    if ( ! FontSystemAndroid.initialized ) {
+    if ( ! FontSystemHTML5.initialized ) {
         return -1;
     }
 
@@ -160,7 +160,7 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
     	font->args.flags = FT_OPEN_STREAM;
     	font->args.stream = stream;
 
-		error = FT_Open_Face( FontSystemAndroid.library, &font->args, 0, &font->face );
+		error = FT_Open_Face( FontSystemHTML5.library, &font->args, 0, &font->face );
 
 		if (error) {
             printf("Font Init Error: FontName=%s, Code=%d\n", UTF8_FontName, error);
@@ -279,7 +279,7 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
 extern int CreateFontToHandle_Error_PF( FONTMANAGE * ManageData )
 {
 	// 解放処理を実行
-	TerminateFontHandle_Android( ManageData ) ;
+	TerminateFontHandle_HTML5( ManageData ) ;
 
 	// 終了
 	return 0 ;
@@ -289,7 +289,7 @@ extern int CreateFontToHandle_Error_PF( FONTMANAGE * ManageData )
 extern int TerminateFontHandle_PF( FONTMANAGE *ManageData )
 {
 	// 解放処理を実行
-	TerminateFontHandle_Android( ManageData ) ;
+	TerminateFontHandle_HTML5( ManageData ) ;
 
 	// 終了
 	return 0 ;
@@ -375,7 +375,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
         if ( (font->outline > 0) && glyph->format != FT_GLYPH_FORMAT_BITMAP ) {
             FT_Stroker stroker;
             FT_Get_Glyph( glyph, &bitmap_glyph );
-            error = FT_Stroker_New( FontSystemAndroid.library, &stroker );
+            error = FT_Stroker_New( FontSystemHTML5.library, &stroker );
             if ( error ) {
                 printf("Font Error: Glyph stroke failed! (%d)\n", error);
                 return -1;

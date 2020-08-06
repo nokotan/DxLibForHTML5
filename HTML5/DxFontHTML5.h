@@ -32,7 +32,7 @@ namespace DxLib
 
 // マクロ定義 --------------------------------------------------------------------
 
-#define FSYSANDR			FontSystemAndroid
+#define FSYSHTML5			FontSystemHTML5
 
 // 構造体定義 --------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ struct FONTMANAGE_PF
 } ;
 
 // HTML5用 フォントシステム用構造体
-struct FONTSYSTEM_ANDR
+struct FONTSYSTEM_HTML5
 {
 	int 					initialized;
 	FT_Library 				library;
@@ -101,7 +101,7 @@ struct FONTSYSTEM_ANDR
 
 // 内部大域変数宣言 --------------------------------------------------------------
 
-extern FONTSYSTEM_ANDR FontSystemAndroid ;
+extern FONTSYSTEM_HTML5 FontSystemHTML5 ;
 
 // 関数プロトタイプ宣言-----------------------------------------------------------
 
