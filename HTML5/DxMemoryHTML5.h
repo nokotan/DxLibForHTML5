@@ -1,6 +1,6 @@
 // -------------------------------------------------------------------------------
 // 
-// 		ＤＸライブラリ		Android用メモリ関係プログラムヘッダファイル
+// 		ＤＸライブラリ		HTML5用メモリ関係プログラムヘッダファイル
 // 
 // 				Ver 3.21d
 // 
@@ -34,7 +34,7 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// Android用ヒープの情報
+// HTML5用ヒープの情報
 struct PLATFORMHEAP_ANDR
 {
 	void *					AllocAddress ;						// 確保したメモリ領域のアドレス

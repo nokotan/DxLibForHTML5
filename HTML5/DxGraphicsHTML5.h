@@ -197,7 +197,7 @@ namespace DxLib
 
 // 構造体定義 --------------------------------------------------------------------
 
-// iOS用 テクスチャ情報
+// HTML5用 テクスチャ情報
 struct GRAPHICS_IOS_TEXTURE
 {
 	GLuint							TextureBuffer ;							// テクスチャバッファ
@@ -212,7 +212,7 @@ struct GRAPHICS_IOS_TEXTURE
 	GLint							WrapR ;									// テクスチャアドレスモードＲ( GL_TEXTURE_WRAP_R のパラメータ、 GL_REPEAT など )
 } ;
 
-// iOS用 ハードウエアレンダリング用オリジナル画像テクスチャ情報
+// HTML5用 ハードウエアレンダリング用オリジナル画像テクスチャ情報
 struct IMAGEDATA_ORIG_HARD_TEX_PF
 {
 	GLuint							MSRenderTarget ;						// マルチサンプル用レンダーターゲット
@@ -222,7 +222,7 @@ struct IMAGEDATA_ORIG_HARD_TEX_PF
 	GLuint							DepthBuffer ;							// 深度バッファ
 } ;
 
-// iOS用 シャドウマップ情報
+// HTML5用 シャドウマップ情報
 struct SHADOWMAPDATA_PF
 {
 	GLuint							FrameBuffer ;							// 深度値書き込み用フレームバッファ
@@ -266,13 +266,13 @@ struct VERTEXBUFFER_INPUT_INFO_IOS
 	VERTEXBUFFER_INPUT_ELEMENT_INFO_IOS		ElementInfo[ 32 ] ;			// 入力頂点データ情報
 } ;
 
-// iOS用 頂点バッファハンドル情報
+// HTML5用 頂点バッファハンドル情報
 struct VERTEXBUFFERHANDLEDATA_PF
 {
 	GLuint							VertexBuffer ;
 } ;
 
-// iOS用 インデックスバッファハンドル情報
+// HTML5用 インデックスバッファハンドル情報
 struct INDEXBUFFERHANDLEDATA_PF
 {
 	GLuint							IndexBuffer ;
@@ -287,13 +287,13 @@ struct GRAPHICS_IOS_SHADER
 	int								ApplyUniformUpdateCount ;						// 適用されている定数の変更バージョン
 } ;
 
-// iOS用 シェーダーハンドル情報
+// HTML5用 シェーダーハンドル情報
 struct SHADERHANDLEDATA_PF
 {
 	GLuint							Shader ;
 } ;
 
-// iOS用 シェーダー用定数バッファハンドル環境依存情報の構造体
+// HTML5用 シェーダー用定数バッファハンドル環境依存情報の構造体
 struct SHADERCONSTANTBUFFERHANDLEDATA_PF
 {
 	int								Dummy ;

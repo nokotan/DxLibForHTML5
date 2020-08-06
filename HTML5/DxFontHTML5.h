@@ -1,6 +1,6 @@
 // -------------------------------------------------------------------------------
 // 
-// 		ＤＸライブラリ		Android用フォント関係プログラムヘッダファイル
+// 		ＤＸライブラリ		HTML5用フォント関係プログラムヘッダファイル
 // 
 // 				Ver 3.21d
 // 
@@ -51,7 +51,7 @@ typedef struct cached_glyph {
     uint16_t cached;
 } c_glyph;
 
-// Android用 フォントキャッシュの環境依存管理データ
+// HTML5用 フォントキャッシュの環境依存管理データ
 struct FONTMANAGE_PF
 {
    /* Freetype2 maintains all sorts of useful info itself */
@@ -92,7 +92,7 @@ struct FONTMANAGE_PF
     int hinting;
 } ;
 
-// Android用 フォントシステム用構造体
+// HTML5用 フォントシステム用構造体
 struct FONTSYSTEM_ANDR
 {
 	int 					initialized;
