@@ -1,6 +1,6 @@
 // -------------------------------------------------------------------------------
 // 
-// 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		Nintendo Switch—pƒf[ƒ^ƒ^ƒCƒv’è‹`ƒwƒbƒ_ƒtƒ@ƒCƒ‹
+// 		ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒª		HTML5ç”¨ãƒ‡ãƒ¼ã‚¿ã‚¿ã‚¤ãƒ—å®šç¾©ãƒ˜ãƒƒãƒ€ãƒ•ã‚¡ã‚¤ãƒ«
 // 
 // 				Ver 3.21d
 // 
@@ -9,7 +9,7 @@
 #ifndef DX_DATATYPENSW_H
 #define DX_DATATYPENSW_H
 
-// ƒCƒ“ƒNƒ‹[ƒh ------------------------------------------------------------------
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ ------------------------------------------------------------------
 #include "DxCompileConfig.h"
 #include <stdint.h>
 
@@ -20,19 +20,19 @@
 // 
 // #endif // DX_NON_NAMESPACE
 
-// ƒ}ƒNƒ’è‹` --------------------------------------------------------------------
+// ãƒžã‚¯ãƒ­å®šç¾© --------------------------------------------------------------------
 
-// ƒZƒ“ƒT[
-#define DX_ANDROID_SENSOR_ACCELEROMETER			(0)		// ‰Á‘¬“xƒZƒ“ƒT[
-#define DX_ANDROID_SENSOR_MAGNETIC_FIELD		(1)		// Ž¥ŠEƒZƒ“ƒT[
-#define DX_ANDROID_SENSOR_GYROSCOPE				(2)		// ƒWƒƒƒCƒƒXƒR[ƒvƒZƒ“ƒT[
-#define DX_ANDROID_SENSOR_LIGHT					(3)		// Æ“xƒZƒ“ƒT[
-#define DX_ANDROID_SENSOR_PROXIMITY				(4)		// ‹ßÚƒZƒ“ƒT[
-#define DX_ANDROID_SENSOR_PRESSURE				(5)		// ‰Áˆ³ƒZƒ“ƒT[
-#define DX_ANDROID_SENSOR_AMBIENT_TEMPERATURE	(6)		// ‰·“xƒZƒ“ƒT[
+// ã‚»ãƒ³ã‚µãƒ¼
+#define DX_ANDROID_SENSOR_ACCELEROMETER			(0)		// åŠ é€Ÿåº¦ã‚»ãƒ³ã‚µãƒ¼
+#define DX_ANDROID_SENSOR_MAGNETIC_FIELD		(1)		// ç£ç•Œã‚»ãƒ³ã‚µãƒ¼
+#define DX_ANDROID_SENSOR_GYROSCOPE				(2)		// ã‚¸ãƒ£ã‚¤ãƒ­ã‚¹ã‚³ãƒ¼ãƒ—ã‚»ãƒ³ã‚µãƒ¼
+#define DX_ANDROID_SENSOR_LIGHT					(3)		// ç…§åº¦ã‚»ãƒ³ã‚µãƒ¼
+#define DX_ANDROID_SENSOR_PROXIMITY				(4)		// è¿‘æŽ¥ã‚»ãƒ³ã‚µãƒ¼
+#define DX_ANDROID_SENSOR_PRESSURE				(5)		// åŠ åœ§ã‚»ãƒ³ã‚µãƒ¼
+#define DX_ANDROID_SENSOR_AMBIENT_TEMPERATURE	(6)		// æ¸©åº¦ã‚»ãƒ³ã‚µãƒ¼
 #define DX_ANDROID_SENSOR_NUM					(7)
 
-// ŠÂ‹«ˆË‘¶ƒL[ƒ[ƒh‚È‚Ç
+// ç’°å¢ƒä¾å­˜ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ãªã©
 #ifndef FASTCALL
 #define FASTCALL
 #endif
@@ -152,9 +152,9 @@ typedef uint32_t *	LPDWORD ;
 			( ( DWORD )( BYTE )( ch2 ) << 16) | ( ( DWORD )( BYTE )( ch3 ) << 24 ) )
 
 
-#define DX_READSOUNDFUNCTION_AT9					(1 << ( DX_READSOUNDFUNCTION_DEFAULT_NUM + 0 ))		// ATRAC9 ‚ðŽg—p‚µ‚½“Ç‚Ýž‚Ýˆ—
+#define DX_READSOUNDFUNCTION_AT9					(1 << ( DX_READSOUNDFUNCTION_DEFAULT_NUM + 0 ))		// ATRAC9 ã‚’ä½¿ç”¨ã—ãŸèª­ã¿è¾¼ã¿å‡¦ç†
 	
-// \‘¢‘Ì’è‹` --------------------------------------------------------------------
+// æ§‹é€ ä½“å®šç¾© --------------------------------------------------------------------
 
 typedef struct tagRECT
 {
@@ -217,11 +217,11 @@ typedef struct tagBITMAPINFO
 	RGBQUAD				bmiColors[ 1 ] ;
 } BITMAPINFO, FAR *LPBITMAPINFO, *PBITMAPINFO ;
 
-// ƒe[ƒuƒ‹-----------------------------------------------------------------------
+// ãƒ†ãƒ¼ãƒ–ãƒ«-----------------------------------------------------------------------
 
-// “à•”‘åˆæ•Ï”éŒ¾ --------------------------------------------------------------
+// å†…éƒ¨å¤§åŸŸå¤‰æ•°å®£è¨€ --------------------------------------------------------------
 
-// ŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾-----------------------------------------------------------
+// é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€-----------------------------------------------------------
 
 // #ifndef DX_NON_NAMESPACE
 // 
