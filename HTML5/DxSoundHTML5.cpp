@@ -79,12 +79,6 @@ static int SoundReleaseInfo_Add( SOUNDBUFFER *Buffer ) ;							// ALリソース
 
 // プログラム------------------------------------------------------------------
 
-// デシベル値から XAudio2 の率値に変換する関数
-__inline float D_XAudio2DecibelsToAmplitudeRatio( float Decibels )
-{
-    return _POW( 10.0f, Decibels / 20.0f ) ;
-}
-
 // サウンドバッファにデータをセットする
 static void SetupSoundBuffer( SOUNDBUFFER *Buffer, int *IsNext, int TargetBuffer )
 {
