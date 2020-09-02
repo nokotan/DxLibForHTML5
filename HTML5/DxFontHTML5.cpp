@@ -36,7 +36,7 @@
    in the result FT_Bitmap after the FT_Render_Glyph() call. */
 #define NUM_GRAYS       256
 
-#define DEBUG_FONTS
+// #define DEBUG_FONTS
 
 #ifndef DX_NON_NAMESPACE
 
@@ -143,7 +143,7 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
 		ConvString( ( char * )ManageData->FontName, -1, WCHAR_T_CHARCODEFORMAT, UTF8_FontName, sizeof( UTF8_FontName ), DX_CHARCODEFORMAT_UTF8 ) ;
 		stream = (FT_Stream)DXALLOC(sizeof(*stream));
 
-        printf("Font Init: FontName=%s\n", UTF8_FontName);
+        DXST_LOGFILEFMT_ADDA(("Font Init: FontName=%s\n", UTF8_FontName));
 
     	if ( stream == NULL ) {
         	return -1;
@@ -163,7 +163,7 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
 		error = FT_Open_Face( FontSystemHTML5.library, &font->args, 0, &font->face );
 
 		if (error) {
-            printf("Font Init Error: FontName=%s, Code=%d\n", UTF8_FontName, error);
+            DXST_LOGFILEFMT_ADDA(("Font Init Error: FontName=%s, Code=%d\n", UTF8_FontName, error));
 			return -1;
 		}
     }
@@ -244,13 +244,13 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
     }
 
 #ifdef DEBUG_FONTS
-    printf("Font metrics:\n");
-    printf("\tascent = %d, descent = %d\n",
-        font->ascent, font->descent);
-    printf("\theight = %d, lineskip = %d\n",
-        font->height, font->lineskip);
-    printf("\tunderline_offset = %d, underline_height = %d\n",
-        font->underline_offset, font->underline_height);
+    DXST_LOGFILEFMT_ADDA(("Font metrics:\n"));
+    DXST_LOGFILEFMT_ADDA(("\tascent = %d, descent = %d\n",
+        font->ascent, font->descent));
+    DXST_LOGFILEFMT_ADDA(("\theight = %d, lineskip = %d\n",
+        font->height, font->lineskip));
+    DXST_LOGFILEFMT_ADDA(("\tunderline_offset = %d, underline_height = %d\n",
+        font->underline_offset, font->underline_height));
 #endif
 
     /* Set the default font style */
@@ -261,7 +261,7 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
     font->glyph_italics = 0.207f;
     font->glyph_italics *= font->height;
 
-    printf("Cache Info: PixelByte=%d, BitWidth=%d\n", ManageData->TextureCacheBaseImage.ColorData.PixelByte, ManageData->TextureCacheBaseImage.ColorData.ColorBitDepth);
+    DXST_LOGFILEFMT_ADDA(("Cache Info: PixelByte=%d, BitWidth=%d\n", ManageData->TextureCacheBaseImage.ColorData.PixelByte, ManageData->TextureCacheBaseImage.ColorData.ColorBitDepth));
 
 	{
 		// 成功時はパラメータをセット
@@ -326,13 +326,13 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
 	FT_UInt index;
 
 #ifdef DEBUG_FONTS   
-    printf("Font Init: Start font caching of %d\n", CharCode);
+    DXST_LOGFILEFMT_ADDA(("Font Init: Start font caching of %d\n", CharCode));
 #endif
 	// スペースかどうかを取得しておく
 	Space = CharCode == L' ' ? 1 : ( CharCode == ( DWORD )FSYS.DoubleByteSpaceCharCode ? 2 : 0 ) ;
 
     if ( !font || !font->face ) {
-        printf("Font Error: Parameter is NULL!\n");
+        DXST_LOGFILEFMT_ADDA(("Font Error: Parameter is NULL!\n"));
         return -1;
     }
 
@@ -343,7 +343,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
     
     error = FT_Load_Glyph( face, index, FT_LOAD_DEFAULT | font->hinting);
     if ( error ) {
-        printf("Font Error: Glyph cannot loaded! (%d)\n", error);
+        DXST_LOGFILEFMT_ADDA(("Font Error: Glyph cannot loaded! (%d)\n", error));
         return -1;
     }
 
@@ -377,7 +377,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             FT_Get_Glyph( glyph, &bitmap_glyph );
             error = FT_Stroker_New( FontSystemHTML5.library, &stroker );
             if ( error ) {
-                printf("Font Error: Glyph stroke failed! (%d)\n", error);
+                DXST_LOGFILEFMT_ADDA(("Font Error: Glyph stroke failed! (%d)\n", error));
                 return -1;
             }
             FT_Stroker_Set( stroker, font->outline * 64, FT_STROKER_LINECAP_ROUND, FT_STROKER_LINEJOIN_ROUND, 0 );
@@ -386,7 +386,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             /* Render the glyph */
             error = FT_Glyph_To_Bitmap( &bitmap_glyph, mono ? ft_render_mode_mono : ft_render_mode_normal, 0, 1 );
             if ( error ) {
-                printf("Font Error: Glyph convert error to Bitmap! (%d)\n", error);
+                DXST_LOGFILEFMT_ADDA(("Font Error: Glyph convert error to Bitmap! (%d)\n", error));
                 FT_Done_Glyph( bitmap_glyph );
                 return -1;
             }
@@ -395,7 +395,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             /* Render the glyph */
             error = FT_Render_Glyph( glyph, mono ? ft_render_mode_mono : ft_render_mode_normal );
             if ( error ) {
-                printf("Font Error: Glyph render failed! (%d)\n", error);
+                DXST_LOGFILEFMT_ADDA(("Font Error: Glyph render failed! (%d)\n", error));
                 return -1;
             }
             src = &glyph->bitmap;
@@ -448,7 +448,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             }
             memset( dst->buffer, 0, dst->pitch * dst->rows );
 
-            printf("Font Init: Src Pixel Mode is %d\n", src->pixel_mode);
+            DXST_LOGFILEFMT_ADDA(("Font Init: Src Pixel Mode is %d\n", src->pixel_mode));
 
             for ( i = 0; i < src->rows; i++ ) {
                 int soffset = i * src->pitch;
@@ -592,10 +592,10 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
         }
 
 #ifdef DEBUG_FONTS
-        printf("X=%d, Y=%d, Add=%d\n", 
+        DXST_LOGFILEFMT_ADDA(("X=%d, Y=%d, Add=%d\n", 
             metrics->horiBearingX / 64,
             font->ascent - metrics->horiBearingY / 64,
-            metrics->horiAdvance / 64);
+            metrics->horiAdvance / 64));
 #endif
 
         if (Space != 0) {
