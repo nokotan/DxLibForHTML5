@@ -1,6 +1,6 @@
 // -------------------------------------------------------------------------------
 // 
-// 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		Live2D Cubism4 ŠÖŒWƒvƒƒOƒ‰ƒ€ƒwƒbƒ_ƒtƒ@ƒCƒ‹
+// 		ï¿½cï¿½wï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½		Live2D Cubism4 ï¿½ÖŒWï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½wï¿½bï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½
 // 
 // 				Ver 3.21f
 // 
@@ -9,7 +9,7 @@
 #ifndef DXLIVE2D_CUBISM4_H
 #define DXLIVE2D_CUBISM4_H
 
-// ƒCƒ“ƒNƒ‹[ƒh ------------------------------------------------------------------
+// ï¿½Cï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½[ï¿½h ------------------------------------------------------------------
 #include "DxCompileConfig.h"
 
 #ifndef DX_NON_LIVE2D_CUBISM4
@@ -36,6 +36,10 @@
     #endif // TARGET_OS_IPHONE
 #endif // __APPLE__
 
+#ifdef __EMSCRIPTEN__
+	#include "HTML5/DxLive2DCubism4HTML5.h"
+#endif
+
 
 
 
@@ -47,7 +51,7 @@ namespace DxLib
 
 #endif// DX_NON_NAMESPACE
 
-// ƒ}ƒNƒ’è‹` --------------------------------------------------------------------
+// ï¿½}ï¿½Nï¿½ï¿½ï¿½ï¿½` --------------------------------------------------------------------
 
 #define LIVE2DSYS					Live2DCubism4SysData
 #define LIVE2DDLL					Live2DCubism4DLLData
@@ -128,18 +132,18 @@ namespace DxLib
 #define CALL_csmResetDrawableDynamicFlags( x )	( Live2DCubism4DLLData.csmResetDrawableDynamicFlags x	)
 #endif // WINDOWS_DESKTOP_OS
 
-// \‘¢‘Ì’è‹` --------------------------------------------------------------------
+// ï¿½\ï¿½ï¿½ï¿½Ì’ï¿½` --------------------------------------------------------------------
 
-// ƒtƒ@ƒCƒ‹‚©‚çLive2Dƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹‚ğì¬‚·‚éˆ—‚É•K—v‚ÈƒOƒ[ƒoƒ‹ƒf[ƒ^‚ğ“Z‚ß‚½‚à‚Ì
+// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Live2Dï¿½ï¿½ï¿½fï¿½ï¿½ï¿½nï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½éˆï¿½ï¿½ï¿½É•Kï¿½vï¿½ÈƒOï¿½ï¿½ï¿½[ï¿½oï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½Zï¿½ß‚ï¿½ï¿½ï¿½ï¿½ï¿½
 struct LIVE2DCUBISM4_LOADMODEL_GPARAM
 {
 	int							Dummy ;
 } ;
 
-// Live2D Cubism4 ƒ‚ƒfƒ‹î•ñ
+// Live2D Cubism4 ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½ï¿½ï¿½
 struct LIVE2DCUBISM4MODEL
 {
-	HANDLEINFO					HandleInfo ;				// ƒnƒ“ƒhƒ‹‹¤’Êƒf[ƒ^
+	HANDLEINFO					HandleInfo ;				// ï¿½nï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½Êƒfï¿½[ï¿½^
 
 	float						PosX ;
 	float						PosY ;
@@ -150,10 +154,10 @@ struct LIVE2DCUBISM4MODEL
 	D_LAppModel *				AppModel ;
 } ;
 
-// Live2D Cubism4 DLL ‚ÌŠÖ”ƒ|ƒCƒ“ƒ^\‘¢‘Ì
+// Live2D Cubism4 DLL ï¿½ÌŠÖï¿½ï¿½|ï¿½Cï¿½ï¿½ï¿½^ï¿½\ï¿½ï¿½ï¿½ï¿½
 struct LIVE2DCUBISM4DLL
 {
-	wchar_t					Live2DCubismCoreDLLPath[ 1024 ] ;	// Live2D Cubism Core DLL ‚Ìƒtƒ@ƒCƒ‹ƒpƒX
+	wchar_t					Live2DCubismCoreDLLPath[ 1024 ] ;	// Live2D Cubism Core DLL ï¿½Ìƒtï¿½@ï¿½Cï¿½ï¿½ï¿½pï¿½X
 
 	DWORD					( *csmGetVersion )( void ) ;
 	DWORD					( *csmGetLatestMocVersion )( void ) ;
@@ -232,49 +236,49 @@ struct LIVE2DCUBISM4DLL
 #endif // WINDOWS_DESKTOP_OS
 } ;
 
-// Live2D Cubism4 ƒVƒXƒeƒ€—pƒf[ƒ^\‘¢‘Ì
+// Live2D Cubism4 ï¿½Vï¿½Xï¿½eï¿½ï¿½ï¿½pï¿½fï¿½[ï¿½^ï¿½\ï¿½ï¿½ï¿½ï¿½
 struct LIVE2DCUBISM4SYSTEMDATA
 {
-	int						InitializeFlag ;				// ‰Šú‰»ƒtƒ‰ƒO
+	int						InitializeFlag ;				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½ï¿½ï¿½O
 
-	int						EnableConstantBuffer ;			// ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚ªg—p‚Å‚«‚é‚©‚Ç‚¤‚©
+	int						EnableConstantBuffer ;			// ï¿½Rï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½gï¿½oï¿½bï¿½tï¿½@ï¿½ï¿½ï¿½gï¿½pï¿½Å‚ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½
 
 	D_CubismIdManager *		s_cubismIdManager ;
 
-	DXARC					ShaderBinDxa ;					// ƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚c‚w‚`\‘¢‘Ì
-	void					*ShaderBinDxaImage ;			// ƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚c‚w‚`‚ÌƒoƒCƒiƒŠƒCƒ[ƒW
+	DXARC					ShaderBinDxa ;					// ï¿½Vï¿½Fï¿½[ï¿½_ï¿½[ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½cï¿½wï¿½`ï¿½\ï¿½ï¿½ï¿½ï¿½
+	void					*ShaderBinDxaImage ;			// ï¿½Vï¿½Fï¿½[ï¿½_ï¿½[ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½cï¿½wï¿½`ï¿½Ìƒoï¿½Cï¿½iï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½W
 
-	LIVE2DCUBISM4SYSTEMDATA_PF	PF ;						// ŠÂ‹«ˆË‘¶ƒf[ƒ^
+	LIVE2DCUBISM4SYSTEMDATA_PF	PF ;						// ï¿½Â‹ï¿½ï¿½Ë‘ï¿½ï¿½fï¿½[ï¿½^
 } ;
 
-// ƒe[ƒuƒ‹-----------------------------------------------------------------------
+// ï¿½eï¿½[ï¿½uï¿½ï¿½-----------------------------------------------------------------------
 
-// “à•”‘åˆæ•Ï”éŒ¾ --------------------------------------------------------------
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïï¿½ï¿½éŒ¾ --------------------------------------------------------------
 
-// Live2D Cubism4 ƒVƒXƒeƒ€ƒf[ƒ^
+// Live2D Cubism4 ï¿½Vï¿½Xï¿½eï¿½ï¿½ï¿½fï¿½[ï¿½^
 extern LIVE2DCUBISM4SYSTEMDATA Live2DCubism4SysData ;
 
 // Live2D Cubism 4 DLL
 extern LIVE2DCUBISM4DLL Live2DCubism4DLLData ;
 
-// ŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾-----------------------------------------------------------
+// ï¿½Öï¿½ï¿½vï¿½ï¿½ï¿½gï¿½^ï¿½Cï¿½vï¿½éŒ¾-----------------------------------------------------------
 
-// Live2D Cubism4 ŠÖ˜A‚Ì‰Šú‰»‚ÆŒãn––
-extern	int		Live2DCubism4_Initialize( void ) ;					// Live2D Cubism4 ‚Ì‰Šú‰»
-extern	int		Live2DCubism4_Terminate( void ) ;					// Live2D Cubism4 ‚ÌŒãn––
-
-
-extern	int		Live2DCubism4_SetupShaderCode( int *ShaderCodeBinConvert, BYTE *ShaderCodeBin ) ;	// ƒVƒF[ƒ_[DXAƒtƒ@ƒCƒ‹‚ÌƒZƒbƒgƒAƒbƒv
-extern	int		Live2DCubism4_LoadShaderCode( const char *ShaderName, int ShaderType ) ;			// w’è–¼‚ÌƒVƒF[ƒ_[‚ğ“Ç‚İ‚Ş
-
-extern	void	Live2DCubism4_InitLoadModelGParam( LIVE2DCUBISM4_LOADMODEL_GPARAM *GParam ) ;		// LIVE2DCUBISM4_LOADMODEL_GPARAM ‚Ìƒf[ƒ^‚ğƒZƒbƒg‚·‚é
-
-extern	int		Live2DCubism4_LoadModel_UseGParam( LIVE2DCUBISM4_LOADMODEL_GPARAM *GParam, const wchar_t *FilePath, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;				// Live2D_LoadModel ‚ÌƒOƒ[ƒoƒ‹•Ï”‚ÉƒAƒNƒZƒX‚µ‚È‚¢ƒo[ƒWƒ‡ƒ“
+// Live2D Cubism4 ï¿½Ö˜Aï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆŒï¿½nï¿½ï¿½
+extern	int		Live2DCubism4_Initialize( void ) ;					// Live2D Cubism4 ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+extern	int		Live2DCubism4_Terminate( void ) ;					// Live2D Cubism4 ï¿½ÌŒï¿½nï¿½ï¿½
 
 
+extern	int		Live2DCubism4_SetupShaderCode( int *ShaderCodeBinConvert, BYTE *ShaderCodeBin ) ;	// ï¿½Vï¿½Fï¿½[ï¿½_ï¿½[DXAï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ÌƒZï¿½bï¿½gï¿½Aï¿½bï¿½v
+extern	int		Live2DCubism4_LoadShaderCode( const char *ShaderName, int ShaderType ) ;			// ï¿½wï¿½è–¼ï¿½ÌƒVï¿½Fï¿½[ï¿½_ï¿½[ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
+
+extern	void	Live2DCubism4_InitLoadModelGParam( LIVE2DCUBISM4_LOADMODEL_GPARAM *GParam ) ;		// LIVE2DCUBISM4_LOADMODEL_GPARAM ï¿½Ìƒfï¿½[ï¿½^ï¿½ï¿½ï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½ï¿½
+
+extern	int		Live2DCubism4_LoadModel_UseGParam( LIVE2DCUBISM4_LOADMODEL_GPARAM *GParam, const wchar_t *FilePath, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;				// Live2D_LoadModel ï¿½ÌƒOï¿½ï¿½ï¿½[ï¿½oï¿½ï¿½ï¿½Ïï¿½ï¿½ÉƒAï¿½Nï¿½Zï¿½Xï¿½ï¿½ï¿½È‚ï¿½ï¿½oï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½
 
 
-// wchar_t”ÅŠÖ”
+
+
+// wchar_tï¿½ÅŠÖï¿½
 extern	int			Live2D_SetCubism4CoreDLLPath_WCHAR_T(			const wchar_t *CoreDLLFilePath ) ;
 extern	int			Live2D_LoadModel_WCHAR_T(						const wchar_t *FilePath ) ;
 extern	int			Live2D_Model_StartMotion_WCHAR_T(				int Live2DModelHandle, const wchar_t *group, int no ) ;
@@ -298,13 +302,13 @@ extern	float		Live2D_Model_GetMotionFadeOutTimeValue_WCHAR_T(	int Live2DModelHan
 
 
 
-// ŠÂ‹«ˆË‘¶ŠÖ”
-extern	int		Live2DCubism4_Initialize_PF( void ) ;										// Live2D Cubism4 ŠÖ˜A‚Ì‰Šú‰»‚·‚éŠÖ”‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”
-extern	int		Live2DCubism4_Terminate_PF( void ) ;										// Live2D Cubism4 ŠÖ˜A‚ÌŒãn––‚ğ‚·‚éŠÖ”‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”
+// ï¿½Â‹ï¿½ï¿½Ë‘ï¿½ï¿½Öï¿½
+extern	int		Live2DCubism4_Initialize_PF( void ) ;										// Live2D Cubism4 ï¿½Ö˜Aï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½ï¿½ÌŠÂ‹ï¿½ï¿½Ë‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Öï¿½
+extern	int		Live2DCubism4_Terminate_PF( void ) ;										// Live2D Cubism4 ï¿½Ö˜Aï¿½ÌŒï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½ï¿½ÌŠÂ‹ï¿½ï¿½Ë‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Öï¿½
 
-extern	int		Live2DCubism4_GenerateShaders_PF( void ) ;									// Live2D Cubism4 ‚ÌƒVƒF[ƒ_[ì¬‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤
-extern	int		Live2DCubism4_SetupShader_PF( int ConstantBufferHandle, D_CubismConstantBufferDxLib *ConstantBuffer, D_ShaderNames VertexShader, D_ShaderNames PixelShader ) ;	// Live2D Cubism4 ‚ÌƒVƒF[ƒ_[‚ÌƒZƒbƒgƒAƒbƒv‚ğs‚¤
-extern	int		Live2DCubism4_DrawAfter_PF( void ) ;										// Live2D Cubism4 ‚Ì•`‰æ‚ÌŒã‚ÉŒÄ‚Î‚ê‚éŠÂ‹«ˆË‘¶ŠÖ”
+extern	int		Live2DCubism4_GenerateShaders_PF( void ) ;									// Live2D Cubism4 ï¿½ÌƒVï¿½Fï¿½[ï¿½_ï¿½[ï¿½ì¬ï¿½ÌŠÂ‹ï¿½ï¿½Ë‘ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½
+extern	int		Live2DCubism4_SetupShader_PF( int ConstantBufferHandle, D_CubismConstantBufferDxLib *ConstantBuffer, D_ShaderNames VertexShader, D_ShaderNames PixelShader ) ;	// Live2D Cubism4 ï¿½ÌƒVï¿½Fï¿½[ï¿½_ï¿½[ï¿½ÌƒZï¿½bï¿½gï¿½Aï¿½bï¿½vï¿½ï¿½ï¿½sï¿½ï¿½
+extern	int		Live2DCubism4_DrawAfter_PF( void ) ;										// Live2D Cubism4 ï¿½Ì•`ï¿½ï¿½ÌŒï¿½ÉŒÄ‚Î‚ï¿½ï¿½Â‹ï¿½ï¿½Ë‘ï¿½ï¿½Öï¿½
 
 
 
