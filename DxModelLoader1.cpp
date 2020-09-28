@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＦＢＸモデルデータ読み込みプログラム
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -308,7 +308,11 @@ static int AnalyseFbxNode( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *P
 	MV1_SHAPE_VERTEX_R *ShapeVert ;
 	VECTOR *MeshPos ;
 	MATRIX ReverseMat ;
-	int i, j, k, l, Num, LayerNum, Index, MaterialNum ;
+	int i, j, k, l, Num, LayerNum, Index, IndexNum, MaterialNum ;
+	VECTOR *WorkNormals, *WorkBinormals, *WorkTangents ;
+	int NormalNum, NormalIndexNum ;
+	int BinormalNum, BinormalIndexNum ;
+	int TangentNum, TangentIndexNum ;
 	char UTF16LE_Buffer[ 1024 ] ;
 
 	// FbxNode が NULL だったらトップノードをセットアップする
@@ -416,6 +420,7 @@ static int AnalyseFbxNode( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *P
 
 						// 面の情報を取得
 						MeshFace = Mesh->Faces ;
+						IndexNum = 0 ;
 						for( i = 0 ; i < ( int )Mesh->FaceNum ; i ++, MeshFace ++ )
 						{
 							// インデックスの数を取得
@@ -429,6 +434,9 @@ static int AnalyseFbxNode( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *P
 								}
 								MeshFace = Mesh->Faces + i ;
 							}
+
+							// インデックスの数を加算
+							IndexNum += MeshFace->IndexNum ;
 
 							// インデックスを取得
 							for( j = 0 ; j < ( int )MeshFace->IndexNum ; j ++ )
@@ -474,48 +482,152 @@ static int AnalyseFbxNode( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *P
 							FbxRefMode     = FbxNormalElem->GetReferenceMode() ;
 							FbxMappingMode = FbxNormalElem->GetMappingMode() ;
 
+							// 法線情報の数をセット
+							Mesh->NormalNum = IndexNum ;
+
+							// 法線情報を格納するメモリ領域の確保
+							Mesh->Normals = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * IndexNum, &RModel->Mem ) ;
+							if( Mesh->Normals == NULL )
+							{
+								DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\xd5\x6c\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 法線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
+								return -1 ;
+							}
+
+							// 法線情報の数を取得
+							NormalNum = FbxNormalElem->GetDirectArray().GetCount() ;
+
+							// インデックスの数を取得
+							NormalIndexNum = FbxNormalElem->GetIndexArray().GetCount() ;
+
+							// 法線のインデックスをセット
+							MeshFace = Mesh->Faces ;
+							k = 0 ;
+							for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+							{
+								for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k++ )
+								{
+									MeshFace->NormalIndex[ l ] = k ;
+								}
+							}
+
 							switch( FbxRefMode )
 							{
 							case FbxGeometryElement::eDirect :
-								// 法線情報の数を取得
-								Mesh->NormalNum = FbxNormalElem->GetDirectArray().GetCount() ;
+//								// 直接モードの場合はそのまま代入
+//								for( j = 0 ; ( DWORD )j < Mesh->NormalNum ; j ++ )
+//								{
+//									Mesh->Normals[ j ].x = ( float ) FbxNormalElem->GetDirectArray().GetAt( j )[ 0 ] ;
+//									Mesh->Normals[ j ].y = ( float ) FbxNormalElem->GetDirectArray().GetAt( j )[ 1 ] ;
+//									Mesh->Normals[ j ].z = ( float )-FbxNormalElem->GetDirectArray().GetAt( j )[ 2 ] ;
+//								}
 
-								// 法線情報を格納するメモリ領域の確保
-								Mesh->Normals = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * Mesh->NormalNum, &RModel->Mem ) ;
-								if( Mesh->Normals == NULL )
+								// 面の各頂点に対応する法線の情報を取得
+								switch( FbxMappingMode )
 								{
-									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\xd5\x6c\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 法線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
+								case FbxGeometryElement::eByControlPoint :
+									// 法線インデックスは頂点インデックスと等しくなる
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k++ )
+										{
+											Index = MeshFace->VertexIndex[ l ] ;
+											if( Index < NormalNum )
+											{
+												Mesh->Normals[ k ].x = ( float ) FbxNormalElem->GetDirectArray().GetAt( Index )[ 0 ] ;
+												Mesh->Normals[ k ].y = ( float ) FbxNormalElem->GetDirectArray().GetAt( Index )[ 1 ] ;
+												Mesh->Normals[ k ].z = ( float )-FbxNormalElem->GetDirectArray().GetAt( Index )[ 2 ] ;
+											}
+										}
+									}
+									break ;
+
+								case FbxGeometryElement::eByPolygonVertex :
+									// 法線インデックスは別個で存在する
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k ++ )
+										{
+											if( k < NormalNum )
+											{
+												Mesh->Normals[ k ].x = ( float ) FbxNormalElem->GetDirectArray().GetAt( k )[ 0 ] ;
+												Mesh->Normals[ k ].y = ( float ) FbxNormalElem->GetDirectArray().GetAt( k )[ 1 ] ;
+												Mesh->Normals[ k ].z = ( float )-FbxNormalElem->GetDirectArray().GetAt( k )[ 2 ] ;
+											}
+										}
+									}
+									break ;
+
+								default :
+									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x5e\x97\xfe\x5b\xdc\x5f\x6e\x30\xd5\x6c\xda\x7d\xde\x30\xc3\x30\xd4\x30\xf3\x30\xb0\x30\xe2\x30\xfc\x30\xc9\x30\x4c\x30\x7f\x4f\x28\x75\x55\x30\x8c\x30\x66\x30\x44\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 非対応の法線マッピングモードが使用されていました\n" @*/ )) ;
 									return -1 ;
-								}
-
-								// 直接モードの場合はそのまま代入
-								for( j = 0 ; ( DWORD )j < Mesh->NormalNum ; j ++ )
-								{
-									Mesh->Normals[ j ].x = ( float ) FbxNormalElem->GetDirectArray().GetAt( j )[ 0 ] ;
-									Mesh->Normals[ j ].y = ( float ) FbxNormalElem->GetDirectArray().GetAt( j )[ 1 ] ;
-									Mesh->Normals[ j ].z = ( float )-FbxNormalElem->GetDirectArray().GetAt( j )[ 2 ] ;
 								}
 								break ;
 
 							case FbxGeometryElement::eIndexToDirect :
-								// インデックスの数を取得
-								Mesh->NormalNum = FbxNormalElem->GetIndexArray().GetCount() ;
-
-								// 法線情報を格納するメモリ領域の確保
-								Mesh->Normals = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * Mesh->NormalNum, &RModel->Mem ) ;
-								if( Mesh->Normals == NULL )
+								// インデックスモードの場合は法線テーブルを作成する
+								WorkNormals = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * NormalIndexNum, &RModel->Mem ) ;
+								if( WorkNormals == NULL )
 								{
-									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\xd5\x6c\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 法線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
+									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x5c\x4f\x6d\x69\x28\x75\x6e\x30\xd5\x6c\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 作業用の法線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
 									return -1 ;
 								}
 
-								// インデックスモードの場合は間接参照代入
-								for( j = 0 ; ( DWORD )j < Mesh->NormalNum ; j ++ )
+								// 法線テーブルの作成
+								for( j = 0 ; j < NormalIndexNum ; j ++ )
 								{
 									Index = FbxNormalElem->GetIndexArray().GetAt( j ) ;
-									Mesh->Normals[ j ].x = ( float ) FbxNormalElem->GetDirectArray().GetAt( Index )[ 0 ] ;
-									Mesh->Normals[ j ].y = ( float ) FbxNormalElem->GetDirectArray().GetAt( Index )[ 1 ] ;
-									Mesh->Normals[ j ].z = ( float )-FbxNormalElem->GetDirectArray().GetAt( Index )[ 2 ] ;
+									WorkNormals[ j ].x = ( float ) FbxNormalElem->GetDirectArray().GetAt( Index )[ 0 ] ;
+									WorkNormals[ j ].y = ( float ) FbxNormalElem->GetDirectArray().GetAt( Index )[ 1 ] ;
+									WorkNormals[ j ].z = ( float )-FbxNormalElem->GetDirectArray().GetAt( Index )[ 2 ] ;
+								}
+
+								// 面の各頂点に対応する法線の情報を取得
+								switch( FbxMappingMode )
+								{
+								case FbxGeometryElement::eByControlPoint :
+									// 法線インデックスは頂点インデックスと等しくなる
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k++ )
+										{
+											Index = MeshFace->VertexIndex[ l ] ;
+											if( Index < NormalIndexNum )
+											{
+												Mesh->Normals[ k ].x = ( float ) WorkNormals[ Index ].x ;
+												Mesh->Normals[ k ].y = ( float ) WorkNormals[ Index ].y ;
+												Mesh->Normals[ k ].z = ( float )-WorkNormals[ Index ].z ;
+											}
+										}
+									}
+									break ;
+
+								case FbxGeometryElement::eByPolygonVertex :
+									// 法線インデックスは別個で存在する
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k ++ )
+										{
+											if( k < NormalIndexNum )
+											{
+												Mesh->Normals[ k ].x = ( float ) WorkNormals[ k ].x ;
+												Mesh->Normals[ k ].y = ( float ) WorkNormals[ k ].y ;
+												Mesh->Normals[ k ].z = ( float )-WorkNormals[ k ].z ;
+											}
+										}
+									}
+									break ;
+
+								default :
+									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x5e\x97\xfe\x5b\xdc\x5f\x6e\x30\xd5\x6c\xda\x7d\xde\x30\xc3\x30\xd4\x30\xf3\x30\xb0\x30\xe2\x30\xfc\x30\xc9\x30\x4c\x30\x7f\x4f\x28\x75\x55\x30\x8c\x30\x66\x30\x44\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 非対応の法線マッピングモードが使用されていました\n" @*/ )) ;
+									return -1 ;
 								}
 								break ;
 
@@ -524,45 +636,45 @@ static int AnalyseFbxNode( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *P
 								return -1 ;
 							}
 
-							// 面の各頂点に対応する法線の情報を取得
-							switch( FbxMappingMode )
-							{
-							case FbxGeometryElement::eByControlPoint :
-								// 法線インデックスは頂点インデックスと等しくなる
-								MeshFace = Mesh->Faces ;
-								for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
-								{
-									MeshFace->NormalIndex[ 0 ] = MeshFace->VertexIndex[ 0 ] ;
-									MeshFace->NormalIndex[ 1 ] = MeshFace->VertexIndex[ 1 ] ;
-									MeshFace->NormalIndex[ 2 ] = MeshFace->VertexIndex[ 2 ] ;
-									MeshFace->NormalIndex[ 3 ] = MeshFace->VertexIndex[ 3 ] ;
-								}
-								break ;
-
-							case FbxGeometryElement::eByPolygonVertex :
-								// 法線インデックスは別個で存在する
-								MeshFace = Mesh->Faces ;
-								k = 0 ;
-								for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
-								{
-									for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++ )
-									{
-										MeshFace->NormalIndex[ l ] = k ;
-										k ++ ;
-
-										// 法泉の数が足りないバグデータの対応
-										if( k == Mesh->NormalNum )
-										{
-											k = 0 ;
-										}
-									}
-								}
-								break ;
-
-							default :
-								DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x5e\x97\xfe\x5b\xdc\x5f\x6e\x30\xd5\x6c\xda\x7d\xde\x30\xc3\x30\xd4\x30\xf3\x30\xb0\x30\xe2\x30\xfc\x30\xc9\x30\x4c\x30\x7f\x4f\x28\x75\x55\x30\x8c\x30\x66\x30\x44\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 非対応の法線マッピングモードが使用されていました\n" @*/ )) ;
-								return -1 ;
-							}
+//							// 面の各頂点に対応する法線の情報を取得
+//							switch( FbxMappingMode )
+//							{
+//							case FbxGeometryElement::eByControlPoint :
+//								// 法線インデックスは頂点インデックスと等しくなる
+//								MeshFace = Mesh->Faces ;
+//								for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+//								{
+//									MeshFace->NormalIndex[ 0 ] = MeshFace->VertexIndex[ 0 ] ;
+//									MeshFace->NormalIndex[ 1 ] = MeshFace->VertexIndex[ 1 ] ;
+//									MeshFace->NormalIndex[ 2 ] = MeshFace->VertexIndex[ 2 ] ;
+//									MeshFace->NormalIndex[ 3 ] = MeshFace->VertexIndex[ 3 ] ;
+//								}
+//								break ;
+//
+//							case FbxGeometryElement::eByPolygonVertex :
+//								// 法線インデックスは別個で存在する
+//								MeshFace = Mesh->Faces ;
+//								k = 0 ;
+//								for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+//								{
+//									for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++ )
+//									{
+//										MeshFace->NormalIndex[ l ] = k ;
+//										k ++ ;
+//
+//										// 法泉の数が足りないバグデータの対応
+//										if( k == Mesh->NormalNum )
+//										{
+//											k = 0 ;
+//										}
+//									}
+//								}
+//								break ;
+//
+//							default :
+//								DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x5e\x97\xfe\x5b\xdc\x5f\x6e\x30\xd5\x6c\xda\x7d\xde\x30\xc3\x30\xd4\x30\xf3\x30\xb0\x30\xe2\x30\xfc\x30\xc9\x30\x4c\x30\x7f\x4f\x28\x75\x55\x30\x8c\x30\x66\x30\x44\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 非対応の法線マッピングモードが使用されていました\n" @*/ )) ;
+//								return -1 ;
+//							}
 						}
 
 						// 従法線エレメントの数だけ繰り返し
@@ -574,54 +686,147 @@ static int AnalyseFbxNode( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *P
 							FbxRefMode     = FbxBinormalElem->GetReferenceMode() ;
 							FbxMappingMode = FbxBinormalElem->GetMappingMode() ;
 
+							// 従法線情報を格納するメモリ領域の確保
+							Mesh->Binormals = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * IndexNum, &RModel->Mem ) ;
+							if( Mesh->Binormals == NULL )
+							{
+								DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x93\x5f\xd5\x6c\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 従法線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
+								return -1 ;
+							}
+
+							// 従法線情報の数を取得
+							BinormalNum = FbxBinormalElem->GetDirectArray().GetCount() ;
+
+							// 従法線インデックスの数を取得
+							BinormalIndexNum = FbxBinormalElem->GetIndexArray().GetCount() ;
+
 							switch( FbxRefMode )
 							{
 							case FbxGeometryElement::eDirect :
-								// 従法線情報の数が法線情報の数と異なっていたら無視
-								if( Mesh->NormalNum != FbxBinormalElem->GetDirectArray().GetCount() )
-								{
-									continue ;
-								}
+//								// 直接モードの場合はそのまま代入
+//								for( j = 0 ; ( DWORD )j < Mesh->NormalNum ; j ++ )
+//								{
+//									Mesh->Binormals[ j ].x = ( float ) FbxBinormalElem->GetDirectArray().GetAt( j )[ 0 ] ;
+//									Mesh->Binormals[ j ].y = ( float ) FbxBinormalElem->GetDirectArray().GetAt( j )[ 1 ] ;
+//									Mesh->Binormals[ j ].z = ( float )-FbxBinormalElem->GetDirectArray().GetAt( j )[ 2 ] ;
+//								}
 
-								// 従法線情報を格納するメモリ領域の確保
-								Mesh->Binormals = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * Mesh->NormalNum, &RModel->Mem ) ;
-								if( Mesh->Binormals == NULL )
+								// 面の各頂点に対応する従法線の情報を取得
+								switch( FbxMappingMode )
 								{
-									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x93\x5f\xd5\x6c\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 従法線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
+								case FbxGeometryElement::eByControlPoint :
+									// 従法線インデックスは頂点インデックスと等しくなる
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k++ )
+										{
+											Index = MeshFace->VertexIndex[ l ] ;
+											if( Index < BinormalNum )
+											{
+												Mesh->Binormals[ k ].x = ( float ) FbxBinormalElem->GetDirectArray().GetAt( Index )[ 0 ] ;
+												Mesh->Binormals[ k ].y = ( float ) FbxBinormalElem->GetDirectArray().GetAt( Index )[ 1 ] ;
+												Mesh->Binormals[ k ].z = ( float )-FbxBinormalElem->GetDirectArray().GetAt( Index )[ 2 ] ;
+											}
+										}
+									}
+									break ;
+
+								case FbxGeometryElement::eByPolygonVertex :
+									// 従法線インデックスは別個で存在する
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k ++ )
+										{
+											if( k < BinormalNum )
+											{
+												Mesh->Binormals[ k ].x = ( float ) FbxBinormalElem->GetDirectArray().GetAt( k )[ 0 ] ;
+												Mesh->Binormals[ k ].y = ( float ) FbxBinormalElem->GetDirectArray().GetAt( k )[ 1 ] ;
+												Mesh->Binormals[ k ].z = ( float )-FbxBinormalElem->GetDirectArray().GetAt( k )[ 2 ] ;
+											}
+										}
+									}
+									break ;
+
+								default :
+									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x5e\x97\xfe\x5b\xdc\x5f\x6e\x30\x93\x5f\xd5\x6c\xda\x7d\xde\x30\xc3\x30\xd4\x30\xf3\x30\xb0\x30\xe2\x30\xfc\x30\xc9\x30\x4c\x30\x7f\x4f\x28\x75\x55\x30\x8c\x30\x66\x30\x44\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 非対応の従法線マッピングモードが使用されていました\n" @*/ )) ;
 									return -1 ;
-								}
-
-								// 直接モードの場合はそのまま代入
-								for( j = 0 ; ( DWORD )j < Mesh->NormalNum ; j ++ )
-								{
-									Mesh->Binormals[ j ].x = ( float ) FbxBinormalElem->GetDirectArray().GetAt( j )[ 0 ] ;
-									Mesh->Binormals[ j ].y = ( float ) FbxBinormalElem->GetDirectArray().GetAt( j )[ 1 ] ;
-									Mesh->Binormals[ j ].z = ( float )-FbxBinormalElem->GetDirectArray().GetAt( j )[ 2 ] ;
 								}
 								break ;
 
 							case FbxGeometryElement::eIndexToDirect :
-								// インデックスの数が法線情報の数と異なっていたら無視
-								if( Mesh->NormalNum != FbxBinormalElem->GetIndexArray().GetCount() )
-								{
-									continue ;
-								}
+//								// インデックスモードの場合は間接参照代入
+//								for( j = 0 ; ( DWORD )j < Mesh->NormalNum ; j ++ )
+//								{
+//									Index = FbxBinormalElem->GetIndexArray().GetAt( j ) ;
+//									Mesh->Binormals[ j ].x = ( float ) FbxBinormalElem->GetDirectArray().GetAt( Index )[ 0 ] ;
+//									Mesh->Binormals[ j ].y = ( float ) FbxBinormalElem->GetDirectArray().GetAt( Index )[ 1 ] ;
+//									Mesh->Binormals[ j ].z = ( float )-FbxBinormalElem->GetDirectArray().GetAt( Index )[ 2 ] ;
+//								}
 
-								// 従法線情報を格納するメモリ領域の確保
-								Mesh->Binormals = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * Mesh->NormalNum, &RModel->Mem ) ;
-								if( Mesh->Binormals == NULL )
+								// インデックスモードの場合は従法線テーブルを作成する
+								WorkBinormals = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * BinormalIndexNum, &RModel->Mem ) ;
+								if( WorkBinormals == NULL )
 								{
-									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x93\x5f\xd5\x6c\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 従法線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
+									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x5c\x4f\x6d\x69\x28\x75\x6e\x30\x93\x5f\xd5\x6c\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 作業用の従法線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
 									return -1 ;
 								}
 
-								// インデックスモードの場合は間接参照代入
-								for( j = 0 ; ( DWORD )j < Mesh->NormalNum ; j ++ )
+								// 従法線テーブルの作成
+								for( j = 0 ; j < BinormalIndexNum ; j ++ )
 								{
 									Index = FbxBinormalElem->GetIndexArray().GetAt( j ) ;
-									Mesh->Binormals[ j ].x = ( float ) FbxBinormalElem->GetDirectArray().GetAt( Index )[ 0 ] ;
-									Mesh->Binormals[ j ].y = ( float ) FbxBinormalElem->GetDirectArray().GetAt( Index )[ 1 ] ;
-									Mesh->Binormals[ j ].z = ( float )-FbxBinormalElem->GetDirectArray().GetAt( Index )[ 2 ] ;
+									WorkBinormals[ j ].x = ( float ) FbxBinormalElem->GetDirectArray().GetAt( Index )[ 0 ] ;
+									WorkBinormals[ j ].y = ( float ) FbxBinormalElem->GetDirectArray().GetAt( Index )[ 1 ] ;
+									WorkBinormals[ j ].z = ( float )-FbxBinormalElem->GetDirectArray().GetAt( Index )[ 2 ] ;
+								}
+
+								// 面の各頂点に対応する法線の情報を取得
+								switch( FbxMappingMode )
+								{
+								case FbxGeometryElement::eByControlPoint :
+									// 従法線インデックスは頂点インデックスと等しくなる
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k++ )
+										{
+											Index = MeshFace->VertexIndex[ l ] ;
+											if( Index < BinormalIndexNum )
+											{
+												Mesh->Binormals[ k ].x = ( float ) WorkBinormals[ Index ].x ;
+												Mesh->Binormals[ k ].y = ( float ) WorkBinormals[ Index ].y ;
+												Mesh->Binormals[ k ].z = ( float )-WorkBinormals[ Index ].z ;
+											}
+										}
+									}
+									break ;
+
+								case FbxGeometryElement::eByPolygonVertex :
+									// 従法線インデックスは別個で存在する
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k ++ )
+										{
+											if( k < BinormalIndexNum )
+											{
+												Mesh->Binormals[ k ].x = ( float ) WorkBinormals[ k ].x ;
+												Mesh->Binormals[ k ].y = ( float ) WorkBinormals[ k ].y ;
+												Mesh->Binormals[ k ].z = ( float )-WorkBinormals[ k ].z ;
+											}
+										}
+									}
+									break ;
+
+								default :
+									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x5e\x97\xfe\x5b\xdc\x5f\x6e\x30\x93\x5f\xd5\x6c\xda\x7d\xde\x30\xc3\x30\xd4\x30\xf3\x30\xb0\x30\xe2\x30\xfc\x30\xc9\x30\x4c\x30\x7f\x4f\x28\x75\x55\x30\x8c\x30\x66\x30\x44\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 非対応の従法線マッピングモードが使用されていました\n" @*/ )) ;
+									return -1 ;
 								}
 								break ;
 
@@ -640,54 +845,147 @@ static int AnalyseFbxNode( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *P
 							FbxRefMode     = FbxTangentElem->GetReferenceMode() ;
 							FbxMappingMode = FbxTangentElem->GetMappingMode() ;
 
+							// 接線情報を格納するメモリ領域の確保
+							Mesh->Tangents = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * IndexNum, &RModel->Mem ) ;
+							if( Mesh->Tangents == NULL )
+							{
+								DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\xa5\x63\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 接線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
+								return -1 ;
+							}
+
+							// 接線情報の数を取得
+							TangentNum = FbxTangentElem->GetDirectArray().GetCount() ;
+
+							// 接線インデックスの数を取得
+							TangentIndexNum = FbxTangentElem->GetIndexArray().GetCount() ;
+
 							switch( FbxRefMode )
 							{
 							case FbxGeometryElement::eDirect :
-								// 接線情報の数が法線情報の数と異なっていたら無視
-								if( Mesh->NormalNum != FbxTangentElem->GetDirectArray().GetCount() )
-								{
-									continue ;
-								}
+//								// 直接モードの場合はそのまま代入
+//								for( j = 0 ; ( DWORD )j < Mesh->NormalNum ; j ++ )
+//								{
+//									Mesh->Tangents[ j ].x = ( float ) FbxTangentElem->GetDirectArray().GetAt( j )[ 0 ] ;
+//									Mesh->Tangents[ j ].y = ( float ) FbxTangentElem->GetDirectArray().GetAt( j )[ 1 ] ;
+//									Mesh->Tangents[ j ].z = ( float )-FbxTangentElem->GetDirectArray().GetAt( j )[ 2 ] ;
+//								}
 
-								// 接線情報を格納するメモリ領域の確保
-								Mesh->Tangents = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * Mesh->NormalNum, &RModel->Mem ) ;
-								if( Mesh->Tangents == NULL )
+								// 面の各頂点に対応する接線の情報を取得
+								switch( FbxMappingMode )
 								{
-									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\xa5\x63\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 接線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
+								case FbxGeometryElement::eByControlPoint :
+									// 接線インデックスは頂点インデックスと等しくなる
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k++ )
+										{
+											Index = MeshFace->VertexIndex[ l ] ;
+											if( Index < TangentNum )
+											{
+												Mesh->Tangents[ k ].x = ( float ) FbxTangentElem->GetDirectArray().GetAt( Index )[ 0 ] ;
+												Mesh->Tangents[ k ].y = ( float ) FbxTangentElem->GetDirectArray().GetAt( Index )[ 1 ] ;
+												Mesh->Tangents[ k ].z = ( float )-FbxTangentElem->GetDirectArray().GetAt( Index )[ 2 ] ;
+											}
+										}
+									}
+									break ;
+
+								case FbxGeometryElement::eByPolygonVertex :
+									// 接線インデックスは別個で存在する
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k ++ )
+										{
+											if( k < TangentNum )
+											{
+												Mesh->Tangents[ k ].x = ( float ) FbxTangentElem->GetDirectArray().GetAt( k )[ 0 ] ;
+												Mesh->Tangents[ k ].y = ( float ) FbxTangentElem->GetDirectArray().GetAt( k )[ 1 ] ;
+												Mesh->Tangents[ k ].z = ( float )-FbxTangentElem->GetDirectArray().GetAt( k )[ 2 ] ;
+											}
+										}
+									}
+									break ;
+
+								default :
+									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x5e\x97\xfe\x5b\xdc\x5f\x6e\x30\xa5\x63\xda\x7d\xde\x30\xc3\x30\xd4\x30\xf3\x30\xb0\x30\xe2\x30\xfc\x30\xc9\x30\x4c\x30\x7f\x4f\x28\x75\x55\x30\x8c\x30\x66\x30\x44\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 非対応の接線マッピングモードが使用されていました\n" @*/ )) ;
 									return -1 ;
-								}
-
-								// 直接モードの場合はそのまま代入
-								for( j = 0 ; ( DWORD )j < Mesh->NormalNum ; j ++ )
-								{
-									Mesh->Tangents[ j ].x = ( float ) FbxTangentElem->GetDirectArray().GetAt( j )[ 0 ] ;
-									Mesh->Tangents[ j ].y = ( float ) FbxTangentElem->GetDirectArray().GetAt( j )[ 1 ] ;
-									Mesh->Tangents[ j ].z = ( float )-FbxTangentElem->GetDirectArray().GetAt( j )[ 2 ] ;
 								}
 								break ;
 
 							case FbxGeometryElement::eIndexToDirect :
-								// インデックスの数が法線情報の数と異なっていたら無視
-								if( Mesh->NormalNum != FbxTangentElem->GetIndexArray().GetCount() )
-								{
-									continue ;
-								}
+//								// インデックスモードの場合は間接参照代入
+//								for( j = 0 ; ( DWORD )j < Mesh->NormalNum ; j ++ )
+//								{
+//									Index = FbxTangentElem->GetIndexArray().GetAt( j ) ;
+//									Mesh->Tangents[ j ].x = ( float ) FbxTangentElem->GetDirectArray().GetAt( Index )[ 0 ] ;
+//									Mesh->Tangents[ j ].y = ( float ) FbxTangentElem->GetDirectArray().GetAt( Index )[ 1 ] ;
+//									Mesh->Tangents[ j ].z = ( float )-FbxTangentElem->GetDirectArray().GetAt( Index )[ 2 ] ;
+//								}
 
-								// 接線情報を格納するメモリ領域の確保
-								Mesh->Tangents = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * Mesh->NormalNum, &RModel->Mem ) ;
-								if( Mesh->Tangents == NULL )
+								// インデックスモードの場合は接線テーブルを作成する
+								WorkTangents = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * TangentIndexNum, &RModel->Mem ) ;
+								if( WorkTangents == NULL )
 								{
-									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\xa5\x63\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 接線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
+									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x5c\x4f\x6d\x69\x28\x75\x6e\x30\xa5\x63\xda\x7d\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 作業用の接線情報を格納するメモリの確保に失敗しました\n" @*/ )) ;
 									return -1 ;
 								}
 
-								// インデックスモードの場合は間接参照代入
-								for( j = 0 ; ( DWORD )j < Mesh->NormalNum ; j ++ )
+								// 接線テーブルの作成
+								for( j = 0 ; j < TangentIndexNum ; j ++ )
 								{
 									Index = FbxTangentElem->GetIndexArray().GetAt( j ) ;
-									Mesh->Tangents[ j ].x = ( float ) FbxTangentElem->GetDirectArray().GetAt( Index )[ 0 ] ;
-									Mesh->Tangents[ j ].y = ( float ) FbxTangentElem->GetDirectArray().GetAt( Index )[ 1 ] ;
-									Mesh->Tangents[ j ].z = ( float )-FbxTangentElem->GetDirectArray().GetAt( Index )[ 2 ] ;
+									WorkTangents[ j ].x = ( float ) FbxTangentElem->GetDirectArray().GetAt( Index )[ 0 ] ;
+									WorkTangents[ j ].y = ( float ) FbxTangentElem->GetDirectArray().GetAt( Index )[ 1 ] ;
+									WorkTangents[ j ].z = ( float )-FbxTangentElem->GetDirectArray().GetAt( Index )[ 2 ] ;
+								}
+
+								// 面の各頂点に対応する法線の情報を取得
+								switch( FbxMappingMode )
+								{
+								case FbxGeometryElement::eByControlPoint :
+									// 接線インデックスは頂点インデックスと等しくなる
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k++ )
+										{
+											Index = MeshFace->VertexIndex[ l ] ;
+											if( Index < TangentIndexNum )
+											{
+												Mesh->Tangents[ k ].x = ( float ) WorkTangents[ Index ].x ;
+												Mesh->Tangents[ k ].y = ( float ) WorkTangents[ Index ].y ;
+												Mesh->Tangents[ k ].z = ( float )-WorkTangents[ Index ].z ;
+											}
+										}
+									}
+									break ;
+
+								case FbxGeometryElement::eByPolygonVertex :
+									// 接線インデックスは別個で存在する
+									MeshFace = Mesh->Faces ;
+									k = 0 ;
+									for( j = 0 ; ( DWORD )j < Mesh->FaceNum ; j ++, MeshFace ++ )
+									{
+										for( l = 0 ; ( DWORD )l < MeshFace->IndexNum ; l ++, k ++ )
+										{
+											if( k < TangentIndexNum )
+											{
+												Mesh->Tangents[ k ].x = ( float ) WorkTangents[ k ].x ;
+												Mesh->Tangents[ k ].y = ( float ) WorkTangents[ k ].y ;
+												Mesh->Tangents[ k ].z = ( float )-WorkTangents[ k ].z ;
+											}
+										}
+									}
+									break ;
+
+								default :
+									DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x5e\x97\xfe\x5b\xdc\x5f\x6e\x30\xa5\x63\xda\x7d\xde\x30\xc3\x30\xd4\x30\xf3\x30\xb0\x30\xe2\x30\xfc\x30\xc9\x30\x4c\x30\x7f\x4f\x28\x75\x55\x30\x8c\x30\x66\x30\x44\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : 非対応の接線マッピングモードが使用されていました\n" @*/ )) ;
+									return -1 ;
 								}
 								break ;
 

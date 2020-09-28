@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -1665,6 +1665,8 @@ extern	COLOR_F			MV1GetMaterialAmbColorBase( int MBHandle, int MaterialIndex ) ;
 extern	float			MV1GetMaterialSpcPowerBase( int MBHandle, int MaterialIndex ) ;							// 指定のマテリアルのスペキュラの強さを取得する
 extern	int				MV1SetMaterialDifMapTextureBase( int MBHandle, int MaterialIndex, int TexIndex ) ;		// 指定のマテリアルでディフューズマップとして使用するテクスチャを指定する
 extern	int				MV1GetMaterialDifMapTextureBase( int MBHandle, int MaterialIndex ) ;					// 指定のマテリアルでディフューズマップとして使用されているテクスチャのインデックスを取得する
+extern	int				MV1SetMaterialSubDifMapTextureBase( int MBHandle, int MaterialIndex, int TexIndex ) ;	// 指定のマテリアルでサブディフューズマップとして使用するテクスチャを指定する
+extern	int				MV1GetMaterialSubDifMapTextureBase( int MBHandle, int MaterialIndex ) ;					// 指定のマテリアルでサブディフューズマップとして使用されているテクスチャのインデックスを取得する
 extern	int				MV1SetMaterialSpcMapTextureBase( int MBHandle, int MaterialIndex, int TexIndex ) ;		// 指定のマテリアルでスペキュラマップとして使用するテクスチャを指定する
 extern	int				MV1GetMaterialSpcMapTextureBase( int MBHandle, int MaterialIndex ) ;					// 指定のマテリアルでスペキュラマップとして使用されているテクスチャのインデックスを取得する
 extern	int				MV1SetMaterialNormalMapTextureBase( int MBHandle, int MaterialIndex, int TexIndex ) ;	// 指定のマテリアルで法線マップとして使用するテクスチャを指定する
@@ -2406,6 +2408,8 @@ extern	int			NS_MV1SetMaterialSpcPower( int MHandle, int MaterialIndex, float Po
 extern	float		NS_MV1GetMaterialSpcPower( int MHandle, int MaterialIndex ) ;								// 指定のマテリアルのスペキュラの強さを取得する
 extern	int			NS_MV1SetMaterialDifMapTexture( int MHandle, int MaterialIndex, int TexIndex ) ;			// 指定のマテリアルでディフューズマップとして使用するテクスチャを指定する
 extern	int			NS_MV1GetMaterialDifMapTexture( int MHandle, int MaterialIndex ) ;							// 指定のマテリアルでディフューズマップとして使用されているテクスチャのインデックスを取得する
+extern	int			NS_MV1SetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;						// 指定のマテリアルでサブディフューズマップとして使用するテクスチャを指定する
+extern	int			NS_MV1GetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex ) ;										// 指定のマテリアルでサブディフューズマップとして使用されているテクスチャのインデックスを取得する
 extern	int			NS_MV1SetMaterialSpcMapTexture( int MHandle, int MaterialIndex, int TexIndex ) ;			// 指定のマテリアルでスペキュラマップとして使用するテクスチャを指定する
 extern	int			NS_MV1GetMaterialSpcMapTexture( int MHandle, int MaterialIndex ) ;							// 指定のマテリアルでスペキュラマップとして使用されているテクスチャのインデックスを取得する
 extern	int			NS_MV1GetMaterialNormalMapTexture( int MHandle, int MaterialIndex ) ;					// 指定のマテリアルで法線マップとして使用されているテクスチャのインデックスを取得する
@@ -2782,6 +2786,8 @@ extern	MV1_REF_POLYGONLIST	NS_MV1GetReferenceMesh(		int MHandle, int FrameIndex,
 #define NS_MV1GetMaterialSpcPower						MV1GetMaterialSpcPower
 #define NS_MV1SetMaterialDifMapTexture					MV1SetMaterialDifMapTexture
 #define NS_MV1GetMaterialDifMapTexture					MV1GetMaterialDifMapTexture
+#define NS_MV1SetMaterialSubDifMapTexture				MV1SetMaterialSubDifMapTexture
+#define NS_MV1GetMaterialSubDifMapTexture				MV1GetMaterialSubDifMapTexture
 #define NS_MV1SetMaterialSpcMapTexture					MV1SetMaterialSpcMapTexture
 #define NS_MV1GetMaterialSpcMapTexture					MV1GetMaterialSpcMapTexture
 #define NS_MV1GetMaterialNormalMapTexture				MV1GetMaterialNormalMapTexture

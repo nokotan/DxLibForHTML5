@@ -3,9 +3,71 @@
 //　ＤＸライブラリ　非公式ログ
 //
 //　Creator : 山田　巧
-//  Last Access : 2020/5/10
+//  Last Access : 2020/8/23
 // ============================================================================
 
+Ver 3.22a	　正式公開のためにバージョン番号を変更。
+Ver 3.22	　ReadSoftSoundData, WriteSoftSoundData を量子化ビット深度
+			24bitのサウンドデータに対応。
+			　DrawCubeSet3D で引数 FillFlag を FALSE にするとメモリの不正な
+			アクセスが発生してしまうバグを修正。
+			　DrawCube3D と DrawCubeSet3D で FillFlag を FALSE にすると
+			ライティングが有効になっている場合、DifColor の色の指定に
+			関わらず真っ黒な線が描画されてしまうバグを修正。
+			　GraphBlend の DX_GRAPH_BLEND_RGBA_SELECT_MIX で指定できる
+			色成分に DX_RGBA_SELECT_SRC_INV_R などの反転要素を追加。
+			　GraphFilter に色の置換を行うためのフィルター
+			DX_GRAPH_FILTER_REPLACEMENT を追加。
+			　Windows版：InputString 等の文字列入力関数が Windows10 環境で
+			全角文字を入力すると、半角文字も一緒に入力されてしまう
+			不具合を修正。
+			　BMP形式の一部のピクセルフォーマットの画像が正常に読み込め
+			ないバグを修正。
+			　Windows版：Direct3D 11 で使用するアダプター( GPU )を
+			指定するための関数 SetUseDirect3D11AdapterIndex を追加。
+			　Windows版：プログラム実行途中で ChangeWindowMode を使用して
+			フルスクリーンモードからウィンドウモードに変更をすると
+			ウィンドウの位置やサイズが正常ではなくなってしまうバグを修正。
+			　Windows版：画面のDPI設定を100%より大きな値にしている場合に
+			フルスクリーンモードで起動した後、ウィンドウモードに変更すると
+			小さいウィンドウで表示されてしまう不具合を修正。
+			　CreateMaskScreen を呼び出したあと、DrawString で描画される
+			文字の下端が描画されない場合があったり、DrawRoundRectAA で
+			正常な描画が行われなかったりするバグを修正。
+			　指定のマテリアルのサブディフューズマップテクスチャを設定、
+			取得する為の関数 MV1SetMaterialSubDifMapTexture と
+			MV1GetMaterialSubDifMapTexture を追加。
+			　GetDrawExtendStringSize の ExRateX や ExRateY に 1.0 以外の
+			値を渡すと SizeY で取得できる縦サイズが正しい値ではなくなる
+			バグを修正。
+			　DxLibModelViewer.exe で fbxファイルを読み込んだ際に
+			従法線( Binormal )と接線( Tangent )が正常に読み込めない
+			事があるバグを修正。
+			　シャドウマップへの描画の場合はトゥーンレンダリングの輪郭線を
+			描画しないように処理を変更。
+			　Ogg Vorbis ファイルのコメントの数を取得する為の関数
+			GetOggCommentNum と、コメントの内容を取得する為の関数
+			GetOggComment を追加。
+			　Windows版：メインウィンドウの最大化ボタンを押した時の挙動を
+			設定する関数 SetWindowMaximizeButtonBehavior と、
+			SetWindowMaximizeButtonBehavior( 1 ); の設定の際に
+			最大化ボタンが押されたかどうかを判定するための関数
+			CheckWindowMaximizeButtonInput を追加。
+			　Windows版：IME入力を有効な状態では Escキー、BackSpaceキー、
+			Enterキーが効かなくなっていたバグを修正。
+			　グラフィックハンドルの最大数を 32768 から 262144 に増量。
+			　Live2D_Model_Draw による Live2Dモデルの描画の後、
+			MV1DrawModel を実行しても３Ｄモデルが描画されないバグを修正。
+			　３Ｄモデルのマテリアルにサブテクスチャが設定されていた場合、
+			サブではないテクスチャの透明な部分はサブテクスチャの透明度と
+			関係なく透明になってしまっていたバグを修正。
+			　GraphFilterBlt と GraphBlendBlt で引数 DestGrHandle に
+			DX_SCREEN_BACK を指定すると裏画面に結果を出力できる仕様を追加。
+			　SetCurrentPositionSoundMem 等で新しい再生位置としてサウンド
+			データのサイズ以上の位置を指定した場合メモリの不正なアクセスが
+			発生してしまう事があるバグを修正。
+			　GraphFilterBlt や GraphBlendBlt の結果を転送先に転送する際の
+			ブレンドモードを設定する為の関数 SetGraphFilterBltBlendMode を追加。
 Ver 3.21f	　正式公開のためにバージョン番号を変更。
 Ver 3.21e	　符号付き24bitの WAVファイルが正常に再生できないバグを修正。
 			　同じサウンドハンドルを連続して PlaySoundMem を呼び続けると

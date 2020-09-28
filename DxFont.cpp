@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＤｒａｗ制御プログラム
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // ----------------------------------------------------------------------------
 
@@ -2827,9 +2827,6 @@ extern int FontCacheCharImageBltToHandle(
 
 				RGBMask		= cl.RedMask | cl.GreenMask | cl.BlueMask ;
 
-				// printf("Font Init: Overhere? (SrcPitch=%d, DestPitch=%d)\n", ImagePitch, DestPitch);
-    			// printf("Cache Info: PixelByte=%d, BitWidth=%d\n", ManageData->TextureCacheBaseImage.ColorData.PixelByte, ManageData->TextureCacheBaseImage.ColorData.ColorBitDepth);
-
 				switch( ImageType )
 				{
 				case DX_FONT_SRCIMAGETYPE_1BIT :
@@ -3337,8 +3334,6 @@ extern int FontCacheCharImageBltToHandle(
 					{
 						if( BaseImage.ColorData.MaxPaletteNo == 15 )
 						{
-							// printf("Font Init: Overhere 1?\n");
-
 							for( i = 0 ; i < Height ; i ++ )
 							{
 								for( j = 0 ; j < Width ; j ++ )
@@ -3352,8 +3347,6 @@ extern int FontCacheCharImageBltToHandle(
 						}
 						else
 						{
-							// printf("Font Init: Overhere 2?\n");
-
 							for( i = 0 ; i < Height ; i ++ )
 							{
 								for( j = 0 ; j < Width ; j ++ )
@@ -3372,8 +3365,6 @@ extern int FontCacheCharImageBltToHandle(
 						{
 							BYTE aloc, rloc, gloc, bloc ;
 
-							// printf("Font Init: Overhere 3?\n");
-
 							aloc = ( BYTE )( cl.AlphaLoc + cl.AlphaWidth - 8 ) ;
 							rloc = ( BYTE )( cl.RedLoc   + cl.RedWidth   - 8 ) ;
 							gloc = ( BYTE )( cl.GreenLoc + cl.GreenWidth - 8 ) ;
@@ -3391,8 +3382,6 @@ extern int FontCacheCharImageBltToHandle(
 						}
 						else
 						{
-							// printf("Font Init: Overhere 4?\n");
-
 							for( i = 0 ; i < Height ; i ++ )
 							{
 								for( j = 0 ; j < Width ; j ++ )
@@ -3412,7 +3401,6 @@ extern int FontCacheCharImageBltToHandle(
 				}
 
 #ifndef DX_NON_GRAPHICS
-
 				// テクスチャキャッシュに転送
 				if( TextureCacheUpdate )
 				{
@@ -3457,7 +3445,7 @@ extern int FontCacheCharImageBltToHandle(
 			int		EdgeSize ;
 			int		DestPitch ;
 			unsigned char ( *EdgePat )[ FONTEDGE_PATTERN_NUM * 2 + 1 ] ;
-
+			
 			Width 		= ( int )CharData->SizeX ;
 			Height 		= ( int )CharData->SizeY ;
 
@@ -5395,7 +5383,6 @@ extern int FontTextureCacheUpdateRectApply( FONTMANAGE *ManageData )
 
 	ManageData->TextureCacheUpdateRectValid = FALSE ;
 
-
 	Graphics_Image_BltBmpOrGraphImageToGraph2Base(
 		&ManageData->TextureCacheBaseImage, NULL,
 		&ManageData->TextureCacheUpdateRect,
@@ -6626,7 +6613,7 @@ static int LoadFontDataFromMemToHandle_UseGParam_Static(
 		ManageData->FontDataFile.CharaTable = ( FONTDATAFILECHARADATA ** )( ( BYTE * )ManageData->FontDataFile.CharaTable + ( sizeof( FONTBASEINFO ) - DX_FONTBASEINFO_SIZE_VER0 ) ) ;
 	}
 
-	// フォントデータファイル??の 0xffff を超える文字コードの文字情報へのアドレスの配列を保存するメモリ領域へのアドレスをセット
+	// フォントデータファイル内の 0xffff を超える文字コードの文字情報へのアドレスの配列を保存するメモリ領域へのアドレスをセット
 	ManageData->FontDataFile.CharaExArray = ManageData->FontDataFile.CharaTable + 0x10000 ;
 
 	// 解凍したフォント画像データを格納するメモリアドレスをセット
@@ -10935,7 +10922,7 @@ LOOPEND :
 				MaxDrawPos = DrawPos ;
 			}
 		}
-		DrawPosSub += ( UseManageData->BaseInfo.FontHeight - UseManageData->BaseInfo.FontAddHeight ) * ExRate ;
+		DrawPosSub += ( UseManageData->BaseInfo.FontHeight - UseManageData->BaseInfo.FontAddHeight ) * ( VerticalFlag ? ExRateX : ExRateY ) ;
 
 		// 縁なしの場合は最後に描画輝度を元に戻す
 		Graphics_DrawSetting_SetDrawBrightToOneParam( OrigColor ) ;
@@ -11144,7 +11131,7 @@ LOOPEND :
 				MaxDrawPos = DrawPos ;
 			}
 		}
-		DrawPosSub += ( UseManageData->BaseInfo.FontHeight - UseManageData->BaseInfo.FontAddHeight ) * ExRate ;
+		DrawPosSub += ( UseManageData->BaseInfo.FontHeight - UseManageData->BaseInfo.FontAddHeight ) * ( VerticalFlag ? ExRateX : ExRateY ) ;
 	}
 
 	if( DrawSize != NULL )
@@ -12501,7 +12488,7 @@ extern int NS_FontBaseImageBltToHandle( int x, int y, const TCHAR *StrData, BASE
 #endif
 }
 
-// 基本イメー??に文字列を描画する
+// 基本イメージに文字列を描画する
 extern int NS_FontBaseImageBltToHandleWithStrLen( int x, int y, const TCHAR *StrData, size_t StrDataLength, BASEIMAGE *DestImage, BASEIMAGE *DestEdgeImage, int FontHandle, int VerticalFlag )
 {
 	int Result ;
@@ -14312,14 +14299,14 @@ extern int DrawVStringF_WCHAR_T( float x, float y, const wchar_t *String, size_t
 	if( VerticalFlag )\
 	{\
 		x += font->BaseInfo.FontAddHeight / 2;\
-		SETRECT( DrawRect, x, y, x + NS_GetFontSizeToHandle( FontHandle ) + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
+		SETRECT( DrawRect, x, y, x + NS_GetFontSizeToHandle( FontHandle ) + font->BaseInfo.FontAddHeight / 2 + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 		x -= font->BaseInfo.FontAddHeight / 2;\
 	}\
 	else\
 	{\
 		y -= font->BaseInfo.FontAddHeight / 2 ;\
-		SETRECT( DrawRect, x, y, GSYS.DrawSetting.DrawArea.right, y + NS_GetFontSizeToHandle( FontHandle ) + 3 ) ;\
+		SETRECT( DrawRect, x, y, GSYS.DrawSetting.DrawArea.right, y + NS_GetFontSizeToHandle( FontHandle ) + font->BaseInfo.FontAddHeight / 2 + 3 ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 		y += font->BaseInfo.FontAddHeight / 2 ;\
 	}\
