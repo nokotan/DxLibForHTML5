@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用GraphFilter系プログラムヘッダファイル
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -44,6 +44,7 @@ struct GRAPHFILTER_SYSTEMIFNO_ANDR
 	GRAPHICS_ANDROID_SHADER	Invert[ 2 ] ;							// 階調反転フィルター[ 0:通常用  1:乗算済みアルファ用 ]
 	GRAPHICS_ANDROID_SHADER	Level[ 2 ] ;							// レベル補正フィルター[ 0:通常用  1:乗算済みアルファ用 ]
 	GRAPHICS_ANDROID_SHADER	TwoColor[ 2 ] ;							// ２値化フィルター[ 0:通常用  1:乗算済みアルファ用 ]
+	GRAPHICS_ANDROID_SHADER	Replacement[ 2 ] ;						// 色の置換フィルター[ 0:通常用  1:乗算済みアルファ用 ]
 	GRAPHICS_ANDROID_SHADER	GradientMap[ 2 ][ 2 ] ;					// グラデーションマップフィルター[ 0:通常用  1:乗算済みアルファ用 ]
 	GRAPHICS_ANDROID_SHADER	PreMulAlpha ;							// 通常画像から乗算済みアルファ画像を作成する為のフィルター
 	GRAPHICS_ANDROID_SHADER	InterpAlpha ;							// 乗算済みアルファ画像から通常画像を作成する為のフィルター
