@@ -145,7 +145,8 @@ static int HTML5_FilterStretchBlt( GRAPHICS_HTML5_SHADER *UseShader, GRAPHFILTER
 		return -1 ;
 	}
 
-	if( GRAPHCHK(     Info->DestGrHandle, DestImage    ) &&
+	if( Info->DestGrHandle != DX_SCREEN_BACK &&
+ 		GRAPHCHK(     Info->DestGrHandle, DestImage    ) &&
 		SHADOWMAPCHK( Info->DestGrHandle, DestShadowMap ) )
 	{
 		return -1 ;
@@ -170,12 +171,18 @@ static int HTML5_FilterStretchBlt( GRAPHICS_HTML5_SHADER *UseShader, GRAPHFILTER
 		DestFrameBufferWidth  = DestShadowMap->PF->Texture.Width ;
 		DestFrameBufferHeight = DestShadowMap->PF->Texture.Height ;
 	}
-	else
+	else if( DestImage != NULL )
 	{
 		DestFrameBuffer       = DestImage->Hard.Draw[ 0 ].Tex->PF->FrameBuffer ;
 		DestFrameBufferWidth  = DestImage->Hard.Draw[ 0 ].Tex->PF->Texture.Width ;
 		DestFrameBufferHeight = DestImage->Hard.Draw[ 0 ].Tex->PF->Texture.Height ;
 	}
+	else
+ 	{
+ 		DestFrameBuffer       = GHTML5.Device.Screen.SubBackBufferFrameBuffer ;
+ 		DestFrameBufferWidth  = GHTML5.Device.Screen.SubBackBufferTextureSizeX ;
+ 		DestFrameBufferHeight = GHTML5.Device.Screen.SubBackBufferTextureSizeY ;
+ 	}
 
 	SrcRect.left   = Info->SrcX1 ;
 	SrcRect.top    = Info->SrcY1 ;
@@ -230,7 +237,7 @@ static int HTML5_FilterStretchBlt( GRAPHICS_HTML5_SHADER *UseShader, GRAPHFILTER
 		SrcTexture,      SrcTextureWidth,      SrcTextureHeight,      &SrcRect,
 		DestFrameBuffer, DestFrameBufferWidth, DestFrameBufferHeight, &DestRect,
 		IsLinearFilter ? GL_LINEAR : GL_NEAREST,
-		FALSE,
+		Info->BltBlendMode == DX_BLENDMODE_ALPHA ? TRUE : FALSE,
 		UseShader,
 		BlendTexture,    BlendTextureWidth,    BlendTextureHeight,    &BlendRect,
 		Texcoord8Vertex
@@ -1077,6 +1084,59 @@ extern int	GraphFilter_GradientMap_PF( GRAPHFILTER_INFO *Info, int MapGrHandle, 
 	return 0 ;
 }
 
+extern int	GraphFilter_Replacement_PF(    GRAPHFILTER_INFO *Info, COLOR_U8 TargetColor, COLOR_U8 NextColor, int IsPMA )
+{
+ 	static const char *FlagFileName[ 2 ] =
+ 	{
+ 		"Replacement.flag",
+ 		"Replacement_PMA.flag",
+ 	} ;
+ 	DX_HTML5_SHADER_FLOAT4  ParamF4[ 2 ] ;
+ 	GRAPHICS_HTML5_SHADER *UseAndrShader ;
+
+  	// 使用するシェーダーのセットアップ
+ 	if( GraphFilterShaderHandle.ReplacementPS[ IsPMA ] < 0 )
+ 	{
+ 		GraphFilterShaderHandle.ReplacementPS[ IsPMA ] = HTML5_MemLoadShaderCode( FlagFileName[ IsPMA ], DX_SHADERTYPE_PIXEL ) ;
+ 		if( GraphFilterShaderHandle.ReplacementPS[ IsPMA ] < 0 )
+ 		{
+ 			char PathUTF16LE[ 128 ] ;
+
+  			ConvString( FlagFileName[ IsPMA ], -1, DX_CHARCODEFORMAT_ASCII, ( char * )PathUTF16LE, sizeof( PathUTF16LE ), DX_CHARCODEFORMAT_UTF16LE ) ;
+ 			DXST_LOGFILEFMT_ADDUTF16LE(( "\xd5\x30\xa3\x30\xeb\x30\xbf\x30\xfc\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x20\x00\x25\x00\x73\x00\x00"/*@ L"フィルター用シェーダーの作成に失敗しました %s" @*/, PathUTF16LE )) ;
+ 			return -1 ;
+ 		}
+ 		NS_SetDeleteHandleFlag( GraphFilterShaderHandle.ReplacementPS[ IsPMA ], &GraphFilterShaderHandle.ReplacementPS[ IsPMA ] ) ;
+ 	}
+ 	if( GraphFilterSystemInfoHTML5.Replacement[ IsPMA ].Shader == 0 )
+ 	{
+ 		Graphics_HTML5_Shader_Create( &GraphFilterSystemInfoHTML5.Replacement[ IsPMA ], GraphicsHardDataHTML5.Device.Shader.Base.StretchRect_VS, HTML5_GetFragmentShader( GraphFilterShaderHandle.ReplacementPS[ IsPMA ] ) ) ;
+ 	}
+ 	UseAndrShader = &GraphFilterSystemInfoHTML5.Replacement[ IsPMA ] ;
+
+  	ParamF4[ 0 ][ 0 ] = ( float )TargetColor.r / 255.0f ;
+ 	ParamF4[ 0 ][ 1 ] = ( float )TargetColor.g / 255.0f ;
+ 	ParamF4[ 0 ][ 2 ] = ( float )TargetColor.b / 255.0f ;
+ 	ParamF4[ 0 ][ 3 ] = ( float )TargetColor.a / 255.0f ;
+ 	ParamF4[ 1 ][ 0 ] = ( float )NextColor.r / 255.0f ;
+ 	ParamF4[ 1 ][ 1 ] = ( float )NextColor.g / 255.0f ;
+ 	ParamF4[ 1 ][ 2 ] = ( float )NextColor.b / 255.0f ;
+ 	ParamF4[ 1 ][ 3 ] = ( float )NextColor.a / 255.0f ;
+
+  	// シェーダーを使用状態にセット
+ 	glUseProgram( UseAndrShader->Shader ) ;
+
+  	// Uniform の値をセット
+ 	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseAndrShader, "uSrcTex"      ), 0            ) ;
+ 	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseAndrShader, "uTargetColor" ), ParamF4[ 0 ] ) ;
+ 	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseAndrShader, "uNextColor"   ), ParamF4[ 1 ] ) ;
+
+  	HTML5_FilterStretchBlt( UseAndrShader, Info, FALSE ) ;
+
+  	// 正常終了
+ 	return 0 ;
+}
+
 extern int	GraphFilter_PremulAlpha_PF( GRAPHFILTER_INFO *Info )
 {
 	static const char *FlagFileName[ 1 ] =
@@ -1785,6 +1845,14 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 	char                   PathUTF16LE[ 64 ] ;
 
 	// 使用するシェーダーのセットアップ
+	if( ( SelectR >= DX_RGBA_SELECT_SRC_INV_R && SelectR <= DX_RGBA_SELECT_BLEND_INV_A ) ||
+ 		( SelectG >= DX_RGBA_SELECT_SRC_INV_R && SelectG <= DX_RGBA_SELECT_BLEND_INV_A ) ||
+ 		( SelectB >= DX_RGBA_SELECT_SRC_INV_R && SelectB <= DX_RGBA_SELECT_BLEND_INV_A ) ||
+ 		( SelectA >= DX_RGBA_SELECT_SRC_INV_R && SelectA <= DX_RGBA_SELECT_BLEND_INV_A ) )
+ 	{
+ 		goto USE_BASE_SHADER ;
+ 	}
+
 	if( SelectR >= DX_RGBA_SELECT_SRC_R && SelectR <= DX_RGBA_SELECT_SRC_A &&
 		SelectG >= DX_RGBA_SELECT_SRC_R && SelectG <= DX_RGBA_SELECT_SRC_A &&
 		SelectB >= DX_RGBA_SELECT_SRC_R && SelectB <= DX_RGBA_SELECT_SRC_A &&
@@ -1908,6 +1976,7 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 	}
 	else
 	{
+USE_BASE_SHADER:
 		PixelShaderHandle = &GraphFilterShaderHandle.RgbaMixBasePS[ IsPMA ] ;
 		if( *PixelShaderHandle < 0 )
 		{
@@ -1966,6 +2035,7 @@ extern int GraphFilter_HTML5_ReleaseShaderAll( void )
 	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.Level,			sizeof( GraphFilterSystemInfoHTML5.Level			) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
 	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.TwoColor,		sizeof( GraphFilterSystemInfoHTML5.TwoColor		) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
 	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.GradientMap,	sizeof( GraphFilterSystemInfoHTML5.GradientMap	) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
+	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.Replacement,	sizeof( GraphFilterSystemInfoHTML5.Replacement	) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
 	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )&GraphFilterSystemInfoHTML5.PreMulAlpha,	sizeof( GraphFilterSystemInfoHTML5.PreMulAlpha	) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
 	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )&GraphFilterSystemInfoHTML5.InterpAlpha,	sizeof( GraphFilterSystemInfoHTML5.InterpAlpha	) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;
 	Graphics_HTML5_ShaderArray_Release( ( GRAPHICS_HTML5_SHADER * )GraphFilterSystemInfoHTML5.YUVtoRGB,		sizeof( GraphFilterSystemInfoHTML5.YUVtoRGB		) / sizeof( GRAPHICS_HTML5_SHADER ) ) ;

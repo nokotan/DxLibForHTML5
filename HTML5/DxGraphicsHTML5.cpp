@@ -17063,6 +17063,14 @@ END :
 	return 0 ;
 }
 
+// ミドルウェア等を使用した後に Direct3D や OpenGL のＤＸライブラリ用の設定を再度行うための関数
+extern int Graphics_Hardware_RefreshSetting_PF( void )
+{
+	Graphics_HTML5_DeviceState_RefreshRenderState() ;
+
+	// 終了
+	return 0 ;
+}
 
 
 

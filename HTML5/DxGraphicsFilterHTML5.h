@@ -45,6 +45,7 @@ struct GRAPHFILTER_SYSTEMIFNO_HTML5
 	GRAPHICS_HTML5_SHADER	Level[ 2 ] ;							// レベル補正フィルター[ 0:通常用  1:乗算済みアルファ用 ]
 	GRAPHICS_HTML5_SHADER	TwoColor[ 2 ] ;							// ２値化フィルター[ 0:通常用  1:乗算済みアルファ用 ]
 	GRAPHICS_HTML5_SHADER	GradientMap[ 2 ][ 2 ] ;					// グラデーションマップフィルター[ 0:通常用  1:乗算済みアルファ用 ]
+	GRAPHICS_HTML5_SHADER	Replacement[ 2 ] ;						// 色の置換フィルター[ 0:通常用  1:乗算済みアルファ用 ]
 	GRAPHICS_HTML5_SHADER	PreMulAlpha ;							// 通常画像から乗算済みアルファ画像を作成する為のフィルター
 	GRAPHICS_HTML5_SHADER	InterpAlpha ;							// 乗算済みアルファ画像から通常画像を作成する為のフィルター
 	GRAPHICS_HTML5_SHADER	YUVtoRGB[ 4 ] ;							// YUVカラーをRGBカラーに変換するフィルター
