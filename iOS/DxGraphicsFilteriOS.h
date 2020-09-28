@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		iOS用GraphFilter系プログラムヘッダファイル
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -45,6 +45,7 @@ struct GRAPHFILTER_SYSTEMIFNO_IOS
 	GRAPHICS_IOS_SHADER	Level[ 2 ] ;							// レベル補正フィルター[ 0:通常用  1:乗算済みアルファ用 ]
 	GRAPHICS_IOS_SHADER	TwoColor[ 2 ] ;							// ２値化フィルター[ 0:通常用  1:乗算済みアルファ用 ]
 	GRAPHICS_IOS_SHADER	GradientMap[ 2 ][ 2 ] ;					// グラデーションマップフィルター[ 0:通常用  1:乗算済みアルファ用 ]
+	GRAPHICS_IOS_SHADER	Replacement[ 2 ] ;						// 色の置換フィルター[ 0:通常用  1:乗算済みアルファ用 ]
 	GRAPHICS_IOS_SHADER	PreMulAlpha ;							// 通常画像から乗算済みアルファ画像を作成する為のフィルター
 	GRAPHICS_IOS_SHADER	InterpAlpha ;							// 乗算済みアルファ画像から通常画像を作成する為のフィルター
 	GRAPHICS_IOS_SHADER	YUVtoRGB[ 4 ] ;							// YUVカラーをRGBカラーに変換するフィルター

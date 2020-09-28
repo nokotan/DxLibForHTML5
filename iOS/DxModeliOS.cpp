@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム( iOS )
 // 
-//  	Ver 3.21f
+//  	Ver 3.22a
 // 
 //-----------------------------------------------------------------------------
 
@@ -422,8 +422,16 @@ __inline void MV1_IOS_SetVertexData(
 	}
 	else
 	{
-		( ( FLOAT4 * )Dest )->x = 0.0f ;
-		( ( FLOAT4 * )Dest )->y = 0.0f ;
+		if( TexCoord0 != NULL )
+		{
+			( ( FLOAT4 * )Dest )->x = TexCoord0->u ;
+			( ( FLOAT4 * )Dest )->y = TexCoord0->v ;
+		}
+		else
+		{
+			( ( FLOAT4 * )Dest )->x = 0.0f ;
+			( ( FLOAT4 * )Dest )->y = 0.0f ;
+		}
 	}
 	( ( FLOAT4 * )Dest )->z = 1.0f ;
 	( ( FLOAT4 * )Dest )->w = 1.0f ;
@@ -2678,7 +2686,7 @@ static int  MV1_IOS_ShaderSetup( MV1_MESH *Mesh, int VertexType, int IsToonOutLi
 	FogType       = GIOS.Device.State.FogEnable ? GIOS.Device.State.FogMode : DX_FOGMODE_NONE ;
 	IsToon        = MMaterial->BaseData->Type == DX_MATERIAL_TYPE_TOON || MMaterial->BaseData->Type == DX_MATERIAL_TYPE_TOON_2 ;
 	BumpMap       = MBMaterial->NormalLayerNum  > 0 ;
-	MultiTexMode  = MBMaterial->DiffuseLayerNum > 1 ? MBMaterial->DiffuseLayer[ 1 ].BlendType + 1 : 0 ;
+	MultiTexMode  = MMaterial->DiffuseLayerNum  > 1 ? MMaterial->DiffuseLayer[ 1 ].BlendType + 1 : 0 ;
 	SpecularMap   = MMaterial->SpecularLayerNum > 0 ;
 
 	if( IsToonOutLine )
@@ -3879,7 +3887,8 @@ SD4BONESKIN:
 	// トゥーンがある場合は輪郭線を描画
 	if( ( ( Model->MeshCategoryHide[ DX_MV1_MESHCATEGORY_OUTLINE ]             == FALSE && MV1Man.UseOrigShaderFlag == FALSE ) ||
 		  ( Model->MeshCategoryHide[ DX_MV1_MESHCATEGORY_OUTLINE_ORIG_SHADER ] == FALSE && MV1Man.UseOrigShaderFlag == TRUE  ) ) && 
-		( Mesh->Material->BaseData->Type == DX_MATERIAL_TYPE_TOON || Mesh->Material->BaseData->Type == DX_MATERIAL_TYPE_TOON_2 ) )
+		( Mesh->Material->BaseData->Type == DX_MATERIAL_TYPE_TOON || Mesh->Material->BaseData->Type == DX_MATERIAL_TYPE_TOON_2 ) &&
+		GSYS.DrawSetting.ShadowMapDraw == FALSE )
 	{
 		// 輪郭線の描画
 		if( Mesh->Material->OutLineWidth    > 0.000001f ||
