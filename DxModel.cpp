@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -10910,6 +10910,63 @@ extern int MV1SetMaterialDifMapTextureBase( int MBHandle, int MaterialIndex, int
 
 // 指定のマテリアルでディフューズマップとして使用されているテクスチャのインデックスを取得する
 extern int MV1GetMaterialDifMapTextureBase( int MBHandle, int MaterialIndex )
+{
+	MV1BASEMATERIALSTART( MBHandle, ModelBase, Material, MaterialIndex, -1 ) ;
+
+	if( Material->DiffuseLayerNum == 0 )
+		return -1 ;
+
+	return Material->DiffuseLayer[ 0 ].Texture ;
+}
+
+// 指定のマテリアルでサブディフューズマップとして使用するテクスチャを指定する
+extern int MV1SetMaterialSubDifMapTextureBase( int MBHandle, int MaterialIndex, int TexIndex )
+{
+	MV1_MODEL *Model ;
+	MV1_MESH_BASE * MBMesh ;
+	MV1_MESH *Mesh ;
+	int i ;
+
+	MV1BASEMATERIALSTART( MBHandle, ModelBase, Material, MaterialIndex, -1 ) ;
+
+	if( TexIndex < 0 || TexIndex >= ModelBase->TextureNum )
+		return -1 ;
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	// 今までディフューズマップが2以下の場合は2にする
+	if( Material->DiffuseLayerNum < 2 )
+	{
+		Material->DiffuseLayerNum = 2 ;
+	}
+
+	// 設定
+	Material->DiffuseLayer[ 1 ].Texture = TexIndex ;
+
+	// このマテリアルを使用しているメッシュのセットアップ完了フラグを倒す
+	MBMesh = ModelBase->Mesh ;
+	for( i = 0 ; i < ModelBase->MeshNum ; i ++, MBMesh ++ )
+	{
+		if( MBMesh->Material != Material ) continue ;
+
+		for( Model = ModelBase->UseFirst ; Model ; Model = Model->UseBaseDataNext )
+		{
+			Mesh = &Model->Mesh[ i ] ;
+			MV1MESH_RESET_SEMITRANSSETUP( Mesh )
+
+			// マテリアル情報も更新
+			if( MV1CCHK( Mesh->DrawMaterialChange ) == 0 )
+				MV1BitSetChange( &Mesh->DrawMaterialChange ) ;
+		}
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// 指定のマテリアルでサブディフューズマップとして使用されているテクスチャのインデックスを取得する
+extern int MV1GetMaterialSubDifMapTextureBase( int MBHandle, int MaterialIndex )
 {
 	MV1BASEMATERIALSTART( MBHandle, ModelBase, Material, MaterialIndex, -1 ) ;
 
@@ -24756,6 +24813,60 @@ extern int NS_MV1GetMaterialDifMapTexture( int MHandle, int MaterialIndex )
 		return -1 ;
 
 	return Material->DiffuseLayer[ 0 ].Texture ;
+}
+
+// 指定のマテリアルでサブディフューズマップとして使用するテクスチャを指定する
+extern int NS_MV1SetMaterialSubDifMapTexture( int MHandle, int MaterialIndex, int TexIndex )
+{
+	MV1_MESH *Mesh ;
+	int i ;
+
+	MV1MATERIALSTART( MHandle, Model, ModelBase, Material, MaterialIndex, -1 ) ;
+
+	if( TexIndex < 0 || TexIndex >= ModelBase->TextureNum )
+		return -1 ;
+
+	if( Material->DiffuseLayerNum > 1 && Material->DiffuseLayer[ 1 ].Texture == TexIndex )
+	{
+		return 0 ;
+	}
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	// ディフューズレイヤーが2以下の場合は２にする
+	if( Material->DiffuseLayerNum < 2 )
+	{
+		Material->DiffuseLayerNum = 2 ;
+	}
+
+	// 設定
+	Material->DiffuseLayer[ 1 ].Texture = TexIndex ;
+
+	// このマテリアルを使用しているメッシュの半透明要素有無情報のセットアップ完了フラグを倒す
+	Mesh = Model->Mesh ;
+	for( i = 0 ; i < ModelBase->MeshNum ; i ++, Mesh ++ )
+	{
+		if( Mesh->Material != Material ) continue ;
+
+		MV1MESH_RESET_SEMITRANSSETUP( Mesh )
+		if( MV1CCHK( Mesh->DrawMaterialChange ) == 0 )
+			MV1BitSetChange( &Mesh->DrawMaterialChange ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// 指定のマテリアルでサブディフューズマップとして使用されているテクスチャのインデックスを取得する
+extern int NS_MV1GetMaterialSubDifMapTexture( int MHandle, int MaterialIndex )
+{
+	MV1MATERIALSTART( MHandle, Model, ModelBase, Material, MaterialIndex, -1 ) ;
+
+	if( Material->DiffuseLayerNum < 2 )
+		return -1 ;
+
+	return Material->DiffuseLayer[ 1 ].Texture ;
 }
 
 // 指定のマテリアルでスペキュラマップとして使用するテクスチャを指定する

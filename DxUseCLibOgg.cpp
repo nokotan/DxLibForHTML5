@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Ogg関係
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -3061,7 +3061,132 @@ extern int GetSoundConvertLoopAreaInfo_OGG(  SOUNDCONV *SoundConv, LONGLONG *Loo
 	return 0 ;
 }
 
-#endif
+extern int GetOggCommentNumBase( STREAMDATA *Stream )
+{
+	DWORD_PTR fp = 0 ;
+	int Comments ;
+	OggVorbis_File File ;
+	ov_callbacks ogfunc ;
+	vorbis_comment *comment ;
+
+	// コールバック関数を用意する
+	ogfunc.read_func = ( size_t ( * )( void *, size_t, size_t, void * ) )Ogg_StreamRead ;
+	ogfunc.seek_func = ( int  ( * )( void *, ogg_int64_t, int ) )Ogg_StreamSeek64_wrap ;
+	ogfunc.close_func = ( int ( * )( void * ) )Ogg_StreamClose ;
+	ogfunc.tell_func = ( long ( * )( void * ) )Ogg_StreamTell ;
+
+	// Ｏｇｇファイルのセットアップ
+	if( ov_open_callbacks( Stream, &File, NULL, 0, ogfunc ) != 0 )
+	{
+		DXST_LOGFILE_ADDA( "GetOggCommentNum Ogg File Setup Error\n" ) ;
+		return -1 ;
+	}
+
+	// コメントの数を取得
+	comment = ov_comment( &File, -1 ) ;
+	Comments = comment->comments ;
+
+	// ファイルを閉じる
+	ov_clear( &File ) ;
+
+	// コメントの数を返す
+	return Comments ;
+}
+
+extern int GetOggCommentBase( STREAMDATA *Stream, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes )
+{
+	OggVorbis_File File ;
+	ov_callbacks ogfunc ;
+	vorbis_comment *comment ;
+	int SrcBytes, DestBytes ;
+	DWORD UTF8CharCode ;
+	DWORD TCHARCharCode ;
+	int CharBytes ;
+
+	// コールバック関数を用意する
+	ogfunc.read_func = ( size_t ( * )( void *, size_t, size_t, void * ) )Ogg_StreamRead ;
+	ogfunc.seek_func = ( int  ( * )( void *, ogg_int64_t, int ) )Ogg_StreamSeek64_wrap ;
+	ogfunc.close_func = ( int ( * )( void * ) )Ogg_StreamClose ;
+	ogfunc.tell_func = ( long ( * )( void * ) )Ogg_StreamTell ;
+
+	// Ｏｇｇファイルのセットアップ
+	if( ov_open_callbacks( Stream, &File, NULL, 0, ogfunc ) != 0 )
+	{
+		DXST_LOGFILE_ADDA( "GetOggComment Ogg File Setup Error\n" ) ;
+		return -1 ;
+	}
+
+	// コメントの情報を取得
+	comment = ov_comment( &File, -1 ) ;
+
+	// コメントインデックスチェック
+	if( CommentIndex < 0 || CommentIndex >= comment->comments )
+	{
+		ov_clear( &File ) ;
+		return -1 ;
+	}
+
+	// コメント名をコピー
+	SrcBytes = 0 ;
+	DestBytes = 0 ;
+	for(;;)
+	{
+		if( SrcBytes >= comment->comment_lengths[ CommentIndex ] || comment->user_comments[ CommentIndex ][ SrcBytes ] == 0 )
+		{
+			DXST_LOGFILE_ADDA( "GetOggComment Comment Format Error\n" ) ;
+			ov_clear( &File ) ;
+			return -1 ;
+		}
+
+		UTF8CharCode = GetCharCode( &comment->user_comments[ CommentIndex ][ SrcBytes ], DX_CHARCODEFORMAT_UTF8, &CharBytes ) ;
+		SrcBytes += CharBytes ;
+		if( UTF8CharCode == 0x3d /* '=' */ )
+		{
+			break ;
+		}
+
+		if( DestBytes < ( int )CommentNameBufferBytes )
+		{
+			TCHARCharCode = ConvCharCode( UTF8CharCode, DX_CHARCODEFORMAT_UTF8, _TCHARCODEFORMAT ) ;
+			DestBytes += PutCharCode( TCHARCharCode, _TCHARCODEFORMAT, ( char * )&CommentNameBuffer[ DestBytes ], ( size_t )CommentNameBufferBytes - DestBytes ) ;
+		}
+	}
+	if( DestBytes < ( int )CommentNameBufferBytes )
+	{
+		DestBytes += PutCharCode( 0, _TCHARCODEFORMAT, ( char * )&CommentNameBuffer[ DestBytes ], ( size_t )CommentNameBufferBytes - DestBytes ) ;
+	}
+
+	// コメント文字列をコピー
+	DestBytes = 0 ;
+	for(;;)
+	{
+		if( SrcBytes >= comment->comment_lengths[ CommentIndex ] || comment->user_comments[ CommentIndex ][ SrcBytes ] == 0 )
+		{
+			break ;
+		}
+
+		UTF8CharCode = GetCharCode( &comment->user_comments[ CommentIndex ][ SrcBytes ], DX_CHARCODEFORMAT_UTF8, &CharBytes ) ;
+		SrcBytes += CharBytes ;
+
+		if( DestBytes < ( int )CommentNameBufferBytes )
+		{
+			TCHARCharCode = ConvCharCode( UTF8CharCode, DX_CHARCODEFORMAT_UTF8, _TCHARCODEFORMAT ) ;
+			DestBytes += PutCharCode( TCHARCharCode, _TCHARCODEFORMAT, ( char * )&CommentBuffer[ DestBytes ], ( size_t )CommentBufferBytes - DestBytes ) ;
+		}
+	}
+	if( DestBytes < ( int )CommentBufferBytes )
+	{
+		DestBytes += PutCharCode( 0, _TCHARCODEFORMAT, ( char * )&CommentBuffer[ DestBytes ], ( size_t )CommentBufferBytes - DestBytes ) ;
+	}
+
+	// ファイルを閉じる
+	ov_clear( &File ) ;
+
+	// 正常終了
+	return 0 ;
+}
+
+#endif // DX_NON_OGGVORBIS
 
 
 

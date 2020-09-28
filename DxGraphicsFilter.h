@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		GraphFilter系プログラムヘッダファイル
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ namespace DxLib
 // フィルター情報構造体
 struct GRAPHFILTER_INFO
 {
+	int						BltBlendMode ;
 	int						IsBlend ;
 	int						FilterOrBlendType ;
 	int						SrcGrHandle ;
@@ -96,6 +97,8 @@ struct GRAPHFILTER_PARAM
 	int						UVGrHandle ;
 	int						DestSizeX ;
 	int						DestSizeY ;
+	COLOR_U8				TargetColor ;
+	COLOR_U8				NextColor ;
 
 	int						RGBA_R ;
 	int						RGBA_G ;
@@ -118,6 +121,7 @@ struct GRAPHFILTER_SHADER_HANDLE
 	float					PrevGamma ;								// 前回のガンマフィルタの際のガンマ値
 	int						TwoColorPS[ 2 ] ;						// ２値化フィルター[ 0:通常用  1:乗算済みアルファ用 ]
 	int						GradientMapPS[ 2 ][ 2 ] ;				// グラデーションマップフィルター[ 0:通常用  1:乗算済みアルファ用 ]
+	int						ReplacementPS[ 2 ] ;					// 色の置換[ 0:通常用  1:乗算済みアルファ用 ]
 	int						PreMulAlphaPS ;							// 通常画像から乗算済みアルファ画像を作成する為のフィルター
 	int						InterpAlphaPS ;							// 乗算済みアルファ画像から通常画像を作成する為のフィルター
 	int						YUVtoRGBPS[ 4 ] ;						// YUVカラーをRGBカラーに変換するフィルター
@@ -131,9 +135,16 @@ struct GRAPHFILTER_SHADER_HANDLE
 	int						RgbaMixS[ 4 ][ 4 ][ 4 ][ 4 ][ 2 ] ;		// RGBAMixブレンドの S だけの組み合わせ256個[ R ][ G ][ B ][ A ][ 0:通常用  1:乗算済みアルファ用 ]
 } ;
 
+// フィルター処理のシステムデータ
+struct GRAPHFILTER_SYSTEM_DATA
+{
+	int						BltBlendMode ;							// 転送先とのブレンドモード
+} ;
+
 // 内部大域変数宣言 --------------------------------------------------------------
 
 extern GRAPHFILTER_SHADER_HANDLE GraphFilterShaderHandle ;
+extern GRAPHFILTER_SYSTEM_DATA GraphFilterSystemData ;
 
 // 関数プロトタイプ宣言-----------------------------------------------------------
 
@@ -150,6 +161,7 @@ extern int	GraphFilter_Invert(        GRAPHFILTER_INFO *Info, int IsPMA ) ;
 extern int	GraphFilter_Level(         GRAPHFILTER_INFO *Info, float Min, float Max, float Gamma, float AfterMin, float AfterMax, int IsPMA ) ;
 extern int	GraphFilter_TwoColor(      GRAPHFILTER_INFO *Info, float Threshold, COLOR_F *LowColor, COLOR_F *HighColor, int IsPMA ) ;
 extern int	GraphFilter_GradientMap(   GRAPHFILTER_INFO *Info, int MapGrHandle, int Reverse, int IsPMA ) ;
+extern int	GraphFilter_Replacement(   GRAPHFILTER_INFO *Info, COLOR_U8 TargetColor, COLOR_U8 NextColor, int IsPMA ) ;
 extern int	GraphFilter_PremulAlpha(   GRAPHFILTER_INFO *Info ) ;
 extern int	GraphFilter_InterpAlpha(   GRAPHFILTER_INFO *Info ) ;
 extern int	GraphFilter_YUVtoRGB(      GRAPHFILTER_INFO *Info, int UVGrHandle ) ;
@@ -178,6 +190,7 @@ extern int	GraphFilter_Invert_PF(        GRAPHFILTER_INFO *Info, int IsPMA ) ;
 extern int	GraphFilter_Level_PF(         GRAPHFILTER_INFO *Info, float Min, float Max, float Gamma, float AfterMin, float AfterMax, int IsPMA ) ;
 extern int	GraphFilter_TwoColor_PF(      GRAPHFILTER_INFO *Info, float Threshold, COLOR_F *LowColor, COLOR_F *HighColor, int IsPMA ) ;
 extern int	GraphFilter_GradientMap_PF(   GRAPHFILTER_INFO *Info, int MapGrHandle, int Reverse, int IsPMA ) ;
+extern int	GraphFilter_Replacement_PF(   GRAPHFILTER_INFO *Info, COLOR_U8 TargetColor, COLOR_U8 NextColor, int IsPMA ) ;
 extern int	GraphFilter_PremulAlpha_PF(   GRAPHFILTER_INFO *Info ) ;
 extern int	GraphFilter_InterpAlpha_PF(   GRAPHFILTER_INFO *Info ) ;
 extern int	GraphFilter_YUVtoRGB_PF(      GRAPHFILTER_INFO *Info, int UVGrHandle ) ;

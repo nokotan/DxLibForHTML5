@@ -2,7 +2,7 @@
 //
 //		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ@“à•”g—pŠÖ˜A—pƒwƒbƒ_ƒtƒ@ƒCƒ‹
 //
-//				Ver 3.21f
+//				Ver 3.22a
 //
 // ----------------------------------------------------------------------------
 
@@ -483,6 +483,7 @@ extern	int			NS_GetWindowSize(					int *Width, int *Height ) ;								// ƒEƒCƒ“ƒ
 extern	int			NS_GetWindowEdgeWidth(				int *LeftWidth, int *RightWidth, int *TopWidth, int *BottomWidth ) ;	// ƒEƒCƒ“ƒhƒE‚Ìã‰º¶‰E‚Ì‰‚Ì•‚ğæ“¾‚·‚é
 extern	int			NS_GetWindowPosition(				int *x, int *y ) ;										// ƒEƒCƒ“ƒhƒEƒ‚[ƒh‚ÌƒEƒCƒ“ƒhƒE‚ÌˆÊ’u‚ğæ“¾‚·‚é( ˜g‚àŠÜ‚ß‚½¶ãÀ•W )
 extern	int			NS_GetWindowUserCloseFlag(			int StateResetFlag = FALSE ) ;							// ƒEƒCƒ“ƒhƒE‚Ì•Â‚¶‚éƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é
+extern	int			NS_CheckWindowMaximizeButtonInput(	int StateResetFlag = TRUE ) ;							// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚ÌÅ‘å‰»ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚©‚Ç‚¤‚©‚ğæ“¾‚·‚éASetWindowMaximizeButtonBehavior( 1 ); ‚ªÀs‚³‚ê‚Ä‚¢‚éê‡‚Ì‚İ—LŒø‚ÈŠÖ”( StateResetFlag  TRUE = ‰Ÿ‚³‚ê‚½ó‘Ô‚ğƒŠƒZƒbƒg‚·‚é   FALSE = ‰Ÿ‚³‚ê‚½ó‘Ô‚ğƒŠƒZƒbƒg‚µ‚È‚¢ )
 extern	int			NS_GetNotDrawFlag(					void ) ;												// •`‰æ‹@”\‚ğg‚¤‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğæ“¾‚·‚é
 extern	int			NS_GetPaintMessageFlag(			void ) ;												// WM_PAINT ƒƒbƒZ[ƒW‚ª—ˆ‚½‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é(–ß‚è’l  TRUE:WM_PAINTƒƒbƒZ[ƒW‚ª—ˆ‚½(ˆê“xæ“¾‚·‚é‚ÆˆÈŒãAÄ‚Ñ WM_PAINTƒƒbƒZ[ƒW‚ª—ˆ‚é‚Ü‚Å FALSE ‚ª•Ô‚Á‚Ä‚­‚é‚æ‚¤‚É‚È‚é)  FALSE:WM_PAINT ƒƒbƒZ[ƒW‚Í—ˆ‚Ä‚¢‚È‚¢)
 extern	int			NS_GetValidHiPerformanceCounter(	void ) ;												// ƒpƒtƒH[ƒ}ƒ“ƒXƒJƒEƒ“ƒ^‚ª—LŒø‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é(–ß‚è’l  TRUE:—LŒø  FALSE:–³Œø)
@@ -516,6 +517,7 @@ extern	int			NS_SetWindowMinSize(						int MinWidth, int MinHeight ) ;										
 extern	int			NS_SetWindowPosition(						int x, int y ) ;																	// ƒEƒCƒ“ƒhƒEƒ‚[ƒh‚ÌƒEƒCƒ“ƒhƒE‚ÌˆÊ’u‚ğİ’è‚·‚é( ˜g‚àŠÜ‚ß‚½¶ãÀ•W )
 extern	int			NS_SetSysCommandOffFlag(					int Flag , const TCHAR *HookDllPath = NULL ) ;										// ƒ^ƒXƒNƒXƒCƒbƒ`‚ğ—LŒø‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
 extern	int			NS_SetSysCommandOffFlagWithStrLen(			int Flag , const TCHAR *HookDllPath = NULL , size_t HookDllPathLength = 0 ) ;		// ƒ^ƒXƒNƒXƒCƒbƒ`‚ğ—LŒø‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
+extern	int			NS_SetWindowMaximizeButtonBehavior(		int BehaviorType ) ;																// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚ÌÅ‘å‰»ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚Æ‚«‚Ì‹““®‚ğİ’è‚·‚é( BehaviorType 0=•W€“®ì 1=•W€“®ì‚Ís‚í‚¸AÅ‘å‰»ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚©‚Ç‚¤‚©‚Í CheckWindowMaximizeButtonInput ‚Å”»’è‚·‚é )
 extern	int			NS_SetHookWinProc(							WNDPROC WinProc ) ;																	// ƒƒbƒZ[ƒW‚ğƒtƒbƒN‚·‚éƒEƒCƒ“ƒhƒEƒvƒ[ƒWƒƒ‚ğ“o˜^‚·‚é
 extern	int			NS_SetUseHookWinProcReturnValue(			int UseFlag ) ;																		// SetHookWinProc ‚Åİ’è‚µ‚½ƒEƒCƒ“ƒhƒEƒvƒ[ƒWƒƒ‚Ì–ß‚è’l‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚éASetHookWinProc ‚Åİ’è‚µ‚½ƒEƒCƒ“ƒhƒEƒvƒ[ƒWƒƒ‚Ì’†‚Å‚Ì‚İg—p‰Â”\( UseFlag TRUE:–ß‚è’l‚ğg—p‚µ‚ÄA‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒEƒCƒ“ƒhƒEƒvƒ[ƒWƒƒ‚Ìˆ—‚Ís‚í‚È‚¢  FALSE:–ß‚è’l‚Íg—p‚¹‚¸AƒEƒCƒ“ƒhƒEƒvƒ[ƒWƒƒ‚©‚ço‚½ŒãA‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒEƒCƒ“ƒhƒEƒvƒ[ƒWƒƒ‚Ìˆ—‚ğs‚¤ )
 extern	int			NS_SetDoubleStartValidFlag(				int Flag ) ;																		// ‚Qd‹N“®‚ğ‹–‚·‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
@@ -1605,6 +1607,7 @@ extern	int			NS_SetUseDirect3D11WARPDriver(						int Flag ) ;									// D3D_DRI
 extern	int			NS_SetUseDirect3DVersion(						int Version /* DX_DIRECT3D_9 ‚È‚Ç */ ) ;		// g—p‚·‚é Direct3D ‚Ìƒo[ƒWƒ‡ƒ“‚ğİ’è‚·‚éADxLib_Init ŒÄ‚Ño‚µ‚Ì‘O‚Å‚Ì‚İg—p‰Â”\@
 extern	int			NS_GetUseDirect3DVersion(						void ) ;										// g—p‚µ‚Ä‚¢‚é Direct3D ‚Ìƒo[ƒWƒ‡ƒ“‚ğæ“¾‚·‚é( DX_DIRECT3D_9 ‚È‚Ç )
 extern	int			NS_GetUseDirect3D11FeatureLevel(				void ) ;										// g—p‚µ‚Ä‚¢‚é Direct3D11 ‚Ì FeatureLevel ( DX_DIRECT3D_11_FEATURE_LEVEL_9_1 “™ )‚ğæ“¾‚·‚é( –ß‚è’l@-1FƒGƒ‰[@-1ˆÈŠOFFeature Level )
+extern	int			NS_SetUseDirect3D11AdapterIndex(					int Index ) ;									// g—p‚·‚éƒOƒ‰ƒtƒBƒbƒNƒXƒfƒoƒCƒX‚ÌƒAƒ_ƒvƒ^[‚ÌƒCƒ“ƒfƒbƒNƒX‚ğİ’è‚·‚é
 extern	int			NS_SetUseDirectDrawFlag(						int Flag ) ;									// ( “¯Œø‰Ê‚ÌSetUseSoftwareRenderModeFlag ‚ğg—p‚µ‚Ä‰º‚³‚¢ )‚c‚‰‚’‚…‚ƒ‚”‚c‚’‚‚—‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg‚·‚é
 extern	int			NS_SetUseGDIFlag(								int Flag ) ;									// ‚f‚c‚h•`‰æ‚ğ•K—v‚Æ‚·‚é‚©A‚ğ•ÏX‚·‚é
 extern	int			NS_GetUseGDIFlag(								void ) ;										// ‚f‚c‚h•`‰æ‚ğ•K—v‚Æ‚·‚é‚©‚Ìó‘Ô‚ğæ“¾‚·‚é
@@ -1772,6 +1775,7 @@ extern	int			NS_SetShaderConstantBuffer(		int SConstBufHandle, int TargetShader 
 
 // ƒtƒBƒ‹ƒ^[ŠÖŒWŠÖ”
 #ifndef DX_NON_FILTER
+extern	int			NS_SetGraphFilterBltBlendMode( int BlendMode /* DX_BLENDMODE_ALPHA ‚È‚Ç */ ) ;												// GraphFilterBlt ‚â GraphBlendBlt ‚ÌŒ‹‰Ê‚ğ“]‘—æ‚É“]‘—‚·‚éÛ‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh‚ğİ’è‚·‚é( Œ»ó‚Å‘Î‰‚µ‚Ä‚¢‚é‚Ì‚Í DX_BLENDMODE_NOBLEND ‚Æ DX_BLENDMODE_ALPHA ‚Ì‚İ )
 extern	int			NS_GraphFilter(        int    GrHandle,                                                                                     int FilterType /* DX_GRAPH_FILTER_GAUSS “™ */ , ... ) ;		// ‰æ‘œ‚ÉƒtƒBƒ‹ƒ^[ˆ—‚ğs‚¤
 extern	int			NS_GraphFilterBlt(     int SrcGrHandle, int DestGrHandle,                                                                   int FilterType /* DX_GRAPH_FILTER_GAUSS “™ */ , ... ) ;		// ‰æ‘œ‚ÌƒtƒBƒ‹ƒ^[•t‚«“]‘—‚ğs‚¤
 extern	int			NS_GraphFilterRectBlt( int SrcGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int DestX, int DestY, int FilterType /* DX_GRAPH_FILTER_GAUSS “™ */ , ... ) ;		// ‰æ‘œ‚ÌƒtƒBƒ‹ƒ^[•t‚«“]‘—‚ğs‚¤( ‹éŒ`w’è )
@@ -2754,6 +2758,12 @@ extern	int			NS_SetNextPlay3DVelocitySoundMem(       VECTOR Velocity,           
 // “ÁêŠÖ”
 extern	int			NS_GetMP3TagInfo(           const TCHAR *FileName,                        TCHAR *TitleBuffer, size_t TitleBufferBytes, TCHAR *ArtistBuffer, size_t ArtistBufferBytes, TCHAR *AlbumBuffer, size_t AlbumBufferBytes, TCHAR *YearBuffer, size_t YearBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes, TCHAR *TrackBuffer, size_t TrackBufferBytes, TCHAR *GenreBuffer, size_t GenreBufferBytes, int *PictureGrHandle ) ;		// MP3ƒtƒ@ƒCƒ‹‚Ìƒ^ƒOî•ñ‚ğæ“¾‚·‚é
 extern	int			NS_GetMP3TagInfoWithStrLen( const TCHAR *FileName, size_t FileNameLength, TCHAR *TitleBuffer, size_t TitleBufferBytes, TCHAR *ArtistBuffer, size_t ArtistBufferBytes, TCHAR *AlbumBuffer, size_t AlbumBufferBytes, TCHAR *YearBuffer, size_t YearBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes, TCHAR *TrackBuffer, size_t TrackBufferBytes, TCHAR *GenreBuffer, size_t GenreBufferBytes, int *PictureGrHandle ) ;		// MP3ƒtƒ@ƒCƒ‹‚Ìƒ^ƒOî•ñ‚ğæ“¾‚·‚é
+#ifndef DX_NON_OGGVORBIS
+extern	int			NS_GetOggCommentNum(           const TCHAR *FileName                        ) ;																			// Oggƒtƒ@ƒCƒ‹‚ÌƒRƒƒ“ƒgî•ñ‚Ì”‚ğæ“¾‚·‚é
+extern	int			NS_GetOggCommentNumWithStrLen( const TCHAR *FileName, size_t FileNameLength ) ;																			// Oggƒtƒ@ƒCƒ‹‚ÌƒRƒƒ“ƒgî•ñ‚Ì”‚ğæ“¾‚·‚é
+extern	int			NS_GetOggComment(              const TCHAR *FileName,                        int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes ) ;		// Oggƒtƒ@ƒCƒ‹‚ÌƒRƒƒ“ƒgî•ñ‚ğæ“¾‚·‚é
+extern	int			NS_GetOggCommentWithStrLen(    const TCHAR *FileName, size_t FileNameLength, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes ) ;		// Oggƒtƒ@ƒCƒ‹‚ÌƒRƒƒ“ƒgî•ñ‚ğæ“¾‚·‚é
+#endif // DX_NON_OGGVORBIS
 
 
 // İ’èŠÖŒWŠÖ”
@@ -3233,6 +3243,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_GetWindowEdgeWidth					GetWindowEdgeWidth
 #define NS_GetWindowPosition					GetWindowPosition
 #define NS_GetWindowUserCloseFlag				GetWindowUserCloseFlag
+#define NS_CheckWindowMaximizeButtonInput		CheckWindowMaximizeButtonInput
 #define NS_GetNotDrawFlag						GetNotDrawFlag
 #define NS_GetPaintMessageFlag					GetPaintMessageFlag
 #define NS_GetValidHiPerformanceCounter			GetValidHiPerformanceCounter
@@ -3266,6 +3277,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetWindowPosition					SetWindowPosition
 #define NS_SetSysCommandOffFlag					SetSysCommandOffFlag
 #define NS_SetSysCommandOffFlagWithStrLen		SetSysCommandOffFlagWithStrLen
+#define NS_SetWindowMaximizeButtonBehavior		SetWindowMaximizeButtonBehavior
 #define NS_SetHookWinProc						SetHookWinProc
 #define NS_SetUseHookWinProcReturnValue			SetUseHookWinProcReturnValue
 #define NS_SetDoubleStartValidFlag				SetDoubleStartValidFlag
@@ -4318,6 +4330,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetUseDirect3DVersion				SetUseDirect3DVersion
 #define NS_GetUseDirect3DVersion				GetUseDirect3DVersion
 #define NS_GetUseDirect3D11FeatureLevel			GetUseDirect3D11FeatureLevel
+#define NS_SetUseDirect3D11AdapterIndex			SetUseDirect3D11AdapterIndex
 #define NS_SetUseDirectDrawFlag					SetUseDirectDrawFlag
 #define NS_SetUseGDIFlag						SetUseGDIFlag
 #define NS_GetUseGDIFlag						GetUseGDIFlag
@@ -4484,6 +4497,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 // ƒtƒBƒ‹ƒ^[ŠÖŒWŠÖ”
 #ifndef DX_NON_FILTER
 
+#define NS_SetGraphFilterBltBlendMode			SetGraphFilterBltBlendMode
 #define NS_GraphFilter							GraphFilter
 #define NS_GraphFilterBlt						GraphFilterBlt
 #define NS_GraphFilterRectBlt					GraphFilterRectBlt
@@ -5427,6 +5441,12 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 // “ÁêŠÖ”
 #define NS_GetMP3TagInfo						GetMP3TagInfo
 #define NS_GetMP3TagInfoWithStrLen				GetMP3TagInfoWithStrLen
+#ifndef DX_NON_OGGVORBIS
+#define NS_GetOggCommentNum						GetOggCommentNum
+#define NS_GetOggCommentNumWithStrLen			GetOggCommentNumWithStrLen
+#define NS_GetOggComment						GetOggComment
+#define NS_GetOggCommentWithStrLen				GetOggCommentWithStrLen
+#endif // DX_NON_OGGVORBIS
 
 
 // İ’èŠÖŒWŠÖ”

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画プログラム
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // ----------------------------------------------------------------------------
 
@@ -10697,6 +10697,14 @@ extern int NS_DrawCube3DD( VECTOR_D Pos1, VECTOR_D Pos2, unsigned int DifColor, 
 		NS_GetColor2( DifColor, &dr, &dg, &db ) ;
 		NS_GetColor2( SpcColor, &sr, &sg, &sb ) ;
 		a = GSYS.DrawSetting.BlendMode == DX_BLENDMODE_NOBLEND ? 255 : GSYS.DrawSetting.BlendParam ;
+		Vertex[ 0 ].norm.x = -0.57735027f ;	Vertex[ 0 ].norm.y =  0.57735027f ;	Vertex[ 0 ].norm.z =  0.57735027f ;
+		Vertex[ 1 ].norm.x =  0.57735027f ;	Vertex[ 1 ].norm.y =  0.57735027f ;	Vertex[ 1 ].norm.z =  0.57735027f ;
+		Vertex[ 2 ].norm.x =  0.57735027f ;	Vertex[ 2 ].norm.y =  0.57735027f ;	Vertex[ 2 ].norm.z = -0.57735027f ;
+		Vertex[ 3 ].norm.x = -0.57735027f ;	Vertex[ 3 ].norm.y =  0.57735027f ;	Vertex[ 3 ].norm.z = -0.57735027f ;
+		Vertex[ 4 ].norm.x = -0.57735027f ;	Vertex[ 4 ].norm.y = -0.57735027f ;	Vertex[ 4 ].norm.z =  0.57735027f ;
+		Vertex[ 5 ].norm.x =  0.57735027f ;	Vertex[ 5 ].norm.y = -0.57735027f ;	Vertex[ 5 ].norm.z =  0.57735027f ;
+		Vertex[ 6 ].norm.x =  0.57735027f ;	Vertex[ 6 ].norm.y = -0.57735027f ;	Vertex[ 6 ].norm.z = -0.57735027f ;
+		Vertex[ 7 ].norm.x = -0.57735027f ;	Vertex[ 7 ].norm.y = -0.57735027f ;	Vertex[ 7 ].norm.z = -0.57735027f ;
 		Vertex[ 0 ].pos.x = Pos1F.x ; Vertex[ 0 ].pos.y = Pos2F.y ; Vertex[ 0 ].pos.z = Pos2F.z ;
 		Vertex[ 1 ].pos.x = Pos2F.x ; Vertex[ 1 ].pos.y = Pos2F.y ; Vertex[ 1 ].pos.z = Pos2F.z ;
 		Vertex[ 2 ].pos.x = Pos2F.x ; Vertex[ 2 ].pos.y = Pos2F.y ; Vertex[ 2 ].pos.z = Pos1F.z ;
@@ -10978,16 +10986,14 @@ extern int NS_DrawCubeSet3D( CUBEDATA *CubeDataArray, int Num, int FillFlag )
 			Vertex = GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ] ;
 			for( i = 0 ; i < GSYS.Resource.DrawCubeSet3DWorkVertexBufferSize[ 0 ] ; i ++ )
 			{
-				Vertex[ 0 ].norm.x = 0.0f ;
-				Vertex[ 0 ].norm.y = 0.0f ;
-				Vertex[ 0 ].norm.z = 0.0f ;
-				Vertex[ 1 ].norm = Vertex[ 0 ].norm ;
-				Vertex[ 2 ].norm = Vertex[ 0 ].norm ;
-				Vertex[ 3 ].norm = Vertex[ 0 ].norm ;
-				Vertex[ 4 ].norm = Vertex[ 0 ].norm ;
-				Vertex[ 5 ].norm = Vertex[ 0 ].norm ;
-				Vertex[ 6 ].norm = Vertex[ 0 ].norm ;
-				Vertex[ 7 ].norm = Vertex[ 0 ].norm ;
+				Vertex[ 0 ].norm.x = -0.57735027f ;	Vertex[ 0 ].norm.y =  0.57735027f ;	Vertex[ 0 ].norm.z =  0.57735027f ;
+				Vertex[ 1 ].norm.x =  0.57735027f ;	Vertex[ 1 ].norm.y =  0.57735027f ;	Vertex[ 1 ].norm.z =  0.57735027f ;
+				Vertex[ 2 ].norm.x =  0.57735027f ;	Vertex[ 2 ].norm.y =  0.57735027f ;	Vertex[ 2 ].norm.z = -0.57735027f ;
+				Vertex[ 3 ].norm.x = -0.57735027f ;	Vertex[ 3 ].norm.y =  0.57735027f ;	Vertex[ 3 ].norm.z = -0.57735027f ;
+				Vertex[ 4 ].norm.x = -0.57735027f ;	Vertex[ 4 ].norm.y = -0.57735027f ;	Vertex[ 4 ].norm.z =  0.57735027f ;
+				Vertex[ 5 ].norm.x =  0.57735027f ;	Vertex[ 5 ].norm.y = -0.57735027f ;	Vertex[ 5 ].norm.z =  0.57735027f ;
+				Vertex[ 6 ].norm.x =  0.57735027f ;	Vertex[ 6 ].norm.y = -0.57735027f ;	Vertex[ 6 ].norm.z = -0.57735027f ;
+				Vertex[ 7 ].norm.x = -0.57735027f ;	Vertex[ 7 ].norm.y = -0.57735027f ;	Vertex[ 7 ].norm.z = -0.57735027f ;
 				Vertex[ 0 ].u = 0.0f ;		Vertex[ 0 ].v = 0.0f ;		Vertex[ 0 ].su = 0.0f ;		Vertex[ 0 ].sv = 0.0f ;
 				Vertex[ 1 ].u = 0.0f ;		Vertex[ 1 ].v = 0.0f ;		Vertex[ 1 ].su = 0.0f ;		Vertex[ 1 ].sv = 0.0f ;
 				Vertex[ 2 ].u = 0.0f ;		Vertex[ 2 ].v = 0.0f ;		Vertex[ 2 ].su = 0.0f ;		Vertex[ 2 ].sv = 0.0f ;
@@ -11129,7 +11135,7 @@ extern int NS_DrawCubeSet3D( CUBEDATA *CubeDataArray, int Num, int FillFlag )
 				{
 					NS_DrawPrimitiveIndexed3D(
 						GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ], 8 * j,
-						GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 0 ], 24 * j,
+						GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ], 24 * j,
 						DX_PRIMTYPE_LINELIST, DX_NONE_GRAPH, TRUE ) ;
 				}
 
@@ -11156,7 +11162,7 @@ extern int NS_DrawCubeSet3D( CUBEDATA *CubeDataArray, int Num, int FillFlag )
 			{
 				NS_DrawPrimitiveIndexed3D(
 					GSYS.Resource.DrawCubeSet3DWorkVertexBuffer[ 0 ], 8 * j,
-					GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 0 ], 24 * j,
+					GSYS.Resource.DrawCubeSet3DWorkIndexBuffer[ 2 ], 24 * j,
 					DX_PRIMTYPE_LINELIST, DX_NONE_GRAPH, TRUE ) ;
 			}
 		}
@@ -32973,7 +32979,7 @@ extern int	Graphics_Draw_GetOval_ThicknessDrawPosition( int x, int y, int rx, in
 		if( ix < MinX ) MinX = ix ; if( iy < MinY ) MinY = iy ;\
 	}\
 \
-	SETRECT( DrawRect, MinX, MinY, MaxX, MaxY ) ;\
+	SETRECT( DrawRect, MinX - 1, MinY - 1, MaxX + 1, MaxY + 1 ) ;\
 
 extern int Graphics_Draw_DrawSimpleQuadrangleGraphF( const GRAPHICS_DRAW_DRAWSIMPLEQUADRANGLEGRAPHF_PARAM *Param )
 {
@@ -33043,23 +33049,22 @@ extern int Graphics_Draw_DrawSimpleQuadrangleGraphF( const GRAPHICS_DRAW_DRAWSIM
 // 座標補正を行わない１ポリゴン描画を行う( １テクスチャ画像のみ有効 )
 
 #define SETDRAWRECTCODE\
-	int x[ 3 ], y[ 3 ], MaxX, MaxY, MinX, MinY ;\
+	int MaxX, MaxY, MinX, MinY ;\
 	int i, ix, iy ;\
-\
-	x[ 0 ] = _FTOL( Param->Vertex[ 0 ].x ) ; x[ 1 ] = _FTOL( Param->Vertex[ 1 ].x ) ; x[ 2 ] = _FTOL( Param->Vertex[ 2 ].x ) ;\
-	y[ 0 ] = _FTOL( Param->Vertex[ 0 ].y ) ; y[ 1 ] = _FTOL( Param->Vertex[ 1 ].y ) ; y[ 2 ] = _FTOL( Param->Vertex[ 2 ].y ) ;\
+	int VertexNum = Param->TriangleNum * 3 ;\
 \
 	MaxX = 0 ; MaxY = 0 ;\
 	MinX = 0xfffffff ; MinY = 0xfffffff ;\
 \
-	for( i = 0 ; i < 3 ; i ++ )\
+	for( i = 0 ; i < VertexNum ; i ++ )\
 	{\
-		ix = x[ i ] ; iy = y[ i ] ;\
+		ix = _FTOL( Param->Vertex[ i ].x ) ;\
+		iy = _FTOL( Param->Vertex[ i ].y ) ;\
 		if( ix > MaxX ) MaxX = ix ; if( iy > MaxY ) MaxY = iy ;\
 		if( ix < MinX ) MinX = ix ; if( iy < MinY ) MinY = iy ;\
 	}\
 \
-	SETRECT( DrawRect, MinX, MinY, MaxX, MaxY ) ;\
+	SETRECT( DrawRect, MinX - 1, MinY - 1, MaxX + 1, MaxY + 1 ) ;\
 
 extern int Graphics_Draw_DrawSimpleTriangleGraphF( const GRAPHICS_DRAW_DRAWSIMPLETRIANGLEGRAPHF_PARAM *Param )
 {

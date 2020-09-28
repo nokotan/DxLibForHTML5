@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		GraphFilter系プログラム
 // 
-//  	Ver 3.21f
+//  	Ver 3.22a
 // 
 //-----------------------------------------------------------------------------
 
@@ -50,6 +50,7 @@ namespace DxLib
 // データ定義 -----------------------------------------------------------------
 
 GRAPHFILTER_SHADER_HANDLE GraphFilterShaderHandle ;
+GRAPHFILTER_SYSTEM_DATA GraphFilterSystemData ;
 
 // 関数宣言 -------------------------------------------------------------------
 
@@ -77,6 +78,22 @@ extern int GraphFilter_Terminate( void )
 {
 	// 環境依存処理
 	GraphFilter_Terminate_PF() ;
+
+	// 終了
+	return 0 ;
+}
+
+// GraphFilterBlt や GraphBlendBlt の結果を転送先に転送する際のブレンドモードを設定する( 現状で対応しているのは DX_BLENDMODE_NOBLEND と DX_BLENDMODE_ALPHA のみ )
+extern int NS_SetGraphFilterBltBlendMode( int BlendMode /* DX_BLENDMODE_ALPHA など */ )
+{
+	// 未対応のブレンドモードの場合はエラー
+	if( BlendMode != DX_BLENDMODE_ALPHA && BlendMode != DX_BLENDMODE_NOBLEND )
+	{
+		return -1 ;
+	}
+
+	// ブレンドモードを保存
+	GraphFilterSystemData.BltBlendMode = BlendMode ;
 
 	// 終了
 	return 0 ;
@@ -190,14 +207,14 @@ static int GraphFilter_GetSoftImage( int GrHandle, BASEIMAGE *BaseImage, RECT *G
 	RECT TempRect ;
 	int Width, Height ;
 	BASEIMAGE SurfaceImage ;
-	IMAGEDATA *Image ;
+	IMAGEDATA *Image = NULL ;
 	IMAGEDATA_HARD_DRAW *HardDraw ;
 	RECT SrcRect ;
 	RECT DestRect ;
 	int i ;
 	int temp ;
 
-	if( GRAPHCHK( GrHandle, Image ) )
+	if( GrHandle != DX_SCREEN_BACK && GRAPHCHK( GrHandle, Image ) )
 		return -1 ;
 
 	if( GetRect == NULL )
@@ -220,7 +237,7 @@ static int GraphFilter_GetSoftImage( int GrHandle, BASEIMAGE *BaseImage, RECT *G
 	if( NS_CreateARGB8ColorBaseImage( Width, Height, BaseImage ) < 0 )
 		return -1 ;
 
-	if( Image->Orig->FormatDesc.TextureFlag )
+	if( GrHandle != DX_SCREEN_BACK && Image->Orig->FormatDesc.TextureFlag )
 	{
 		HardDraw = Image->Hard.Draw ;
 		for( i = 0 ; i < Image->Hard.DrawNum ; i ++, HardDraw ++ )
@@ -384,33 +401,44 @@ static int	GraphFilter_SoftImageTerminate( GRAPHFILTER_INFO *Info )
 
 	if( Info->DestBaseImage.GraphData )
 	{
-		RECT Rect ;
-
-		Rect.left   = 0 ;
-		Rect.top    = 0 ;
-		Rect.right  = Info->DestWidth ;
-		Rect.bottom = Info->DestHeight ;
-		Graphics_Image_BltBmpOrBaseImageToGraph3(
-			&Rect,
-			Info->DestX, Info->DestY,
-			Info->DestGrHandle,
-			&Info->DestBaseImage,
-			NULL,
-			FALSE,
-			FALSE,
-			FALSE
-		) ;
-/*
-		if( Info->UseTempDestImage )
+		if( Info->DestGrHandle == DX_SCREEN_BACK )
 		{
-			if( Info->TempDestImage.GraphData )
-			{
-				NS_BltBaseImage( 0, 0, Info->DestWidth, Info->DestHeight, 0, 0, &Info->TempDestImage, &Info->DestBaseImage ) ;
-			}
+			int BlendMode, BlendParam ;
+			NS_GetDrawBlendMode( &BlendMode, &BlendParam ) ;
+			NS_SetDrawBlendMode( DX_BLENDMODE_SRCCOLOR, 255 ) ;
+			NS_DrawBaseImage( Info->DestX, Info->DestY, &Info->DestBaseImage ) ;
+			NS_SetDrawBlendMode( BlendMode, BlendParam ) ;
 		}
+		else
+		{
+			RECT Rect ;
 
-		Graphics_Screen_UnlockDrawScreen() ;
-*/
+			Rect.left   = 0 ;
+			Rect.top    = 0 ;
+			Rect.right  = Info->DestWidth ;
+			Rect.bottom = Info->DestHeight ;
+			Graphics_Image_BltBmpOrBaseImageToGraph3(
+				&Rect,
+				Info->DestX, Info->DestY,
+				Info->DestGrHandle,
+				&Info->DestBaseImage,
+				NULL,
+				FALSE,
+				FALSE,
+				FALSE
+			) ;
+	/*
+			if( Info->UseTempDestImage )
+			{
+				if( Info->TempDestImage.GraphData )
+				{
+					NS_BltBaseImage( 0, 0, Info->DestWidth, Info->DestHeight, 0, 0, &Info->TempDestImage, &Info->DestBaseImage ) ;
+				}
+			}
+
+			Graphics_Screen_UnlockDrawScreen() ;
+	*/
+		}
 	}
 
 	if( Info->DestBaseImage.GraphData )
@@ -459,6 +487,11 @@ extern int GraphFilter_RectBltBase(
 	{
 		SrcImageWidth  = SrcImage->WidthI ;
 		SrcImageHeight = SrcImage->HeightI ;
+
+#ifndef DX_NON_MOVIE
+		if( SrcImage->Orig->MovieHandle != -1 )
+			UpdateMovie( SrcImage->Orig->MovieHandle, FALSE ) ;
+#endif
 	}
 	else
 	if( !SHADOWMAPCHK( SrcGrHandle, SrcShadowMap ) )
@@ -471,6 +504,11 @@ extern int GraphFilter_RectBltBase(
 		return -1 ;
 	}
 
+	if( DestGrHandle == DX_SCREEN_BACK )
+	{
+		NS_GetDrawScreenSize( &DestImageWidth, &DestImageHeight ) ;
+	}
+	else
 	if( !GRAPHCHK(     DestGrHandle, DestImage    ) )
 	{
 		DestImageWidth = DestImage->WidthI ;
@@ -502,6 +540,11 @@ extern int GraphFilter_RectBltBase(
 
 		if( FilterOrBlendType < 0 || FilterOrBlendType >= DX_GRAPH_BLEND_NUM )
 			return -1;
+
+#ifndef DX_NON_MOVIE
+		if( BlendImage->Orig->MovieHandle != -1 )
+			UpdateMovie( BlendImage->Orig->MovieHandle, FALSE ) ;
+#endif
 	}
 	else
 	{
@@ -622,6 +665,7 @@ extern int GraphFilter_RectBltBase(
 		return 0 ;
 	
 	// 情報のセット
+	Info.BltBlendMode      = SrcGrHandle == DestGrHandle ? DX_BLENDMODE_NOBLEND : GraphFilterSystemData.BltBlendMode ;
 	Info.IsBlend           = IsBlend ;
 	Info.FilterOrBlendType = FilterOrBlendType ;
 	Info.BlendGrHandle     = BlendGrHandle ;
@@ -758,6 +802,19 @@ extern int GraphFilter_RectBltBase(
 			Param.GM_Reverse     = va_arg( ParamList, int ) ;
 			break ;
 
+		case DX_GRAPH_FILTER_PMA_REPLACEMENT:
+			IsPMA = 1 ;
+		case DX_GRAPH_FILTER_REPLACEMENT:
+			Param.TargetColor.r = ( BYTE )va_arg( ParamList, int ) ;
+			Param.TargetColor.g = ( BYTE )va_arg( ParamList, int ) ;
+			Param.TargetColor.b = ( BYTE )va_arg( ParamList, int ) ;
+			Param.TargetColor.a = ( BYTE )va_arg( ParamList, int ) ;
+			Param.NextColor.r = ( BYTE )va_arg( ParamList, int ) ;
+			Param.NextColor.g = ( BYTE )va_arg( ParamList, int ) ;
+			Param.NextColor.b = ( BYTE )va_arg( ParamList, int ) ;
+			Param.NextColor.a = ( BYTE )va_arg( ParamList, int ) ;
+			break ;
+
 		case DX_GRAPH_FILTER_PREMUL_ALPHA :
 			break ;
 
@@ -812,7 +869,8 @@ extern int GraphFilter_RectBltBase(
 
 		DestImage     = NULL ;
 		DestShadowMap = NULL ;
-		if( GRAPHCHK(     UseDestGrHandle, DestImage ) &&
+		if( UseDestGrHandle != DX_SCREEN_BACK &&
+			GRAPHCHK(     UseDestGrHandle, DestImage ) &&
 			SHADOWMAPCHK( UseDestGrHandle, DestShadowMap  ) )
 			break ;
 
@@ -917,6 +975,11 @@ extern int GraphFilter_RectBltBase(
 			case DX_GRAPH_FILTER_PMA_GRADIENT_MAP :
 			case DX_GRAPH_FILTER_GRADIENT_MAP :
 				FilterResult = GraphFilter_GradientMap( &Info, Param.GM_MapGrHandle, Param.GM_Reverse, IsPMA ) ;
+				break ;
+
+			case DX_GRAPH_FILTER_PMA_REPLACEMENT:
+			case DX_GRAPH_FILTER_REPLACEMENT :
+				FilterResult = GraphFilter_Replacement( &Info, Param.TargetColor, Param.NextColor, IsPMA ) ;
 				break ;
 
 			case DX_GRAPH_FILTER_PREMUL_ALPHA :
@@ -3457,6 +3520,115 @@ extern int	GraphFilter_GradientMap( GRAPHFILTER_INFO *Info, int MapGrHandle, int
 					*( ( DWORD * )Dest ) = GradMap[ ( Src[ 0 ] * ( int )( 0.114f * 4096.0f ) +
 													  Src[ 1 ] * ( int )( 0.587f * 4096.0f ) +
 													  Src[ 2 ] * ( int )( 0.299f * 4096.0f ) ) >> 12 ] ;
+
+					Src  += 4 ;
+					Dest += 4 ;
+				}while( -- i ) ;
+
+				Src  += SrcAddPitch ;
+				Dest += DestAddPitch ;
+			}while( -- Height ) ;
+		}
+
+		GraphFilter_SoftImageTerminate( Info ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+extern int GraphFilter_Replacement( GRAPHFILTER_INFO *Info, COLOR_U8 TargetColor, COLOR_U8 NextColor, int IsPMA )
+{
+	// シェーダーが使えるかどうかで処理を分岐
+	if( GSYS.HardInfo.UseShader == TRUE )
+	{
+		GraphFilter_Replacement_PF( Info, TargetColor, NextColor, IsPMA ) ;
+	}
+	else
+	{
+		// シェーダーが使えない場合
+
+		BYTE *Src ;
+		BYTE *Dest ;
+		DWORD i ;
+		DWORD Width ;
+		DWORD Height ;
+		DWORD SrcAddPitch ;
+		DWORD DestAddPitch ;
+
+		if( GraphFilter_SoftImageSetup( Info ) < 0 )
+			return -1 ;
+
+		Src = ( BYTE * )Info->SrcBaseImage.GraphData ;
+		Dest = ( BYTE * )Info->DestBaseImage.GraphData ;
+
+		Width  = ( DWORD )( Info->SrcX2 - Info->SrcX1 ) ;
+		Height = ( DWORD )( Info->SrcY2 - Info->SrcY1 ) ;
+
+		SrcAddPitch  = Info->SrcBaseImage.Pitch  - Width * 4 ;
+		DestAddPitch = Info->DestBaseImage.Pitch - Width * 4 ;
+
+		if( IsPMA )
+		{
+			NextColor.r = BASEIM.RgbToPmaTable[ NextColor.r ][ NextColor.a ] ;
+			NextColor.g = BASEIM.RgbToPmaTable[ NextColor.g ][ NextColor.a ] ;
+			NextColor.b = BASEIM.RgbToPmaTable[ NextColor.b ][ NextColor.a ] ;
+
+			do
+			{
+				i = Width ;
+				do
+				{
+					if( BASEIM.PmaToRgbTable[ Src[ 0 ] ][ Src[ 3 ] ] == TargetColor.b &&
+						BASEIM.PmaToRgbTable[ Src[ 1 ] ][ Src[ 3 ] ] == TargetColor.g &&
+						BASEIM.PmaToRgbTable[ Src[ 2 ] ][ Src[ 3 ] ] == TargetColor.r &&
+						Src[ 3 ] == TargetColor.a )
+					{
+						Dest[ 0 ] = NextColor.b ;
+						Dest[ 1 ] = NextColor.g ;
+						Dest[ 2 ] = NextColor.r ;
+						Dest[ 3 ] = NextColor.a ;
+					}
+					else
+					{
+						Dest[ 0 ] = Src[ 0 ] ;
+						Dest[ 1 ] = Src[ 1 ] ;
+						Dest[ 2 ] = Src[ 2 ] ;
+						Dest[ 3 ] = Src[ 3 ] ;
+					}
+
+					Src  += 4 ;
+					Dest += 4 ;
+				}while( -- i ) ;
+
+				Src  += SrcAddPitch ;
+				Dest += DestAddPitch ;
+			}while( -- Height ) ;
+		}
+		else
+		{
+			do
+			{
+				i = Width ;
+				do
+				{
+					if( Src[ 0 ] == TargetColor.b &&
+						Src[ 1 ] == TargetColor.g &&
+						Src[ 2 ] == TargetColor.r &&
+						Src[ 3 ] == TargetColor.a )
+					{
+						Dest[ 0 ] = NextColor.b ;
+						Dest[ 1 ] = NextColor.g ;
+						Dest[ 2 ] = NextColor.r ;
+						Dest[ 3 ] = NextColor.a ;
+					}
+					else
+					{
+						Dest[ 0 ] = Src[ 0 ] ;
+						Dest[ 1 ] = Src[ 1 ] ;
+						Dest[ 2 ] = Src[ 2 ] ;
+						Dest[ 3 ] = Src[ 3 ] ;
+					}
 
 					Src  += 4 ;
 					Dest += 4 ;

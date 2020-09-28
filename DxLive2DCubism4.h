@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Live2D Cubism4 関係プログラムヘッダファイル
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -238,6 +238,8 @@ struct LIVE2DCUBISM4SYSTEMDATA
 	int						InitializeFlag ;				// 初期化フラグ
 
 	int						EnableConstantBuffer ;			// コンスタントバッファが使用できるかどうか
+
+	SCREENDRAWSETTINGINFO	ScreenDrawSettingInfo ;			// Live2D描画開始前の描画設定
 
 	D_CubismIdManager *		s_cubismIdManager ;
 

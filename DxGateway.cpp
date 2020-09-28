@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		内部との出入り口プログラムファイル
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -1438,6 +1438,14 @@ extern int GetWindowUserCloseFlag( int StateResetFlag )
 	DXFUNC_END
 	return Result ;
 }
+extern int CheckWindowMaximizeButtonInput( int StateResetFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_CheckWindowMaximizeButtonInput( StateResetFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int GetNotDrawFlag( void )
 {
 	int Result ;
@@ -1731,6 +1739,14 @@ extern int SetSysCommandOffFlagWithStrLen( int Flag , const TCHAR *HookDllPath, 
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_SetSysCommandOffFlagWithStrLen( Flag , HookDllPath, HookDllPathLength ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetWindowMaximizeButtonBehavior( int BehaviorType )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetWindowMaximizeButtonBehavior( BehaviorType ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -8412,6 +8428,15 @@ extern	int			SetShaderConstantBuffer( int SConstBufHandle, int TargetShader /* D
 
 #ifndef DX_NON_FILTER
 
+extern	int			SetGraphFilterBltBlendMode( int BlendMode /* DX_BLENDMODE_ALPHA など */ )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetGraphFilterBltBlendMode( BlendMode ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 extern	int			GraphFilter( int GrHandle, int FilterType /* DX_BLTFILTER_GAUSS_H 等 */ , ... )
 {
 	int Result ;
@@ -9382,6 +9407,14 @@ extern int GetUseDirect3D11FeatureLevel( void )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetUseDirect3D11FeatureLevel() ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetUseDirect3D11AdapterIndex( int Index )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseDirect3D11AdapterIndex( Index ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -16220,6 +16253,40 @@ extern int GetMP3TagInfoWithStrLen( const TCHAR *FileName, size_t FileNameLength
 	DXFUNC_END
 	return Result ;
 }
+#ifndef DX_NON_OGGVORBIS
+extern int GetOggCommentNum( const TCHAR *FileName )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetOggCommentNum( FileName ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetOggCommentNumWithStrLen( const TCHAR *FileName, size_t FileNameLength )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetOggCommentNumWithStrLen( FileName, FileNameLength ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetOggComment( const TCHAR *FileName, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetOggComment( FileName, CommentIndex, CommentNameBuffer, CommentNameBufferBytes, CommentBuffer, CommentBufferBytes ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetOggCommentWithStrLen( const TCHAR *FileName, size_t FileNameLength, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetOggCommentWithStrLen( FileName, FileNameLength, CommentIndex, CommentNameBuffer, CommentNameBufferBytes, CommentBuffer, CommentBufferBytes ) ;
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_NON_OGGVORBIS
 
 
 // 設定関係関数
@@ -18658,6 +18725,24 @@ extern int MV1GetMaterialDifMapTexture( int MHandle, int MaterialIndex )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_MV1GetMaterialDifMapTexture(  MHandle,  MaterialIndex ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int MV1SetMaterialSubDifMapTexture( int MHandle, int MaterialIndex, int TexIndex )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1SetMaterialSubDifMapTexture(  MHandle,  MaterialIndex,  TexIndex ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int MV1GetMaterialSubDifMapTexture( int MHandle, int MaterialIndex )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1GetMaterialSubDifMapTexture(  MHandle,  MaterialIndex ) ;
 	DXFUNC_END
 	return Result ;
 }

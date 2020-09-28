@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Live2D Cubism4 関係プログラム
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // ----------------------------------------------------------------------------
 
@@ -350,6 +350,9 @@ extern int NS_Live2D_RenderBegin( void )
 		return -1 ;
 	}
 
+	// 各種描画設定情報を取得
+	Graphics_DrawSetting_GetScreenDrawSettingInfo( &LIVE2DSYS.ScreenDrawSettingInfo ) ;
+
 	// D3D11 フレーム先頭処理 
 	// 各フレームでの、Cubismの処理前にコール 
 	NS_GetGraphSize( NS_GetDrawScreen(), &windowWidth, &windowHeight ) ;
@@ -369,8 +372,12 @@ extern int NS_Live2D_RenderEnd( void )
 	}
 
 	// D3D11 フレーム終了処理 
-	// 各フレームでの、Cubismの処理後にコール 
+	// 各フレームでの、Cubismの処理後にコール
 	D_CubismRenderer_DxLib::EndFrame() ;
+
+	// ＤＸライブラリ用の設定に戻す
+	Graphics_Hardware_RefreshSetting_PF() ;
+	Graphics_DrawSetting_SetScreenDrawSettingInfo( &LIVE2DSYS.ScreenDrawSettingInfo ) ;
 
 	// 正常終了
 	return 0 ;

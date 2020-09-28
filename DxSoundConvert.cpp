@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		サウンドデータ変換プログラム
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -560,7 +560,7 @@ static	int SetupSoundConvert_WAVE( SOUNDCONV *SoundConv )
 
 			Wave->SrcSampleNum = SoundConv->OutFormat.nSamplesPerSec ;
 			Wave->SrcBufferSize = format->nAvgBytesPerSec ;
-			Wave->SrcBuffer = ( BYTE * )DXALLOC( Wave->SrcBufferSize ) ;
+			Wave->SrcBuffer = ( BYTE * )DXALLOC( ( size_t )Wave->SrcBufferSize ) ;
 			if( Wave->SrcBuffer == NULL )
 				goto ERR ;
 			break ;

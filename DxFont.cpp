@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		‚c‚‰‚’‚…‚ƒ‚”‚c‚’‚‚—§ŒäƒvƒƒOƒ‰ƒ€
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // ----------------------------------------------------------------------------
 
@@ -10919,7 +10919,7 @@ LOOPEND :
 				MaxDrawPos = DrawPos ;
 			}
 		}
-		DrawPosSub += ( UseManageData->BaseInfo.FontHeight - UseManageData->BaseInfo.FontAddHeight ) * ExRate ;
+		DrawPosSub += ( UseManageData->BaseInfo.FontHeight - UseManageData->BaseInfo.FontAddHeight ) * ( VerticalFlag ? ExRateX : ExRateY ) ;
 
 		// ‰‚È‚µ‚Ìê‡‚ÍÅŒã‚É•`‰æ‹P“x‚ðŒ³‚É–ß‚·
 		Graphics_DrawSetting_SetDrawBrightToOneParam( OrigColor ) ;
@@ -11128,7 +11128,7 @@ LOOPEND :
 				MaxDrawPos = DrawPos ;
 			}
 		}
-		DrawPosSub += ( UseManageData->BaseInfo.FontHeight - UseManageData->BaseInfo.FontAddHeight ) * ExRate ;
+		DrawPosSub += ( UseManageData->BaseInfo.FontHeight - UseManageData->BaseInfo.FontAddHeight ) * ( VerticalFlag ? ExRateX : ExRateY ) ;
 	}
 
 	if( DrawSize != NULL )
@@ -14296,14 +14296,14 @@ extern int DrawVStringF_WCHAR_T( float x, float y, const wchar_t *String, size_t
 	if( VerticalFlag )\
 	{\
 		x += font->BaseInfo.FontAddHeight / 2;\
-		SETRECT( DrawRect, x, y, x + NS_GetFontSizeToHandle( FontHandle ) + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
+		SETRECT( DrawRect, x, y, x + NS_GetFontSizeToHandle( FontHandle ) + font->BaseInfo.FontAddHeight / 2 + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 		x -= font->BaseInfo.FontAddHeight / 2;\
 	}\
 	else\
 	{\
 		y -= font->BaseInfo.FontAddHeight / 2 ;\
-		SETRECT( DrawRect, x, y, GSYS.DrawSetting.DrawArea.right, y + NS_GetFontSizeToHandle( FontHandle ) + 3 ) ;\
+		SETRECT( DrawRect, x, y, GSYS.DrawSetting.DrawArea.right, y + NS_GetFontSizeToHandle( FontHandle ) + font->BaseInfo.FontAddHeight / 2 + 3 ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 		y += font->BaseInfo.FontAddHeight / 2 ;\
 	}\

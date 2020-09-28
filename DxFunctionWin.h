@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Windows専用関数プロトタイプ宣言用ヘッダファイル
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -57,6 +57,7 @@ extern	int			GetWindowSize(					int *Width, int *Height ) ;								// メインウイ
 extern	int			GetWindowEdgeWidth(				int *LeftWidth, int *RightWidth, int *TopWidth, int *BottomWidth ) ;	// ウインドウの上下左右の縁の幅を取得する
 extern	int			GetWindowPosition(				int *x, int *y ) ;										// メインウインドウのデスクトップ上の左上端座標を取得する( 枠も含める )
 extern	int			GetWindowUserCloseFlag(			int StateResetFlag = FALSE ) ;							// メインウインドウの閉じるボタンが押されたかどうかを取得する
+extern	int			CheckWindowMaximizeButtonInput(	int StateResetFlag = TRUE ) ;							// メインウインドウの最大化ボタンが押されたかどうかを取得する、SetWindowMaximizeButtonBehavior( 1 ); が実行されている場合のみ有効な関数( StateResetFlag  TRUE = 押された状態をリセットする   FALSE = 押された状態をリセットしない )
 extern	int			GetNotDrawFlag(					void ) ;												// ＤＸライブラリの描画機能を使うかどうかの設定を取得する
 extern	int			GetPaintMessageFlag(			void ) ;												// WM_PAINT メッセージが来たかどうかを取得する(戻り値  TRUE:WM_PAINTメッセージが来た(一度取得すると以後、再び WM_PAINTメッセージが来るまで FALSE が返ってくるようになる)  FALSE:WM_PAINT メッセージは来ていない)
 extern	int			GetValidHiPerformanceCounter(	void ) ;												// パフォーマンスカウンタが有効かどうかを取得する(戻り値  TRUE:有効  FALSE:無効)
@@ -89,6 +90,7 @@ extern	int			SetWindowMinSize(						int MinWidth, int MinHeight ) ;													
 extern	int			SetWindowPosition(						int x, int y ) ;																	// メインウインドウの位置を設定する( 枠も含めた左上座標 )
 extern	int			SetSysCommandOffFlag(					int Flag , const TCHAR *HookDllPath = NULL                                ) ;		// タスクスイッチを有効にするかどうかを設定する
 extern	int			SetSysCommandOffFlagWithStrLen(			int Flag , const TCHAR *HookDllPath = NULL , size_t HookDllPathLength = 0 ) ;		// タスクスイッチを有効にするかどうかを設定する
+extern	int			SetWindowMaximizeButtonBehavior(		int BehaviorType ) ;																// メインウインドウの最大化ボタンが押されたときの挙動を設定する( BehaviorType 0=標準動作 1=標準動作は行わず、最大化ボタンが押されたかどうかは CheckWindowMaximizeButtonInput で判定する )
 extern	int			SetHookWinProc(							WNDPROC WinProc ) ;																	// メインウインドウへのメッセージをフックするウインドウプロージャを登録する
 extern	int			SetUseHookWinProcReturnValue(			int UseFlag ) ;																		// SetHookWinProc で設定したウインドウプロージャの戻り値を使用するかどうかを設定する、SetHookWinProc で設定したウインドウプロージャの中でのみ使用可能( UseFlag TRUE:戻り値を使用して、ＤＸライブラリのウインドウプロージャの処理は行わない  FALSE:戻り値は使用せず、ウインドウプロージャから出た後、ＤＸライブラリのウインドウプロージャの処理を行う )
 extern	int			SetDoubleStartValidFlag(				int Flag ) ;																		// ＤＸライブラリを使用したソフトの二重起動を可能にするかどうかの設定を行う( TRUE:可能にする  FALSE:不可能にする( デフォルト ) )
@@ -319,6 +321,7 @@ extern	int			SetUseDirect3D11WARPDriver(						int Flag ) ;									// D3D_DRIVER
 extern	int			SetUseDirect3DVersion(							int Version /* DX_DIRECT3D_9 など */ ) ;		// 使用する Direct3D のバージョンを設定する、DxLib_Init 呼び出しの前でのみ使用可能　
 extern	int			GetUseDirect3DVersion(							void ) ;										// 使用している Direct3D のバージョンを取得する( DX_DIRECT3D_9 など )
 extern	int			GetUseDirect3D11FeatureLevel(					void ) ;										// 使用している Direct3D11 の FeatureLevel ( DX_DIRECT3D_11_FEATURE_LEVEL_9_1 等 )を取得する( 戻り値　-1：エラー　-1以外：Feature Level )
+extern	int			SetUseDirect3D11AdapterIndex(					int Index ) ;									// 使用するグラフィックスデバイスのアダプターのインデックスを設定する
 extern	int			SetUseDirectDrawFlag(							int Flag ) ;									// ( 同効果のSetUseSoftwareRenderModeFlag を使用して下さい )DirectDrawを使用するかどうかを設定する
 extern	int			SetUseGDIFlag(									int Flag ) ;									// GDI描画を使用するかどうかを設定する
 extern	int			GetUseGDIFlag(									void ) ;										// GDI描画を使用するかどうかを取得する

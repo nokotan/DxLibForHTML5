@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ読み込みプログラム
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -5376,7 +5376,7 @@ extern int MV1LoadModelToReadModel(
 				// スキンメッシュの場合
 				for( i = 0 ; ( DWORD )i < Mesh->FaceNum ; i ++ )
 				{
-					WORD UseMatrix[ MV1_TRIANGLE_LIST_USE_BONE_MAX_NUM ] ;
+					WORD UseMatrix[ /* MV1_TRIANGLE_LIST_USE_BONE_MAX_NUM */ 1024 ] ;
 					int UseBoneNum ;
 
 					PolyNum = Mesh->Faces[ i ].PolygonNum ;

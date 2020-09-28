@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＳｏｕｎｄ制御プログラム
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -21,6 +21,15 @@
 #include "DxUseCLib.h"
 #include "DxASyncLoad.h"
 #include "DxLog.h"
+
+// 外部関数プロトタイプ宣言 ------------------------------------------------------
+
+#ifndef DX_NON_OGGVORBIS
+
+extern	int	GetOggCommentNumBase( STREAMDATA *Stream ) ;
+extern	int	GetOggCommentBase( STREAMDATA *Stream, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes ) ;
+
+#endif // DX_NON_OGGVORBIS
 
 #ifndef DX_NON_NAMESPACE
 
@@ -6259,10 +6268,7 @@ extern int NS_SetSoundCurrentPosition( LONGLONG Byte, int SoundHandle )
 	// 再生位置を変更する
 //	sd->Buffer[ i ]->SetCurrentPosition( Byte ) ;
 //	SoundBuffer_SetCurrentPosition( &sd->Buffer[ i ], Byte ) ;
-	SoundBuffer_SetCurrentPosition( &sd->Buffer[ sd->Normal.BackPlayBufferNo ], ( DWORD )Byte ) ;
-
-	// 終了
-	return 0 ;
+	return SoundBuffer_SetCurrentPosition( &sd->Buffer[ sd->Normal.BackPlayBufferNo ], ( DWORD )Byte ) ;
 }
 
 // サウンドハンドルの再生位置をバイト単位で取得する
@@ -6322,10 +6328,7 @@ extern int NS_SetSoundCurrentTime( LONGLONG Time, int SoundHandle )
 
 //	sd->Buffer[ i ]->SetCurrentPosition( time ) ;
 //	SoundBuffer_SetCurrentPosition( &sd->Buffer[ i ], time ) ;
-	SoundBuffer_SetCurrentPosition( &sd->Buffer[ sd->Normal.BackPlayBufferNo ], ( DWORD )time ) ;
-
-	// 終了
-	return 0 ;
+	return SoundBuffer_SetCurrentPosition( &sd->Buffer[ sd->Normal.BackPlayBufferNo ], ( DWORD )time ) ;
 }
 
 // GetSoundTotalSample のグローバル変数にアクセスしないバージョン
@@ -7954,6 +7957,139 @@ ERR :
 	return -1 ;
 }
 
+#ifndef DX_NON_OGGVORBIS
+
+// Oggファイルのコメント情報の数を取得する
+extern int GetOggCommentNum_WCHAR_T( const wchar_t *FileName )
+{
+	DWORD_PTR fp = 0 ;
+	STREAMDATA Stream ;
+	int Comments ;
+
+	// ファイルを開く
+	fp = DX_FOPEN( FileName ) ;
+	if( fp == 0 )
+	{
+		DXST_LOGFILE_ADDA( "GetOggCommentNum Sound File Open Error\n" ) ;
+		return -1 ;
+	}
+
+	// ストリームデータ情報をセットする
+	Stream.DataPoint = fp ;
+	Stream.ReadShred = *GetFileStreamDataShredStruct() ;
+
+	// libogg を使用する処理を実行
+	Comments = GetOggCommentNumBase( &Stream ) ;
+
+	// ファイルを閉じる
+	DX_FCLOSE( fp ) ;
+
+	// コメントの数を返す
+	return Comments ;
+}
+
+extern int NS_GetOggCommentNum( const TCHAR *FileName )
+{
+#ifdef UNICODE
+	return GetOggCommentNum_WCHAR_T( FileName ) ;
+#else
+	int Result ;
+
+	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, return -1 )
+
+	Result = GetOggCommentNum_WCHAR_T( UseFileNameBuffer ) ;
+
+	TCHAR_TO_WCHAR_T_STRING_END( FileName )
+
+	return Result ;
+#endif
+}
+
+extern int NS_GetOggCommentNumWithStrLen( const TCHAR *FileName, size_t FileNameLength )
+{
+	int Result ;
+#ifdef UNICODE
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
+
+	Result = GetOggCommentNum_WCHAR_T( UseFileNameBuffer ) ;
+
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( FileName )
+#else
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
+
+	Result = GetOggCommentNum_WCHAR_T( UseFileNameBuffer ) ;
+
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( FileName )
+#endif
+	return Result ;
+}
+
+// Oggファイルのコメント情報を取得する
+extern int GetOggComment_WCHAR_T( const wchar_t *FileName, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes )
+{
+	DWORD_PTR fp = 0 ;
+	STREAMDATA Stream ;
+	int Result ;
+
+	// ファイルを開く
+	fp = DX_FOPEN( FileName ) ;
+	if( fp == 0 )
+	{
+		DXST_LOGFILE_ADDA( "GetOggComment Sound File Open Error\n" ) ;
+		return -1 ;
+	}
+
+	// ストリームデータ情報をセットする
+	Stream.DataPoint = fp ;
+	Stream.ReadShred = *GetFileStreamDataShredStruct() ;
+
+	// libogg を使用する処理を実行
+	Result = GetOggCommentBase( &Stream, CommentIndex, CommentNameBuffer, CommentNameBufferBytes, CommentBuffer, CommentBufferBytes ) ;
+
+	// ファイルを閉じる
+	DX_FCLOSE( fp ) ;
+
+	// 正常終了
+	return 0 ;
+}
+
+extern int NS_GetOggComment( const TCHAR *FileName, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes )
+{
+#ifdef UNICODE
+	return GetOggComment_WCHAR_T( FileName, CommentIndex, CommentNameBuffer, CommentNameBufferBytes, CommentBuffer, CommentBufferBytes ) ;
+#else
+	int Result ;
+
+	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, return -1 )
+
+	Result = GetOggComment_WCHAR_T( UseFileNameBuffer, CommentIndex, CommentNameBuffer, CommentNameBufferBytes, CommentBuffer, CommentBufferBytes ) ;
+
+	TCHAR_TO_WCHAR_T_STRING_END( FileName )
+
+	return Result ;
+#endif
+}
+
+extern int NS_GetOggCommentWithStrLen( const TCHAR *FileName, size_t FileNameLength, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes )
+{
+	int Result ;
+#ifdef UNICODE
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
+
+	Result = GetOggComment_WCHAR_T( UseFileNameBuffer, CommentIndex, CommentNameBuffer, CommentNameBufferBytes, CommentBuffer, CommentBufferBytes ) ;
+
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( FileName )
+#else
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
+
+	Result = GetOggComment_WCHAR_T( UseFileNameBuffer, CommentIndex, CommentNameBuffer, CommentNameBufferBytes, CommentBuffer, CommentBufferBytes ) ;
+
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( FileName )
+#endif
+	return Result ;
+}
+
+#endif // DX_NON_OGGVORBIS
 
 
 
@@ -9474,6 +9610,12 @@ extern int SoundBuffer_GetCurrentPosition( SOUNDBUFFER *Buffer, DWORD *PlayPos, 
 extern int SoundBuffer_SetCurrentPosition( SOUNDBUFFER *Buffer, DWORD NewPos )
 {
 	if( Buffer->Valid == FALSE ) return -1 ;
+
+	// 新しい位置が範囲から外れていたらエラー
+	if( NewPos / Buffer->Format.nBlockAlign >= ( DWORD )Buffer->SampleNum )
+	{
+		return -1 ;
+	}
 
 	if( SoundSysData.EnableSoundCaptureFlag || SoundSysData.EnableSelfMixingFlag )
 	{
@@ -13019,6 +13161,7 @@ extern	int NS_ReadSoftSoundData( int SoftSoundHandle, LONGLONG SamplePosition, i
 {
 	SOFTSOUND * SSound ;
 	BYTE *Src ;
+	DWORD Sample ;
 
 	// エラー判定
 	if( SSND_MASKHCHK( SoftSoundHandle, SSound ) ) return -1 ;
@@ -13097,6 +13240,60 @@ extern	int NS_ReadSoftSoundData( int SoftSoundHandle, LONGLONG SamplePosition, i
 				}
 			}
 			break ;
+
+		case 24 :
+			if( Channel1 )
+			{
+				Sample = Src[ 0 ] | ( Src[ 1 ] << 8 ) | ( Src[ 2 ] << 16 ) ;
+				if( ( Sample & 0x800000 ) != 0 )
+				{
+					*Channel1 = ( int )( Sample | 0xff000000 ) ;
+				}
+				else
+				{
+					*Channel1 = ( int )Sample ;
+				}
+			}
+
+			if( Channel2 )
+			{
+				if( SSound->BufferFormat.nChannels == 1 )
+				{
+					*Channel2 = 0 ;
+				}
+				else
+				{
+					Sample = Src[ 3 ] | ( Src[ 4 ] << 8 ) | ( Src[ 5 ] << 16 ) ;
+					if( ( Sample & 0x800000 ) != 0 )
+					{
+						*Channel2 = ( int )( Sample | 0xff000000 ) ;
+					}
+					else
+					{
+						*Channel2 = ( int )Sample ;
+					}
+				}
+			}
+			break ;
+
+		case 32 :
+			if( Channel1 )
+			{
+				*Channel1 = ( ( int * )Src )[ 0 ] ;
+			}
+
+			if( Channel2 )
+			{
+				if( SSound->BufferFormat.nChannels == 1 )
+				{
+					*Channel2 = 0 ;
+				}
+				else
+				{
+					*Channel2 = ( ( int * )Src )[ 1 ] ;
+				}
+			}
+			break ;
 		}
 	}
 
@@ -13109,6 +13306,7 @@ extern	int NS_ReadSoftSoundDataF( int SoftSoundHandle, LONGLONG SamplePosition, 
 {
 	SOFTSOUND * SSound ;
 	BYTE *Src ;
+	DWORD Sample ;
 
 	// エラー判定
 	if( SSND_MASKHCHK( SoftSoundHandle, SSound ) ) return -1 ;
@@ -13187,6 +13385,60 @@ extern	int NS_ReadSoftSoundDataF( int SoftSoundHandle, LONGLONG SamplePosition, 
 				}
 			}
 			break ;
+
+		case 24 :
+			if( Channel1 )
+			{
+				Sample = Src[ 0 ] | ( Src[ 1 ] << 8 ) | ( Src[ 2 ] << 16 ) ;
+				if( ( Sample & 0x800000 ) != 0 )
+				{
+					*Channel1 = ( int )( Sample | 0xff000000 ) / 8388608.0f ;
+				}
+				else
+				{
+					*Channel1 = ( int )Sample / 8388608.0f ;
+				}
+			}
+
+			if( Channel2 )
+			{
+				if( SSound->BufferFormat.nChannels == 1 )
+				{
+					*Channel2 = 0.0f ;
+				}
+				else
+				{
+					Sample = Src[ 3 ] | ( Src[ 4 ] << 8 ) | ( Src[ 5 ] << 16 ) ;
+					if( ( Sample & 0x800000 ) != 0 )
+					{
+						*Channel2 = ( int )( Sample | 0xff000000 ) / 8388608.0f ;
+					}
+					else
+					{
+						*Channel2 = ( int )Sample / 8388608.0f ;
+					}
+				}
+			}
+			break ;
+
+		case 32 :
+			if( Channel1 )
+			{
+				*Channel1 = ( ( int * )Src )[ 0 ] / 4294967296.0f ;
+			}
+
+			if( Channel2 )
+			{
+				if( SSound->BufferFormat.nChannels == 1 )
+				{
+					*Channel2 = 0.0f ;
+				}
+				else
+				{
+					*Channel2 = ( ( int * )Src )[ 1 ] / 4294967296.0f ;
+				}
+			}
+			break ;
 		}
 	}
 
@@ -13199,6 +13451,7 @@ extern	int NS_WriteSoftSoundData( int SoftSoundHandle, LONGLONG SamplePosition, 
 {
 	SOFTSOUND * SSound ;
 	BYTE *Dest ;
+	DWORD Sample ;
 
 	// エラー判定
 	if( SSND_MASKHCHK( SoftSoundHandle, SSound ) ) return -1 ;
@@ -13255,6 +13508,34 @@ extern	int NS_WriteSoftSoundData( int SoftSoundHandle, LONGLONG SamplePosition, 
 				( ( short * )Dest )[ 1 ] = ( short )Channel2 ;
 			}
 			break ;
+
+		case 24 :
+				 if( Channel1 >  8388607 ) Channel1 =  8388607 ;
+			else if( Channel1 < -8388608 ) Channel1 = -8388608 ;
+			Sample = ( DWORD )Channel1 ;
+			Dest[ 0 ] = ( BYTE )Sample ;
+			Dest[ 1 ] = ( BYTE )( Sample >> 8 );
+			Dest[ 2 ] = ( BYTE )( Sample >> 16 ) ;
+
+			if( SSound->BufferFormat.nChannels != 1 )
+			{
+					 if( Channel2 >  8388607 ) Channel2 =  8388607 ;
+				else if( Channel2 < -8388608 ) Channel2 = -8388608 ;
+				Sample = ( DWORD )Channel2 ;
+				Dest[ 3 ] = ( BYTE )Sample ;
+				Dest[ 4 ] = ( BYTE )( Sample >> 8 );
+				Dest[ 5 ] = ( BYTE )( Sample >> 16 ) ;
+			}
+			break ;
+
+		case 32 :
+			( ( int * )Dest )[ 0 ] = Channel1 ;
+
+			if( SSound->BufferFormat.nChannels != 1 )
+			{
+				( ( int * )Dest )[ 1 ] = Channel2 ;
+			}
+			break ;
 		}
 	}
 
@@ -13268,6 +13549,7 @@ extern int NS_WriteSoftSoundDataF( int SoftSoundHandle, LONGLONG SamplePosition,
 	SOFTSOUND * SSound ;
 	BYTE *Dest ;
 	int ChannelI ;
+	DWORD Sample ;
 
 	// エラー判定
 	if( SSND_MASKHCHK( SoftSoundHandle, SSound ) ) return -1 ;
@@ -13326,6 +13608,36 @@ extern int NS_WriteSoftSoundDataF( int SoftSoundHandle, LONGLONG SamplePosition,
 					 if( ChannelI >  32767 ) ChannelI =  32767 ;
 				else if( ChannelI < -32768 ) ChannelI = -32768 ;
 				( ( short * )Dest )[ 1 ] = ( short )ChannelI ;
+			}
+			break ;
+
+		case 24 :
+			ChannelI = _FTOL( Channel1 * 8388608.0f  ) ;
+				 if( ChannelI >  8388607 ) ChannelI =  8388607 ;
+			else if( ChannelI < -8388608 ) ChannelI = -8388608 ;
+			Sample = ( DWORD )ChannelI ;
+			Dest[ 0 ] = ( BYTE )Sample ;
+			Dest[ 1 ] = ( BYTE )( Sample >> 8 );
+			Dest[ 2 ] = ( BYTE )( Sample >> 16 ) ;
+
+			if( SSound->BufferFormat.nChannels != 1 )
+			{
+				ChannelI = _FTOL( Channel2 * 8388608.0f  ) ;
+					 if( ChannelI >  8388607 ) ChannelI =  8388607 ;
+				else if( ChannelI < -8388608 ) ChannelI = -8388608 ;
+				Sample = ( DWORD )ChannelI ;
+				Dest[ 3 ] = ( BYTE )Sample ;
+				Dest[ 4 ] = ( BYTE )( Sample >> 8 );
+				Dest[ 5 ] = ( BYTE )( Sample >> 16 ) ;
+			}
+			break ;
+
+		case 32 :
+			( ( int * )Dest )[ 0 ] = _FTOL( Channel1 * 4294967296.0f  ) ;
+
+			if( SSound->BufferFormat.nChannels != 1 )
+			{
+				( ( int * )Dest )[ 1 ] = _FTOL( Channel2 * 4294967296.0f  ) ;
 			}
 			break ;
 		}
@@ -19359,6 +19671,8 @@ extern int NS_LoadSoundMemFromSoftSound( int SoftSoundHandle, int BufferNum )
 	if( GParam.CreateSoundDataType == DX_SOUNDDATATYPE_FILE )
 		GParam.CreateSoundDataType = DX_SOUNDDATATYPE_MEMNOPRESS ;
 	NewHandle = LoadSoundMemByMemImageBase_UseGParam( &GParam, TRUE, -1, WaveImage, WaveSize, BufferNum, -1, FALSE, FALSE ) ;
+
+	_MEMSET( WaveImage, 0, WaveSize ) ;
 
 	// メモリの解放
 	DXFREE( WaveImage ) ;

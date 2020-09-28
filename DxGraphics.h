@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画プログラムヘッダファイル
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -1576,6 +1576,7 @@ extern	int		Graphics_Hardware_ApplyLigFogToHardware_PF( void ) ;													// 
 extern	int		Graphics_Hardware_SetUseOldDrawModiGraphCodeFlag_PF( int Flag ) ;										// 以前の DrawModiGraph 関数のコードを使用するかどうかのフラグをセットする
 extern	int		Graphics_Hardware_RefreshAlphaChDrawMode_PF( void ) ;													// 描画先に正しいα値を書き込むかどうかのフラグを更新する
 //extern	void	Graphics_Hardware_SetUse2DProjectionMatrix_PF( int Use2DProjectionMatrix ) ;							// 使用する射影行列を３Ｄ用にするか２Ｄ用にするかを設定する
+extern	int		Graphics_Hardware_RefreshSetting_PF( void ) ;															// ミドルウェア等を使用した後に Direct3D や OpenGL のＤＸライブラリ用の設定を再度行うための関数
 
 
 

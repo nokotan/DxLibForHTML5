@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ヘッダファイル
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -12,9 +12,9 @@
 #include "DxCompileConfig.h"
 
 // ＤＸライブラリのバージョン
-#define DXLIB_VERSION 0x321f
-#define DXLIB_VERSION_STR_T _T( "3.21f" )
-#define DXLIB_VERSION_STR_W    L"3.21f"
+#define DXLIB_VERSION 0x322a
+#define DXLIB_VERSION_STR_T _T( "3.22a" )
+#define DXLIB_VERSION_STR_W    L"3.22a"
 
 // 設定 -----------------------------------------------------------------------
 
@@ -43,13 +43,10 @@
 
 #define DX_DEFINE_START
 
-#define MAX_IMAGE_NUM								(32768)				// 同時に持てるグラフィックハンドルの最大数( ハンドルエラーチェックのマスクに使用しているので 65536 以下の 2 のべき乗にして下さい )
-#define MAX_2DSURFACE_NUM							(32768)				// ２Ｄサーフェスデータの最大数( ハンドルエラーチェックのマスクに使用しているので 65536 以下の 2 のべき乗にして下さい )
-#define MAX_3DSURFACE_NUM							(65536)				// ３Ｄサーフェスデータの最大数( ハンドルエラーチェックのマスクに使用しているので 65536 以下の 2 のべき乗にして下さい )
+#define MAX_IMAGE_NUM								(0x40000)			// 同時に持てるグラフィックハンドルの最大数( ハンドルエラーチェックのマスクに使用しているので 0x40000 以下の 2 のべき乗にして下さい )
 #define MAX_IMAGE_DIVNUM							(64)				// 画像分割の最大数
-#define MAX_SURFACE_NUM								(65536)				// サーフェスデータの最大数
 #define MAX_SHADOWMAP_NUM							(8192)				// シャドウマップデータの最大数
-#define MAX_SOFTIMAGE_NUM							(8192)				// 同時に持てるソフトイメージハンドルの最大数( ハンドルエラーチェックのマスクに使用しているので 65536 以下の 2 のべき乗にして下さい )
+#define MAX_SOFTIMAGE_NUM							(8192)				// 同時に持てるソフトイメージハンドルの最大数( ハンドルエラーチェックのマスクに使用しているので 0x40000 以下の 2 のべき乗にして下さい )
 
 #define MAX_SOUND_NUM								(32768)				// 同時に持てるサウンドハンドルの最大数
 #define MAX_SOFTSOUND_NUM							(8192)				// 同時に持てるソフトウエアサウンドハンドルの最大数
@@ -246,22 +243,24 @@
 #define DX_GRAPH_FILTER_LEVEL						(7)				// レベル補正フィルタ
 #define DX_GRAPH_FILTER_TWO_COLOR					(8)				// ２階調化フィルタ
 #define DX_GRAPH_FILTER_GRADIENT_MAP				(9)				// グラデーションマップフィルタ
-#define DX_GRAPH_FILTER_PREMUL_ALPHA				(10)			// 通常のアルファチャンネル付き画像を乗算済みアルファ画像に変換するフィルタ
-#define DX_GRAPH_FILTER_INTERP_ALPHA				(11)			// 乗算済みα画像を通常のアルファチャンネル付き画像に変換するフィルタ
-#define DX_GRAPH_FILTER_YUV_TO_RGB					(12)			// YUVカラーをRGBカラーに変換するフィルタ
-#define DX_GRAPH_FILTER_Y2UV1_TO_RGB				(13)			// YUVカラーをRGBカラーに変換するフィルタ( UV成分が Y成分の半分・又は４分の１( 横・縦片方若しくは両方 )の解像度しかない場合用 )
-#define DX_GRAPH_FILTER_YUV_TO_RGB_RRA				(14)			// YUVカラーをRGBカラーに変換するフィルタ( 且つ右側半分のRの値をアルファ値として扱う )
-#define DX_GRAPH_FILTER_Y2UV1_TO_RGB_RRA			(15)			// YUVカラーをRGBカラーに変換するフィルタ( UV成分が Y成分の半分・又は４分の１( 横・縦片方若しくは両方 )の解像度しかない場合用 )( 且つ右側半分のRの値をアルファ値として扱う )
-#define DX_GRAPH_FILTER_BICUBIC_SCALE				(16)			// バイキュービックを使用した拡大・縮小フィルタ
-#define DX_GRAPH_FILTER_LANCZOS3_SCALE				(17)			// Lanczos-3を使用した拡大・縮小フィルタ
-#define DX_GRAPH_FILTER_PMA_BRIGHT_CLIP				(18)			// 明るさクリップフィルタ(乗算済みアルファ画像用)
-#define DX_GRAPH_FILTER_PMA_BRIGHT_SCALE			(19)			// 指定の明るさ領域を拡大するフィルタ(乗算済みアルファ画像用)
-#define DX_GRAPH_FILTER_PMA_HSB						(20)			// 色相・彩度・明度フィルタ(乗算済みアルファ画像用)
-#define DX_GRAPH_FILTER_PMA_INVERT					(21)			// 階調の反転フィルタ(乗算済みアルファ画像用)
-#define DX_GRAPH_FILTER_PMA_LEVEL					(22)			// レベル補正フィルタ(乗算済みアルファ画像用)
-#define DX_GRAPH_FILTER_PMA_TWO_COLOR				(23)			// ２階調化フィルタ(乗算済みアルファ画像用)
-#define DX_GRAPH_FILTER_PMA_GRADIENT_MAP			(24)			// グラデーションマップフィルタ(乗算済みアルファ画像用)
-#define DX_GRAPH_FILTER_NUM							(25)
+#define DX_GRAPH_FILTER_REPLACEMENT					(10)			// 色の置換
+#define DX_GRAPH_FILTER_PREMUL_ALPHA				(11)			// 通常のアルファチャンネル付き画像を乗算済みアルファ画像に変換するフィルタ
+#define DX_GRAPH_FILTER_INTERP_ALPHA				(12)			// 乗算済みα画像を通常のアルファチャンネル付き画像に変換するフィルタ
+#define DX_GRAPH_FILTER_YUV_TO_RGB					(13)			// YUVカラーをRGBカラーに変換するフィルタ
+#define DX_GRAPH_FILTER_Y2UV1_TO_RGB				(14)			// YUVカラーをRGBカラーに変換するフィルタ( UV成分が Y成分の半分・又は４分の１( 横・縦片方若しくは両方 )の解像度しかない場合用 )
+#define DX_GRAPH_FILTER_YUV_TO_RGB_RRA				(15)			// YUVカラーをRGBカラーに変換するフィルタ( 且つ右側半分のRの値をアルファ値として扱う )
+#define DX_GRAPH_FILTER_Y2UV1_TO_RGB_RRA			(16)			// YUVカラーをRGBカラーに変換するフィルタ( UV成分が Y成分の半分・又は４分の１( 横・縦片方若しくは両方 )の解像度しかない場合用 )( 且つ右側半分のRの値をアルファ値として扱う )
+#define DX_GRAPH_FILTER_BICUBIC_SCALE				(17)			// バイキュービックを使用した拡大・縮小フィルタ
+#define DX_GRAPH_FILTER_LANCZOS3_SCALE				(18)			// Lanczos-3を使用した拡大・縮小フィルタ
+#define DX_GRAPH_FILTER_PMA_BRIGHT_CLIP				(19)			// 明るさクリップフィルタ(乗算済みアルファ画像用)
+#define DX_GRAPH_FILTER_PMA_BRIGHT_SCALE			(20)			// 指定の明るさ領域を拡大するフィルタ(乗算済みアルファ画像用)
+#define DX_GRAPH_FILTER_PMA_HSB						(21)			// 色相・彩度・明度フィルタ(乗算済みアルファ画像用)
+#define DX_GRAPH_FILTER_PMA_INVERT					(22)			// 階調の反転フィルタ(乗算済みアルファ画像用)
+#define DX_GRAPH_FILTER_PMA_LEVEL					(23)			// レベル補正フィルタ(乗算済みアルファ画像用)
+#define DX_GRAPH_FILTER_PMA_TWO_COLOR				(24)			// ２階調化フィルタ(乗算済みアルファ画像用)
+#define DX_GRAPH_FILTER_PMA_GRADIENT_MAP			(25)			// グラデーションマップフィルタ(乗算済みアルファ画像用)
+#define DX_GRAPH_FILTER_PMA_REPLACEMENT				(26)			// 色の置換(乗算済みアルファ画像用)
+#define DX_GRAPH_FILTER_NUM							(27)
 
 // グラフィックブレンドタイプ
 #define DX_GRAPH_BLEND_NORMAL						(0)				// 通常
@@ -309,6 +308,14 @@
 #define DX_RGBA_SELECT_BLEND_G						(5)				// ブレンド画像の緑成分
 #define DX_RGBA_SELECT_BLEND_B						(6)				// ブレンド画像の青成分
 #define DX_RGBA_SELECT_BLEND_A						(7)				// ブレンド画像のα成分
+#define DX_RGBA_SELECT_SRC_INV_R					(8)				// 元画像の赤成分を反転したもの
+#define DX_RGBA_SELECT_SRC_INV_G					(9)				// 元画像の緑成分を反転したもの
+#define DX_RGBA_SELECT_SRC_INV_B					(10)			// 元画像の青成分を反転したもの
+#define DX_RGBA_SELECT_SRC_INV_A					(11)			// 元画像のα成分を反転したもの
+#define DX_RGBA_SELECT_BLEND_INV_R					(12)			// ブレンド画像の赤成分を反転したもの
+#define DX_RGBA_SELECT_BLEND_INV_G					(13)			// ブレンド画像の緑成分を反転したもの
+#define DX_RGBA_SELECT_BLEND_INV_B					(14)			// ブレンド画像の青成分を反転したもの
+#define DX_RGBA_SELECT_BLEND_INV_A					(15)			// ブレンド画像のα成分を反転したもの
 
 // フィルモード
 #define DX_FILL_WIREFRAME							(2)				// ワイヤーフレーム
@@ -3156,6 +3163,8 @@ extern	int			SetShaderConstantBuffer(		int SConstBufHandle, int TargetShader /* 
 
 // フィルター関係関数
 #ifndef DX_NON_FILTER
+extern	int			SetGraphFilterBltBlendMode( int BlendMode /* DX_BLENDMODE_ALPHA など */ ) ;												// GraphFilterBlt や GraphBlendBlt の結果を転送先に転送する際のブレンドモードを設定する( 現状で対応しているのは DX_BLENDMODE_NOBLEND と DX_BLENDMODE_ALPHA のみ )
+
 extern	int			GraphFilter(         int    GrHandle,                                                                                                               int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */ , ... ) ;		// 画像にフィルター処理を行う
 extern	int			GraphFilterBlt(      int SrcGrHandle, int DestGrHandle,                                                                                             int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */ , ... ) ;		// 画像のフィルター付き転送を行う
 extern	int			GraphFilterRectBlt(  int SrcGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int DestX,  int DestY,                          int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */ , ... ) ;		// 画像のフィルター付き転送を行う( 矩形指定 )
@@ -3169,6 +3178,7 @@ extern	int			GraphFilterRectBlt(  int SrcGrHandle, int DestGrHandle, int SrcX1, 
 //		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_LEVEL, int Min = 変換元の下限値( 0 ～ 255 ), int Max = 変換元の上限値( 0 ～ 255 ), int Gamma = ガンマ値( 100 でガンマ補正無し、0 とそれ以下の値は不可 ), int AfterMin = 変換後の最低値( 0 ～ 255 ), int AfterMax = 変換後の最大値( 0 ～ 255 ) ) ;
 //		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_TWO_COLOR, int Threshold = 閾値( 0 ～ 255 ), unsigned int LowColor = 閾値より値が低かったピクセルの変換後の色値( GetColor で取得する ), int LowAlpha = 閾値より値が低かったピクセルの変換後のα値( 0 ～ 255 ), unsigned int HighColor = 閾値より値が高かったピクセルの変換後の色値( GetColor で取得する ), int HighAlpha = 閾値より値が高かったピクセルの変換後のα値( 0 ～ 255 ) ) ;
 //		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_GRADIENT_MAP, int MapGrHandle = グラデーションマップのグラフィックハンドル( 元画像の輝度からグラデーションマップ画像の x 座標を算出しますので縦幅は1dotでもＯＫ ), int Reverse = グラデーションマップ左右反転フラグ( TRUE : グラデーションマップを左右反転して使う  FALSE : 左右反転しない ) ) ;
+//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_REPLACEMENT, int TargetR, int TargetG, int TargetB, int TargetA = 置換対象の色( 0～255 ), int R, int G, int B, int A = 置換後の色( 0～255 ) ) ;
 //		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_PREMUL_ALPHA ) ;			// 通常のアルファチャンネル付き画像を乗算済みアルファ画像に変換するフィルタ
 //		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_INTERP_ALPHA ) ;			// 乗算済みα画像を通常のアルファチャンネル付き画像に変換するフィルタ
 //		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_YUV_TO_RGB ) ;				// YUVカラーをRGBカラーに変換するフィルタ
@@ -4668,6 +4678,12 @@ extern	int			SetNextPlay3DVelocitySoundMem(       VECTOR Velocity,              
 // 特殊関数
 extern	int			GetMP3TagInfo(           const TCHAR *FileName,                        TCHAR *TitleBuffer, size_t TitleBufferBytes, TCHAR *ArtistBuffer, size_t ArtistBufferBytes, TCHAR *AlbumBuffer, size_t AlbumBufferBytes, TCHAR *YearBuffer, size_t YearBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes, TCHAR *TrackBuffer, size_t TrackBufferBytes, TCHAR *GenreBuffer, size_t GenreBufferBytes, int *PictureGrHandle ) ;		// MP3ファイルのタグ情報を取得する
 extern	int			GetMP3TagInfoWithStrLen( const TCHAR *FileName, size_t FileNameLength, TCHAR *TitleBuffer, size_t TitleBufferBytes, TCHAR *ArtistBuffer, size_t ArtistBufferBytes, TCHAR *AlbumBuffer, size_t AlbumBufferBytes, TCHAR *YearBuffer, size_t YearBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes, TCHAR *TrackBuffer, size_t TrackBufferBytes, TCHAR *GenreBuffer, size_t GenreBufferBytes, int *PictureGrHandle ) ;		// MP3ファイルのタグ情報を取得する
+#ifndef DX_NON_OGGVORBIS
+extern	int			GetOggCommentNum(           const TCHAR *FileName                        ) ;																																	// Oggファイルのコメント情報の数を取得する
+extern	int			GetOggCommentNumWithStrLen( const TCHAR *FileName, size_t FileNameLength ) ;																																	// Oggファイルのコメント情報の数を取得する
+extern	int			GetOggComment(              const TCHAR *FileName,                        int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes ) ;		// Oggファイルのコメント情報を取得する
+extern	int			GetOggCommentWithStrLen(    const TCHAR *FileName, size_t FileNameLength, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes ) ;		// Oggファイルのコメント情報を取得する
+#endif // DX_NON_OGGVORBIS
 						
 
 // 設定関係関数
@@ -5030,6 +5046,8 @@ extern	int			MV1SetMaterialSpcPower( 			int MHandle, int MaterialIndex, float Po
 extern	float		MV1GetMaterialSpcPower( 			int MHandle, int MaterialIndex ) ;										// 指定のマテリアルのスペキュラの強さを取得する
 extern	int			MV1SetMaterialDifMapTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;						// 指定のマテリアルでディフューズマップとして使用するテクスチャを指定する
 extern	int			MV1GetMaterialDifMapTexture(		int MHandle, int MaterialIndex ) ;										// 指定のマテリアルでディフューズマップとして使用されているテクスチャのインデックスを取得する
+extern	int			MV1SetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;						// 指定のマテリアルでサブディフューズマップとして使用するテクスチャを指定する
+extern	int			MV1GetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex ) ;										// 指定のマテリアルでサブディフューズマップとして使用されているテクスチャのインデックスを取得する
 extern	int			MV1SetMaterialSpcMapTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;						// 指定のマテリアルでスペキュラマップとして使用するテクスチャを指定する
 extern	int			MV1GetMaterialSpcMapTexture(		int MHandle, int MaterialIndex ) ;										// 指定のマテリアルでスペキュラマップとして使用されているテクスチャのインデックスを取得する
 extern	int			MV1GetMaterialNormalMapTexture(		int MHandle, int MaterialIndex ) ;										// 指定のマテリアルで法線マップとして使用されているテクスチャのインデックスを取得する

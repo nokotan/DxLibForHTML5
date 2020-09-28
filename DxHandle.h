@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ハンドル管理プログラムヘッダファイル
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -23,12 +23,12 @@ namespace DxLib
 // マクロ定義 --------------------------------------------------------------------
 
 // ハンドルの内訳
-#define DX_HANDLEINDEX_MASK							(0x0000ffff)		// ハンドル配列インデックスマスク
-#define DX_HANDLEINDEX_MAX							(65536)				// ハンドル配列インデックスの最大数
+#define DX_HANDLEINDEX_MASK							(0x0003ffff)		// ハンドル配列インデックスマスク
+#define DX_HANDLEINDEX_MAX							(0x40000)			// ハンドル配列インデックスの最大数
 
-#define DX_HANDLECHECK_MASK							(0x03ff0000)		// ハンドルの正当性チェック用マスク
-#define DX_HANDLECHECK_ADDRESS						(16)				// ハンドルの正当性チェック用マスクの開始アドレス
-#define DX_HANDLECHECK_MAX							(1024)				// ハンドルの正当性チェック値の最大数
+#define DX_HANDLECHECK_MASK							(0x03fc0000)		// ハンドルの正当性チェック用マスク
+#define DX_HANDLECHECK_ADDRESS						(18)				// ハンドルの正当性チェック用マスクの開始アドレス
+#define DX_HANDLECHECK_MAX							(256)				// ハンドルの正当性チェック値の最大数
 
 #define DX_HANDLETYPE_MASK							(0x7c000000)		// ハンドルタイプマスク
 #define DX_HANDLETYPE_ADDRESS						(26)				// ハンドルタイプマスクの開始アドレス

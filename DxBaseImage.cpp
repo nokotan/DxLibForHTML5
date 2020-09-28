@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＢａｓｅＩｍａｇｅプログラム
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // ----------------------------------------------------------------------------
 
@@ -3424,6 +3424,13 @@ static int LoadBmpImage( STREAMDATA *Stream, BASEIMAGE *BaseImage, int GetFormat
 				Format = 888 ;
 			}
 			else
+			if( ( ( DWORD * )BmpInfo2->bmiColors )[ 0 ] == 0x00ff0000 &&
+				( ( DWORD * )BmpInfo2->bmiColors )[ 1 ] == 0x0000ff00 &&
+				( ( DWORD * )BmpInfo2->bmiColors )[ 2 ] == 0x000000ff )
+			{
+				Format = 1888 ;
+			}
+			else
 			if( ( ( DWORD * )BmpInfo2->bmiColors )[ 0 ] == 0x0000f800 &&
 				( ( DWORD * )BmpInfo2->bmiColors )[ 1 ] == 0x000007e0 &&
 				( ( DWORD * )BmpInfo2->bmiColors )[ 2 ] == 0x0000001f )
@@ -3434,10 +3441,6 @@ static int LoadBmpImage( STREAMDATA *Stream, BASEIMAGE *BaseImage, int GetFormat
 			if( ( ( DWORD * )BmpInfo2->bmiColors )[ 0 ] == 0x000007c0 &&
 				( ( DWORD * )BmpInfo2->bmiColors )[ 1 ] == 0x000003e0 &&
 				( ( DWORD * )BmpInfo2->bmiColors )[ 2 ] == 0x0000001f )
-			{
-				Format = 555 ;
-			}
-			else
 			{
 				Format = 555 ;
 			}
@@ -3481,6 +3484,27 @@ static int LoadBmpImage( STREAMDATA *Stream, BASEIMAGE *BaseImage, int GetFormat
 					NS_CreateXRGB8ColorData( &BaseImage->ColorData ) ;
 					switch( Format )
 					{
+					case 1888 :
+						BaseImage->ColorData.ColorBitDepth = 32 ;
+						BaseImage->ColorData.PixelByte = 4 ;
+
+						BaseImage->ColorData.NoneLoc = 24 ;
+						BaseImage->ColorData.NoneMask = 0xff000000 ;
+						BaseImage->ColorData.NoneWidth = 8 ;
+
+						BaseImage->ColorData.RedLoc = 16 ;
+						BaseImage->ColorData.RedMask = 0x00ff0000 ;
+						BaseImage->ColorData.RedWidth = 8 ;
+
+						BaseImage->ColorData.GreenLoc = 8 ;
+						BaseImage->ColorData.GreenMask = 0x0000ff00 ;
+						BaseImage->ColorData.GreenWidth = 8 ;
+
+						BaseImage->ColorData.BlueLoc = 0  ;
+						BaseImage->ColorData.BlueMask = 0x000000ff ;
+						BaseImage->ColorData.BlueWidth = 8 ;
+						break ;
+
 					case 888 :
 						BaseImage->ColorData.ColorBitDepth = 32 ;
 						BaseImage->ColorData.PixelByte = 4 ;
@@ -6663,25 +6687,25 @@ extern int NS_GetDesktopScreenBaseImage( int x1, int y1, int x2, int y2, BASEIMA
 	DesktopW = DesktopRect.right  - DesktopRect.left ;
 	DesktopH = DesktopRect.bottom - DesktopRect.top ;
 
-	// 指定の矩形の補正
-	if( x1 < DesktopRect.left )
-	{
-		DestX += DesktopRect.left - x1 ;
-		x1     = DesktopRect.left ;
-	}
-	if( y1 < DesktopRect.top )
-	{
-		DestY += DesktopRect.top - y1 ;
-		y1     = DesktopRect.top ;
-	}
-	if( x2 > DesktopRect.right )
-	{
-		x2 = DesktopRect.right ;
-	}
-	if( y2 > DesktopRect.bottom )
-	{
-		y2 = DesktopRect.bottom ;
-	}
+//	// 指定の矩形の補正
+//	if( x1 < DesktopRect.left )
+//	{
+//		DestX += DesktopRect.left - x1 ;
+//		x1     = DesktopRect.left ;
+//	}
+//	if( y1 < DesktopRect.top )
+//	{
+//		DestY += DesktopRect.top - y1 ;
+//		y1     = DesktopRect.top ;
+//	}
+//	if( x2 > DesktopRect.right )
+//	{
+//		x2 = DesktopRect.right ;
+//	}
+//	if( y2 > DesktopRect.bottom )
+//	{
+//		y2 = DesktopRect.bottom ;
+//	}
 
 	// 取り込みサイズの算出
 	CaptureW = x2 - x1 ;

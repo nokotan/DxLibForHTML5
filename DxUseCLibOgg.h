@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Ogg関係ヘッダファイル
 // 
-// 				Ver 3.21f
+// 				Ver 3.22a
 // 
 // -------------------------------------------------------------------------------
 
@@ -185,6 +185,13 @@ extern	void	TheoraDecode_ReleaseSurface_PF(	DECODE_THEORA *DT ) ;
 extern	int		TheoraDecode_SetupImage_PF( DECODE_THEORA *DT, volatile THEORA_STOCKFRAME *Stock, int ASyncThread ) ;		// カレントフレームのRGB画像を作成する( 戻り値  1:作成された  0:されなかった )
 extern	const void * TheoraDecode_GetYUVImage_PF( DECODE_THEORA *DT ) ;														// 一時バッファの YUV フォーマットのテクスチャを得る
 extern	int		TheoraDecode_InitializeStream_PF( DECODE_THEORA *DT ) ;														// Ogg Theora の読み込み処理の準備を行う処理の環境依存処理を行う関数
+
+#endif
+
+#ifndef DX_NON_OGGVORBIS
+
+extern	int		GetOggCommentNumBase( STREAMDATA *Stream ) ;
+extern	int		GetOggCommentBase( STREAMDATA *Stream, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes ) ;
 
 #endif
 
