@@ -10,6 +10,9 @@ jobs:
         - cp -r ci-scripts ci-scripts-temp
         - cd ci-scripts-temp
         - npm install
+        - chmod +x AutoUpdate.sh
+        - chmod +x FetchDxLibVersion.js
+        - chmod +x FetchLatestTag.js
         - ./AutoUpdate.sh
 
     - stage: 'Build'
