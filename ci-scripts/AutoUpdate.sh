@@ -106,5 +106,5 @@ do_init
 
 if check_update_required; then
     do_update
-    post_update
+    # post_update
 fi
