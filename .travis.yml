@@ -4,7 +4,7 @@ services:
   - docker
 
 node_js:
-  - 'stable'
+  - '12'
 
 jobs:
   include:
