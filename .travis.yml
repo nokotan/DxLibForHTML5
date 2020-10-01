@@ -7,7 +7,8 @@ jobs:
   include:
     - stage: 'Update Version'
       script:
-        - cd ci-scripts
+        - cp -r ci-scripts ci-scripts-temp
+        - cd ci-scripts-temp
         - npm install
         - ./AutoUpdate.sh
 
