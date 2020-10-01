@@ -29,9 +29,6 @@ jobs:
         - cp DxLib.h dest/include/
         - zip -r DxLibForHTML5.zip dest
         - tar -cvzf DxLibForHTML5.tgz dest/*
-
-    - stage: 'Deploy'
-      script: skip
       deploy:
         provider: releases
         token: $GITHUB_TOKEN
@@ -46,4 +43,3 @@ stages:
   - name: 'Update Version'
     if: type = cron
   - name: 'Build'
-  - name: 'Deploy'
