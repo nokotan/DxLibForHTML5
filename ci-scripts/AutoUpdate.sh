@@ -6,6 +6,8 @@ DxLibVersion=$(./FetchDxLibVersion.js)
 OriginalBranch=original
 DevelopBranch=develop
 
+WorkingBranch=work_on_original
+
 #
 # Support Functions
 #
@@ -16,16 +18,22 @@ function git_init_user() {
 }
 
 function download_and_unzip_dxlib() {
+    echo "### download_and_unzip_dxlib"
+
     local DxLibMakeFileVersion=$(echo ${DxLibVersion} | sed "s/\./_/")
     local DxLibMakeUrl="https://dxlib.xsrv.jp/DxLib/DxLibMake${DxLibMakeFileVersion}.zip"
 
     curl --output DxLibMake.zip ${DxLibMakeUrl}
     unzip DxLibMake.zip
+
+    echo "### download_and_unzip_dxlib done"
 }
 
+
 function create_commit_of_common_part() {
-    git switch ${OriginalBranch} --force
-    git switch -c work_on_original
+    echo "### create_commit_of_common_part"
+
+    git switch ${WorkingBranch} --force
 
     # Commit1: cherry-pick preparation
     sed -i .tmp "s/extern/extern DXLIBAPI/" ../DxLib.h
@@ -41,6 +49,8 @@ function create_commit_of_common_part() {
 
     find .. -maxdepth 1 -type f | xargs -I{} git stage {}
     git commit -m "[Bot] Create Patch of ${DxLibVersion} (Platform-Independent)"
+
+    echo "### create_commit_of_common_part done"
 }
 
 function apply_to_develop_branch() {
@@ -48,12 +58,77 @@ function apply_to_develop_branch() {
     git cherry-pick $1
 }
 
-function update_original_branch() {
+function update_original_branch_of_common_part() {
+    echo "### update_original_branch_of_common_part"
+
     git switch ${OriginalBranch} --force
 
     cp DxLibMake/* ..
     find .. -maxdepth 1 -type f | xargs -I{} git stage {}
     git commit -m "[Bot] Update to ${DxLibVersion} (Platform-Independent)"
+
+    echo "### update_original_branch_of_common_part done"
+}
+
+
+function create_commit_of_android_part() {
+    echo "### create_commit_of_android_part"
+
+    git switch ${WorkingBranch} --force
+    mkdir ../HTML5 || true
+
+    # Commit1: cherry-pick preparation
+    ./CopyFromAndroid.js
+
+    git stage ../HTML5/*
+    git commit -m "[Bot] Update Android Part before ${DxLibVersion}"
+
+    # Commit2: cherry-picked commit
+    cp DxLibMake/Android/* ../Android
+    ./CopyFromAndroid.js
+
+    find ../HTML5 -maxdepth 1 -type f | xargs -I{} git stage {}
+    git commit -m "[Bot] Create Patch of ${DxLibVersion} (Android)"
+
+    echo "### create_commit_of_android_part done"
+}
+
+function create_commit_of_ios_part() {
+    echo "### create_commit_of_ios_part"
+
+    git switch ${WorkingBranch} --force
+
+    # Commit1: cherry-pick preparation
+    ./CopyFromiOS.js
+
+    git stage ../HTML5/*
+    git commit -m "[Bot] Update iOS Part before ${DxLibVersion}"
+
+    # Commit2: cherry-picked commit
+    cp DxLibMake/iOS/* ../iOS
+    ./CopyFromiOS.js
+
+    find ../HTML5 -maxdepth 1 -type f | xargs -I{} git stage {}
+    git commit -m "[Bot] Create Patch of ${DxLibVersion} (iOS)"
+
+    echo "### create_commit_of_ios_part done"
+}
+
+
+function update_original_branch_of_platform_dependent_part() {
+    echo "### update_original_branch_of_platform_dependent_part"
+
+    git switch ${OriginalBranch} --force
+
+    cp DxLibMake/Android/* ../Android
+    find ../Android -maxdepth 1 -type f | xargs -I{} git stage {}
+    git commit -m "[Bot] Update to ${DxLibVersion} (Android)"
+
+    cp DxLibMake/iOS/* ../iOS
+    find ../iOS -maxdepth 1 -type f | xargs -I{} git stage {}
+    git commit -m "[Bot] Update to ${DxLibVersion} (iOS)"
+
+    echo "### update_original_branch_of_platform_dependent_part done"
 }
 
 
@@ -64,6 +139,14 @@ function update_original_branch() {
 
 function do_init() {
     git_init_user
+
+    chmod +x CopyFromAndroid.js
+    chmod +x CopyFromiOS.js
+    chmod +x FetchDxLibVersion.js
+    chmod +x FetchLatestTag.js
+
+    git switch ${OriginalBranch} --force
+    git switch -c ${WorkingBranch}
 }
 
 function check_update_required() {
@@ -81,14 +164,21 @@ function check_update_required() {
 
 function do_update() {
     download_and_unzip_dxlib
+
     create_commit_of_common_part
-
     local Commit_CommonPart=$(git log --format="%H" -n 1)
-    echo ${Commit_CommonPart}
-
     apply_to_develop_branch ${Commit_CommonPart}
+    update_original_branch_of_common_part
 
-    update_original_branch
+    create_commit_of_android_part
+    local Commit_AndroidPart=$(git log --format="%H" -n 1)
+    apply_to_develop_branch ${Commit_AndroidPart}
+    
+    create_commit_of_ios_part
+    local Commit_iOSPart=$(git log --format="%H" -n 1)
+    apply_to_develop_branch ${Commit_iOSPart}
+
+    update_original_branch_of_platform_dependent_part
 }
 
 function post_update() {
