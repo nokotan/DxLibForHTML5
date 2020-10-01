@@ -9,7 +9,7 @@ async function FetchLatestTag()
 {
     const rawTags = await fetch("https://api.github.com/repos/nokotan/DxLibForHTML5/tags").then(res => res.text());
     console.error(`Server Response: ${rawTags}`)
-    const tags = JSON.parse(rawTags) || '3.22a';
+    const tags = JSON.parse(rawTags);
     const tagNames = tags
         .map(tag => tag.name)
         .filter(name => name.match(/[0-9]+\.[0-9]+[a-z]?/));
