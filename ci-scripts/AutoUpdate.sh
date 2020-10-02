@@ -4,7 +4,7 @@ LANG="ja_JP.SJIS"
 
 DxLibVersion=$(./FetchDxLibVersion.js)
 OriginalBranch=original
-DevelopBranch=develop
+DevelopBranch="update_to_${DxLibVersion}"
 
 WorkingBranch=work_on_original
 
@@ -17,8 +17,10 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 
+
+
 #
-# Support Functions
+# Utility Functions
 #
 
 function info() {
@@ -34,6 +36,12 @@ function err_exit() {
     printf "${RED}${1}${NOCOLOR}\n"
     exit 1
 } 
+
+
+
+#
+# Support Functions
+#
 
 function git_init_user() {
     git config --global user.name "DxLib Update Bot"
@@ -187,6 +195,20 @@ function update_original_branch_of_platform_dependent_part() {
     info "### update_original_branch_of_platform_dependent_part done"
 }
 
+function create_pull_request() {
+    curl \
+        -X POST \
+        -H "Authorization: token ${GITHUB_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d "{
+                \"title\":\"update to ${DxLibVersion}\",
+                \"head\":\"${DevelopBranch}\",
+                \"base\":\"develop\",
+                \"body\":\"automated update to ${DxLibVersion}\"
+            }" \
+        https://api.github.com/repos/nokotan/DxLibForHTML5/pulls
+}
+
 
 
 #
@@ -203,6 +225,9 @@ function do_init() {
 
     git switch ${OriginalBranch} --force
     git switch -c ${WorkingBranch}
+
+    git switch develop --force
+    git switch -c ${DevelopBranch}
 }
 
 function check_update_required() {
@@ -242,8 +267,10 @@ function do_update() {
 }
 
 function post_update() {
-    git push https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git original
-    git push https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git develop
+    git push https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git ${OriginalBranch}
+    git push -u https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git ${DevelopBranch}
+
+    create_pull_request
 }
 
 
