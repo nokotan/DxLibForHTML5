@@ -8,9 +8,32 @@ DevelopBranch=develop
 
 WorkingBranch=work_on_original
 
+# 
+# Colors
+# 
+
+NOCOLOR='\033[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+
 #
 # Support Functions
 #
+
+function info() {
+    printf "${GREEN}${1}${NOCOLOR}\n"
+}
+
+function warn() {
+    printf "${YELLOW}${1}${NOCOLOR}\n"
+}
+
+# [no-return]
+function err_exit() {
+    printf "${RED}${1}${NOCOLOR}\n"
+    exit 1
+} 
 
 function git_init_user() {
     git config --global user.name "DxLib Update Bot"
@@ -18,20 +41,25 @@ function git_init_user() {
 }
 
 function download_and_unzip_dxlib() {
-    echo "### download_and_unzip_dxlib"
+    info "### download_and_unzip_dxlib"
 
     local DxLibMakeFileVersion=$(echo ${DxLibVersion} | sed "s/\./_/")
     local DxLibMakeUrl="https://dxlib.xsrv.jp/DxLib/DxLibMake${DxLibMakeFileVersion}.zip"
 
     curl --output DxLibMake.zip ${DxLibMakeUrl}
-    unzip DxLibMake.zip
 
-    echo "### download_and_unzip_dxlib done"
+    if [ $? -ne 0 ]; then
+        err_exit "Downloading ${DxLibMakeUrl} failed!"
+    fi
+
+    unzip DxLibMake.zip || true
+    
+    info "### download_and_unzip_dxlib done"
 }
 
 
-function create_commit_of_common_part() {
-    echo "### create_commit_of_common_part"
+function create_patch_commit_of_common_part() {
+    info "### create_patch_commit_of_common_part"
 
     git switch ${WorkingBranch} --force
 
@@ -50,16 +78,24 @@ function create_commit_of_common_part() {
     find .. -maxdepth 1 -type f | xargs -I{} git stage {}
     git commit -m "[Bot] Create Patch of ${DxLibVersion} (Platform-Independent)"
 
-    echo "### create_commit_of_common_part done"
+    info "### create_patch_commit_of_common_part done"
 }
 
 function apply_to_develop_branch() {
+    info "### apply_to_develop_branch"
+
     git switch ${DevelopBranch} --force
     git cherry-pick $1
+
+    if [ $? -ne 0 ]; then
+        err_exit "Git cherry-pick failed!"
+    fi
+
+    info "### apply_to_develop_branch done"
 }
 
 function update_original_branch_of_common_part() {
-    echo "### update_original_branch_of_common_part"
+    info "### update_original_branch_of_common_part"
 
     git switch ${OriginalBranch} --force
 
@@ -67,12 +103,12 @@ function update_original_branch_of_common_part() {
     find .. -maxdepth 1 -type f | xargs -I{} git stage {}
     git commit -m "[Bot] Update to ${DxLibVersion} (Platform-Independent)"
 
-    echo "### update_original_branch_of_common_part done"
+    info "### update_original_branch_of_common_part done"
 }
 
 
-function create_commit_of_android_part() {
-    echo "### create_commit_of_android_part"
+function create_patch_commit_of_android_part() {
+    info "### create_patch_commit_of_android_part"
 
     git switch ${WorkingBranch} --force
     mkdir ../HTML5 || true
@@ -80,26 +116,41 @@ function create_commit_of_android_part() {
     # Commit1: cherry-pick preparation
     ./CopyFromAndroid.js
 
+    if [ $? -ne 0 ]; then
+        err_exit "CopyFromAndroid.js failed!"
+    fi
+
     git stage ../HTML5/*
     git commit -m "[Bot] Update Android Part before ${DxLibVersion}"
+
 
     # Commit2: cherry-picked commit
     cp DxLibMake/Android/* ../Android
     ./CopyFromAndroid.js
 
+    if [ $? -ne 0 ]; then
+        err_exit "CopyFromAndroid.js failed!"
+    fi
+
+
     find ../HTML5 -maxdepth 1 -type f | xargs -I{} git stage {}
     git commit -m "[Bot] Create Patch of ${DxLibVersion} (Android)"
 
-    echo "### create_commit_of_android_part done"
+    info "### create_patch_commit_of_android_part done"
 }
 
-function create_commit_of_ios_part() {
-    echo "### create_commit_of_ios_part"
+function create_patch_commit_of_ios_part() {
+    info "### create_patch_commit_of_ios_part"
 
     git switch ${WorkingBranch} --force
 
     # Commit1: cherry-pick preparation
     ./CopyFromiOS.js
+
+    if [ $? -ne 0 ]; then
+        err_exit "CopyFromiOS.js failed!"
+    fi
+
 
     git stage ../HTML5/*
     git commit -m "[Bot] Update iOS Part before ${DxLibVersion}"
@@ -108,15 +159,20 @@ function create_commit_of_ios_part() {
     cp DxLibMake/iOS/* ../iOS
     ./CopyFromiOS.js
 
+    if [ $? -ne 0 ]; then
+        err_exit "CopyFromiOS.js failed!"
+    fi
+
+
     find ../HTML5 -maxdepth 1 -type f | xargs -I{} git stage {}
     git commit -m "[Bot] Create Patch of ${DxLibVersion} (iOS)"
 
-    echo "### create_commit_of_ios_part done"
+    info "### create_patch_commit_of_ios_part done"
 }
 
 
 function update_original_branch_of_platform_dependent_part() {
-    echo "### update_original_branch_of_platform_dependent_part"
+    info "### update_original_branch_of_platform_dependent_part"
 
     git switch ${OriginalBranch} --force
 
@@ -128,7 +184,7 @@ function update_original_branch_of_platform_dependent_part() {
     find ../iOS -maxdepth 1 -type f | xargs -I{} git stage {}
     git commit -m "[Bot] Update to ${DxLibVersion} (iOS)"
 
-    echo "### update_original_branch_of_platform_dependent_part done"
+    info "### update_original_branch_of_platform_dependent_part done"
 }
 
 
@@ -152,10 +208,14 @@ function do_init() {
 function check_update_required() {
     local GitHubVersion=$(./FetchLatestTag.js)
 
-    echo "DxLibVersion: ${DxLibVersion}, GitHubVersion: ${GitHubVersion}"
+    if [ $? -ne 0 ]; then
+        err_exit "FetchLatestTag.js failed!"
+    fi
+
+    warn "DxLibVersion: ${DxLibVersion}, GitHubVersion: ${GitHubVersion}"
 
     if [ ${DxLibVersion} == ${GitHubVersion} ]; then
-        echo "No need to update. Exit."
+        warn "No need to update. Exit."
         return 1
     fi
 
@@ -165,18 +225,18 @@ function check_update_required() {
 function do_update() {
     download_and_unzip_dxlib
 
-    create_commit_of_common_part
-    local Commit_CommonPart=$(git log --format="%H" -n 1)
-    apply_to_develop_branch ${Commit_CommonPart}
+    create_patch_commit_of_common_part
+    local CommitID_CommonPart=$(git log --format="%H" -n 1)
+    apply_to_develop_branch ${CommitID_CommonPart}
     update_original_branch_of_common_part
 
-    create_commit_of_android_part
-    local Commit_AndroidPart=$(git log --format="%H" -n 1)
-    apply_to_develop_branch ${Commit_AndroidPart}
+    create_patch_commit_of_android_part
+    local CommitID_AndroidPart=$(git log --format="%H" -n 1)
+    apply_to_develop_branch ${CommitID_AndroidPart}
     
-    create_commit_of_ios_part
-    local Commit_iOSPart=$(git log --format="%H" -n 1)
-    apply_to_develop_branch ${Commit_iOSPart}
+    create_patch_commit_of_ios_part
+    local CommitID_iOSPart=$(git log --format="%H" -n 1)
+    apply_to_develop_branch ${CommitID_iOSPart}
 
     update_original_branch_of_platform_dependent_part
 }
