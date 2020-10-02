@@ -1,33 +1,53 @@
-language: cpp
+language: node_js
 
 services:
   - docker
 
-before_install:
-  - docker pull trzeci/emscripten:1.39.10-upstream
+node_js:
+  - '12'
 
-script:
-  - docker run --name dxlib trzeci/emscripten:1.39.10-upstream bash -c "git clone --recursive https://github.com/nokotan/DxLibForHTML5.git && cd DxLibForHTML5 && mkdir build && cd build && emcmake cmake .. && emmake make"
-  - mkdir dest
-  - mkdir dest/bin
-  - docker cp dxlib:/src/DxLibForHTML5/build/libDxLib.a dest/bin/
-  - docker cp dxlib:/src/DxLibForHTML5/build/libDxUseCLib.a dest/bin/
-  - docker cp dxlib:/src/DxLibForHTML5/build/libDxDrawFunc.a dest/bin/
-  - mkdir dest/include
-  - docker cp dxlib:/src/DxLibForHTML5/DxCompileConfig.h dest/include/
-  - docker cp dxlib:/src/DxLibForHTML5/DxDataType.h dest/include/
-  - docker cp dxlib:/src/DxLibForHTML5/DxDataTypeHTML5.h dest/include/
-  - docker cp dxlib:/src/DxLibForHTML5/DxFunctionWin.h dest/include/
-  - docker cp dxlib:/src/DxLibForHTML5/DxLib.h dest/include/
-  - zip -r DxLibForHTML5.zip dest
-  - tar -cvzf DxLibForHTML5.tgz dest/*
+jobs:
+  include:
+    - stage: 'Update Version'
+      script:
+        - cp -r ci-scripts ci-scripts-temp
+        - cd ci-scripts-temp
+        - node --version
+        - npm install
+        - chmod +x AutoUpdate.sh
+        - chmod +x FetchDxLibVersion.js
+        - chmod +x FetchLatestTag.js
+        - ./AutoUpdate.sh
 
-deploy:
-  provider: releases
-  token: $GITHUB_TOKEN
-  file:
-    - DxLibForHTML5.zip
-    - DxLibForHTML5.tgz
-  skip_cleanup: true
-  on:
-    tags: true
+    - stage: 'Build'
+      before_install:
+        - docker pull trzeci/emscripten:1.39.10-upstream
+      script:
+        - docker run --name dxlib --volume ${TRAVIS_BUILD_DIR}:/src trzeci/emscripten:1.39.10-upstream bash -c "mkdir build && cd build && emcmake cmake .. && emmake make"
+        - mkdir dest
+        - mkdir dest/bin
+        - cp build/libDxLib.a dest/bin/
+        - cp build/libDxUseCLib.a dest/bin/
+        - cp build/libDxDrawFunc.a dest/bin/
+        - mkdir dest/include
+        - cp DxCompileConfig.h dest/include/
+        - cp DxDataType.h dest/include/
+        - cp DxDataTypeHTML5.h dest/include/
+        - cp DxFunctionWin.h dest/include/
+        - cp DxLib.h dest/include/
+        - zip -r DxLibForHTML5.zip dest
+        - tar -cvzf DxLibForHTML5.tgz dest/*
+      deploy:
+        provider: releases
+        token: $GITHUB_TOKEN
+        file:
+          - DxLibForHTML5.zip
+          - DxLibForHTML5.tgz
+        skip_cleanup: true
+        on:
+          tags: true
+
+stages:
+  - name: 'Update Version'
+    if: type = cron
+  - name: 'Build'
