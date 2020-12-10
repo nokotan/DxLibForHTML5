@@ -73,10 +73,6 @@ set_target_properties(DxLib
         CXX_STANDARD 11
 )
 
-target_link_libraries(DxLib
-    DxDrawFunc
-)
-
 
 
 # DxDrawFunc
