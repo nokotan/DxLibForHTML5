@@ -23,7 +23,7 @@ jobs:
       before_install:
         - docker pull trzeci/emscripten:1.39.10-upstream
       script:
-        - docker run --name dxlib --volume ${TRAVIS_BUILD_DIR}:/src trzeci/emscripten:1.39.10-upstream bash -c ./Build.sh
+        - docker run --name dxlib --volume ${TRAVIS_BUILD_DIR}:/src trzeci/emscripten:1.39.10-upstream bash Build.sh
         - mkdir dest
         - mkdir dest/bin
         - cp build/libDxLib.a dest/bin/
