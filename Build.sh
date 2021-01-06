@@ -1,5 +1,7 @@
 !/bin/bash
 
+cd /src
+
 echo "# Create Build Folder"
 
 mkdir build

@@ -21,9 +21,9 @@ jobs:
 
     - stage: 'Build'
       before_install:
-        - docker pull trzeci/emscripten:1.39.10-upstream
+        - docker pull emscripten/emsdk:2.0.4
       script:
-        - docker run --name dxlib --volume ${TRAVIS_BUILD_DIR}:/src trzeci/emscripten:1.39.10-upstream bash Build.sh
+        - docker run --name dxlib --volume ${TRAVIS_BUILD_DIR}:/src emscripten/emsdk:2.0.4 bash Build.sh
         - mkdir dest
         - mkdir dest/bin
         - cp build/libDxLib.a dest/bin/
