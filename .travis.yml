@@ -46,7 +46,7 @@ jobs:
         file:
           - DxLibForHTML5.zip
           - DxLibForHTML5.tgz
-        cleanup: false
+        skip_cleanup: true
         on:
           tags: true
 
