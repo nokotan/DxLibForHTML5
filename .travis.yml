@@ -50,7 +50,11 @@ jobs:
         on:
           tags: true
       after_deploy:
-        - "curl -X POST \"-H Authorization: token $GITHUB_TOKEN\" -H \"Accept: application/vnd.github.v3+json\" \"https://api.github.com/repos/nokotan/OpenSiv3DForWeb-VSCode/actions/workflows/update.yml/dispatches\" -d '{ \"ref\": \"master\", \"inputs\": { \"name\": \"Update ${{ github.ref }}\", \"url\": \"${{ needs.pre-deploy.outputs.upload_url }}\" } }'"
+        - |
+          curl -X POST \
+          -H "Authorization: token ${GITHUB_TOKEN}" -H "Accept: application/vnd.github.v3+json" \
+          "https://api.github.com/repos/nokotan/DxLibForHTML5-VSCode/actions/workflows/update.yml/dispatches" \
+          -d "{ \"ref\": \"master\", \"inputs\": { \"name\": \"Update ${TRAVIS_TAG}\", \"url\": \"https://github.com/nokotan/DxLibForHTML5/releases/download/${TRAVIS_TAG}/DxLibForHTML5.tgz\" } }"
 
 stages:
   - name: 'Update Version'
