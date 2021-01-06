@@ -23,7 +23,7 @@ jobs:
         - ./AutoUpdate.sh
 
     - stage: 'Build'
-      before_install:
+      install:
         - docker pull ${CONTAINER}
       script:
         - docker run --name dxlib --volume ${TRAVIS_BUILD_DIR}:/src ${CONTAINER} bash Build.sh
@@ -49,6 +49,8 @@ jobs:
         skip_cleanup: true
         on:
           tags: true
+      after_deploy:
+        - curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/nokotan/OpenSiv3DForWeb-VSCode/actions/workflows/update.yml/dispatches" -d '{ "ref": "master", "inputs": { "name": "Update ${{ github.ref }}", "url": "${{ needs.pre-deploy.outputs.upload_url }}" } }'
 
 stages:
   - name: 'Update Version'
