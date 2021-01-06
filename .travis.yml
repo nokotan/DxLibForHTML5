@@ -6,6 +6,9 @@ services:
 node_js:
   - '12'
 
+env:
+  - CONTAINER="emscripten/emsdk:2.0.4"
+
 jobs:
   include:
     - stage: 'Update Version'
@@ -21,9 +24,9 @@ jobs:
 
     - stage: 'Build'
       before_install:
-        - docker pull emscripten/emsdk:2.0.4
+        - docker pull ${CONTAINER}
       script:
-        - docker run --name dxlib --volume ${TRAVIS_BUILD_DIR}:/src emscripten/emsdk:2.0.4 bash Build.sh
+        - docker run --name dxlib --volume ${TRAVIS_BUILD_DIR}:/src ${CONTAINER} bash Build.sh
         - mkdir dest
         - mkdir dest/lib
         - cp build/libDxLib.a dest/lib/
