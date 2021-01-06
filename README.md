@@ -4,7 +4,7 @@
 
 ## 概要
 
-DXライブラリをHTML5で動かしてみたい...
+DXライブラリをWebGLで動かしてみたい...
 
 - iOS, Android版の描画バックエンドが OpenGLES
 - iOS のサウンド再生バックエンドが OpenAL
@@ -12,18 +12,34 @@ DXライブラリをHTML5で動かしてみたい...
 
 はい、emscripten を使ってビルドしてみます
 
-## コンパイル済みバイナリのダウンロード
+## ビルド環境構築
+
+### コンパイル済みバイナリのダウンロード
 
 - [最新版のダウンロード](https://github.com/nokotan/DxLibForHTML5/releases/latest) (Windows, Linux, macOS共通)
 
-## 必要条件
+### 必要条件
+
+- [emscripten 2.0.4](https://emscripten.org/docs/getting_started/downloads.html)
+- [Visual Studio](https://visualstudio.microsoft.com/ja/downloads/) または [Visual Studio Code](https://visualstudio.microsoft.com/ja/downloads/)
+
+### 参考資料
+
+| 開発環境 | リンク |
+|:--:|:--:|
+| Visual Studio | [DXライブラリ HTML5版を使ってブラウザで動くゲームを作ってみる (Visual Studio版, Windows)](https://qiita.com/nokotan/items/5fa6f2d39ff7bb6641e8) |
+| VSCode | [DXライブラリ HTML5版を使ってブラウザで動くゲームを作ってみる (VSCode版, Windows)](https://qiita.com/nokotan/items/d2dff1559f981e5e3da5) |
+
+## ライブラリ本体の手動ビルド
+
+### 必要条件
 
 - emscripten 1.39.6^
 - cmake
 - git
 - make (nmake, ninjaでも可)
 
-## ビルド
+### ビルド
 
 - macOS, Linux
 
