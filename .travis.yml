@@ -25,10 +25,10 @@ jobs:
       script:
         - docker run --name dxlib --volume ${TRAVIS_BUILD_DIR}:/src emscripten/emsdk:2.0.4 bash Build.sh
         - mkdir dest
-        - mkdir dest/bin
-        - cp build/libDxLib.a dest/bin/
-        - cp build/libDxUseCLib.a dest/bin/
-        - cp build/libDxDrawFunc.a dest/bin/
+        - mkdir dest/lib
+        - cp build/libDxLib.a dest/lib/
+        - cp build/libDxUseCLib.a dest/lib/
+        - cp build/libDxDrawFunc.a dest/lib/
         - mkdir dest/include
         - cp DxCompileConfig.h dest/include/
         - cp DxDataType.h dest/include/
@@ -43,7 +43,7 @@ jobs:
         file:
           - DxLibForHTML5.zip
           - DxLibForHTML5.tgz
-        skip_cleanup: true
+        cleanup: false
         on:
           tags: true
 
