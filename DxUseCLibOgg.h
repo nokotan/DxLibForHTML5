@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Ogg関係ヘッダファイル
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -191,7 +191,7 @@ extern	int		TheoraDecode_InitializeStream_PF( DECODE_THEORA *DT ) ;													
 #ifndef DX_NON_OGGVORBIS
 
 extern	int		GetOggCommentNumBase( STREAMDATA *Stream ) ;
-extern	int		GetOggCommentBase( STREAMDATA *Stream, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes ) ;
+extern	int		GetOggCommentBase( STREAMDATA *Stream, int CommentIndex, char *CommentNameBuffer, size_t CommentNameBufferBytes, char *CommentBuffer, size_t CommentBufferBytes ) ;
 
 #endif
 

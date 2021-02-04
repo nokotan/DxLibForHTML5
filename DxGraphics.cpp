@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画プログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // ----------------------------------------------------------------------------
 
@@ -24959,6 +24959,186 @@ extern int NS_DrawModiFormatStringToHandleToZBuffer( int x1, int y1, int x2, int
 	return 0;
 }
 
+// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を描画する
+extern int DrawFormatStringToZBuffer_VaList( int x, int y, int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode );
+	NS_DrawString(  x,  y, String,  GetColor( 255,255,255 ) );
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
+// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を描画する( 縦書き )
+extern int DrawFormatVStringToZBuffer_VaList( int x, int y, int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode );
+	NS_DrawVString(  x,  y, String,  GetColor( 255,255,255 ) );
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
+// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を拡大描画する
+extern int DrawExtendFormatStringToZBuffer_VaList( int x, int y, double ExRateX, double ExRateY, int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode );
+	NS_DrawExtendString(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ) );
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
+// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を拡大描画する( 縦書き )
+extern int DrawExtendFormatVStringToZBuffer_VaList( int x, int y, double ExRateX, double ExRateY, int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode );
+	NS_DrawExtendVString(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ) );
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
+// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を回転描画する
+extern int DrawRotaFormatStringToZBuffer_VaList( int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, int WriteZMode /* DX_ZWRITE_MASK 等 */ , int VerticalFlag , const TCHAR *FormatString , va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode ) ;
+	NS_DrawRotaString(  x,  y,  ExRateX,  ExRateY, RotCenterX, RotCenterY, RotAngle,  GetColor( 255,255,255 ), GetColor( 0,0,0 ), VerticalFlag, String ) ;
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
+// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を変形描画する
+extern int DrawModiFormatStringToZBuffer_VaList( int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int WriteZMode /* DX_ZWRITE_MASK 等 */ , int VerticalFlag , const TCHAR *FormatString , va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode ) ;
+	NS_DrawModiString(  x1, y1, x2, y2, x3, y3, x4, y4,  GetColor( 255,255,255 ), GetColor( 0,0,0 ), VerticalFlag, String ) ;
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
+// フォントハンドルを使用してＺバッファに対して書式指定文字列を描画する
+extern int DrawFormatStringToHandleToZBuffer_VaList( int x, int y, int FontHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode );
+	NS_DrawStringToHandle(  x,  y, String,  GetColor( 255,255,255 ), FontHandle );
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
+// フォントハンドルを使用してＺバッファに対して書式指定文字列を描画する( 縦書き )
+extern int DrawFormatVStringToHandleToZBuffer_VaList( int x, int y, int FontHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode );
+	NS_DrawVStringToHandle(  x,  y, String,  GetColor( 255,255,255 ), FontHandle );
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
+// フォントハンドルを使用してＺバッファに対して書式指定文字列を拡大描画する
+extern int DrawExtendFormatStringToHandleToZBuffer_VaList( int x, int y, double ExRateX, double ExRateY, int FontHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode );
+	NS_DrawExtendStringToHandle(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), FontHandle );
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
+// フォントハンドルを使用してＺバッファに対して書式指定文字列を拡大描画する( 縦書き )
+extern int DrawExtendFormatVStringToHandleToZBuffer_VaList( int x, int y, double ExRateX, double ExRateY, int FontHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode );
+	NS_DrawExtendVStringToHandle(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), FontHandle );
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
+// フォントハンドルを使用してＺバッファに対して書式指定文字列を回転描画する
+extern int DrawRotaFormatStringToHandleToZBuffer_VaList( int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, int FontHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */ , int VerticalFlag, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode ) ;
+	NS_DrawRotaStringToHandle(  x,  y,  ExRateX,  ExRateY, RotCenterX, RotCenterY, RotAngle,  GetColor( 255,255,255 ), FontHandle, GetColor( 0,0,0 ), VerticalFlag, String ) ;
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
+// フォントハンドルを使用してＺバッファに対して書式指定文字列を変形描画する
+extern int DrawModiFormatStringToHandleToZBuffer_VaList( int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int FontHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */ , int VerticalFlag, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	DrawZBuffer_Pre( WriteZMode ) ;
+	NS_DrawModiStringToHandle(  x1, y1, x2, y2, x3, y3, x4, y4,  GetColor( 255,255,255 ), FontHandle, GetColor( 0,0,0 ), VerticalFlag, String ) ;
+	DrawZBuffer_Post();
+
+	// 終了
+	return 0;
+}
+
 #endif // DX_NON_FONT
 
 
@@ -34766,6 +34946,70 @@ extern int Graphics_Other_TerminateCommonBuffer( void )
 
 	return 0 ;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// va_list 関数
+
+// 描画処理時に描画する画像とブレンドする画像のブレンド設定を行う、BlendGraph を -1 にすれば設定を解除、その場合 BlendType とその後ろのパラメータは無視される
+extern int SetBlendGraphParam_VaList( int BlendGraph, int BlendType, va_list VaList )
+{
+	int Result ;
+
+	if( BlendType < 0 || BlendType >= DX_BLENDGRAPHTYPE_NUM )
+	{
+		return -1 ;
+	}
+
+	Result = Graphics_DrawSetting_SetBlendGraphParamBase(  BlendGraph,  BlendType, VaList ) ;
+
+	return Result ;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 #ifndef DX_NON_NAMESPACE
 

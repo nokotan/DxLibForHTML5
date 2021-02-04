@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字コード関係プログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // ----------------------------------------------------------------------------
 
@@ -19,6 +19,7 @@
 #include "DxChar.h"
 #include <float.h>
 #include <math.h>
+#include <limits.h>
 
 #ifdef WINDOWS_DESKTOP_OS
 #include "Windows/DxWinAPI.h"
@@ -3298,6 +3299,7 @@ extern DWORD CheckCharCodeFormat( const char *String, int CharCodeFormat, int *I
 	case DX_CHARCODEFORMAT_WINDOWS_1252 :
 	case DX_CHARCODEFORMAT_ISO_IEC_8859_15 :
 	case DX_CHARCODEFORMAT_ASCII :
+		CHARCODETABLE_INITCHECK( CharCodeFormat )
 		for( i = 0 ; ( ( BYTE * )String )[ i ] != 0 ; )
 		{
 			j = i ;
@@ -3316,6 +3318,10 @@ extern DWORD CheckCharCodeFormat( const char *String, int CharCodeFormat, int *I
 		break ;
 
 	case DX_CHARCODEFORMAT_UTF8 :
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_SHIFTJIS )
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_GB2312 )
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_UHC )
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_BIG5 )
 		for( i = 0 ; ( ( BYTE * )String )[ i ] != 0 ; )
 		{
 			j = i ;
@@ -3347,6 +3353,10 @@ extern DWORD CheckCharCodeFormat( const char *String, int CharCodeFormat, int *I
 
 	case DX_CHARCODEFORMAT_UTF16LE :
 	case DX_CHARCODEFORMAT_UTF16BE :
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_SHIFTJIS )
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_GB2312 )
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_UHC )
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_BIG5 )
 		for( i = 0 ; ( ( WORD * )String )[ i ] != 0 ; )
 		{
 			j = i ;
@@ -3378,6 +3388,10 @@ extern DWORD CheckCharCodeFormat( const char *String, int CharCodeFormat, int *I
 
 	case DX_CHARCODEFORMAT_UTF32LE :
 	case DX_CHARCODEFORMAT_UTF32BE :
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_SHIFTJIS )
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_GB2312 )
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_UHC )
+		CHARCODETABLE_INITCHECK( DX_CHARCODEFORMAT_BIG5 )
 		for( i = 0 ; ( ( DWORD * )String )[ i ] != 0 ; )
 		{
 			j = i ;
@@ -7777,14 +7791,17 @@ END :
 extern int CL_atoi( int CharCodeFormat, const char *Str )
 {
 	int i ;
-	int AddNum ;
+	LONGLONG AddNum ;
 	int NumCharNum ;
-	int Number[ 256 ] ;
-	int Total = 0 ;
-	int Minus ;
+	int BaseNumber[ 256 ] ;
+	int *TempNumber = NULL ;
+	int *Number ;
+	LONGLONG Total = 0 ;
+	int Minus = 0 ;
 	DWORD BaseBuffer[ 1024 ] ;
 	DWORD *TempBuffer = NULL ;
 	DWORD *FCode ;
+	DWORD *FCodeBackup ;
 	int StringSize ;
 
 	// NULL のアドレスが渡されたら 0 を返す
@@ -7800,7 +7817,8 @@ extern int CL_atoi( int CharCodeFormat, const char *Str )
 		TempBuffer = ( DWORD * )DXALLOC( StringSize + sizeof( DWORD ) * 16 ) ;
 		if( TempBuffer == NULL )
 		{
-			return -1 ;
+			Total = -1 ;
+			goto END ;
 		}
 
 		FCode = TempBuffer ;
@@ -7812,18 +7830,14 @@ extern int CL_atoi( int CharCodeFormat, const char *Str )
 	_MEMSET( FCode, 0, StringSize + sizeof( DWORD ) * 16 ) ;
 	StringToCharCodeString_inline( Str, CharCodeFormat, FCode ) ;
 
-	// 数字を探す
-	while( *FCode != '\0' )
+	// スペースや改行文字はスキップ
+	while( *FCode != '\0' && ( *FCode == ' ' || *FCode == '\n' || *FCode == '\r' || *FCode == '\t' || *FCode == '\v' || *FCode == '\f' ) )
 	{
-		if( ( *FCode >= '0' && *FCode <= '9' ) || *FCode == '-' )
-		{
-			break ;
-		}
-		FCode ++ ;
+		FCode++ ;
 	}
 
-	// いきなり終端文字の場合はエラーなので 0 を返す
-	if( *FCode == '\0' )
+	// 一文字目が - や + や数字ではなかったら 0 を返す
+	if( *FCode != '-' && *FCode != '+' && ( *FCode < '0' || *FCode > '9' ) )
 	{
 		goto END ;
 	}
@@ -7833,30 +7847,113 @@ extern int CL_atoi( int CharCodeFormat, const char *Str )
 	{
 		Minus = 1 ;
 		FCode ++ ;
+
+		// 次の文字が数字ではない場合は 0 を返す
+		if( *FCode < '0' && *FCode > '9' )
+		{
+			goto END ;
+		}
 	}
 	else
+	// 最初の文字がプラス記号の場合は無視する
+	if( *FCode == '+' )
 	{
 		Minus = 0 ;
+		FCode ++ ;
+
+		// 次の文字が数字ではない場合は 0 を返す
+		if( *FCode < '0' && *FCode > '9' )
+		{
+			goto END ;
+		}
 	}
 	
 	// 数字を取得
+	FCodeBackup = FCode ;
+	for( NumCharNum = 0 ; *FCode != '\0' && ( *FCode >= '0' && *FCode <= '9' ) ; NumCharNum ++, FCode ++ ){}
+	if( NumCharNum > sizeof( BaseNumber ) / sizeof( int ) )
+	{
+		TempNumber = ( int * )DXALLOC( NumCharNum * sizeof( int ) ) ;
+		if( TempNumber == NULL )
+		{
+			Total = -1 ;
+			goto END ;
+		}
+
+		Number = TempNumber ;
+	}
+	else
+	{
+		Number = BaseNumber ;
+	}
+	FCode = FCodeBackup ;
 	for( NumCharNum = 0 ; *FCode != '\0' && ( *FCode >= '0' && *FCode <= '9' ) ; NumCharNum ++, FCode ++ )
 	{
 		Number[ NumCharNum ] = *FCode - '0' ;
 	}
 	
 	// 数値に変換
-	AddNum = 1 ;
-	Total  = 0 ;
-	for( i = NumCharNum - 1 ; i >= 0 ; i --, AddNum *= 10 )
-	{
-		Total += Number[ i ] * AddNum ;
-	}
-
-	// マイナスフラグが立っていたらマイナス値にする
 	if( Minus == 1 )
 	{
-		Total = -Total ;
+		AddNum = -1 ;
+		Total  = 0 ;
+		for( i = NumCharNum - 1 ; i >= 0 ; i --, AddNum *= 10 )
+		{
+			// AddNum が int型の最小値を越えたら、文字列の終端までに 1 以上の数値があったら INT_MIN を返す
+			if( AddNum <= INT_MIN )
+			{
+				for( ; i >= 0 ; i -- )
+				{
+					if( Number[ i ] > 0 )
+					{
+						Total = INT_MIN ;
+						break ;
+					}
+				}
+
+				break ;
+			}
+
+			Total += Number[ i ] * AddNum ;
+
+			// int型の最小値を越えたら関数を抜ける
+			if( Total <= INT_MIN )
+			{
+				Total = INT_MIN ;
+				break ;
+			}
+		}
+	}
+	else
+	{
+		AddNum = 1 ;
+		Total  = 0 ;
+		for( i = NumCharNum - 1 ; i >= 0 ; i --, AddNum *= 10 )
+		{
+			// AddNum が int型の最大値を越えたら、文字列の終端までに 1 以上の数値があったら INT_MAX を返す
+			if( AddNum >= INT_MAX )
+			{
+				for( ; i >= 0 ; i -- )
+				{
+					if( Number[ i ] > 0 )
+					{
+						Total = INT_MAX ;
+						break ;
+					}
+				}
+
+				break ;
+			}
+
+			Total += Number[ i ] * AddNum ;
+
+			// int型の最大値を越えたら関数を抜ける
+			if( Total >= INT_MAX )
+			{
+				Total = INT_MAX ;
+				break ;
+			}
+		}
 	}
 
 END :
@@ -7867,8 +7964,14 @@ END :
 		TempBuffer = NULL ;
 	}
 
+	if( TempNumber != NULL )
+	{
+		DXFREE( TempNumber ) ;
+		TempNumber = NULL ;
+	}
+
 	// 数値を返す
-	return Total ;
+	return ( int )Total ;
 }
 
 extern LONGLONG CL_atoi64( int CharCodeFormat, const char *Str )
@@ -7878,10 +7981,11 @@ extern LONGLONG CL_atoi64( int CharCodeFormat, const char *Str )
 	int NumCharNum ;
 	int Number[ 256 ] ;
 	LONGLONG Total = 0 ;
-	int Minus ;
+	int Minus = 0 ;
 	DWORD BaseBuffer[ 1024 ] ;
 	DWORD *TempBuffer = NULL ;
 	DWORD *FCode ;
+	DWORD *FCodeBackup ;
 	int StringSize ;
 
 	// NULL のアドレスが渡されたら 0 を返す
@@ -7909,18 +8013,14 @@ extern LONGLONG CL_atoi64( int CharCodeFormat, const char *Str )
 	_MEMSET( FCode, 0, StringSize + sizeof( DWORD ) * 16 ) ;
 	StringToCharCodeString_inline( Str, CharCodeFormat, FCode ) ;
 
-	// 数字を探す
-	while( *FCode != '\0' )
+	// スペースや改行文字はスキップ
+	while( *FCode != '\0' && ( *FCode == ' ' || *FCode == '\n' || *FCode == '\r' || *FCode == '\t' || *FCode == '\v' || *FCode == '\f' ) )
 	{
-		if( ( *FCode >= '0' && *FCode <= '9' ) || *FCode == '-' )
-		{
-			break ;
-		}
-		FCode ++ ;
+		FCode++ ;
 	}
 
-	// いきなり終端文字の場合はエラーなので 0 を返す
-	if( *FCode == '\0' )
+	// 一文字目が - や + や数字ではなかったら 0 を返す
+	if( *FCode != '-' && *FCode != '+' && ( *FCode < '0' || *FCode > '9' ) )
 	{
 		goto END ;
 	}
@@ -7930,10 +8030,35 @@ extern LONGLONG CL_atoi64( int CharCodeFormat, const char *Str )
 	{
 		Minus = 1 ;
 		FCode ++ ;
+
+		// 次の文字が数字ではない場合は 0 を返す
+		if( *FCode < '0' && *FCode > '9' )
+		{
+			goto END ;
+		}
 	}
 	else
+	// 最初の文字がプラス記号の場合は無視する
+	if( *FCode == '+' )
 	{
 		Minus = 0 ;
+		FCode ++ ;
+
+		// 次の文字が数字ではない場合は 0 を返す
+		if( *FCode < '0' && *FCode > '9' )
+		{
+			goto END ;
+		}
+	}
+
+	// 数字の数が 256個を越える場合はエラー
+	FCodeBackup = FCode ;
+	for( NumCharNum = 0 ; *FCode != '\0' && ( *FCode >= '0' && *FCode <= '9' ) ; NumCharNum ++, FCode ++ ){}
+	FCode = FCodeBackup ;
+	if( NumCharNum >= sizeof( Number ) / sizeof( int ) )
+	{
+		Total = -1 ;
+		goto END ;
 	}
 	
 	// 数字を取得
@@ -8022,6 +8147,12 @@ extern double CL_atof( int CharCodeFormat, const char *Str )
 	_MEMSET( FCode, 0, StringSize + sizeof( DWORD ) * 16 ) ;
 	StringToCharCodeString_inline( Str, CharCodeFormat, FCode ) ;
 
+	// スペースや改行文字はスキップ
+	while( *FCode != '\0' && ( *FCode == ' ' || *FCode == '\n' || *FCode == '\r' || *FCode == '\t' || *FCode == '\v' || *FCode == '\f' ) )
+	{
+		FCode++ ;
+	}
+
 	// いきなり終端文字の場合は 0.0 を返す
 	if( *FCode == '\0' )
 	{
@@ -8039,6 +8170,18 @@ extern double CL_atof( int CharCodeFormat, const char *Str )
 			goto END ;
 		}
 		MinusFlag = 1 ;
+	}
+	else
+	// プラス記号が最初にあったら無視する
+	if( *FCode == '+' )
+	{
+		FCode ++ ;
+
+		// プラス記号の直後に終端文字の場合は 0.0 を返す
+		if( *FCode == '\0' )
+		{
+			goto END ;
+		}
 	}
 
 	IntNumberNum   = 0 ;
@@ -8126,9 +8269,9 @@ extern double CL_atof( int CharCodeFormat, const char *Str )
 			}
 		}
 		else
-		// 上記以外の文字だった場合はエラーなので 0.0 を返す
+		// 上記以外の文字だった場合はループを抜ける
 		{
-			goto END ;
+			break ;
 		}
 	}
 

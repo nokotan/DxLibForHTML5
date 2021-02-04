@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		演算プログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // ----------------------------------------------------------------------------
 
@@ -5534,39 +5534,84 @@ extern void HitCheck_Line_Triangle_Base(
 			Segment_Segment_Analyse( &LinePos1, &LinePos2, &TrianglePos2, &TrianglePos3, &Seg_Tri2_3_Res ) ;
 			Segment_Segment_Analyse( &LinePos1, &LinePos2, &TrianglePos3, &TrianglePos1, &Seg_Tri3_1_Res ) ;
 
-			MinLen = 0.0f ;
-			if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
-				( Result->HitFlag == 0 || MinLen > Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ) )
+			if( Project2 )
 			{
-				MinLen = Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ;
 				Result->HitFlag = 1 ;
-				Result->Position = Seg_Tri1_2_Res.SegB_MinDist_Pos ;
+				if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < Seg_Tri2_3_Res.SegA_SegB_MinDist_Square )
+				{
+					if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < Seg_Tri3_1_Res.SegA_SegB_MinDist_Square )
+					{
+						Result->Position = Seg_Tri1_2_Res.SegB_MinDist_Pos ;
 
-				if( TrianglePos1Weight ) *TrianglePos1Weight = 1.0f - Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
-				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
-				if( TrianglePos3Weight ) *TrianglePos3Weight = 0.0f ;
+						if( TrianglePos1Weight ) *TrianglePos1Weight = 1.0f - Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+						if( TrianglePos2Weight ) *TrianglePos2Weight = Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+						if( TrianglePos3Weight ) *TrianglePos3Weight = 0.0f ;
+					}
+					else
+					{
+						Result->Position = Seg_Tri3_1_Res.SegB_MinDist_Pos ;
+
+						if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+						if( TrianglePos2Weight ) *TrianglePos2Weight = 0.0f ;
+						if( TrianglePos3Weight ) *TrianglePos3Weight = 1.0f - Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+					}
+				}
+				else
+				{
+					if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < Seg_Tri3_1_Res.SegA_SegB_MinDist_Square )
+					{
+						Result->Position = Seg_Tri2_3_Res.SegB_MinDist_Pos ;
+
+						if( TrianglePos1Weight ) *TrianglePos1Weight = 0.0f ;
+						if( TrianglePos2Weight ) *TrianglePos2Weight = 1.0f - Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+						if( TrianglePos3Weight ) *TrianglePos3Weight = Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+					}
+					else
+					{
+						Result->Position = Seg_Tri3_1_Res.SegB_MinDist_Pos ;
+
+						if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+						if( TrianglePos2Weight ) *TrianglePos2Weight = 0.0f ;
+						if( TrianglePos3Weight ) *TrianglePos3Weight = 1.0f - Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+					}
+				}
 			}
-			if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
-				( Result->HitFlag == 0 || MinLen > Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ) )
+			else
 			{
-				MinLen = Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ;
-				Result->HitFlag = 1 ;
-				Result->Position = Seg_Tri2_3_Res.SegB_MinDist_Pos ;
+				MinLen = 0.0f ;
+				if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
+					( Result->HitFlag == 0 || MinLen > Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ) )
+				{
+					MinLen = Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ;
+					Result->HitFlag = 1 ;
+					Result->Position = Seg_Tri1_2_Res.SegB_MinDist_Pos ;
 
-				if( TrianglePos1Weight ) *TrianglePos1Weight = 0.0f ;
-				if( TrianglePos2Weight ) *TrianglePos2Weight = 1.0f - Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
-				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
-			}
-			if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
-				( Result->HitFlag == 0 || MinLen > Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ) )
-			{
-				MinLen = Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ;
-				Result->HitFlag = 1 ;
-				Result->Position = Seg_Tri3_1_Res.SegB_MinDist_Pos ;
+					if( TrianglePos1Weight ) *TrianglePos1Weight = 1.0f - Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+					if( TrianglePos2Weight ) *TrianglePos2Weight = Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+					if( TrianglePos3Weight ) *TrianglePos3Weight = 0.0f ;
+				}
+				if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
+					( Result->HitFlag == 0 || MinLen > Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ) )
+				{
+					MinLen = Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ;
+					Result->HitFlag = 1 ;
+					Result->Position = Seg_Tri2_3_Res.SegB_MinDist_Pos ;
 
-				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
-				if( TrianglePos2Weight ) *TrianglePos2Weight = 0.0f ;
-				if( TrianglePos3Weight ) *TrianglePos3Weight = 1.0f - Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+					if( TrianglePos1Weight ) *TrianglePos1Weight = 0.0f ;
+					if( TrianglePos2Weight ) *TrianglePos2Weight = 1.0f - Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+					if( TrianglePos3Weight ) *TrianglePos3Weight = Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+				}
+				if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < 0.00000001f &&
+					( Result->HitFlag == 0 || MinLen > Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ) )
+				{
+					MinLen = Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ;
+					Result->HitFlag = 1 ;
+					Result->Position = Seg_Tri3_1_Res.SegB_MinDist_Pos ;
+
+					if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+					if( TrianglePos2Weight ) *TrianglePos2Weight = 0.0f ;
+					if( TrianglePos3Weight ) *TrianglePos3Weight = 1.0f - Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+				}
 			}
 		}
 	}
@@ -5773,39 +5818,84 @@ extern void HitCheck_Line_TriangleD_Base(
 			Segment_Segment_AnalyseD( &LinePos1, &LinePos2, &TrianglePos2, &TrianglePos3, &Seg_Tri2_3_Res ) ;
 			Segment_Segment_AnalyseD( &LinePos1, &LinePos2, &TrianglePos3, &TrianglePos1, &Seg_Tri3_1_Res ) ;
 
-			MinLen = 0.0f ;
-			if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
-				( Result->HitFlag == 0 || MinLen > Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ) )
+			if( Project2 )
 			{
-				MinLen = Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ;
 				Result->HitFlag = 1 ;
-				Result->Position = Seg_Tri1_2_Res.SegB_MinDist_Pos ;
+				if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < Seg_Tri2_3_Res.SegA_SegB_MinDist_Square )
+				{
+					if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < Seg_Tri3_1_Res.SegA_SegB_MinDist_Square )
+					{
+						Result->Position = Seg_Tri1_2_Res.SegB_MinDist_Pos ;
 
-				if( TrianglePos1Weight ) *TrianglePos1Weight = 1.0 - Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
-				if( TrianglePos2Weight ) *TrianglePos2Weight = Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
-				if( TrianglePos3Weight ) *TrianglePos3Weight = 0.0 ;
+						if( TrianglePos1Weight ) *TrianglePos1Weight = 1.0 - Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+						if( TrianglePos2Weight ) *TrianglePos2Weight = Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+						if( TrianglePos3Weight ) *TrianglePos3Weight = 0.0 ;
+					}
+					else
+					{
+						Result->Position = Seg_Tri3_1_Res.SegB_MinDist_Pos ;
+
+						if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+						if( TrianglePos2Weight ) *TrianglePos2Weight = 0.0 ;
+						if( TrianglePos3Weight ) *TrianglePos3Weight = 1.0 - Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+					}
+				}
+				else
+				{
+					if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < Seg_Tri3_1_Res.SegA_SegB_MinDist_Square )
+					{
+						Result->Position = Seg_Tri2_3_Res.SegB_MinDist_Pos ;
+
+						if( TrianglePos1Weight ) *TrianglePos1Weight = 0.0 ;
+						if( TrianglePos2Weight ) *TrianglePos2Weight = 1.0 - Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+						if( TrianglePos3Weight ) *TrianglePos3Weight = Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+					}
+					else
+					{
+						Result->Position = Seg_Tri3_1_Res.SegB_MinDist_Pos ;
+
+						if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+						if( TrianglePos2Weight ) *TrianglePos2Weight = 0.0 ;
+						if( TrianglePos3Weight ) *TrianglePos3Weight = 1.0 - Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+					}
+				}
 			}
-			if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
-				( Result->HitFlag == 0 || MinLen > Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ) )
+			else
 			{
-				MinLen = Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ;
-				Result->HitFlag = 1 ;
-				Result->Position = Seg_Tri2_3_Res.SegB_MinDist_Pos ;
+				MinLen = 0.0f ;
+				if( Seg_Tri1_2_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
+					( Result->HitFlag == 0 || MinLen > Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ) )
+				{
+					MinLen = Seg_Tri1_2_Res.SegA_MinDist_Pos1_Pos2_t ;
+					Result->HitFlag = 1 ;
+					Result->Position = Seg_Tri1_2_Res.SegB_MinDist_Pos ;
 
-				if( TrianglePos1Weight ) *TrianglePos1Weight = 0.0 ;
-				if( TrianglePos2Weight ) *TrianglePos2Weight = 1.0 - Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
-				if( TrianglePos3Weight ) *TrianglePos3Weight = Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
-			}
-			if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
-				( Result->HitFlag == 0 || MinLen > Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ) )
-			{
-				MinLen = Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ;
-				Result->HitFlag = 1 ;
-				Result->Position = Seg_Tri3_1_Res.SegB_MinDist_Pos ;
+					if( TrianglePos1Weight ) *TrianglePos1Weight = 1.0 - Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+					if( TrianglePos2Weight ) *TrianglePos2Weight = Seg_Tri1_2_Res.SegB_MinDist_Pos1_Pos2_t ;
+					if( TrianglePos3Weight ) *TrianglePos3Weight = 0.0 ;
+				}
+				if( Seg_Tri2_3_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
+					( Result->HitFlag == 0 || MinLen > Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ) )
+				{
+					MinLen = Seg_Tri2_3_Res.SegA_MinDist_Pos1_Pos2_t ;
+					Result->HitFlag = 1 ;
+					Result->Position = Seg_Tri2_3_Res.SegB_MinDist_Pos ;
 
-				if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
-				if( TrianglePos2Weight ) *TrianglePos2Weight = 0.0 ;
-				if( TrianglePos3Weight ) *TrianglePos3Weight = 1.0 - Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+					if( TrianglePos1Weight ) *TrianglePos1Weight = 0.0 ;
+					if( TrianglePos2Weight ) *TrianglePos2Weight = 1.0 - Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+					if( TrianglePos3Weight ) *TrianglePos3Weight = Seg_Tri2_3_Res.SegB_MinDist_Pos1_Pos2_t ;
+				}
+				if( Seg_Tri3_1_Res.SegA_SegB_MinDist_Square < 0.00000001 &&
+					( Result->HitFlag == 0 || MinLen > Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ) )
+				{
+					MinLen = Seg_Tri3_1_Res.SegA_MinDist_Pos1_Pos2_t ;
+					Result->HitFlag = 1 ;
+					Result->Position = Seg_Tri3_1_Res.SegB_MinDist_Pos ;
+
+					if( TrianglePos1Weight ) *TrianglePos1Weight = Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+					if( TrianglePos2Weight ) *TrianglePos2Weight = 0.0 ;
+					if( TrianglePos3Weight ) *TrianglePos3Weight = 1.0 - Seg_Tri3_1_Res.SegB_MinDist_Pos1_Pos2_t ;
+				}
 			}
 		}
 	}
@@ -5928,7 +6018,23 @@ extern int HitCheck_Triangle_Triangle( VECTOR Triangle1Pos1, VECTOR Triangle1Pos
 				LD1[ 1 ] = VSub( Triangle2Pos3, Triangle2Pos1 ) ;
 				LP1[ 1 ] = Triangle2Pos1 ;
 			}
-			else return FALSE ;
+			else
+			{
+				// もし二つの三角形が同一平面上にある場合は専用の処理を行う
+				if( L1[ 0 ] < 0.00000001f && L1[ 1 ] < 0.00000001f && L1[ 2 ] < 0.00000001f )
+				{
+					if( Triangle_Triangle_MinLength_Square( Triangle1Pos1, Triangle1Pos2, Triangle1Pos3, Triangle2Pos1, Triangle2Pos2, Triangle2Pos3 ) < 0.0000000001f )
+					{
+						return TRUE ;
+					}
+					else
+					{
+						return FALSE ;
+					}
+				}
+
+				return FALSE ;
+			}
 		}
 	}
 
@@ -6090,7 +6196,23 @@ extern int HitCheck_Triangle_TriangleD( VECTOR_D Triangle1Pos1, VECTOR_D Triangl
 				LD1[ 1 ] = VSubD( Triangle2Pos3, Triangle2Pos1 ) ;
 				LP1[ 1 ] = Triangle2Pos1 ;
 			}
-			else return FALSE ;
+			else
+			{
+				// もし二つの三角形が同一平面上にある場合は専用の処理を行う
+				if( L1[ 0 ] < 0.00000001 && L1[ 1 ] < 0.00000001 && L1[ 2 ] < 0.00000001 )
+				{
+					if( Triangle_Triangle_MinLength_SquareD( Triangle1Pos1, Triangle1Pos2, Triangle1Pos3, Triangle2Pos1, Triangle2Pos2, Triangle2Pos3 ) < 0.0000000001 )
+					{
+						return TRUE ;
+					}
+					else
+					{
+						return FALSE ;
+					}
+				}
+
+				return FALSE ;
+			}
 		}
 	}
 

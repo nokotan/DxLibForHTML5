@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		GraphFilter系プログラムヘッダファイル
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -16,6 +16,7 @@
 // インクルード ------------------------------------------------------------------
 #include "DxLib.h"
 #include "DxGraphics.h"
+#include <stdarg.h>
 
 #ifndef DX_NON_NAMESPACE
 
@@ -175,6 +176,13 @@ extern int	GraphBlend_RGBA_Select_Mix( GRAPHFILTER_INFO *Info, int SelectR, int 
 
 
 
+// va_list 関数
+extern	int	GraphFilter_VaList(			int    GrHandle,                                                                                                               int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */ , va_list VaList ) ;		// 画像にフィルター処理を行う
+extern	int	GraphFilterBlt_VaList(		int SrcGrHandle, int DestGrHandle,                                                                                             int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */ , va_list VaList ) ;		// 画像のフィルター付き転送を行う
+extern	int	GraphFilterRectBlt_VaList(	int SrcGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int DestX,  int DestY,                          int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */ , va_list VaList ) ;		// 画像のフィルター付き転送を行う( 矩形指定 )
+extern	int	GraphBlend_VaList(			int    GrHandle, int BlendGrHandle,                                                                                                              int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD 等 */ , va_list VaList ) ;	// 二つの画像をブレンドする
+extern	int	GraphBlendBlt_VaList(		int SrcGrHandle, int BlendGrHandle, int DestGrHandle,                                                                                            int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD 等 */ , va_list VaList ) ;	// 二つの画像をブレンドして結果を指定の画像に出力する
+extern	int	GraphBlendRectBlt_VaList(	int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX,  int BlendY, int DestX, int DestY, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD 等 */ , va_list VaList ) ;	// 二つの画像をブレンドして結果を指定の画像に出力する( 矩形指定 )
 
 // 環境依存関係
 extern int	GraphFilter_Initialize_PF( void ) ;

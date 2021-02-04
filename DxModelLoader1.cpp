@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＦＢＸモデルデータ読み込みプログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ struct FBX_MODEL
 
 static int AnalyseFbx( MV1_MODEL_R *RModel, FBX_MODEL *Model ) ;														// FBXファイルの解析( 0:成功  -1:失敗 )
 static int AnalyseFbxNode( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *ParentFrame, FbxNode *pFbxNode ) ;		// ノードの解析( -1:エラー )
-static int GetFbxAnimInfo( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *Frame, MV1_ANIMSET_R *AnimSet, MV1_ANIM_R **Anim, int DataType, FbxAnimCurve *FbxCurve, bool Reverse = false, bool DeggToRad = false ) ;	// ＦＢＸカーブからアニメーション情報を取得する( -1:エラー )
+static int GetFbxAnimInfo( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *Frame, MV1_ANIMSET_R *AnimSet, MV1_ANIM_R **Anim, int DataType, FbxAnimCurve *FbxCurve, float TimeScale, bool Reverse = false, bool DeggToRad = false ) ;	// ＦＢＸカーブからアニメーション情報を取得する( -1:エラー )
 static MV1_TEXTURE_R *FbxAddTexture( MV1_MODEL_R *RModel, FbxTexture *_FbxTexture ) ;				// ＦＢＸテクスチャを追加する
 
 // プログラム -----------------------------------
@@ -162,6 +162,7 @@ static int GetFbxAnimInfo(
 	MV1_ANIM_R **AnimP,
 	int DataType,
 	FbxAnimCurve *pFbxCurve,
+	float TimeScale,
 	bool Reverse,
 	bool DeggToRad
 )
@@ -230,7 +231,7 @@ static int GetFbxAnimInfo(
 	for( i = 0 ; i < KeyNum ; i ++ )
 	{
 		// 時間の取得
-		*KeyTime = ( float )pFbxCurve->KeyGetTime( i ).GetFrameCountPrecise() ;
+		*KeyTime = ( float )pFbxCurve->KeyGetTime( i ).GetFrameCountPrecise() * TimeScale ;
 		if( KeySet->TotalTime < *KeyTime ) KeySet->TotalTime = *KeyTime ;
 		if( *KeyTime < AnimSet->StartTime ) AnimSet->StartTime = *KeyTime ;
 		if( *KeyTime > AnimSet->EndTime   ) AnimSet->EndTime   = *KeyTime ;
@@ -2059,9 +2060,22 @@ static int AnalyseFbx( MV1_MODEL_R *RModel, FBX_MODEL *Model )
 		MV1_ANIM_R *Anim ;
 		MV1_FRAME_R *Frame ;
 		FbxAnimStack *lFbxAnimStack ;
+		FbxTime::EMode TimeMode ;
+		float TimeScale = 1.0f ;
 
 		// アニメーションセットの数を取得
 		TakeNum = Model->pScene->GetSrcObjectCount< FbxAnimStack >() ;
+
+		// 時間スケールを取得する
+		TimeMode = Model->pScene->GetGlobalSettings().GetTimeMode();
+		if( TimeMode == FbxTime::eCustom )
+		{
+			TimeScale = ( float )Model->pScene->GetGlobalSettings().GetCustomFrameRate() / 30.0f ;
+		}
+		else
+		{
+			TimeScale = ( float )FbxTime::GetFrameRate( TimeMode ) / 30.0f ;
+		}
 
 		// アニメーションの数だけ繰り返し
 		for( i = 0 ; i < TakeNum ; i ++ )
@@ -2098,15 +2112,15 @@ static int AnalyseFbx( MV1_MODEL_R *RModel, FBX_MODEL *Model )
 
 				// カーブデータが存在する要素のアニメーション情報を取得する
 				Anim = NULL ;
-				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_TRANSLATE_X, pFbxNode->LclTranslation.GetCurve( pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_X )              ) == -1 ) return -1 ;
-				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_TRANSLATE_Y, pFbxNode->LclTranslation.GetCurve( pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y )              ) == -1 ) return -1 ;
-				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_TRANSLATE_Z, pFbxNode->LclTranslation.GetCurve( pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z ), true        ) == -1 ) return -1 ;
-				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_SCALE_X,     pFbxNode->LclScaling.GetCurve(     pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_X )              ) == -1 ) return -1 ;
-				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_SCALE_Y,     pFbxNode->LclScaling.GetCurve(     pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y )              ) == -1 ) return -1 ;
-				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_SCALE_Z,     pFbxNode->LclScaling.GetCurve(     pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z )              ) == -1 ) return -1 ;
-				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_ROTATE_X,    pFbxNode->LclRotation.GetCurve(    pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_X ), true,  true ) == -1 ) return -1 ;
-				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_ROTATE_Y,    pFbxNode->LclRotation.GetCurve(    pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y ), true,  true ) == -1 ) return -1 ;
-				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_ROTATE_Z,    pFbxNode->LclRotation.GetCurve(    pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z ), false, true ) == -1 ) return -1 ;
+				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_TRANSLATE_X, pFbxNode->LclTranslation.GetCurve( pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_X ), TimeScale              ) == -1 ) return -1 ;
+				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_TRANSLATE_Y, pFbxNode->LclTranslation.GetCurve( pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y ), TimeScale              ) == -1 ) return -1 ;
+				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_TRANSLATE_Z, pFbxNode->LclTranslation.GetCurve( pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z ), TimeScale, true        ) == -1 ) return -1 ;
+				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_SCALE_X,     pFbxNode->LclScaling.GetCurve(     pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_X ), TimeScale              ) == -1 ) return -1 ;
+				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_SCALE_Y,     pFbxNode->LclScaling.GetCurve(     pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y ), TimeScale              ) == -1 ) return -1 ;
+				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_SCALE_Z,     pFbxNode->LclScaling.GetCurve(     pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z ), TimeScale              ) == -1 ) return -1 ;
+				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_ROTATE_X,    pFbxNode->LclRotation.GetCurve(    pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_X ), TimeScale, true,  true ) == -1 ) return -1 ;
+				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_ROTATE_Y,    pFbxNode->LclRotation.GetCurve(    pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y ), TimeScale, true,  true ) == -1 ) return -1 ;
+				if( GetFbxAnimInfo( RModel, Model, Frame, AnimSet, &Anim, MV1_ANIMKEY_DATATYPE_ROTATE_Z,    pFbxNode->LclRotation.GetCurve(    pFbxAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z ), TimeScale, false, true ) == -1 ) return -1 ;
 
 				// キーセットが一つも無かったらこのノードにはアニメーションが無いということ
 				if( Anim == NULL )

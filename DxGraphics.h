@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画プログラムヘッダファイル
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -1904,6 +1904,8 @@ extern	int			PlayMovie_WCHAR_T(						const wchar_t *FileName, int ExRate, int Pl
 extern	int			GetMovieImageSize_File_WCHAR_T(         const wchar_t *FileName, int *SizeX, int *SizeY ) ;
 extern	int			OpenMovieToGraph_WCHAR_T(				const wchar_t *FileName, int FullColor = TRUE ) ;
 
+// va_list 関数
+extern	int			SetBlendGraphParam_VaList(	int BlendGraph, int BlendType, va_list VaList ) ;							// 描画処理時に描画する画像とブレンドする画像のブレンド設定を行う、BlendGraph を -1 にすれば設定を解除、その場合 BlendType とその後ろのパラメータは無視される
 
 
 

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -2211,6 +2211,10 @@ extern	const wchar_t *	MV1GetFrameName_WCHAR_T(				int MHandle, int FrameIndex )
 extern	int				MV1GetFrameName2_WCHAR_T(				int MHandle, int FrameIndex, wchar_t *StrBuffer ) ;
 extern	int				MV1SearchShape_WCHAR_T(					int MHandle, const wchar_t *ShapeName ) ;
 extern	const wchar_t *	MV1GetShapeName_WCHAR_T(				int MHandle, int ShapeIndex ) ;
+
+// va_list 関数
+extern	int			MV1SetMaterialTypeParamAll_VaList(		int MHandle,                    va_list VaList ) ;									// 全てのマテリアルのタイプ別パラメータを変更する( マテリアルタイプ DX_MATERIAL_TYPE_MAT_SPEC_LUMINANCE_TWO_COLOR などで使用 )
+extern	int			MV1SetMaterialTypeParam_VaList(			int MHandle, int MaterialIndex, va_list VaList ) ;									// 指定のマテリアルのタイプ別パラメータを変更する( マテリアルタイプ DX_MATERIAL_TYPE_MAT_SPEC_LUMINANCE_TWO_COLOR などで使用 )
 
 
 

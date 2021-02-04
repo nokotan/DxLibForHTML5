@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ヘッダファイル
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -12,9 +12,9 @@
 #include "DxCompileConfig.h"
 
 // ＤＸライブラリのバージョン
-#define DXLIB_VERSION 0x322a
-#define DXLIB_VERSION_STR_T _T( "3.22a" )
-#define DXLIB_VERSION_STR_W    L"3.22a"
+#define DXLIB_VERSION 0x322c
+#define DXLIB_VERSION_STR_T _T( "3.22c" )
+#define DXLIB_VERSION_STR_W    L"3.22c"
 
 // 設定 -----------------------------------------------------------------------
 
@@ -3229,7 +3229,7 @@ extern 	int			GetMovieStateToGraph(				int GraphHandle ) ;															// 動画
 extern	int			SetMovieVolumeToGraph(				int Volume, int GraphHandle ) ;												// 動画ファイルの音量を設定する(0～10000)
 extern	int			ChangeMovieVolumeToGraph(			int Volume, int GraphHandle ) ;												// 動画ファイルの音量を設定する(0～255)
 extern	const BASEIMAGE* GetMovieBaseImageToGraph(		int GraphHandle, int *ImageUpdateFlag = NULL , int ImageUpdateFlagSetOnly = FALSE ) ;	// 動画ファイルの基本イメージデータを取得する( ImageUpdateFlag に int 型変数のアドレスを渡すと、イメージが更新された場合は 1 が、更新されていない場合は 0 が格納されます、 ImageUpdateFlagSetOnly を TRUE にすると戻り値の BASEIMAGE は有効な画像データではなくなりますが、BASEIMAGE の更新処理が行われませんので、ImageUpdateFlag を利用して画像が更新されたかどうかだけをチェックしたい場合は TRUE にしてください )
-extern	int			GetMovieTotalFrameToGraph(			int GraphHandle ) ;															// 動画ファイルの総フレーム数を得る( Ogg Theora でのみ有効 )
+extern	int			GetMovieTotalFrameToGraph(			int GraphHandle ) ;															// 動画ファイルの総フレーム数を得る( Ogg Theora と mp4 でのみ有効 )
 extern	int			TellMovieToGraph(					int GraphHandle ) ;															// 動画ファイルの再生位置を取得する(ミリ秒単位)
 extern	int			TellMovieToGraphToFrame(			int GraphHandle ) ;															// 動画ファイルの再生位置を取得する(フレーム単位)
 extern	int			SeekMovieToGraphToFrame(			int GraphHandle, int Frame ) ;												// 動画ファイルの再生位置を設定する(フレーム単位)

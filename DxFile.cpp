@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ファイルアクセスプログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -1344,6 +1344,11 @@ static int FileRead_CheckFormat( FILEACCESSINFO *FileInfo )
 	BYTE Head[ 3 ] ;
 	LONGLONG NowPos ;
 	LONGLONG ReadSize ;
+
+	if( FileInfo->CharCodeFormat != 0 )
+	{
+		return 0 ;
+	}
 
 	NowPos = FileInfo->StreamData.ReadShred.Tell( FileInfo->StreamData.DataPoint ) ;
 	if( NowPos == 0 )
@@ -7085,6 +7090,31 @@ END :
 	// 文字列長を返す
 	return len ;
 }
+
+
+
+
+
+
+
+
+
+
+// va_list 関数
+
+// ファイルから書式化されたデータを読み出す
+extern int FileRead_scanf_VaList( int FileHandle, const TCHAR *Format, va_list VaList )
+{
+	int Result;
+
+	Result = FileRead_scanf_base( FileHandle, Format, VaList ) ;
+
+	return Result;
+}
+
+
+
+
 
 
 

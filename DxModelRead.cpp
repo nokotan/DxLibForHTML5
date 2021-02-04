@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ読み込みプログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -1750,7 +1750,6 @@ static bool MV1OptimizeAnim( MV1_MODEL_R *ReadModel )
 	}
 #endif 
 
-
 	// MV1_ANIMKEY_TYPE_MATRIX3X3 タイプの MV1_ANIMKEY_DATATYPE_MATRIX3X3 を
 	// MV1_ANIMKEY_TYPE_VECTOR タイプの MV1_ANIMKEY_DATATYPE_ROTATE に変換する
 	AnimR = ReadModel->AnimFirst ;
@@ -2044,7 +2043,7 @@ static bool MV1OptimizeAnim( MV1_MODEL_R *ReadModel )
 			MV1OptimizeKeySetTimeType( ReadModel, KeySetR, true ) ;
 		}
 	}
-	
+
 	// 同じタイプのキーセットが要素毎に分かれていたら一つにする
 	AnimR = ReadModel->AnimFirst ;
 	for( i = 0 ; ( DWORD )i < ReadModel->AnimNum ; i ++, AnimR = AnimR->DataNext )
@@ -2676,9 +2675,9 @@ FLOATADD :
 					{
 						if( k != 0 && k != KeySetR->Num - 1 )
 						{
-							f = ( rate * ( Key[ 1 ].x - NewKey[ -1 ].x ) + NewKey[ -1 ].x ) - Key[ 0 ].x ; if( f > 0.00001f || f < -0.00001f ) goto TRANSLATEADDONE ;
-							f = ( rate * ( Key[ 1 ].y - NewKey[ -1 ].y ) + NewKey[ -1 ].y ) - Key[ 0 ].y ; if( f > 0.00001f || f < -0.00001f ) goto TRANSLATEADDONE ;
-							f = ( rate * ( Key[ 1 ].z - NewKey[ -1 ].z ) + NewKey[ -1 ].z ) - Key[ 0 ].z ; if( f > 0.00001f || f < -0.00001f ) goto TRANSLATEADDONE ;
+							f = ( rate * ( Key[ 1 ].x - NewKey[ -1 ].x ) + NewKey[ -1 ].x ) - Key[ 0 ].x ; if( f > 0.000001f || f < -0.000001f ) goto TRANSLATEADDONE ;
+							f = ( rate * ( Key[ 1 ].y - NewKey[ -1 ].y ) + NewKey[ -1 ].y ) - Key[ 0 ].y ; if( f > 0.000001f || f < -0.000001f ) goto TRANSLATEADDONE ;
+							f = ( rate * ( Key[ 1 ].z - NewKey[ -1 ].z ) + NewKey[ -1 ].z ) - Key[ 0 ].z ; if( f > 0.000001f || f < -0.000001f ) goto TRANSLATEADDONE ;
 
 							continue ;
 						}
@@ -2705,9 +2704,9 @@ TRANSLATEADDONE :
 						if( k != 0 && k != KeySetR->Num - 1 )
 						{
 							rate = ( Time[ 0 ] - NewTime[ -1 ] ) / ( Time[ 1 ] - NewTime[ -1 ] ) ;
-							f = ( rate * ( Key[ 1 ].x - NewKey[ -1 ].x ) + NewKey[ -1 ].x ) - Key[ 0 ].x ; if( f > 0.00001f || f < -0.00001f ) goto TRANSLATEADD ;
-							f = ( rate * ( Key[ 1 ].y - NewKey[ -1 ].y ) + NewKey[ -1 ].y ) - Key[ 0 ].y ; if( f > 0.00001f || f < -0.00001f ) goto TRANSLATEADD ;
-							f = ( rate * ( Key[ 1 ].z - NewKey[ -1 ].z ) + NewKey[ -1 ].z ) - Key[ 0 ].z ; if( f > 0.00001f || f < -0.00001f ) goto TRANSLATEADD ;
+							f = ( rate * ( Key[ 1 ].x - NewKey[ -1 ].x ) + NewKey[ -1 ].x ) - Key[ 0 ].x ; if( f > 0.000001f || f < -0.000001f ) goto TRANSLATEADD ;
+							f = ( rate * ( Key[ 1 ].y - NewKey[ -1 ].y ) + NewKey[ -1 ].y ) - Key[ 0 ].y ; if( f > 0.000001f || f < -0.000001f ) goto TRANSLATEADD ;
+							f = ( rate * ( Key[ 1 ].z - NewKey[ -1 ].z ) + NewKey[ -1 ].z ) - Key[ 0 ].z ; if( f > 0.000001f || f < -0.000001f ) goto TRANSLATEADD ;
 
 							continue ;
 						}

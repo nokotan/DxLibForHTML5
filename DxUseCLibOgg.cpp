@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Ogg関係
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -3093,7 +3093,7 @@ extern int GetOggCommentNumBase( STREAMDATA *Stream )
 	return Comments ;
 }
 
-extern int GetOggCommentBase( STREAMDATA *Stream, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes )
+extern int GetOggCommentBase( STREAMDATA *Stream, int CommentIndex, char *CommentNameBuffer, size_t CommentNameBufferBytes, char *CommentBuffer, size_t CommentBufferBytes )
 {
 	OggVorbis_File File ;
 	ov_callbacks ogfunc ;

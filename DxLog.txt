@@ -3,9 +3,65 @@
 //　ＤＸライブラリ　非公式ログ
 //
 //　Creator : 山田　巧
-//  Last Access : 2020/8/23
+//  Last Access : 2021/1/31
 // ============================================================================
 
+Ver 3.22c	　正式公開のためにバージョン番号を変更。
+Ver 3.22b	　Windows版：SeekMovieToGraph で、mp4ファイルの再生時間以上の
+			値を指定した場合、SeekMovieToGraph から処理が戻ってこなくなる
+			バグを修正。
+			　Windows版：GetOneFrameTimeMovieToGraph で mp4ファイルの
+			1フレーム当たりの時間を取得した場合、単位がマイクロ秒ではなく、
+			100ナノ秒単位の値が返ってしまっていたバグを修正。
+			　Windows版：PlayMovieToGraph で再生中の mp4ファイルに対して
+			SeekMovieToGraph で再生位置を変更すると、音だけが再生位置が
+			変更されないバグを修正。
+			　Windows版：mp4ファイルによっては TellMovieToGraph で正常な
+			再生時間が取得できない場合があるバグを修正。
+			　Windows版：LoadGraph で読み込めない動画ファイルを読み込んだ
+			際にメモリの不正なアクセスが発生してしまうバグを修正。
+			　Windows版：WebM を LoadGraph で読み込んだ場合、読み込みに
+			成功しても動画の画像が正常に描画できない事があるバグを修正。
+			　int で表現できない値の文字列を atoiDx に渡した際の挙動を
+			atoi と同様になるように処理を変更。
+			　C#版：DrawFormatString 等の可変長引数の関数を追加。
+			　Windows版：SeekMovieToGraph を使用すると、動画の音声が最初から
+			再生されてしまうことがあるバグを修正。
+			　FileRead_gets を実行した際に行われるテキストファイルの
+			文字コード判別処理が正常に行われない事があるバグを修正。
+			　PlayMovieToGraph で動画を再生中に SeekMovieToGraph を
+			使用しても動画の再生が停止状態にならないように仕様を変更。
+			　3チャンネル以上のサウンドデータが正常に再生できないバグを修正。
+			　Windows版：PlayMovieToGraph で mp4ファイルを再生すると
+			音倍速で再生されることがあるバグを修正。
+			　Windows版：SeekMovieToGraph で mp4ファイルの再生位置を
+			変更すると、無音になることがあるバグを修正。
+			　Windows版：mp3 ファイルを LoadSoundMem で読み込み、
+			GetSoundTotalTime で総再生時間を取得すると、実際の総再生時間の
+			２倍の値が返ってきてしまうことがあるバグを修正。
+			　Windows版：1時間を越えるような長い mp4ファイルを再生すると
+			再生時間が1時間を越える前後でフリーズしてしまうバグを修正。
+			　ＤＸアーカイブの拡張子判定はアルファベットの大文字・
+			小文字を区別しないように仕様を変更。
+			　３Ｄモデルのアニメーションの回転キーの値によっては３Ｄモデルが
+			大きく歪むバグを修正。
+			　HitCheck_Line_Triangle で同一平面上の線分と三角形の当たり判定を
+			行うと、当たっているにも関わらず当たっていないという判定が
+			返ってくることがあるバグを修正。
+			　HitCheck_Triangle_Triangle で同一平面上の二つの三角形の
+			当たり判定を行うと、当たっているにも関わらず当たっていない
+			という判定が返ってくるバグを修正。
+			　DxLibModelViewer.exe で fbxを読み込んだ場合に、アニメーションの
+			時間が正しく読み込まれないことがあるバグを修正。
+			　DxLibModelViewer.exe で fbxを読み込んだ場合に、アニメーションの
+			回転情報が正しく読み込まれないことがあるバグを修正。
+			　Windows版：SetWindowPosition でマイナスの値を指定すると
+			GetMousePoint で正しい座標が取得できなくなるバグを修正。
+			　Windows版：Direct3D 11 で SetUsePixelLighting( TRUE ); を
+			実行してピクセル単位のライティングを行う設定にしていて、
+			且つポイントライトかスポットライトを有効にしていると
+			DrawCube3D などの単純３Ｄ図形描画関数を実行しても何も
+			描画されないバグを修正。
 Ver 3.22a	　正式公開のためにバージョン番号を変更。
 Ver 3.22	　ReadSoftSoundData, WriteSoftSoundData を量子化ビット深度
 			24bitのサウンドデータに対応。

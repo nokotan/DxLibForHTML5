@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		アーカイブ制御プログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -3509,7 +3509,7 @@ static int DXA_DIR_OpenArchive( const wchar_t *FilePath, void *FileImage, int Fi
 		
 		i ++ ;
 
-		if( _WCSCMP( arc->Path, FilePath ) == 0 )
+		if( _WCSICMP( arc->Path, FilePath ) == 0 )
 		{
 			// 既に開かれていた場合はそのインデックスを返す
 			arc->UseCounter ++ ;

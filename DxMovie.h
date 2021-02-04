@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		動画プログラムヘッダファイル
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -79,6 +79,7 @@ struct MOVIEGRAPH
 	ULONGLONG				TheoraPrevTimeCount ;			// 前回の計測時間
 	ULONGLONG				TheoraPlayNowTime ;				// 再生時間
 	int						TheoraTotalPlayTime ;			// 再生総時間( ミリ秒 )
+	int						TheoraTotalFrame ;				// 総フレーム数
 	DWORD_PTR				TheoraStreamData ;				// ストリーム処理用データ
 	int						TheoraStreamDataIsFileImage ;	// ストリーム処理用データがファイルをメモリに読み込んだものかどうか
 	double					TheoraFrameRate ;				// フレームレート

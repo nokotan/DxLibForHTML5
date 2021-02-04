@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -1637,7 +1637,6 @@ static void MV1SetupMatrix( MV1_MODEL *Model )
 	MV1_MODEL_BASE *MBase ;
 	MV1_FRAME_BASE *FrameBase ;
 	MV1_MODEL_ANIM *MAnim, *MAnim2, *MAnim3 = NULL;
-	VECTOR DivSize ;
 
 	MBase = Model->BaseData ;
 
@@ -2032,22 +2031,44 @@ static void MV1SetupMatrix( MV1_MODEL *Model )
 						Frame->LocalWorldMatrixUseScaling = true ;
 					}
 
-					// 行列の回転部分の正規化
-					DivSize.x = BlendScaling.x / _SQRT( BlendMat.m[ 0 ][ 0 ] * BlendMat.m[ 0 ][ 0 ] + BlendMat.m[ 0 ][ 1 ] * BlendMat.m[ 0 ][ 1 ] + BlendMat.m[ 0 ][ 2 ] * BlendMat.m[ 0 ][ 2 ] ) ;
-					DivSize.y = BlendScaling.y / _SQRT( BlendMat.m[ 1 ][ 0 ] * BlendMat.m[ 1 ][ 0 ] + BlendMat.m[ 1 ][ 1 ] * BlendMat.m[ 1 ][ 1 ] + BlendMat.m[ 1 ][ 2 ] * BlendMat.m[ 1 ][ 2 ] ) ;
-					DivSize.z = BlendScaling.z / _SQRT( BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 2 ][ 0 ] + BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 2 ][ 1 ] + BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 2 ][ 2 ] ) ;
+					// 行列の回転部分のX・Y・Z軸が直行するように補正
+					{
+						float DivNum ;
 
-					BlendMat.m[ 0 ][ 0 ] *= DivSize.x ;
-					BlendMat.m[ 0 ][ 1 ] *= DivSize.x ;
-					BlendMat.m[ 0 ][ 2 ] *= DivSize.x ;
+						DivNum = 1.0f / _SQRT( BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 2 ][ 0 ] + BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 2 ][ 1 ] + BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 2 ][ 2 ] ) ;
+						BlendMat.m[ 2 ][ 0 ] *= DivNum ;
+						BlendMat.m[ 2 ][ 1 ] *= DivNum ;
+						BlendMat.m[ 2 ][ 2 ] *= DivNum ;
 
-					BlendMat.m[ 1 ][ 0 ] *= DivSize.y ;
-					BlendMat.m[ 1 ][ 1 ] *= DivSize.y ;
-					BlendMat.m[ 1 ][ 2 ] *= DivSize.y ;
+						BlendMat.m[ 0 ][ 0 ] = BlendMat.m[ 1 ][ 1 ] * BlendMat.m[ 2 ][ 2 ] - BlendMat.m[ 1 ][ 2 ] * BlendMat.m[ 2 ][ 1 ] ;
+						BlendMat.m[ 0 ][ 1 ] = BlendMat.m[ 1 ][ 2 ] * BlendMat.m[ 2 ][ 0 ] - BlendMat.m[ 1 ][ 0 ] * BlendMat.m[ 2 ][ 2 ] ;
+						BlendMat.m[ 0 ][ 2 ] = BlendMat.m[ 1 ][ 0 ] * BlendMat.m[ 2 ][ 1 ] - BlendMat.m[ 1 ][ 1 ] * BlendMat.m[ 2 ][ 0 ] ;
 
-					BlendMat.m[ 2 ][ 0 ] *= DivSize.z ;
-					BlendMat.m[ 2 ][ 1 ] *= DivSize.z ;
-					BlendMat.m[ 2 ][ 2 ] *= DivSize.z ;
+						DivNum = 1.0f / _SQRT( BlendMat.m[ 0 ][ 0 ] * BlendMat.m[ 0 ][ 0 ] + BlendMat.m[ 0 ][ 1 ] * BlendMat.m[ 0 ][ 1 ] + BlendMat.m[ 0 ][ 2 ] * BlendMat.m[ 0 ][ 2 ] ) ;
+						BlendMat.m[ 0 ][ 0 ] *= DivNum ;
+						BlendMat.m[ 0 ][ 1 ] *= DivNum ;
+						BlendMat.m[ 0 ][ 2 ] *= DivNum ;
+
+						BlendMat.m[ 1 ][ 0 ] = BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 0 ][ 2 ] - BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 0 ][ 1 ] ;
+						BlendMat.m[ 1 ][ 1 ] = BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 0 ][ 0 ] - BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 0 ][ 2 ] ;
+						BlendMat.m[ 1 ][ 2 ] = BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 0 ][ 1 ] - BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 0 ][ 0 ] ;
+					}
+
+					// スケーリング成分がある場合はスケーリング
+					if( BlendScaling.x != 1.0f || BlendScaling.y != 1.0f || BlendScaling.z != 1.0f )
+					{
+						BlendMat.m[ 0 ][ 0 ] *= BlendScaling.x ;
+						BlendMat.m[ 0 ][ 1 ] *= BlendScaling.x ;
+						BlendMat.m[ 0 ][ 2 ] *= BlendScaling.x ;
+
+						BlendMat.m[ 1 ][ 0 ] *= BlendScaling.y ;
+						BlendMat.m[ 1 ][ 1 ] *= BlendScaling.y ;
+						BlendMat.m[ 1 ][ 2 ] *= BlendScaling.y ;
+
+						BlendMat.m[ 2 ][ 0 ] *= BlendScaling.z ;
+						BlendMat.m[ 2 ][ 1 ] *= BlendScaling.z ;
+						BlendMat.m[ 2 ][ 2 ] *= BlendScaling.z ;
+					}
 				}
 				else
 				{
@@ -4498,6 +4519,29 @@ MATRIXLINEARBLEND :
 			Anim->Matrix.m[ 0 ][ 3 ] = Pos.x ;
 			Anim->Matrix.m[ 1 ][ 3 ] = Pos.y ;
 			Anim->Matrix.m[ 2 ][ 3 ] = Pos.z ;
+
+			// 行列の回転部分のX・Y・Z軸が直行するように補正
+			{
+				float DivNum ;
+
+				DivNum = 1.0f / _SQRT( Anim->Matrix.m[ 2 ][ 0 ] * Anim->Matrix.m[ 2 ][ 0 ] + Anim->Matrix.m[ 2 ][ 1 ] * Anim->Matrix.m[ 2 ][ 1 ] + Anim->Matrix.m[ 2 ][ 2 ] * Anim->Matrix.m[ 2 ][ 2 ] ) ;
+				Anim->Matrix.m[ 2 ][ 0 ] *= DivNum ;
+				Anim->Matrix.m[ 2 ][ 1 ] *= DivNum ;
+				Anim->Matrix.m[ 2 ][ 2 ] *= DivNum ;
+
+				Anim->Matrix.m[ 0 ][ 0 ] = Anim->Matrix.m[ 1 ][ 1 ] * Anim->Matrix.m[ 2 ][ 2 ] - Anim->Matrix.m[ 1 ][ 2 ] * Anim->Matrix.m[ 2 ][ 1 ] ;
+				Anim->Matrix.m[ 0 ][ 1 ] = Anim->Matrix.m[ 1 ][ 2 ] * Anim->Matrix.m[ 2 ][ 0 ] - Anim->Matrix.m[ 1 ][ 0 ] * Anim->Matrix.m[ 2 ][ 2 ] ;
+				Anim->Matrix.m[ 0 ][ 2 ] = Anim->Matrix.m[ 1 ][ 0 ] * Anim->Matrix.m[ 2 ][ 1 ] - Anim->Matrix.m[ 1 ][ 1 ] * Anim->Matrix.m[ 2 ][ 0 ] ;
+
+				DivNum = 1.0f / _SQRT( Anim->Matrix.m[ 0 ][ 0 ] * Anim->Matrix.m[ 0 ][ 0 ] + Anim->Matrix.m[ 0 ][ 1 ] * Anim->Matrix.m[ 0 ][ 1 ] + Anim->Matrix.m[ 0 ][ 2 ] * Anim->Matrix.m[ 0 ][ 2 ] ) ;
+				Anim->Matrix.m[ 0 ][ 0 ] *= DivNum ;
+				Anim->Matrix.m[ 0 ][ 1 ] *= DivNum ;
+				Anim->Matrix.m[ 0 ][ 2 ] *= DivNum ;
+
+				Anim->Matrix.m[ 1 ][ 0 ] = Anim->Matrix.m[ 2 ][ 1 ] * Anim->Matrix.m[ 0 ][ 2 ] - Anim->Matrix.m[ 2 ][ 2 ] * Anim->Matrix.m[ 0 ][ 1 ] ;
+				Anim->Matrix.m[ 1 ][ 1 ] = Anim->Matrix.m[ 2 ][ 2 ] * Anim->Matrix.m[ 0 ][ 0 ] - Anim->Matrix.m[ 2 ][ 0 ] * Anim->Matrix.m[ 0 ][ 2 ] ;
+				Anim->Matrix.m[ 1 ][ 2 ] = Anim->Matrix.m[ 2 ][ 0 ] * Anim->Matrix.m[ 0 ][ 1 ] - Anim->Matrix.m[ 2 ][ 1 ] * Anim->Matrix.m[ 0 ][ 0 ] ;
+			}
 
 			if( Scale.x != 1.0f || Scale.y != 1.0f || Scale.z != 1.0f )
 			{
@@ -26867,7 +26911,6 @@ extern MATRIX NS_MV1GetFrameLocalMatrix( int MHandle, int FrameIndex )
 		else
 		{
 			MV1_ANIM * RST Anim ;
-			VECTOR DivSize ;
 
 			// 行列があるか、クォータニオンとＸＹＺ軸回転が混同しているか
 			// デフォルトパラメータが無効な上に当ててあるアニメーションの種類が違う場合は行列ブレンド
@@ -27013,22 +27056,44 @@ extern MATRIX NS_MV1GetFrameLocalMatrix( int MHandle, int FrameIndex )
 				BlendMat.m[ 2 ][ 2 ] += FrameBase->LocalTransformMatrix.m[ 2 ][ 2 ] ;
 				BlendMat.m[ 2 ][ 3 ] += FrameBase->LocalTransformMatrix.m[ 2 ][ 3 ] ;
 
+				// 行列の回転部分のX・Y・Z軸が直行するように補正
+				{
+					float DivNum ;
 
-				DivSize.x = BlendScale.x / _SQRT( BlendMat.m[ 0 ][ 0 ] * BlendMat.m[ 0 ][ 0 ] + BlendMat.m[ 0 ][ 1 ] * BlendMat.m[ 0 ][ 1 ] + BlendMat.m[ 0 ][ 2 ] * BlendMat.m[ 0 ][ 2 ] ) ;
-				DivSize.y = BlendScale.y / _SQRT( BlendMat.m[ 1 ][ 0 ] * BlendMat.m[ 1 ][ 0 ] + BlendMat.m[ 1 ][ 1 ] * BlendMat.m[ 1 ][ 1 ] + BlendMat.m[ 1 ][ 2 ] * BlendMat.m[ 1 ][ 2 ] ) ;
-				DivSize.z = BlendScale.z / _SQRT( BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 2 ][ 0 ] + BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 2 ][ 1 ] + BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 2 ][ 2 ] ) ;
+					DivNum = 1.0f / _SQRT( BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 2 ][ 0 ] + BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 2 ][ 1 ] + BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 2 ][ 2 ] ) ;
+					BlendMat.m[ 2 ][ 0 ] *= DivNum ;
+					BlendMat.m[ 2 ][ 1 ] *= DivNum ;
+					BlendMat.m[ 2 ][ 2 ] *= DivNum ;
 
-				BlendMat.m[ 0 ][ 0 ] *= DivSize.x ;
-				BlendMat.m[ 0 ][ 1 ] *= DivSize.x ;
-				BlendMat.m[ 0 ][ 2 ] *= DivSize.x ;
+					BlendMat.m[ 0 ][ 0 ] = BlendMat.m[ 1 ][ 1 ] * BlendMat.m[ 2 ][ 2 ] - BlendMat.m[ 1 ][ 2 ] * BlendMat.m[ 2 ][ 1 ] ;
+					BlendMat.m[ 0 ][ 1 ] = BlendMat.m[ 1 ][ 2 ] * BlendMat.m[ 2 ][ 0 ] - BlendMat.m[ 1 ][ 0 ] * BlendMat.m[ 2 ][ 2 ] ;
+					BlendMat.m[ 0 ][ 2 ] = BlendMat.m[ 1 ][ 0 ] * BlendMat.m[ 2 ][ 1 ] - BlendMat.m[ 1 ][ 1 ] * BlendMat.m[ 2 ][ 0 ] ;
 
-				BlendMat.m[ 1 ][ 0 ] *= DivSize.y ;
-				BlendMat.m[ 1 ][ 1 ] *= DivSize.y ;
-				BlendMat.m[ 1 ][ 2 ] *= DivSize.y ;
+					DivNum = 1.0f / _SQRT( BlendMat.m[ 0 ][ 0 ] * BlendMat.m[ 0 ][ 0 ] + BlendMat.m[ 0 ][ 1 ] * BlendMat.m[ 0 ][ 1 ] + BlendMat.m[ 0 ][ 2 ] * BlendMat.m[ 0 ][ 2 ] ) ;
+					BlendMat.m[ 0 ][ 0 ] *= DivNum ;
+					BlendMat.m[ 0 ][ 1 ] *= DivNum ;
+					BlendMat.m[ 0 ][ 2 ] *= DivNum ;
 
-				BlendMat.m[ 2 ][ 0 ] *= DivSize.z ;
-				BlendMat.m[ 2 ][ 1 ] *= DivSize.z ;
-				BlendMat.m[ 2 ][ 2 ] *= DivSize.z ;
+					BlendMat.m[ 1 ][ 0 ] = BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 0 ][ 2 ] - BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 0 ][ 1 ] ;
+					BlendMat.m[ 1 ][ 1 ] = BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 0 ][ 0 ] - BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 0 ][ 2 ] ;
+					BlendMat.m[ 1 ][ 2 ] = BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 0 ][ 1 ] - BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 0 ][ 0 ] ;
+				}
+
+				// スケーリング成分がある場合はスケーリング
+				if( BlendScale.x != 1.0f || BlendScale.y != 1.0f || BlendScale.z != 1.0f )
+				{
+					BlendMat.m[ 0 ][ 0 ] *= BlendScale.x ;
+					BlendMat.m[ 0 ][ 1 ] *= BlendScale.x ;
+					BlendMat.m[ 0 ][ 2 ] *= BlendScale.x ;
+
+					BlendMat.m[ 1 ][ 0 ] *= BlendScale.y ;
+					BlendMat.m[ 1 ][ 1 ] *= BlendScale.y ;
+					BlendMat.m[ 1 ][ 2 ] *= BlendScale.y ;
+
+					BlendMat.m[ 2 ][ 0 ] *= BlendScale.z ;
+					BlendMat.m[ 2 ][ 1 ] *= BlendScale.z ;
+					BlendMat.m[ 2 ][ 2 ] *= BlendScale.z ;
+				}
 			}
 			else
 			{
@@ -27265,7 +27330,6 @@ extern MATRIX_D NS_MV1GetFrameLocalMatrixD( int MHandle, int FrameIndex )
 		else
 		{
 			MV1_ANIM * RST Anim ;
-			VECTOR DivSize ;
 
 			// 行列があるか、クォータニオンとＸＹＺ軸回転が混同しているか
 			// デフォルトパラメータが無効な上に当ててあるアニメーションの種類が違う場合は行列ブレンド
@@ -27411,22 +27475,44 @@ extern MATRIX_D NS_MV1GetFrameLocalMatrixD( int MHandle, int FrameIndex )
 				BlendMat.m[ 2 ][ 2 ] += FrameBase->LocalTransformMatrix.m[ 2 ][ 2 ] ;
 				BlendMat.m[ 2 ][ 3 ] += FrameBase->LocalTransformMatrix.m[ 2 ][ 3 ] ;
 
+				// 行列の回転部分のX・Y・Z軸が直行するように補正
+				{
+					float DivNum ;
 
-				DivSize.x = BlendScale.x / _SQRT( BlendMat.m[ 0 ][ 0 ] * BlendMat.m[ 0 ][ 0 ] + BlendMat.m[ 0 ][ 1 ] * BlendMat.m[ 0 ][ 1 ] + BlendMat.m[ 0 ][ 2 ] * BlendMat.m[ 0 ][ 2 ] ) ;
-				DivSize.y = BlendScale.y / _SQRT( BlendMat.m[ 1 ][ 0 ] * BlendMat.m[ 1 ][ 0 ] + BlendMat.m[ 1 ][ 1 ] * BlendMat.m[ 1 ][ 1 ] + BlendMat.m[ 1 ][ 2 ] * BlendMat.m[ 1 ][ 2 ] ) ;
-				DivSize.z = BlendScale.z / _SQRT( BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 2 ][ 0 ] + BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 2 ][ 1 ] + BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 2 ][ 2 ] ) ;
+					DivNum = 1.0f / _SQRT( BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 2 ][ 0 ] + BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 2 ][ 1 ] + BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 2 ][ 2 ] ) ;
+					BlendMat.m[ 2 ][ 0 ] *= DivNum ;
+					BlendMat.m[ 2 ][ 1 ] *= DivNum ;
+					BlendMat.m[ 2 ][ 2 ] *= DivNum ;
 
-				BlendMat.m[ 0 ][ 0 ] *= DivSize.x ;
-				BlendMat.m[ 0 ][ 1 ] *= DivSize.x ;
-				BlendMat.m[ 0 ][ 2 ] *= DivSize.x ;
+					BlendMat.m[ 0 ][ 0 ] = BlendMat.m[ 1 ][ 1 ] * BlendMat.m[ 2 ][ 2 ] - BlendMat.m[ 1 ][ 2 ] * BlendMat.m[ 2 ][ 1 ] ;
+					BlendMat.m[ 0 ][ 1 ] = BlendMat.m[ 1 ][ 2 ] * BlendMat.m[ 2 ][ 0 ] - BlendMat.m[ 1 ][ 0 ] * BlendMat.m[ 2 ][ 2 ] ;
+					BlendMat.m[ 0 ][ 2 ] = BlendMat.m[ 1 ][ 0 ] * BlendMat.m[ 2 ][ 1 ] - BlendMat.m[ 1 ][ 1 ] * BlendMat.m[ 2 ][ 0 ] ;
 
-				BlendMat.m[ 1 ][ 0 ] *= DivSize.y ;
-				BlendMat.m[ 1 ][ 1 ] *= DivSize.y ;
-				BlendMat.m[ 1 ][ 2 ] *= DivSize.y ;
+					DivNum = 1.0f / _SQRT( BlendMat.m[ 0 ][ 0 ] * BlendMat.m[ 0 ][ 0 ] + BlendMat.m[ 0 ][ 1 ] * BlendMat.m[ 0 ][ 1 ] + BlendMat.m[ 0 ][ 2 ] * BlendMat.m[ 0 ][ 2 ] ) ;
+					BlendMat.m[ 0 ][ 0 ] *= DivNum ;
+					BlendMat.m[ 0 ][ 1 ] *= DivNum ;
+					BlendMat.m[ 0 ][ 2 ] *= DivNum ;
 
-				BlendMat.m[ 2 ][ 0 ] *= DivSize.z ;
-				BlendMat.m[ 2 ][ 1 ] *= DivSize.z ;
-				BlendMat.m[ 2 ][ 2 ] *= DivSize.z ;
+					BlendMat.m[ 1 ][ 0 ] = BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 0 ][ 2 ] - BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 0 ][ 1 ] ;
+					BlendMat.m[ 1 ][ 1 ] = BlendMat.m[ 2 ][ 2 ] * BlendMat.m[ 0 ][ 0 ] - BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 0 ][ 2 ] ;
+					BlendMat.m[ 1 ][ 2 ] = BlendMat.m[ 2 ][ 0 ] * BlendMat.m[ 0 ][ 1 ] - BlendMat.m[ 2 ][ 1 ] * BlendMat.m[ 0 ][ 0 ] ;
+				}
+
+				// スケーリング成分がある場合はスケーリング
+				if( BlendScale.x != 1.0f || BlendScale.y != 1.0f || BlendScale.z != 1.0f )
+				{
+					BlendMat.m[ 0 ][ 0 ] *= BlendScale.x ;
+					BlendMat.m[ 0 ][ 1 ] *= BlendScale.x ;
+					BlendMat.m[ 0 ][ 2 ] *= BlendScale.x ;
+
+					BlendMat.m[ 1 ][ 0 ] *= BlendScale.y ;
+					BlendMat.m[ 1 ][ 1 ] *= BlendScale.y ;
+					BlendMat.m[ 1 ][ 2 ] *= BlendScale.y ;
+
+					BlendMat.m[ 2 ][ 0 ] *= BlendScale.z ;
+					BlendMat.m[ 2 ][ 1 ] *= BlendScale.z ;
+					BlendMat.m[ 2 ][ 2 ] *= BlendScale.z ;
+				}
 			}
 			else
 			{
@@ -32804,6 +32890,65 @@ ERR :
 	_MEMSET( &PolyList, 0, sizeof( PolyList ) ) ;
 	return PolyList ;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// va_list 関数
+
+// 全てのマテリアルのタイプ別パラメータを変更する( マテリアルタイプ DX_MATERIAL_TYPE_MAT_SPEC_LUMINANCE_TWO_COLOR などで使用 )
+extern int MV1SetMaterialTypeParamAll_VaList( int MHandle, va_list VaList )
+{
+	int Result ;
+
+	Result = MV1SetMaterialTypeParamAll_Base( MHandle, VaList ) ;
+
+	return Result ;
+}
+
+// 指定のマテリアルのタイプ別パラメータを変更する( マテリアルタイプ DX_MATERIAL_TYPE_MAT_SPEC_LUMINANCE_TWO_COLOR などで使用 )
+extern int MV1SetMaterialTypeParam_VaList( int MHandle, int MaterialIndex, va_list VaList )
+{
+	int Result ;
+
+	Result = MV1SetMaterialTypeParam_Base( MHandle, MaterialIndex, VaList ) ;
+
+	return Result ;
+}
+
+
+
+
+
+
+
+
+
 
 
 #ifndef DX_NON_NAMESPACE
