@@ -223,6 +223,8 @@ function do_init() {
     chmod +x FetchDxLibVersion.js
     chmod +x FetchLatestTag.js
 
+    git fetch
+
     git switch ${OriginalBranch} --force
     git switch -c ${WorkingBranch}
 
