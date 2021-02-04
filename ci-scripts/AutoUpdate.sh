@@ -223,6 +223,7 @@ function do_init() {
     chmod +x FetchDxLibVersion.js
     chmod +x FetchLatestTag.js
 
+    git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     git fetch
 
     git switch ${OriginalBranch} --force
