@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準関数の互換関数プログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -1090,6 +1090,53 @@ LOOPEND:
 	Dest64[ 1 ] = dat_dst_1 ;
 #endif
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// va_list 関数
+
+// sprintf と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
+extern int sprintfDx_VaList( TCHAR *Buffer, const TCHAR *FormatString, va_list VaList )
+{
+	int Result ;
+
+	Result = NS_vsprintfDx( Buffer, FormatString, VaList ) ;
+
+	return Result ;
+}
+
+// snprintf と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
+extern int snprintfDx_VaList( TCHAR *Buffer, size_t BufferSize, const TCHAR *FormatString, va_list VaList )
+{
+	int Result ;
+
+	Result = NS_vsnprintfDx( Buffer, BufferSize, FormatString, VaList ) ;
+
+	return Result ;
+}
+
+// sscanf と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
+extern int sscanfDx_VaList( const TCHAR *String, const TCHAR *FormatString, va_list VaList )
+{
+	int Result ;
+
+	Result = NS_vsscanfDx( String, FormatString, VaList ) ;
+
+	return Result ;
+}
+
 
 
 

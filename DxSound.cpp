@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＳｏｕｎｄ制御プログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -27,7 +27,7 @@
 #ifndef DX_NON_OGGVORBIS
 
 extern	int	GetOggCommentNumBase( STREAMDATA *Stream ) ;
-extern	int	GetOggCommentBase( STREAMDATA *Stream, int CommentIndex, TCHAR *CommentNameBuffer, size_t CommentNameBufferBytes, TCHAR *CommentBuffer, size_t CommentBufferBytes ) ;
+extern	int	GetOggCommentBase( STREAMDATA *Stream, int CommentIndex, char *CommentNameBuffer, size_t CommentNameBufferBytes, char *CommentBuffer, size_t CommentBufferBytes ) ;
 
 #endif // DX_NON_OGGVORBIS
 
@@ -2205,7 +2205,7 @@ int SoundDataCopy( SOUNDBUFFERLOCKDATA *LockData, SOUNDCONV *ConvData, DWORD Mov
 
 			if( MLen > LockData->Valid ) MLen = LockData->Valid ;
 			MLen = ( DWORD )RunSoundConvert( ConvData, WOff, MLen ) ;
-			if( MLen == 0 ) break ;
+			if( MLen == 0 && GetSoundConvertEndState( ConvData ) ) break ;
 			
 			LockData->Valid -= MLen ;
 			LockData->Offset += MLen ;
@@ -2218,7 +2218,7 @@ int SoundDataCopy( SOUNDBUFFERLOCKDATA *LockData, SOUNDCONV *ConvData, DWORD Mov
 
 			if( MLen > LockData->Valid2 ) MLen = LockData->Valid2 ;
 			MLen = ( DWORD )RunSoundConvert( ConvData, WOff, MLen ) ;
-			if( MLen == 0 ) break ;
+			if( MLen == 0 && GetSoundConvertEndState( ConvData ) ) break ;
 
 			LockData->Valid2 -= MLen ;
 			LockData->Offset2 += MLen ;
@@ -2632,7 +2632,7 @@ extern int ProcessStreamSoundMem_UseGParam( int SoundHandle, int ASyncThread )
 
 			// 転送量が０バイトの場合は次のファイルに移る
 			BreakFlag = FALSE ;
-			if( MoveByte2 == 0 )
+			if( MoveByte2 == 0 && GetSoundConvertEndState( &PlayData->ConvData ) )
 			{
 //				CurPosition = 0;
 				if( StreamSoundNextData( Sound, &LockData, ( int )CurPosition ) < 0 )
@@ -8044,7 +8044,7 @@ extern int GetOggComment_WCHAR_T( const wchar_t *FileName, int CommentIndex, TCH
 	Stream.ReadShred = *GetFileStreamDataShredStruct() ;
 
 	// libogg を使用する処理を実行
-	Result = GetOggCommentBase( &Stream, CommentIndex, CommentNameBuffer, CommentNameBufferBytes, CommentBuffer, CommentBufferBytes ) ;
+	Result = GetOggCommentBase( &Stream, CommentIndex, ( char * )CommentNameBuffer, CommentNameBufferBytes, ( char * )CommentBuffer, CommentBufferBytes ) ;
 
 	// ファイルを閉じる
 	DX_FCLOSE( fp ) ;
@@ -11322,6 +11322,91 @@ extern int SetupSelfMixingWorkBuffer( int IsFloat, int Samples )
 		}\
 	}
 
+#define HZ_CHANGE_SRC_NCH_U8_PARTS0\
+	{\
+		BYTE *SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer + CompPos * SoundBuf->Format.nChannels ;\
+\
+		Src1_P = SoundSysData.Bit8To16Table[ SrcBuf[ 0 ] ] ;\
+		Src2_P = SoundSysData.Bit8To16Table[ SrcBuf[ 1 ] ] ;\
+		if( CompPos == SoundBuf->SampleNum - 1 )\
+		{\
+			if( SoundBuf->Loop == TRUE )\
+			{\
+				Src1_N = SoundSysData.Bit8To16Table[ ( ( BYTE * )SoundBuf->Wave->Buffer )[ 0 ] ] ; \
+				Src2_N = SoundSysData.Bit8To16Table[ ( ( BYTE * )SoundBuf->Wave->Buffer )[ 1 ] ] ; \
+			}\
+			else\
+			{\
+				Src1_N = 0 ;\
+				Src2_N = 0 ;\
+			}\
+		}\
+		else\
+		{\
+			Src1_N = SoundSysData.Bit8To16Table[ SrcBuf[ SoundBuf->Format.nChannels     ] ] ;\
+			Src2_N = SoundSysData.Bit8To16Table[ SrcBuf[ SoundBuf->Format.nChannels + 1 ] ] ;\
+		}\
+\
+		while( OutputSampleNum > 0 )\
+		{
+
+#define HZ_CHANGE_SRC_NCH_U8_PARTS1\
+			OutputSampleNum -- ;\
+\
+			Ratio += SampleAdd ;\
+			while( Ratio >= 1.0 )\
+			{\
+				Ratio -= 1.0 ;\
+				CompPos ++ ;\
+				SrcBuf += SoundBuf->Format.nChannels ;\
+				Src1_P = Src1_N ;\
+				Src2_P = Src2_N ;\
+				if( CompPos >= SoundBuf->SampleNum )\
+				{\
+					if( SoundBuf->Loop == TRUE )\
+					{\
+						CompPos = 0 ;\
+						SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer ;\
+						Src1_N = SoundSysData.Bit8To16Table[ SrcBuf[ SoundBuf->Format.nChannels     ] ] ;\
+						Src2_N = SoundSysData.Bit8To16Table[ SrcBuf[ SoundBuf->Format.nChannels + 1 ] ] ;\
+					}\
+					else\
+					{\
+						Ratio = 0.0 ;\
+						SoundBuf->CompPos = SoundBuf->SampleNum ;\
+						SoundBuf->PlayPos = SoundBuf->CompPos ;\
+						SoundBuf->State = FALSE ;\
+						SoundBuf->AddPlaySoundBufferList = FALSE ;\
+						SubSimpleList( ( SIMPLELIST * )&SoundBuf->PlaySoundBufferList ) ;\
+						OutputSampleNum = 0 ;\
+						break ;\
+					}\
+				}\
+				else\
+				{\
+					if( CompPos == SoundBuf->SampleNum - 1 )\
+					{\
+						if( SoundBuf->Loop == TRUE )\
+						{\
+							Src1_N = SoundSysData.Bit8To16Table[ ( ( BYTE * )SoundBuf->Wave->Buffer )[ 0 ] ] ;\
+							Src2_N = SoundSysData.Bit8To16Table[ ( ( BYTE * )SoundBuf->Wave->Buffer )[ 1 ] ] ;\
+						}\
+						else\
+						{\
+							Src1_N = 0 ;\
+							Src2_N = 0 ;\
+						}\
+					}\
+					else\
+					{\
+						Src1_N = SoundSysData.Bit8To16Table[ SrcBuf[ SoundBuf->Format.nChannels     ] ] ;\
+						Src2_N = SoundSysData.Bit8To16Table[ SrcBuf[ SoundBuf->Format.nChannels + 1 ] ] ;\
+					}\
+				}\
+			}\
+		}\
+	}
+
 #define HZ_CHANGE_SRC_1CH_S16_PARTS0\
 	{\
 		short *SrcBuf = ( short * )SoundBuf->Wave->Buffer + CompPos ;\
@@ -11477,6 +11562,91 @@ extern int SetupSelfMixingWorkBuffer( int IsFloat, int Samples )
 					{\
 						Src1_N = SrcBuf[ 2 ] ;\
 						Src2_N = SrcBuf[ 3 ] ;\
+					}\
+				}\
+			}\
+		}\
+	}
+
+#define HZ_CHANGE_SRC_NCH_S16_PARTS0\
+	{\
+		short *SrcBuf = ( short * )SoundBuf->Wave->Buffer + CompPos * SoundBuf->Format.nChannels ;\
+\
+		Src1_P = SrcBuf[ 0 ] ;\
+		Src2_P = SrcBuf[ 1 ] ;\
+		if( CompPos == SoundBuf->SampleNum - 1 )\
+		{\
+			if( SoundBuf->Loop == TRUE )\
+			{\
+				Src1_N = ( ( short * )SoundBuf->Wave->Buffer )[ 0 ] ;\
+				Src2_N = ( ( short * )SoundBuf->Wave->Buffer )[ 1 ] ;\
+			}\
+			else\
+			{\
+				Src1_N = 0 ;\
+				Src2_N = 0 ;\
+			}\
+		}\
+		else\
+		{\
+			Src1_N = SrcBuf[ SoundBuf->Format.nChannels     ] ;\
+			Src2_N = SrcBuf[ SoundBuf->Format.nChannels + 1 ] ;\
+		}\
+\
+		while( OutputSampleNum > 0 )\
+		{
+
+#define HZ_CHANGE_SRC_NCH_S16_PARTS1\
+			OutputSampleNum -- ;\
+\
+			Ratio += SampleAdd ;\
+			while( Ratio >= 1.0 )\
+			{\
+				Ratio -= 1.0 ;\
+				CompPos ++ ;\
+				SrcBuf += SoundBuf->Format.nChannels ;\
+				Src1_P = Src1_N ;\
+				Src2_P = Src2_N ;\
+				if( CompPos >= SoundBuf->SampleNum )\
+				{\
+					if( SoundBuf->Loop == TRUE )\
+					{\
+						CompPos = 0 ;\
+						SrcBuf = ( short * )SoundBuf->Wave->Buffer ;\
+						Src1_N = SrcBuf[ SoundBuf->Format.nChannels     ] ;\
+						Src2_N = SrcBuf[ SoundBuf->Format.nChannels + 1 ] ;\
+					}\
+					else\
+					{\
+						Ratio = 0.0 ;\
+						SoundBuf->CompPos = SoundBuf->SampleNum ;\
+						SoundBuf->PlayPos = SoundBuf->CompPos ;\
+						SoundBuf->State = FALSE ;\
+						SoundBuf->AddPlaySoundBufferList = FALSE ;\
+						SubSimpleList( ( SIMPLELIST * )&SoundBuf->PlaySoundBufferList ) ;\
+						OutputSampleNum = 0 ;\
+						break ;\
+					}\
+				}\
+				else\
+				{\
+					if( CompPos == SoundBuf->SampleNum - 1 )\
+					{\
+						if( SoundBuf->Loop == TRUE )\
+						{\
+							Src1_N = ( ( short * )SoundBuf->Wave->Buffer )[ 0 ] ;\
+							Src2_N = ( ( short * )SoundBuf->Wave->Buffer )[ 1 ] ;\
+						}\
+						else\
+						{\
+							Src1_N = 0 ;\
+							Src2_N = 0 ;\
+						}\
+					}\
+					else\
+					{\
+						Src1_N = SrcBuf[ SoundBuf->Format.nChannels     ] ;\
+						Src2_N = SrcBuf[ SoundBuf->Format.nChannels + 1 ] ;\
 					}\
 				}\
 			}\
@@ -11644,6 +11814,91 @@ extern int SetupSelfMixingWorkBuffer( int IsFloat, int Samples )
 		}\
 	}
 
+#define HZ_CHANGE_SRC_NCH_S24_PARTS0\
+	{\
+		BYTE *SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer + CompPos * SoundBuf->Format.nChannels * 3 ;\
+\
+		Src1_P = ( short )( SrcBuf[ 1 ] | ( SrcBuf[ 2 ] << 8 ) ) ;\
+		Src2_P = ( short )( SrcBuf[ 4 ] | ( SrcBuf[ 5 ] << 8 ) ) ;\
+		if( CompPos == SoundBuf->SampleNum - 1 )\
+		{\
+			if( SoundBuf->Loop == TRUE )\
+			{\
+				Src1_N = ( short )( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 1 ] | ( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 2 ] << 8 ) ) ;\
+				Src2_N = ( short )( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 4 ] | ( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 5 ] << 8 ) ) ;\
+			}\
+			else\
+			{\
+				Src1_N = 0 ;\
+				Src2_N = 0 ;\
+			}\
+		}\
+		else\
+		{\
+			Src1_N = ( short )( SrcBuf[ SoundBuf->Format.nChannels * 3 + 1 ] | ( SrcBuf[ SoundBuf->Format.nChannels * 3 + 2 ] << 8 ) ) ;\
+			Src2_N = ( short )( SrcBuf[ SoundBuf->Format.nChannels * 3 + 4 ] | ( SrcBuf[ SoundBuf->Format.nChannels * 3 + 5 ] << 8 ) ) ;\
+		}\
+\
+		while( OutputSampleNum > 0 )\
+		{
+
+#define HZ_CHANGE_SRC_NCH_S24_PARTS1\
+			OutputSampleNum -- ;\
+\
+			Ratio += SampleAdd ;\
+			while( Ratio >= 1.0 )\
+			{\
+				Ratio -= 1.0 ;\
+				CompPos ++ ;\
+				SrcBuf += SoundBuf->Format.nChannels * 3 ;\
+				Src1_P = Src1_N ;\
+				Src2_P = Src2_N ;\
+				if( CompPos >= SoundBuf->SampleNum )\
+				{\
+					if( SoundBuf->Loop == TRUE )\
+					{\
+						CompPos = 0 ;\
+						SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer ;\
+						Src1_N = ( short )( SrcBuf[ SoundBuf->Format.nChannels * 3 + 1 ] | ( SrcBuf[ SoundBuf->Format.nChannels * 3 + 2 ] << 8 ) ) ;\
+						Src2_N = ( short )( SrcBuf[ SoundBuf->Format.nChannels * 3 + 4 ] | ( SrcBuf[ SoundBuf->Format.nChannels * 3 + 5 ] << 8 ) ) ;\
+					}\
+					else\
+					{\
+						Ratio = 0.0 ;\
+						SoundBuf->CompPos = SoundBuf->SampleNum ;\
+						SoundBuf->PlayPos = SoundBuf->CompPos ;\
+						SoundBuf->State = FALSE ;\
+						SoundBuf->AddPlaySoundBufferList = FALSE ;\
+						SubSimpleList( ( SIMPLELIST * )&SoundBuf->PlaySoundBufferList ) ;\
+						OutputSampleNum = 0 ;\
+						break ;\
+					}\
+				}\
+				else\
+				{\
+					if( CompPos == SoundBuf->SampleNum - 1 )\
+					{\
+						if( SoundBuf->Loop == TRUE )\
+						{\
+							Src1_N = ( short )( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 1 ] | ( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 2 ] << 8 ) ) ;\
+							Src2_N = ( short )( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 4 ] | ( ( ( BYTE * )SoundBuf->Wave->Buffer )[ 5 ] << 8 ) ) ;\
+						}\
+						else\
+						{\
+							Src1_N = 0 ;\
+							Src2_N = 0 ;\
+						}\
+					}\
+					else\
+					{\
+						Src1_N = ( short )( SrcBuf[ SoundBuf->Format.nChannels * 3 + 1 ] | ( SrcBuf[ SoundBuf->Format.nChannels * 3 + 2 ] << 8 ) ) ;\
+						Src2_N = ( short )( SrcBuf[ SoundBuf->Format.nChannels * 3 + 4 ] | ( SrcBuf[ SoundBuf->Format.nChannels * 3 + 5 ] << 8 ) ) ;\
+					}\
+				}\
+			}\
+		}\
+	}
+
 #define DESTADD_FLOAT_1CH\
 	DestBufF[ 0 ] += ( float )Output0 * Scale0 ;\
 	DestBufF[ 1 ] += ( float )Output0 * Scale1 ;\
@@ -11715,6 +11970,15 @@ extern int SetupSelfMixingWorkBuffer( int IsFloat, int Samples )
 			Output0 = SoundSysData.Bit8To16Table[ SrcBuf[ 0 ] ] ;\
 			Output1 = SoundSysData.Bit8To16Table[ SrcBuf[ 1 ] ] ;
 
+#define INT_SRC_NCH_U8_PARTS0\
+	{\
+		BYTE *SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer + CompPos * SoundBuf->Format.nChannels ;\
+\
+		while( OutputSampleNum > 0 )\
+		{\
+			Output0 = SoundSysData.Bit8To16Table[ SrcBuf[ 0 ] ] ;\
+			Output1 = SoundSysData.Bit8To16Table[ SrcBuf[ 1 ] ] ;
+
 #define INT_SRC_1CH_S16_PARTS0\
 	{\
 		short *SrcBuf = ( short * )SoundBuf->Wave->Buffer + CompPos ;\
@@ -11733,6 +11997,15 @@ extern int SetupSelfMixingWorkBuffer( int IsFloat, int Samples )
 			Output0 = SrcBuf[ 0 ] ;\
 			Output1 = SrcBuf[ 1 ] ;
 
+#define INT_SRC_NCH_S16_PARTS0\
+	{\
+		short *SrcBuf = ( short * )SoundBuf->Wave->Buffer + CompPos * SoundBuf->Format.nChannels ;\
+\
+		while( OutputSampleNum > 0 )\
+		{\
+			Output0 = SrcBuf[ 0 ] ;\
+			Output1 = SrcBuf[ 1 ] ;
+
 #define INT_SRC_1CH_S24_PARTS0\
 	{\
 		BYTE *SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer + CompPos * 3 ;\
@@ -11745,6 +12018,15 @@ extern int SetupSelfMixingWorkBuffer( int IsFloat, int Samples )
 #define INT_SRC_2CH_S24_PARTS0\
 	{\
 		BYTE *SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer + CompPos * 6 ;\
+\
+		while( OutputSampleNum > 0 )\
+		{\
+			Output0 = ( short )( SrcBuf[ 1 ] | ( SrcBuf[ 2 ] << 8 ) ) ;\
+			Output1 = ( short )( SrcBuf[ 4 ] | ( SrcBuf[ 5 ] << 8 ) ) ;
+
+#define INT_SRC_NCH_S24_PARTS0\
+	{\
+		BYTE *SrcBuf = ( BYTE * )SoundBuf->Wave->Buffer + CompPos * SoundBuf->Format.nChannels * 3 ;\
 \
 		while( OutputSampleNum > 0 )\
 		{\
@@ -11902,6 +12184,7 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 				}
 			}
 			else
+			if( SoundBuf->Format.nChannels == 1 )
 			{
 				if( SoundBuf->Format.wBitsPerSample == 16 )
 				{
@@ -11915,6 +12198,22 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 				else
 				{
 					DEST_HZ_CHANGE_CODE( HZ_CHANGE_SRC_1CH_U8_PARTS0, HZ_CHANGE_SRC_1CH_U8_PARTS1, DEST_INT_HZ_CHANGE_1CH_ADD_SCALE_PARTS, DEST_INT_HZ_CHANGE_1CH_ADD_PARTS, DEST_FLOAT_HZ_CHANGE_1CH_ADD_PARTS )
+				}
+			}
+			else
+			{
+				if( SoundBuf->Format.wBitsPerSample == 16 )
+				{
+					DEST_HZ_CHANGE_CODE( HZ_CHANGE_SRC_NCH_S16_PARTS0, HZ_CHANGE_SRC_NCH_S16_PARTS1, DEST_INT_HZ_CHANGE_2CH_ADD_SCALE_PARTS, DEST_INT_HZ_CHANGE_2CH_ADD_PARTS, DEST_FLOAT_HZ_CHANGE_2CH_ADD_PARTS )
+				}
+				else
+				if( SoundBuf->Format.wBitsPerSample == 24 )
+				{
+					DEST_HZ_CHANGE_CODE( HZ_CHANGE_SRC_NCH_S24_PARTS0, HZ_CHANGE_SRC_NCH_S24_PARTS1, DEST_INT_HZ_CHANGE_2CH_ADD_SCALE_PARTS, DEST_INT_HZ_CHANGE_2CH_ADD_PARTS, DEST_FLOAT_HZ_CHANGE_2CH_ADD_PARTS )
+				}
+				else
+				{
+					DEST_HZ_CHANGE_CODE( HZ_CHANGE_SRC_NCH_U8_PARTS0, HZ_CHANGE_SRC_NCH_U8_PARTS1, DEST_INT_HZ_CHANGE_2CH_ADD_SCALE_PARTS, DEST_INT_HZ_CHANGE_2CH_ADD_PARTS, DEST_FLOAT_HZ_CHANGE_2CH_ADD_PARTS )
 				}
 			}
 
@@ -11941,6 +12240,7 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 				}
 			}
 			else
+			if( SoundBuf->Format.nChannels == 1 )
 			{
 				if( SoundBuf->Format.wBitsPerSample == 16 )
 				{
@@ -11954,6 +12254,22 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 				else
 				{
 					INT_CONVCODE( INT_SRC_1CH_U8_PARTS0, BYTE, 1, DESTADD_INT_1CH_SCALE, DESTADD_INT_1CH, DESTADD_FLOAT_1CH )
+				}
+			}
+			else
+			{
+				if( SoundBuf->Format.wBitsPerSample == 16 )
+				{
+					INT_CONVCODE( INT_SRC_NCH_S16_PARTS0, short, SoundBuf->Format.nChannels, DESTADD_INT_2CH_SCALE, DESTADD_INT_2CH, DESTADD_FLOAT_2CH )
+				}
+				else
+				if( SoundBuf->Format.wBitsPerSample == 24 )
+				{
+					INT_CONVCODE( INT_SRC_NCH_S24_PARTS0, BYTE, SoundBuf->Format.nChannels * 3, DESTADD_INT_2CH_SCALE, DESTADD_INT_2CH, DESTADD_FLOAT_2CH )
+				}
+				else
+				{
+					INT_CONVCODE( INT_SRC_NCH_U8_PARTS0, BYTE, SoundBuf->Format.nChannels, DESTADD_INT_2CH_SCALE, DESTADD_INT_2CH, DESTADD_FLOAT_2CH )
 				}
 			}
 

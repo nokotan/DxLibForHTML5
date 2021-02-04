@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＤｒａｗ制御プログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // ----------------------------------------------------------------------------
 
@@ -270,6 +270,13 @@ namespace DxLib
 	CL_vsnprintf( CharCodeFormat, _TISWCHAR, CHAR_CHARCODEFORMAT, WCHAR_T_CHARCODEFORMAT, ( char * )String, sizeof( String ) / sizeof( TCHAR ), ( const char * )FormatString, VaList ) ;\
 	\
 	va_end( VaList ) ;
+
+#define TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( err )			\
+	TCHAR String[ 2048 ] ;\
+	\
+	TCHAR_CHARCODEFORMAT_SETUP( err )\
+	\
+	CL_vsnprintf( CharCodeFormat, _TISWCHAR, CHAR_CHARCODEFORMAT, WCHAR_T_CHARCODEFORMAT, ( char * )String, sizeof( String ) / sizeof( TCHAR ), ( const char * )FormatString, VaList ) ;
 
 
 // 構造体型宣言----------------------------------------------------------------
@@ -15826,6 +15833,363 @@ extern int DrawNumberPlusToFToHandle_WCHAR_T( int x, int y, const wchar_t *NoteS
 
 	// 描画
 	return DrawStringToHandle_WCHAR_T( x, y, Str, _WCSLEN( Str ), Color, FontHandle, EdgeColor, FALSE ) ;
+}
+
+// デフォルトフォントハンドルを使用した書式付き文字列の描画幅を取得する
+extern int GetDrawFormatStringWidth_VaList( const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 文字列の幅を得る
+	return NS_GetDrawStringWidthToHandle(
+				String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+}
+
+// デフォルトフォントハンドルを使用した書式付き文字列の描画幅を取得する( 拡大率付き )
+extern int GetDrawExtendFormatStringWidth_VaList( double ExRateX, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 文字列の幅を得る
+	return NS_GetDrawExtendStringWidthToHandle(
+		ExRateX, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE ) ;
+}
+
+// デフォルトフォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する
+extern int GetDrawFormatStringSize_VaList( int *SizeX, int *SizeY, int *LineCount, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 文字列の幅を得る
+	return NS_GetDrawStringSizeToHandle(
+				SizeX, SizeY, LineCount, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+}
+
+// デフォルトフォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する( 拡大率付き )
+extern int GetDrawExtendFormatStringSize_VaList( int *SizeX, int *SizeY, int *LineCount, double ExRateX, double ExRateY, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 文字列の幅を得る
+	return NS_GetDrawExtendStringSizeToHandle(
+		SizeX, SizeY, LineCount, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE ) ;
+}
+
+// デフォルトフォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
+extern int GetDrawFormatStringCharInfo_VaList( DRAWCHARINFO *InfoBuffer, size_t InfoBufferSize, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_GetDrawStringCharInfoToHandle(
+				InfoBuffer, InfoBufferSize, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+}
+
+// デフォルトフォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
+extern int GetDrawExtendFormatStringCharInfo_VaList( DRAWCHARINFO *InfoBuffer, size_t InfoBufferSize, double ExRateX, double ExRateY, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 文字列の幅を得る
+	return NS_GetDrawExtendStringCharInfoToHandle(
+		InfoBuffer, InfoBufferSize, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE ) ;
+}
+
+// フォントハンドルを使用した書式付き文字列の描画幅を取得する
+extern int GetDrawFormatStringWidthToHandle_VaList( int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 文字列の幅を得る
+	return NS_GetDrawStringWidthToHandle(
+				String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+}
+
+// フォントハンドルを使用した書式付き文字列の描画幅を取得する
+extern int GetDrawExtendFormatStringWidthToHandle_VaList( double ExRateX, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 文字列の幅を得る
+	return NS_GetDrawExtendStringWidthToHandle(
+				ExRateX, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+}
+
+// フォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する
+extern int GetDrawFormatStringSizeToHandle_VaList( int *SizeX, int *SizeY, int *LineCount, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 文字列の幅を得る
+	return NS_GetDrawStringSizeToHandle(
+				SizeX, SizeY, LineCount, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+}
+
+// フォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する
+extern int GetDrawExtendFormatStringSizeToHandle_VaList( int *SizeX, int *SizeY, int *LineCount, double ExRateX, double ExRateY, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 文字列の幅を得る
+	return NS_GetDrawExtendStringSizeToHandle(
+				SizeX, SizeY, LineCount, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+}
+
+// フォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
+extern int GetDrawFormatStringCharInfoToHandle_VaList( DRAWCHARINFO *InfoBuffer, size_t InfoBufferSize, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_GetDrawStringCharInfoToHandle(
+				InfoBuffer, InfoBufferSize, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+}
+
+// フォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
+extern int GetDrawExtendFormatStringCharInfoToHandle_VaList( DRAWCHARINFO *InfoBuffer, size_t InfoBufferSize, double ExRateX, double ExRateY, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_GetDrawExtendStringCharInfoToHandle(
+				InfoBuffer, InfoBufferSize, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を描画する
+extern int DrawFormatString_VaList( int x, int y, unsigned int Color, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を描画する( 縦書き )
+extern int DrawFormatVString_VaList( int x, int y, unsigned int Color, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する
+extern int DrawExtendFormatString_VaList( int x, int y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )
+extern int DrawExtendFormatVString_VaList( int x, int y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を回転描画する
+extern int DrawRotaFormatString_VaList( int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawRotaStringToHandle( x, y, ExRateX,  ExRateY, RotCenterX, RotCenterY, RotAngle, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, VerticalFlag, String ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を変形描画する
+extern int DrawModiFormatString_VaList( int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, unsigned int Color, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawModiStringToHandle( x1, y1, x2, y2, x3, y3, x4, y4, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, VerticalFlag, String ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を描画する( 座標指定が float 版 )
+extern int DrawFormatStringF_VaList( float x, float y, unsigned int Color, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を描画する( 縦書き )( 座標指定が float 版 )
+extern int DrawFormatVStringF_VaList( float x, float y, unsigned int Color, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する( 座標指定が float 版 )
+extern int DrawExtendFormatStringF_VaList( float x, float y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )( 座標指定が float 版 )
+extern int DrawExtendFormatVStringF_VaList( float x, float y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を回転描画する( 座標指定が float 版 )
+extern int DrawRotaFormatStringF_VaList( float x, float y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawRotaStringFToHandle( x, y, ExRateX,  ExRateY, RotCenterX, RotCenterY, RotAngle, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, VerticalFlag, String ) ;
+}
+
+// デフォルトフォントハンドルを使用して書式指定文字列を変形描画する( 座標指定が float 版 )
+extern int DrawModiFormatStringF_VaList( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, unsigned int Color, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawModiStringFToHandle( x1, y1, x2, y2, x3, y3, x4, y4, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, VerticalFlag, String ) ;
+}
+	   	   
+// フォントハンドルを使用して書式指定文字列を描画する
+extern int DrawFormatStringToHandle_VaList( int x, int y, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringToHandle( x, y, String, Color, FontHandle, 0, FALSE ) ;
+}
+
+// フォントハンドルを使用して書式指定文字列を描画する( 縦書き )
+extern int DrawFormatVStringToHandle_VaList( int x, int y, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringToHandle( x, y, String, Color, FontHandle, 0, TRUE ) ;
+}
+
+// フォントハンドルを使用して書式指定文字列を拡大描画する
+extern int DrawExtendFormatStringToHandle_VaList( int x, int y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, FALSE ) ;
+}
+
+// フォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )
+extern int DrawExtendFormatVStringToHandle_VaList( int x, int y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, TRUE ) ;
+}
+
+// フォントハンドルを使用して書式指定文字列を回転描画する
+extern int DrawRotaFormatStringToHandle_VaList( int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList  )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawRotaStringToHandle( x, y, ExRateX,  ExRateY, RotCenterX, RotCenterY, RotAngle, Color, FontHandle, EdgeColor, VerticalFlag, String ) ;
+}
+
+// フォントハンドルを使用して書式指定文字列を変形描画する
+extern int DrawModiFormatStringToHandle_VaList( int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawModiStringToHandle( x1, y1, x2, y2, x3, y3, x4, y4, Color, FontHandle, EdgeColor, VerticalFlag, String ) ;
+}
+
+// フォントハンドルを使用して書式指定文字列を描画する( 座標指定が float 版 )
+extern int DrawFormatStringFToHandle_VaList( float x, float y, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringFToHandle( x, y, String, Color, FontHandle, 0, FALSE ) ;
+}
+
+// フォントハンドルを使用して書式指定文字列を描画する( 縦書き )( 座標指定が float 版 )
+extern int DrawFormatVStringFToHandle_VaList( float x, float y, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringFToHandle( x, y, String, Color, FontHandle, 0, TRUE ) ;
+}
+
+// フォントハンドルを使用して書式指定文字列を拡大描画する( 座標指定が float 版 )
+extern int DrawExtendFormatStringFToHandle_VaList( float x, float y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, FALSE ) ;
+}
+
+// フォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )( 座標指定が float 版 )
+extern int DrawExtendFormatVStringFToHandle_VaList( float x, float y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, TRUE ) ;
+}
+
+// フォントハンドルを使用して書式指定文字列を回転描画する( 座標指定が float 版 )
+extern int DrawRotaFormatStringFToHandle_VaList( float x, float y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawRotaStringFToHandle( x, y, ExRateX,  ExRateY, RotCenterX, RotCenterY, RotAngle, Color, FontHandle, EdgeColor, VerticalFlag, String ) ;
+}
+
+// フォントハンドルを使用して書式指定文字列を変形描画する( 座標指定が float 版 )
+extern int DrawModiFormatStringFToHandle_VaList( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawModiStringFToHandle( x1, y1, x2, y2, x3, y3, x4, y4, Color, FontHandle, EdgeColor, VerticalFlag, String ) ;
 }
 
 

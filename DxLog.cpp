@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ログプログラム
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -817,6 +817,69 @@ extern int SetApplicationLogFileName_WCHAR_T( const wchar_t *FileName )
 
 	// 終了
 	return 0 ;
+}
+
+// va_list 関数
+
+// 書式付きで ログファイル( Log.txt ) に文字列を出力する( 書式は printf と同じ )
+extern int LogFileFmtAdd_VaList( const TCHAR *FormatString, va_list VaList )
+{
+	int Result ;
+
+	TCHAR_FORMATSTRING_VALIST_SETUP
+
+	// 改行文字を追加する
+	_TSTRCAT_S( String, sizeof( String ), _T( "\n" ) ) ;
+
+	// ログ出力する
+	Result = NS_LogFileAdd( String ) ;
+	
+	return Result ;
+}
+
+// LogFileFmtAdd の旧名称関数
+extern int ErrorLogFmtAdd_VaList( const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FORMATSTRING_VALIST_SETUP
+
+	// 改行文字を追加する
+	_TSTRCAT_S( String, sizeof( String ), _T( "\n" ) ) ;
+
+	// ログ出力する
+	NS_LogFileAdd( String ) ;
+	
+	return -1 ;
+}
+
+// LogFileFmtAdd と同じ機能の関数
+extern int AppLogAdd_VaList( const TCHAR *String, va_list VaList )
+{
+	TCHAR StringBuf[ 2048 ] ;
+
+	_TVSNPRINTF( StringBuf, sizeof( StringBuf ) / sizeof( TCHAR ), String, VaList ) ;
+
+	return NS_ErrorLogAdd( StringBuf ) ;
+}
+
+// printf と同じ引数で画面に文字列を表示するための関数
+extern int printfDx_VaList( const TCHAR *FormatString, va_list VaList )
+{
+	int Result ;
+
+	TCHAR_FORMATSTRING_VALIST_SETUP
+
+#ifdef UNICODE
+	Result = printfDxBase_WCHAR_T( String ) ;
+#else
+	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( String, return -1 )
+
+	Result = printfDxBase_WCHAR_T( UseStringBuffer ) ;
+
+	TCHAR_TO_WCHAR_T_STRING_END( String )
+#endif
+
+	// 終了
+	return Result ;
 }
 
 

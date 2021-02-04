@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ファイルアクセスプログラムヘッダファイル
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -14,6 +14,7 @@
 #include "DxLib.h"
 #include "DxStatic.h"
 #include "DxHandle.h"
+#include <stdarg.h>
 
 
 // マクロ定義 --------------------------------------------------------------------
@@ -309,6 +310,12 @@ extern int			AnalysisDriveNameW_( const wchar_t *Src, wchar_t *Dest, size_t Buff
 // 戻り値は取得した文字列の長さです
 //extern int		AnalysisDirectoryName_( const char *Src, char *Dest ) ;
 extern int			AnalysisDirectoryNameW_( const wchar_t *Src, wchar_t *Dest, size_t BufferBytes ) ;
+
+
+
+
+// va_list 関数
+extern	int			FileRead_scanf_VaList( int FileHandle , const TCHAR *Format , va_list VaList ) ;					// ファイルから書式化されたデータを読み出す
 
 
 

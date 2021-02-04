@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		マスク処理ヘッダファイル
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -18,6 +18,7 @@
 #include "DxStatic.h"
 #include "DxMemImg.h"
 #include "DxHandle.h"
+#include <stdarg.h>
 
 #ifndef DX_NON_NAMESPACE
 
@@ -120,6 +121,12 @@ extern	int			DrawFormatStringMask_WCHAR_T(			int x, int y, int Flag,            
 extern	int			DrawFormatStringMaskToHandle_WCHAR_T(	int x, int y, int Flag, int FontHandle, const wchar_t *FormatString, ... ) ;
 extern	int			DrawStringMask_WCHAR_T(					int x, int y, int Flag,                 const wchar_t *String, int StrLen ) ;
 extern	int			DrawStringMaskToHandle_WCHAR_T(			int x, int y, int Flag, int FontHandle, const wchar_t *String, int StrLen ) ;
+#endif // DX_NON_FONT
+
+// va_list 関数
+#ifndef DX_NON_FONT
+extern	int			DrawFormatStringMask_VaList(			int x, int y, int Flag,                 const TCHAR *FormatString, va_list VaList ) ;						// 書式指定ありの文字列をマスクスクリーンに描画する
+extern	int			DrawFormatStringMaskToHandle_VaList(	int x, int y, int Flag, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;						// 書式指定ありの文字列をマスクスクリーンに描画する( フォントハンドル指定版 )( SetFontCacheToTextureFlag( FALSE ) ; にして作成したフォントハンドルのみ使用可能 )
 #endif // DX_NON_FONT
 
 

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準関数の互換関数プログラムヘッダファイル
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -421,6 +421,12 @@ namespace DxLib
 	va_end( VaList ) ;
 
 
+#define TCHAR_FORMATSTRING_VALIST_SETUP													\
+	TCHAR String[ 2048 ] ;																\
+																						\
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;	
+
+
 #define WCHAR_T_FORMATSTRING_SETUP										\
 	va_list VaList ;													\
 	wchar_t String[ 2048 ] ;											\
@@ -740,6 +746,11 @@ __inline int _FTOL( float Real )
 	return ( int )Real ;
 #endif
 }
+
+// va_list 関数
+extern int sprintfDx_VaList(  TCHAR *Buffer,                    const TCHAR *FormatString, va_list VaList ) ;	// sprintf と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
+extern int snprintfDx_VaList( TCHAR *Buffer, size_t BufferSize, const TCHAR *FormatString, va_list VaList ) ;	// snprintf と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
+extern int sscanfDx_VaList(   const TCHAR *String, const TCHAR *FormatString, va_list VaList ) ;				// sscanf と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
 
 #ifndef DX_NON_NAMESPACE
 

@@ -2,7 +2,7 @@
 //
 //		ＤＸライブラリ　ムービー再生処理用プログラム
 //
-//				Ver 3.22a
+//				Ver 3.22c
 //
 // ----------------------------------------------------------------------------
 
@@ -281,6 +281,7 @@ extern int OpenMovie_UseGParam(
 		if( Width  ) *Width  = Info.Width ;
 		if( Height ) *Height = Info.Height ;
 		Movie->TheoraFrameRate = Info.FrameRate ;
+		Movie->TheoraTotalFrame = Info.TotalFrame ;
 		Movie->TheoraTotalPlayTime = _DTOL( 1000.0 / Info.FrameRate * Info.TotalFrame ) ;
 
 #ifndef DX_NON_SOUND
@@ -561,9 +562,6 @@ extern int SeekMovie( int MovieHandle, int Time )
 	if( MOVIEHCHK( MovieHandle, Movie ) )
 		return -1 ;
 
-	// 再生を止める
-	PauseMovie( MovieHandle ) ;
-
 	// 画像が更新されたフラグを倒す
 	Movie->NowImageUpdateFlag = FALSE ;
 
@@ -573,6 +571,12 @@ extern int SeekMovie( int MovieHandle, int Time )
 	{
 		int CurFrame ;
 		THEORADECODE_INFO Info ;
+
+		// 指定時間が総再生時間以上の値だった場合はエラー終了
+		if( Movie->TheoraTotalPlayTime <= Time )
+		{
+			return -1 ;
+		}
 
 		// コンバート位置を変更する
 		TheoraDecode_SeekToTime( Movie->TheoraHandle, Time * 1000 ) ;
@@ -586,7 +590,15 @@ extern int SeekMovie( int MovieHandle, int Time )
 	
 		// 再生位置を変更する
 #ifndef DX_NON_SOUND
+		if( Movie->PlayFlag )
+		{
+			NS_StopSoundMem( Movie->TheoraVorbisHandle ) ;
+		}
 		NS_SetSoundCurrentTime( Time, Movie->TheoraVorbisHandle ) ;
+		if( Movie->PlayFlag )
+		{
+			NS_PlaySoundMem( Movie->TheoraVorbisHandle, DX_PLAYTYPE_BACK, FALSE ) ;
+		}
 #endif // DX_NON_SOUND
 	}
 	else
@@ -595,7 +607,7 @@ extern int SeekMovie( int MovieHandle, int Time )
 		// 環境依存処理
 		if( SeekMovie_PF( Movie, Time ) < 0 )
 		{
-			return 0 ;
+			return -1 ;
 		}
 	}
 
@@ -743,13 +755,8 @@ extern int GetMovieTotalFrame( int MovieHandle )
 	// Theora を使用しているかどうかで処理を分岐
 	if( Movie->TheoraFlag )
 	{
-		THEORADECODE_INFO info ;
-
-		// 情報の取得
-		TheoraDecode_GetInfo( Movie->TheoraHandle, &info ) ;
-
 		// 総フレーム数を返す
-		return info.TotalFrame ;
+		return Movie->TheoraTotalFrame ;
 	}
 #endif // DX_NON_OGGTHEORA
 
@@ -835,6 +842,12 @@ extern int SeekMovieToFrame( int MovieHandle, int Frame )
 		int CurFrame ;
 		THEORADECODE_INFO Info ;
 
+		// 指定時間が総フレーム数以上の場合はエラー
+		if( Movie->TheoraTotalFrame <= Frame )
+		{
+			return -1 ;
+		}
+
 		// コンバート位置を変更する
 		TheoraDecode_SeekToFrame( Movie->TheoraHandle, Frame ) ;
 
@@ -847,7 +860,15 @@ extern int SeekMovieToFrame( int MovieHandle, int Frame )
 	
 		// 再生位置を変更する
 #ifndef DX_NON_SOUND
+		if( Movie->PlayFlag )
+		{
+			NS_StopSoundMem( Movie->TheoraVorbisHandle ) ;
+		}
 		NS_SetSoundCurrentTime( _DTOL( Frame * 1000 / Movie->TheoraFrameRate ), Movie->TheoraVorbisHandle ) ;
+		if( Movie->PlayFlag )
+		{
+			NS_PlaySoundMem( Movie->TheoraVorbisHandle, FALSE ) ;
+		}
 #endif // DX_NON_SOUND
 	}
 	else

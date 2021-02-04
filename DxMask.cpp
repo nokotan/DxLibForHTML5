@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		マスクデータ管理プログラム
 // 
-//  	Ver 3.22a
+//  	Ver 3.22c
 // 
 //-----------------------------------------------------------------------------
 
@@ -3001,6 +3001,73 @@ extern int NS_SetMaskScreenGraphUseChannel(	int UseChannel )
 	// 正常終了
 	return 0 ;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// va_list 関数
+#ifndef DX_NON_FONT
+
+// 書式指定ありの文字列をマスクスクリーンに描画する
+extern int DrawFormatStringMask_VaList( int x, int y, int Flag, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+	
+	if( MASKD.InitializeFlag == FALSE )
+		return -1 ;
+
+	// 編集後の文字列を取得する
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	return NS_DrawStringMaskToHandle( x, y, Flag, NS_GetDefaultFontHandle(), String ) ;
+}
+
+// 書式指定ありの文字列をマスクスクリーンに描画する( フォントハンドル指定版 )( SetFontCacheToTextureFlag( FALSE ) ; にして作成したフォントハンドルのみ使用可能 )
+extern int DrawFormatStringMaskToHandle_VaList( int x, int y, int Flag, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR String[ 2048 ] ;
+	
+	if( MASKD.InitializeFlag == FALSE )
+		return -1 ;
+
+	// 編集後の文字列を取得する
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+
+	return NS_DrawStringMaskToHandle( x, y, Flag, FontHandle, String ) ;
+}
+
+#endif // DX_NON_FONT
+
+
+
+
+
+
+
 
 
 

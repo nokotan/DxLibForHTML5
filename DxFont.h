@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		フォント処理用プログラムヘッダファイル
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -18,6 +18,7 @@
 #include "DxStatic.h"
 #include "DxMemImg.h"
 #include "DxHandle.h"
+#include <stdarg.h>
 
 #ifndef DX_NON_NAMESPACE
 
@@ -507,6 +508,59 @@ extern	int			DrawModiFormatStringFToHandle_WCHAR_T(			float x1, float y1, float 
 
 extern	int			DrawNumberPlusToIToHandle_WCHAR_T(              int x, int y, const wchar_t *NoteString, int    Num, int RisesNum, unsigned int Color, int FontHandle, unsigned int EdgeColor ) ;											// フォントハンドルを使用して整数型の数値とその説明の文字列を一度に描画する
 extern	int			DrawNumberPlusToFToHandle_WCHAR_T(              int x, int y, const wchar_t *NoteString, double Num, int Length,   unsigned int Color, int FontHandle, unsigned int EdgeColor ) ;											// フォントハンドルを使用して浮動小数点型の数値とその説明の文字列を一度に描画する
+
+
+// va_list 関数
+extern	int			GetDrawFormatStringWidth_VaList(				const TCHAR *FormatString, va_list VaList ) ;																																				// デフォルトフォントハンドルを使用した書式付き文字列の描画幅を取得する
+extern	int			GetDrawExtendFormatStringWidth_VaList(			double ExRateX, const TCHAR *FormatString, va_list VaList ) ;																																// デフォルトフォントハンドルを使用した書式付き文字列の描画幅を取得する( 拡大率付き )
+extern	int			GetDrawFormatStringSize_VaList(					int *SizeX, int *SizeY, int *LineCount, const TCHAR *FormatString, va_list VaList ) ;																										// デフォルトフォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する
+extern	int			GetDrawExtendFormatStringSize_VaList(			int *SizeX, int *SizeY, int *LineCount, double ExRateX, double ExRateY, const TCHAR *FormatString, va_list VaList ) ;																		// デフォルトフォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する( 拡大率付き )
+extern	int			GetDrawFormatStringCharInfo_VaList(				DRAWCHARINFO *InfoBuffer, size_t InfoBufferSize, const TCHAR *FormatString, va_list VaList ) ;																								// デフォルトフォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
+extern	int			GetDrawExtendFormatStringCharInfo_VaList(		DRAWCHARINFO *InfoBuffer, size_t InfoBufferSize, double ExRateX, double ExRateY, const TCHAR *FormatString, va_list VaList ) ;																// デフォルトフォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
+extern	int			GetDrawFormatStringWidthToHandle_VaList(		int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																																// フォントハンドルを使用した書式付き文字列の描画幅を取得する
+extern	int			GetDrawExtendFormatStringWidthToHandle_VaList(	double ExRateX, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																												// フォントハンドルを使用した書式付き文字列の描画幅を取得する
+extern	int			GetDrawFormatStringSizeToHandle_VaList(			int *SizeX, int *SizeY, int *LineCount, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																						// フォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する
+extern	int			GetDrawExtendFormatStringSizeToHandle_VaList(	int *SizeX, int *SizeY, int *LineCount, double ExRateX, double ExRateY, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;														// フォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する
+extern	int			GetDrawFormatStringCharInfoToHandle_VaList(		DRAWCHARINFO *InfoBuffer, size_t InfoBufferSize, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																				// フォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
+extern	int			GetDrawExtendFormatStringCharInfoToHandle_VaList( DRAWCHARINFO *InfoBuffer, size_t InfoBufferSize, double ExRateX, double ExRateY, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;											// フォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
+
+extern	int			DrawFormatString_VaList(						int x, int y,                                 unsigned int Color, const TCHAR *FormatString, va_list VaList ) ;																			// デフォルトフォントハンドルを使用して書式指定文字列を描画する
+extern	int			DrawFormatVString_VaList(						int x, int y,                                 unsigned int Color, const TCHAR *FormatString, va_list VaList ) ;																			// デフォルトフォントハンドルを使用して書式指定文字列を描画する( 縦書き )
+extern	int			DrawExtendFormatString_VaList(					int x, int y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, va_list VaList ) ;																			// デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する
+extern	int			DrawExtendFormatVString_VaList(					int x, int y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, va_list VaList ) ;																			// デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )
+extern	int			DrawRotaFormatString_VaList(					int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList ) ;	// デフォルトフォントハンドルを使用して書式指定文字列を回転描画する
+extern	int			DrawModiFormatString_VaList(					int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, unsigned int Color, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList ) ;				// デフォルトフォントハンドルを使用して書式指定文字列を変形描画する
+extern	int			DrawFormatStringF_VaList(						float x, float y,                                 unsigned int Color, const TCHAR *FormatString, va_list VaList ) ;																		// デフォルトフォントハンドルを使用して書式指定文字列を描画する( 座標指定が float 版 )
+extern	int			DrawFormatVStringF_VaList(						float x, float y,                                 unsigned int Color, const TCHAR *FormatString, va_list VaList ) ;																		// デフォルトフォントハンドルを使用して書式指定文字列を描画する( 縦書き )( 座標指定が float 版 )
+extern	int			DrawExtendFormatStringF_VaList(					float x, float y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, va_list VaList ) ;																		// デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する( 座標指定が float 版 )
+extern	int			DrawExtendFormatVStringF_VaList(				float x, float y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, va_list VaList ) ;																		// デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )( 座標指定が float 版 )
+extern	int			DrawRotaFormatStringF_VaList(					float x, float y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList ) ;		// デフォルトフォントハンドルを使用して書式指定文字列を回転描画する( 座標指定が float 版 )
+extern	int			DrawModiFormatStringF_VaList(					float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, unsigned int Color, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList ) ;									// デフォルトフォントハンドルを使用して書式指定文字列を変形描画する( 座標指定が float 版 )
+extern	int			DrawFormatStringToZBuffer_VaList(				int x, int y,                                                                                        int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList ) ;									// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を描画する
+extern	int			DrawFormatVStringToZBuffer_VaList(				int x, int y,                                                                                        int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList ) ;									// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を描画する( 縦書き )
+extern	int			DrawExtendFormatStringToZBuffer_VaList(			int x, int y, double ExRateX, double ExRateY,                                                        int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList ) ;									// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を拡大描画する
+extern	int			DrawExtendFormatVStringToZBuffer_VaList(		int x, int y, double ExRateX, double ExRateY,                                                        int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList ) ;									// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を拡大描画する( 縦書き )
+extern	int			DrawRotaFormatStringToZBuffer_VaList(			int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, int WriteZMode /* DX_ZWRITE_MASK 等 */ , int VerticalFlag , const TCHAR *FormatString , va_list VaList ) ;				// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を回転描画する
+extern	int			DrawModiFormatStringToZBuffer_VaList(			int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4,                                      int WriteZMode /* DX_ZWRITE_MASK 等 */ , int VerticalFlag , const TCHAR *FormatString , va_list VaList ) ;				// デフォルトフォントハンドルを使用してＺバッファに対して書式指定文字列を変形描画する
+
+extern	int			DrawFormatStringToHandle_VaList(				int x, int y, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																											// フォントハンドルを使用して書式指定文字列を描画する
+extern	int			DrawFormatVStringToHandle_VaList(				int x, int y, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																											// フォントハンドルを使用して書式指定文字列を描画する( 縦書き )
+extern	int			DrawExtendFormatStringToHandle_VaList(			int x, int y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																			// フォントハンドルを使用して書式指定文字列を拡大描画する
+extern	int			DrawExtendFormatVStringToHandle_VaList(			int x, int y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																			// フォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )
+extern	int			DrawRotaFormatStringToHandle_VaList(			int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList ) ;		// フォントハンドルを使用して書式指定文字列を回転描画する
+extern	int			DrawModiFormatStringToHandle_VaList(			int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList ) ;				// フォントハンドルを使用して書式指定文字列を変形描画する
+extern	int			DrawFormatStringFToHandle_VaList(				float x, float y, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																										// フォントハンドルを使用して書式指定文字列を描画する( 座標指定が float 版 )
+extern	int			DrawFormatVStringFToHandle_VaList(				float x, float y, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																										// フォントハンドルを使用して書式指定文字列を描画する( 縦書き )( 座標指定が float 版 )
+extern	int			DrawExtendFormatStringFToHandle_VaList(			float x, float y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																		// フォントハンドルを使用して書式指定文字列を拡大描画する( 座標指定が float 版 )
+extern	int			DrawExtendFormatVStringFToHandle_VaList(		float x, float y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList ) ;																		// フォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )( 座標指定が float 版 )
+extern	int			DrawRotaFormatStringFToHandle_VaList(			float x, float y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList ) ;// フォントハンドルを使用して書式指定文字列を回転描画する( 座標指定が float 版 )
+extern	int			DrawModiFormatStringFToHandle_VaList(			float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, va_list VaList ) ;							// フォントハンドルを使用して書式指定文字列を変形描画する( 座標指定が float 版 )
+extern	int			DrawFormatStringToHandleToZBuffer_VaList(		int x, int y, int FontHandle,                                                                                        int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList ) ;							// フォントハンドルを使用してＺバッファに対して書式指定文字列を描画する
+extern	int			DrawFormatVStringToHandleToZBuffer_VaList(		int x, int y, int FontHandle,                                                                                        int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList ) ;							// フォントハンドルを使用してＺバッファに対して書式指定文字列を描画する( 縦書き )
+extern	int			DrawExtendFormatStringToHandleToZBuffer_VaList(	int x, int y, double ExRateX, double ExRateY, int FontHandle,                                                        int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList ) ;							// フォントハンドルを使用してＺバッファに対して書式指定文字列を拡大描画する
+extern	int			DrawExtendFormatVStringToHandleToZBuffer_VaList(int x, int y, double ExRateX, double ExRateY, int FontHandle,                                                        int WriteZMode /* DX_ZWRITE_MASK 等 */ , const TCHAR *FormatString, va_list VaList ) ;							// フォントハンドルを使用してＺバッファに対して書式指定文字列を拡大描画する( 縦書き )
+extern	int			DrawRotaFormatStringToHandleToZBuffer_VaList(	int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, int FontHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */ , int VerticalFlag, const TCHAR *FormatString, va_list VaList ) ;		// フォントハンドルを使用してＺバッファに対して書式指定文字列を回転描画する
+extern	int			DrawModiFormatStringToHandleToZBuffer_VaList(	int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int FontHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */ , int VerticalFlag, const TCHAR *FormatString, va_list VaList ) ;											// フォントハンドルを使用してＺバッファに対して書式指定文字列を変形描画する
 
 
 // 環境依存関係

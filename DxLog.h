@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ログプログラムヘッダファイル
 // 
-// 				Ver 3.22a
+// 				Ver 3.22c
 // 
 // -------------------------------------------------------------------------------
 
@@ -14,6 +14,7 @@
 #include "DxCompileConfig.h"
 #include "DxFile.h"
 #include "DxThread.h"
+#include <stdarg.h>
 
 #ifdef WINDOWS_DESKTOP_OS
 #include "Windows/DxLogWin.h"
@@ -163,6 +164,11 @@ extern 	int			LogFileFmtAdd_WCHAR_T(	int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLO
 extern	int			SetApplicationLogSaveDirectory_WCHAR_T(	const wchar_t *DirectoryPath );	// ログファイル( Log.txt ) を保存するディレクトリパスを設定する
 extern	int			SetApplicationLogFileName_WCHAR_T(      const wchar_t *FileName ) ;		// ログファイルの名前を設定する( Log.txt 以外にしたい場合に使用 )
 
+// va_list 関数
+extern 	int			LogFileFmtAdd_VaList(	const TCHAR *FormatString, va_list VaList ) ;	// 書式付きで ログファイル( Log.txt ) に文字列を出力する( 書式は printf と同じ )
+extern 	int			ErrorLogFmtAdd_VaList(	const TCHAR *FormatString, va_list VaList ) ;	// LogFileFmtAdd の旧名称関数
+extern 	int			AppLogAdd_VaList(		const TCHAR *String, va_list VaList ) ;			// LogFileFmtAdd と同じ機能の関数
+extern 	int			printfDx_VaList(		const TCHAR *FormatString , va_list VaList ) ;	// printf と同じ引数で画面に文字列を表示するための関数
 
 // 環境依存関数
 extern	int			LogFileInitialize_PF( const wchar_t *LogFilePath ) ;					// ログファイルを初期化する処理の環境依存部分
