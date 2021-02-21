@@ -6,7 +6,12 @@ cmake_minimum_required(VERSION 3.13)
 
 # Library Declaration
 
-add_library(DxLib STATIC)
+if (DXLIB_BUILD_SHARED_MAIN)
+    add_executable(DxLib)
+else ()
+    add_library(DxLib STATIC)
+endif ()
+
 add_library(DxDrawFunc STATIC)
 add_library(DxUseCLib STATIC)
 
@@ -67,11 +72,25 @@ target_sources(DxLib
         DxThread.cpp
 )
 
-set_target_properties(DxLib
-    PROPERTIES 
-        COMPILE_FLAGS "-s USE_FREETYPE=1 -s ALLOW_MEMORY_GROWTH=1"
-        CXX_STANDARD 11
-)
+if (DXLIB_BUILD_SHARED_MAIN)
+    set_target_properties(DxLib
+        PROPERTIES 
+            COMPILE_FLAGS "-s USE_FREETYPE=1 -s ALLOW_MEMORY_GROWTH=1 -s MAIN_MODULE=1"
+            LINK_FLAGS "-s USE_FREETYPE=1 -s USE_BULLET=1 -s USE_VORBIS=1 -s USE_OGG=1 -s USE_LIBPNG=1 -s USE_ZLIB=1 -s FULL_ES2=1 -s ALLOW_MEMORY_GROWTH=1 -s MAIN_MODULE=1"
+            CXX_STANDARD 11
+    )
+
+    target_link_libraries(DxLib
+        DxDrawFunc
+        DxUseCLib
+    )
+else ()
+    set_target_properties(DxLib
+        PROPERTIES 
+            COMPILE_FLAGS "-s USE_FREETYPE=1 -s ALLOW_MEMORY_GROWTH=1"
+            CXX_STANDARD 11
+    )
+endif()
 
 
 
@@ -85,11 +104,19 @@ target_sources(DxDrawFunc
         DxMemImgDrawFunction3.cpp
 )
 
-set_target_properties(DxDrawFunc
-    PROPERTIES 
-        COMPILE_FLAGS "-s ALLOW_MEMORY_GROWTH=1"
-        CXX_STANDARD 11
-)
+if (DXLIB_BUILD_SHARED_MAIN)
+    set_target_properties(DxDrawFunc
+        PROPERTIES 
+            COMPILE_FLAGS "-s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
+            CXX_STANDARD 11
+    )
+else ()
+    set_target_properties(DxDrawFunc
+        PROPERTIES 
+            COMPILE_FLAGS "-s ALLOW_MEMORY_GROWTH=1"
+            CXX_STANDARD 11
+    )
+endif ()
 
 
 
@@ -109,9 +136,16 @@ target_sources(DxUseCLib
         DxUseCLibPhysics.cpp
 )
 
-set_target_properties(DxUseCLib
-    PROPERTIES 
-        COMPILE_FLAGS "-s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -s ALLOW_MEMORY_GROWTH=1"
-        CXX_STANDARD 11
-)
-
+if (DXLIB_BUILD_SHARED_MAIN)
+    set_target_properties(DxUseCLib
+        PROPERTIES 
+            COMPILE_FLAGS "-s SIDE_MODULE=1 -s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -s ALLOW_MEMORY_GROWTH=1"
+            CXX_STANDARD 11
+    )
+else ()
+    set_target_properties(DxUseCLib
+        PROPERTIES 
+            COMPILE_FLAGS "-s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -s ALLOW_MEMORY_GROWTH=1"
+            CXX_STANDARD 11
+    )
+endif ()
