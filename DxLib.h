@@ -3217,31 +3217,31 @@ extern DXLIBAPI	int			GraphBlendRectBlt(  int SrcGrHandle, int BlendGrHandle, in
 
 #ifndef DX_NON_MOVIE
 // ムービーグラフィック関係関数
-extern	int			PlayMovie(							const TCHAR *FileName,                        int ExRate, int PlayType ) ;	// 動画ファイルの再生
-extern	int			PlayMovieWithStrLen(				const TCHAR *FileName, size_t FileNameLength, int ExRate, int PlayType ) ;	// 動画ファイルの再生
-extern	int			GetMovieImageSize_File(             const TCHAR *FileName,                        int *SizeX, int *SizeY ) ;	// 動画ファイルの横ピクセル数と縦ピクセル数を取得する
-extern	int			GetMovieImageSize_File_WithStrLen(  const TCHAR *FileName, size_t FileNameLength, int *SizeX, int *SizeY ) ;	// 動画ファイルの横ピクセル数と縦ピクセル数を取得する
-extern	int			GetMovieImageSize_Mem(              const void *FileImage, int FileImageSize, int *SizeX, int *SizeY ) ;		// メモリ上に展開された動画ファイルの横ピクセル数と縦ピクセル数を取得する
-extern	int			OpenMovieToGraph(					const TCHAR *FileName,                        int FullColor = TRUE ) ;		// 動画ファイルを開く
-extern	int			OpenMovieToGraphWithStrLen(			const TCHAR *FileName, size_t FileNameLength, int FullColor = TRUE ) ;		// 動画ファイルを開く
-extern 	int			PlayMovieToGraph(					int GraphHandle, int PlayType = DX_PLAYTYPE_BACK , int SysPlay = 0 ) ;		// 動画ファイルを使用するグラフィックハンドルの動画ファイルの再生を開始する
-extern 	int			PauseMovieToGraph(					int GraphHandle, int SysPause = 0 ) ;										// 動画ファイルを使用するグラフィックハンドルの動画ファイルの再生を停止する
-extern	int			AddMovieFrameToGraph(				int GraphHandle, unsigned int FrameNum ) ;									// 動画ファイルの再生フレームを進める、戻すことは出来ない( 動画ファイルが停止状態で、且つ Ogg Theora のみ有効 )
-extern	int			SeekMovieToGraph(					int GraphHandle, int Time ) ;												// 動画ファイルの再生位置を設定する(ミリ秒単位)
-extern	int			SetPlaySpeedRateMovieToGraph(		int GraphHandle, double SpeedRate ) ;										// 動画ファイルの再生速度を設定する( 1.0 = 等倍速  2.0 = ２倍速 )、一部のファイルフォーマットのみで有効な機能です
-extern 	int			GetMovieStateToGraph(				int GraphHandle ) ;															// 動画ファイルの再生状態を得る
-extern	int			SetMovieVolumeToGraph(				int Volume, int GraphHandle ) ;												// 動画ファイルの音量を設定する(0～10000)
-extern	int			ChangeMovieVolumeToGraph(			int Volume, int GraphHandle ) ;												// 動画ファイルの音量を設定する(0～255)
-extern	const BASEIMAGE* GetMovieBaseImageToGraph(		int GraphHandle, int *ImageUpdateFlag = NULL , int ImageUpdateFlagSetOnly = FALSE ) ;	// 動画ファイルの基本イメージデータを取得する( ImageUpdateFlag に int 型変数のアドレスを渡すと、イメージが更新された場合は 1 が、更新されていない場合は 0 が格納されます、 ImageUpdateFlagSetOnly を TRUE にすると戻り値の BASEIMAGE は有効な画像データではなくなりますが、BASEIMAGE の更新処理が行われませんので、ImageUpdateFlag を利用して画像が更新されたかどうかだけをチェックしたい場合は TRUE にしてください )
-extern	int			GetMovieTotalFrameToGraph(			int GraphHandle ) ;															// 動画ファイルの総フレーム数を得る( Ogg Theora と mp4 でのみ有効 )
-extern	int			TellMovieToGraph(					int GraphHandle ) ;															// 動画ファイルの再生位置を取得する(ミリ秒単位)
-extern	int			TellMovieToGraphToFrame(			int GraphHandle ) ;															// 動画ファイルの再生位置を取得する(フレーム単位)
-extern	int			SeekMovieToGraphToFrame(			int GraphHandle, int Frame ) ;												// 動画ファイルの再生位置を設定する(フレーム単位)
-extern	LONGLONG	GetOneFrameTimeMovieToGraph(		int GraphHandle ) ;															// 動画ファイルの１フレームあたりの時間を取得する(戻り値：１フレームの時間(単位:マイクロ秒))
-extern	int			GetLastUpdateTimeMovieToGraph(		int GraphHandle ) ;															// 動画ファイルのイメージを最後に更新した時間を得る(ミリ秒単位)
-extern	int			SetMovieRightImageAlphaFlag(		int Flag ) ;																// 読み込む動画ファイル映像の右半分の赤成分をα情報として扱うかどうかをセットする( TRUE:α情報として扱う  FALSE:α情報として扱わない( デフォルト ) )
-extern	int			SetMovieColorA8R8G8B8Flag(			int Flag ) ;																// 読み込む動画ファイルが32bitカラーだった場合、A8R8G8B8 形式として扱うかどうかをセットする、32bitカラーではない動画ファイルに対しては無効( Flag  TRUE:A8R8G8B8として扱う  FALSE:X8R8G8B8として扱う( デフォルト ) )
-extern	int			SetMovieUseYUVFormatSurfaceFlag(	int Flag ) ;																// ＹＵＶフォーマットのサーフェスが使用できる場合はＹＵＶフォーマットのサーフェスを使用するかどうかを設定する( TRUE:使用する( デフォルト ) FALSE:ＲＧＢフォーマットのサーフェスを使用する )
+extern DXLIBAPI	int			PlayMovie(							const TCHAR *FileName,                        int ExRate, int PlayType ) ;	// 動画ファイルの再生
+extern DXLIBAPI	int			PlayMovieWithStrLen(				const TCHAR *FileName, size_t FileNameLength, int ExRate, int PlayType ) ;	// 動画ファイルの再生
+extern DXLIBAPI	int			GetMovieImageSize_File(             const TCHAR *FileName,                        int *SizeX, int *SizeY ) ;	// 動画ファイルの横ピクセル数と縦ピクセル数を取得する
+extern DXLIBAPI	int			GetMovieImageSize_File_WithStrLen(  const TCHAR *FileName, size_t FileNameLength, int *SizeX, int *SizeY ) ;	// 動画ファイルの横ピクセル数と縦ピクセル数を取得する
+extern DXLIBAPI	int			GetMovieImageSize_Mem(              const void *FileImage, int FileImageSize, int *SizeX, int *SizeY ) ;		// メモリ上に展開された動画ファイルの横ピクセル数と縦ピクセル数を取得する
+extern DXLIBAPI	int			OpenMovieToGraph(					const TCHAR *FileName,                        int FullColor = TRUE ) ;		// 動画ファイルを開く
+extern DXLIBAPI	int			OpenMovieToGraphWithStrLen(			const TCHAR *FileName, size_t FileNameLength, int FullColor = TRUE ) ;		// 動画ファイルを開く
+extern DXLIBAPI int			PlayMovieToGraph(					int GraphHandle, int PlayType = DX_PLAYTYPE_BACK , int SysPlay = 0 ) ;		// 動画ファイルを使用するグラフィックハンドルの動画ファイルの再生を開始する
+extern DXLIBAPI int			PauseMovieToGraph(					int GraphHandle, int SysPause = 0 ) ;										// 動画ファイルを使用するグラフィックハンドルの動画ファイルの再生を停止する
+extern DXLIBAPI	int			AddMovieFrameToGraph(				int GraphHandle, unsigned int FrameNum ) ;									// 動画ファイルの再生フレームを進める、戻すことは出来ない( 動画ファイルが停止状態で、且つ Ogg Theora のみ有効 )
+extern DXLIBAPI	int			SeekMovieToGraph(					int GraphHandle, int Time ) ;												// 動画ファイルの再生位置を設定する(ミリ秒単位)
+extern DXLIBAPI	int			SetPlaySpeedRateMovieToGraph(		int GraphHandle, double SpeedRate ) ;										// 動画ファイルの再生速度を設定する( 1.0 = 等倍速  2.0 = ２倍速 )、一部のファイルフォーマットのみで有効な機能です
+extern DXLIBAPI int			GetMovieStateToGraph(				int GraphHandle ) ;															// 動画ファイルの再生状態を得る
+extern DXLIBAPI	int			SetMovieVolumeToGraph(				int Volume, int GraphHandle ) ;												// 動画ファイルの音量を設定する(0～10000)
+extern DXLIBAPI	int			ChangeMovieVolumeToGraph(			int Volume, int GraphHandle ) ;												// 動画ファイルの音量を設定する(0～255)
+extern DXLIBAPI	const BASEIMAGE* GetMovieBaseImageToGraph(		int GraphHandle, int *ImageUpdateFlag = NULL , int ImageUpdateFlagSetOnly = FALSE ) ;	// 動画ファイルの基本イメージデータを取得する( ImageUpdateFlag に int 型変数のアドレスを渡すと、イメージが更新された場合は 1 が、更新されていない場合は 0 が格納されます、 ImageUpdateFlagSetOnly を TRUE にすると戻り値の BASEIMAGE は有効な画像データではなくなりますが、BASEIMAGE の更新処理が行われませんので、ImageUpdateFlag を利用して画像が更新されたかどうかだけをチェックしたい場合は TRUE にしてください )
+extern DXLIBAPI	int			GetMovieTotalFrameToGraph(			int GraphHandle ) ;															// 動画ファイルの総フレーム数を得る( Ogg Theora と mp4 でのみ有効 )
+extern DXLIBAPI	int			TellMovieToGraph(					int GraphHandle ) ;															// 動画ファイルの再生位置を取得する(ミリ秒単位)
+extern DXLIBAPI	int			TellMovieToGraphToFrame(			int GraphHandle ) ;															// 動画ファイルの再生位置を取得する(フレーム単位)
+extern DXLIBAPI	int			SeekMovieToGraphToFrame(			int GraphHandle, int Frame ) ;												// 動画ファイルの再生位置を設定する(フレーム単位)
+extern DXLIBAPI	LONGLONG	GetOneFrameTimeMovieToGraph(		int GraphHandle ) ;															// 動画ファイルの１フレームあたりの時間を取得する(戻り値：１フレームの時間(単位:マイクロ秒))
+extern DXLIBAPI	int			GetLastUpdateTimeMovieToGraph(		int GraphHandle ) ;															// 動画ファイルのイメージを最後に更新した時間を得る(ミリ秒単位)
+extern DXLIBAPI	int			SetMovieRightImageAlphaFlag(		int Flag ) ;																// 読み込む動画ファイル映像の右半分の赤成分をα情報として扱うかどうかをセットする( TRUE:α情報として扱う  FALSE:α情報として扱わない( デフォルト ) )
+extern DXLIBAPI	int			SetMovieColorA8R8G8B8Flag(			int Flag ) ;																// 読み込む動画ファイルが32bitカラーだった場合、A8R8G8B8 形式として扱うかどうかをセットする、32bitカラーではない動画ファイルに対しては無効( Flag  TRUE:A8R8G8B8として扱う  FALSE:X8R8G8B8として扱う( デフォルト ) )
+extern DXLIBAPI	int			SetMovieUseYUVFormatSurfaceFlag(	int Flag ) ;																// ＹＵＶフォーマットのサーフェスが使用できる場合はＹＵＶフォーマットのサーフェスを使用するかどうかを設定する( TRUE:使用する( デフォルト ) FALSE:ＲＧＢフォーマットのサーフェスを使用する )
 #endif // DX_NON_MOVIE
 
 // カメラ関係関数
