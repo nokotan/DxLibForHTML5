@@ -7,7 +7,7 @@ node_js:
   - '12'
 
 env:
-  - CONTAINER="emscripten/emsdk:2.0.4"
+  - CONTAINER="emscripten/emsdk:2.0.22"
 
 jobs:
   include:
