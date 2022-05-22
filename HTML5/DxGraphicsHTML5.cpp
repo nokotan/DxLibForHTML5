@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画処理プログラム( HTML5 )
 // 
-//  	Ver 3.22c
+//  	Ver 3.23 
 // 
 //-----------------------------------------------------------------------------
 
@@ -324,36 +324,41 @@ typedef struct tagGRAPHICS_HTML5_BASE_SIMPLE_VERTEXSHADER_INFO
 
 DX_HTML5_RENDER_BLEND_INFO g_DefaultBlendDescArray[ DX_BLENDMODE_NUM ] =
 {
-	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_NOBLEND			ノーブレンド
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA			αブレンド
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD				加算ブレンド
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB				減算ブレンド
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,		GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				乗算ブレンド
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB2			内部処理用減算ブレンド１
-	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_XOR				XORブレンド(非対応)
-	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// 欠番
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,		GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_DESTCOLOR		カラーは更新されない
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR	描画先の色の反転値を掛ける
-	{ HTML5_RENDER_TYPE_INVERSE,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_INVSRC			描画元の色を反転する
-	{ HTML5_RENDER_TYPE_MUL,			TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,		GL_SRC_ALPHA,			GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_MULA			アルファチャンネル考慮付き乗算ブレンド
-	{ HTML5_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA_X4		αブレンドの描画側の輝度を最大４倍にできるモード
-	{ HTML5_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD_X4			加算ブレンドの描画側の輝度を最大４倍にできるモード
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,			GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SRCCOLOR		描画元のカラーでそのまま描画される
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_HALF_ADD		半加算ブレンド
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_SRC_ALPHA,	GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_SUB1			出力ブレンドが使用可能な場合の減算ブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_NOBLEND			ノーブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA			αブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD				加算ブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB				減算ブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				乗算ブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB2			内部処理用減算ブレンド１
+	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_XOR				XORブレンド(非対応)
+	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// 欠番
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,				GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_DESTCOLOR		カラーは更新されない
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,			GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR	描画先の色の反転値を掛ける
+	{ HTML5_RENDER_TYPE_INVERSE,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_INVSRC			描画元の色を反転する
+	{ HTML5_RENDER_TYPE_MUL,			TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_MULA			アルファチャンネル考慮付き乗算ブレンド
+	{ HTML5_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA_X4		αブレンドの描画側の輝度を最大４倍にできるモード
+	{ HTML5_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD_X4			加算ブレンドの描画側の輝度を最大４倍にできるモード
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SRCCOLOR		描画元のカラーでそのまま描画される
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_HALF_ADD		半加算ブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_SUB1			出力ブレンドが使用可能な場合の減算ブレンド
 
-	{ HTML5_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA		乗算済みαブレンドモードのαブレンド
-	{ HTML5_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD			乗算済みαブレンドモードの加算ブレンド
-	{ HTML5_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_ONE,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_PMA_SUB			乗算済みαブレンドモードの減算ブレンド
-	{ HTML5_RENDER_TYPE_PMA_INVERSE,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_INVSRC		乗算済みαブレンドモードの描画元の色を反転する
-	{ HTML5_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA_X4	乗算済みαブレンドモードのαブレンドの描画側の輝度を最大４倍にできるモード
-	{ HTML5_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD_X4		乗算済みαブレンドモードの加算ブレンドの描画側の輝度を最大４倍にできるモード
+	{ HTML5_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA		乗算済みαブレンドモードのαブレンド
+	{ HTML5_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD			乗算済みαブレンドモードの加算ブレンド
+	{ HTML5_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_ONE,					GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_PMA_SUB			乗算済みαブレンドモードの減算ブレンド
+	{ HTML5_RENDER_TYPE_PMA_INVERSE,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_INVSRC		乗算済みαブレンドモードの描画元の色を反転する
+	{ HTML5_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA_X4	乗算済みαブレンドモードのαブレンドの描画側の輝度を最大４倍にできるモード
+	{ HTML5_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD_X4		乗算済みαブレンドモードの加算ブレンドの描画側の輝度を最大４倍にできるモード
 
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ZERO,				GL_FUNC_ADD,				GL_ZERO,		GL_ZERO,				GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_ZERO		Live2D のブレンドモード Zero 用
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_NORMAL	Live2D のブレンドモード Normal 用
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,		GL_ONE,					GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_ADD		Live2D のブレンドモード Add 用
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_DST_COLOR,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ZERO,		GL_ONE,					GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_MULT		Live2D のブレンドモード Mult 用
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ZERO,		GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 FALSE },	// DX_BLENDMODE_LIVE2D_MASK		Live2D のブレンドモード Mask 用
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ZERO,				GL_FUNC_ADD,				GL_ZERO,				GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_ZERO		Live2D のブレンドモード Zero 用
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_NORMAL	Live2D のブレンドモード Normal 用
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,				GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_ADD		Live2D のブレンドモード Add 用
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_DST_COLOR,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ZERO,				GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_MULT		Live2D のブレンドモード Mult 用
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ZERO,				GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_MASK		Live2D のブレンドモード Mask 用
+
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_NORMAL	Spine のブレンドモード Normal 用
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_ADDITIVE	Spine のブレンドモード Additive 
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_DST_COLOR,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE_MINUS_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_MULTIPLY	Spine のブレンドモード Multiply 
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ONE_MINUS_SRC_COLOR,	GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_SCREEN	Spine のブレンドモード Screen 用
 } ;
 
 // 頂点バッファに格納できる頂点の最大数のテーブル
@@ -709,6 +714,7 @@ const GLchar *g_UniformName[ HTML5_SHADER_UNIFORM_NUM ] =
 	"uFogColor",					// HTML5_SHADER_UNIFORM_FOG_COLOR
 	"uFactorColor",					// HTML5_SHADER_UNIFORM_FACTOR_COLOR
 	"uIgnoreTextureColor",			// HTML5_SHADER_UNIFORM_IGNORE_TEXTURE_COLOR
+	"uAddColor",					// HTML5_SHADER_UNIFORM_ADD_COLOR
 	"uShadowMapLightEnable",		// HTML5_SHADER_UNIFORM_SHADOWMAP_LIGHT_ENABLE
 	"uShadowMap_DAdj_Grad",			// HTML5_SHADER_UNIFORM_SHADOWMAP_DADJ_GRAD
 } ;
@@ -2798,7 +2804,7 @@ extern int Graphics_HTML5_FrontScreenProcess( void )
 	}
 
 	// 前回 ScreenCopy をしてから 16ms 以上経過していたら ScreenCopy を行う
-	NowTime = NS_GetNowCount() ;
+	NowTime = NS_GetNowCount( FALSE ) ;
 	if( NowTime - GHTML5.Device.Screen.FrontScreenCopyTime > 16 )
 	{
 		Graphics_Screen_ScreenCopyBase( TRUE ) ;
@@ -2853,12 +2859,12 @@ extern COLORDATA *Graphics_HTML5_GetDataFormatColorData( int PixelFormat )
 	if( InitializeFlag == FALSE )
 	{
 		InitializeFlag = TRUE ;
-		NS_CreateColorData( &R8G8B8A8_ColorData,       32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 ) ;
-		NS_CreateColorData( &R8G8B8_ColorData,         24, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000 ) ;
-		NS_CreateColorData( &A4B4G4R4_ColorData,       16, 0x0000f000, 0x00000f00, 0x000000f0, 0x0000000f ) ;
-		NS_CreateColorData( &A1B5G5R5_ColorData,       16, 0x0000f800, 0x000007c0, 0x0000003e, 0x00000001 ) ;
-		NS_CreateColorData( &B5G6R5_ColorData,         16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000 ) ;
-		NS_CreateColorData( &R8_ColorData,			    8, 0x000000ff, 0x00000000, 0x00000000, 0x00000000 ) ;
+		NS_CreateColorData( &R8G8B8A8_ColorData,       32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &R8G8B8_ColorData,         24, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &A4B4G4R4_ColorData,       16, 0x0000f000, 0x00000f00, 0x000000f0, 0x0000000f, 0,  0, FALSE ) ;
+		NS_CreateColorData( &A1B5G5R5_ColorData,       16, 0x0000f800, 0x000007c0, 0x0000003e, 0x00000001, 0,  0, FALSE ) ;
+		NS_CreateColorData( &B5G6R5_ColorData,         16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &R8_ColorData,			    8, 0x000000ff, 0x00000000, 0x00000000, 0x00000000, 0,  0, FALSE ) ;
 		NS_CreateColorData( &R16G16B16F_ColorData,      0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 3, 16,  TRUE ) ;
 		NS_CreateColorData( &R32G32B32F_ColorData,      0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 3, 32,  TRUE ) ;
 		NS_CreateColorData( &R16G16B16A16F_ColorData,   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 4, 16,  TRUE ) ;
@@ -3186,6 +3192,10 @@ extern int		Graphics_HTML5_StretchRect(
 
 		// ビューポートをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
 		glViewport( 0, 0, FrameBufferWidth, FrameBufferHeight ) ;
+
+		// Zバッファを無効化
+		Graphics_HTML5_DeviceState_SetDepthEnable( FALSE ) ;
+		Graphics_HTML5_DeviceState_SetDepthWriteEnable( FALSE ) ;
 
 		// シェーダーをセット
 		if( Shader == NULL )
@@ -6304,6 +6314,11 @@ extern int Graphics_HTML5_DeviceState_UpdateShaderUniform( GRAPHICS_HTML5_SHADER
 	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_IGNORE_TEXTURE_COLOR ] != 0xffff )
 	{
 		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_IGNORE_TEXTURE_COLOR ], GHTML5.Device.Shader.Constant.uIgnoreTextureColor ) ;
+	}
+
+	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_ADD_COLOR ] != 0xffff )
+	{
+		UNIFORM_SET_FLOAT4( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_ADD_COLOR ], GHTML5.Device.Shader.Constant.uAddColor ) ;
 	}
 
 	if( Shader->UniformIndex[ HTML5_SHADER_UNIFORM_SHADOWMAP_LIGHT_ENABLE ] != 0xffff )
@@ -16444,6 +16459,9 @@ extern	int		Graphics_Initialize_Timing0_PF( void )
 		return -1 ;
 	}
 
+	// このタイミングでジェスチャーを無効化する
+	DisableGesture_HTML5() ;
+
 	// 正常終了
 	return 0 ;
 }
@@ -16564,9 +16582,9 @@ extern	int		Graphics_RestoreOrChangeSetupGraphSystem_PF( int Change, int ScreenS
 		Graphics_HTML5_Device_ReInitialize() ;
 
 		// 画面の初期化
-//		NS_ClearDrawScreen() ;
+//		NS_ClearDrawScreen( NULL ) ;
 //		NS_ScreenFlip() ;
-//		NS_ClearDrawScreen() ;
+//		NS_ClearDrawScreen( NULL ) ;
 //		NS_ScreenFlip() ;
 
 		// デバイスロスト発生時に削除するフラグが立っているグラフィックを削除する
@@ -16769,6 +16787,17 @@ extern	int		Graphics_Hardware_SetDrawBright_PF( int RedBright, int GreenBright, 
 {
 	// ディフーズカラーの更新
 	GHTML5.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
+
+	// 正常終了
+	return 0 ;
+}
+
+// 描画輝度をセット
+extern	int		Graphics_Hardware_SetDrawAddColor_PF( int Red, int Green, int Blue )
+{
+	GHTML5.Device.Shader.Constant.uAddColor[ 0 ] = GSYS.DrawSetting.DrawAddColorF.r ;
+	GHTML5.Device.Shader.Constant.uAddColor[ 1 ] = GSYS.DrawSetting.DrawAddColorF.g ;
+	GHTML5.Device.Shader.Constant.uAddColor[ 2 ] = GSYS.DrawSetting.DrawAddColorF.b ;
 
 	// 正常終了
 	return 0 ;
