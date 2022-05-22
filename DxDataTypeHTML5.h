@@ -23,14 +23,14 @@
 // マクロ定義 --------------------------------------------------------------------
 
 // センサー
-#define DX_ANDROID_SENSOR_ACCELEROMETER			(0)		// 加速度センサー
-#define DX_ANDROID_SENSOR_MAGNETIC_FIELD		(1)		// 磁界センサー
-#define DX_ANDROID_SENSOR_GYROSCOPE				(2)		// ジャイロスコープセンサー
-#define DX_ANDROID_SENSOR_LIGHT					(3)		// 照度センサー
-#define DX_ANDROID_SENSOR_PROXIMITY				(4)		// 近接センサー
-#define DX_ANDROID_SENSOR_PRESSURE				(5)		// 加圧センサー
-#define DX_ANDROID_SENSOR_AMBIENT_TEMPERATURE	(6)		// 温度センサー
-#define DX_ANDROID_SENSOR_NUM					(7)
+#define DX_HTML5_SENSOR_ACCELEROMETER			(0)		// 加速度センサー
+#define DX_HTML5_SENSOR_MAGNETIC_FIELD		(1)		// 磁界センサー
+#define DX_HTML5_SENSOR_GYROSCOPE				(2)		// ジャイロスコープセンサー
+#define DX_HTML5_SENSOR_LIGHT					(3)		// 照度センサー
+#define DX_HTML5_SENSOR_PROXIMITY				(4)		// 近接センサー
+#define DX_HTML5_SENSOR_PRESSURE				(5)		// 加圧センサー
+#define DX_HTML5_SENSOR_AMBIENT_TEMPERATURE	(6)		// 温度センサー
+#define DX_HTML5_SENSOR_NUM					(7)
 
 // 環境依存キーワードなど
 #ifndef FASTCALL
