@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		iOS用GraphFilter系プログラム
 // 
-//  	Ver 3.22c
+//  	Ver 3.23 
 // 
 //-----------------------------------------------------------------------------
 
@@ -1502,6 +1502,16 @@ extern int	GraphFilter_Lanczos3Scale_PF( GRAPHFILTER_INFO *Info, int DestSizeX, 
 	IOS_FilterStretchBlt( UseAndrShader, Info, FALSE, 1, -1, VertexTex8 ) ;
 
 	// 正常終了
+	return 0 ;
+}
+
+extern int	GraphFilter_SSAO_PF( GRAPHFILTER_INFO *Info, int DepthMapGrHandle, float KernelRadius, float MinDistance, float MaxDistance, float Strength, int OcclusionColor, float OcclusionPower, int ColorMapGrHandle )
+{
+	return 0 ;
+}
+
+extern int GraphFilter_FloatColorScale_PF( GRAPHFILTER_INFO *Info, COLOR_F ColorScale, COLOR_F ColorPreSub )
+{
 	return 0 ;
 }
 

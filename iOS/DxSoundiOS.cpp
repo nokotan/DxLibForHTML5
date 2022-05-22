@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		iOS用サウンドプログラム
 // 
-//  	Ver 3.22c
+//  	Ver 3.23 
 // 
 //-----------------------------------------------------------------------------
 
@@ -384,7 +384,7 @@ static int SoundReleaseInfo_Process( void )
 	int ind ;
 
 	// 現在の時間を取得
-	NowTime = NS_GetNowCount() ;
+	NowTime = NS_GetNowCount( FALSE ) ;
 
 	// クリティカルセクションの取得
 	CRITICALSECTION_LOCK( &SoundSysData.PF.SoundReleaseCriticalSection ) ;
@@ -486,7 +486,7 @@ static int SoundReleaseInfo_Add( SOUNDBUFFER *Buffer )
 	SoundSysData.PF.SoundReleaseInfo[ ind ].UseFlag = TRUE ;
 	SoundSysData.PF.SoundReleaseInfo[ ind ].ALSource = Buffer->PF.ALSource ;
 	_MEMCPY( SoundSysData.PF.SoundReleaseInfo[ ind ].ALBuffer, Buffer->PF.ALBuffer, sizeof( Buffer->PF.ALBuffer ) ) ;
-	SoundSysData.PF.SoundReleaseInfo[ ind ].ReleaseTime = NS_GetNowCount() ;
+	SoundSysData.PF.SoundReleaseInfo[ ind ].ReleaseTime = NS_GetNowCount( FALSE ) ;
 
 	// リストに追加
 	SoundSysData.PF.SoundReleaseInfo[ ind ].NextIndex = SoundSysData.PF.SoundReleaseInfoFirstIndex ;
@@ -697,96 +697,117 @@ static void *StreamSoundThreadFunction( void *argc )
 // サウンドシステムを初期化する関数の環境依存処理を行う関数
 extern int InitializeSoundSystem_PF_Timing0( void )
 {
-	int i ;
-
-	if( SoundSysData.PF.ALCdeviceObject != NULL )
+	// 初期化済みの場合は何もせずに終了
+	if( SoundSysData.PF.InitializeFlag )
 	{
 		return 0 ;
 	}
 
-	DXST_LOGFILE_ADDUTF16LE( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x41\x00\x4c\x00\x1d\x52\x1f\x67\x16\x53\x8b\x95\xcb\x59\x0a\x00\x00"/*@ L"OpenAL初期化開始\n" @*/ ) ;
+	// 自前ミキシングを使用する
+	SoundSysData.EnableSelfMixingFlag = TRUE ;
 
-	DXST_LOGFILE_TABADD ;
-
-	// ストップサウンドバッファ用のクリティカルセクションを初期化
-	if( CriticalSection_Initialize( &SoundSysData.PF.StopSoundBufferCriticalSection ) < 0 )
+	if( SoundSysData.EnableSelfMixingFlag )
 	{
-		DXST_LOGFILEFMT_ADDUTF16LE(( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x41\x00\x4c\x00\x20\x00\x6e\x30\xb5\x30\xa6\x30\xf3\x30\xc9\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x5c\x50\x62\x6b\xe6\x51\x06\x74\x28\x75\x6e\x30\xaf\x30\xea\x30\xc6\x30\xa3\x30\xab\x30\xeb\x30\xbb\x30\xaf\x30\xb7\x30\xe7\x30\xf3\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"OpenAL のサウンドバッファ停止処理用のクリティカルセクションの作成に失敗しました\n" @*/ )) ;
-		DXST_LOGFILE_TABSUB ;
-		return -1 ;
+		// 自前ミキシングのセットアップ
+		SelfMixingPlayer_Setup() ;
 	}
-
-	// 8bit波形を16bit波形に変換するためのテーブルを初期化
-	for( i = 0 ; i < 256 ; i ++ )
+	else
 	{
-		Bit8To16Table[ i ] = ( short )( ( ( int )i * 65535 ) / 255 - 32768 ) ;
-	}
+		int i ;
 
-	// 無音データの初期化
-	for( i = 0 ; i < STREAM_SOUND_BUFFER_UNIT_SAPMLES ; i ++ )
-	{
-		g_NoneSound8bit[ i ]  = 128 ;
-		g_NoneSound16bit[ i ] = 0 ;
-	}
-
-	// API のアドレスを取得
-//	alBufferDataStaticProc = ( alBufferDataStaticProcPtr )alcGetProcAddress( NULL, "alBufferDataStatic" ) ;
-
-	// ALデバイスの作成
-	SoundSysData.PF.ALCdeviceObject = alcOpenDevice( alcGetString( NULL, ALC_DEFAULT_DEVICE_SPECIFIER ) ) ;
-	if( SoundSysData.PF.ALCdeviceObject == NULL )
-	{
-		DXST_LOGFILEFMT_ADDUTF16LE(( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x41\x00\x4c\x00\x20\x00\x6e\x30\xc7\x30\xd0\x30\xa4\x30\xb9\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\xaa\x30\xfc\x30\xd7\x30\xf3\x30\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"OpenAL のデバイスオブジェクトのオープンに失敗しました\n" @*/ )) ;
-		DXST_LOGFILE_TABSUB ;
-		return -1 ;
-	}
-
-	// ALコンテキストの作成
-	SoundSysData.PF.ALCcontectObject = alcCreateContext( SoundSysData.PF.ALCdeviceObject, NULL ) ;
-	if( SoundSysData.PF.ALCcontectObject == NULL )
-	{
-		DXST_LOGFILEFMT_ADDUTF16LE(( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x41\x00\x4c\x00\x20\x00\x6e\x30\xb3\x30\xf3\x30\xc6\x30\xad\x30\xb9\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"OpenAL のコンテキストの作成に失敗しました\n" @*/ )) ;
-		DXST_LOGFILE_TABSUB ;
-		return -1 ;
-	}
-
-//	// マイク許可確認が完了するまで待つ
-//	while( CheckRecordPermissionProcessEnd() == FALSE )
-//	{
-//		usleep( 1000 ) ;
-//	}
-
-	// カレントALコンテキストの設定
-	alcMakeContextCurrent( SoundSysData.PF.ALCcontectObject ) ;
-
-	// サウンド破棄処理の初期化を行う
-	SoundReleaseInfo_Initialize() ;
-
-	// ALBuffer の再生処理を行うスレッドの開始
-	{
-		pthread_attr_t attr ;
-		sched_param param ;
-		int returnCode ;
-
-		pthread_attr_init( &attr ) ;
-		pthread_attr_setstacksize( &attr, 128 * 1024 ) ;
-
-		returnCode = pthread_create(
-			&SoundSysData.PF.ProcessALBufferThread,
-			&attr,
-			ALBufferPlayThreadFunction,
-			NULL
-		) ;
-		if( returnCode != 0 )
+		if( SoundSysData.PF.ALCdeviceObject != NULL )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\x41\x00\x4c\x00\x42\x00\x75\x00\x66\x00\x66\x00\x65\x00\x72\x00\x20\x00\x6e\x30\x8d\x51\x1f\x75\xe6\x51\x06\x74\x92\x30\x4c\x88\x46\x30\xb9\x30\xec\x30\xc3\x30\xc9\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x20\x00\x45\x00\x72\x00\x72\x00\x6f\x00\x72\x00\x20\x00\x43\x00\x6f\x00\x64\x00\x65\x00\x20\x00\x3a\x00\x20\x00\x30\x00\x78\x00\x25\x00\x30\x00\x38\x00\x58\x00\x0a\x00\x00"/*@ L"ALBuffer の再生処理を行うスレッドの作成に失敗しました Error Code : 0x%08X\n" @*/, returnCode )) ;
+			return 0 ;
+		}
+
+		DXST_LOGFILE_ADDUTF16LE( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x41\x00\x4c\x00\x1d\x52\x1f\x67\x16\x53\x8b\x95\xcb\x59\x0a\x00\x00"/*@ L"OpenAL初期化開始\n" @*/ ) ;
+
+		DXST_LOGFILE_TABADD ;
+
+		// ストップサウンドバッファ用のクリティカルセクションを初期化
+		if( CriticalSection_Initialize( &SoundSysData.PF.StopSoundBufferCriticalSection ) < 0 )
+		{
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x41\x00\x4c\x00\x20\x00\x6e\x30\xb5\x30\xa6\x30\xf3\x30\xc9\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x5c\x50\x62\x6b\xe6\x51\x06\x74\x28\x75\x6e\x30\xaf\x30\xea\x30\xc6\x30\xa3\x30\xab\x30\xeb\x30\xbb\x30\xaf\x30\xb7\x30\xe7\x30\xf3\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"OpenAL のサウンドバッファ停止処理用のクリティカルセクションの作成に失敗しました\n" @*/ )) ;
 			DXST_LOGFILE_TABSUB ;
 			return -1 ;
 		}
 
-		_MEMSET( &param, 0, sizeof( param ) ) ;
-		param.sched_priority = sched_get_priority_max( 0 /* SCHED_NORMAL */ ) ;
-		pthread_setschedparam( SoundSysData.PF.ProcessALBufferThread, 0 /* SCHED_NORMAL */, &param ) ;
+		// 8bit波形を16bit波形に変換するためのテーブルを初期化
+		for( i = 0 ; i < 256 ; i ++ )
+		{
+			Bit8To16Table[ i ] = ( short )( ( ( int )i * 65535 ) / 255 - 32768 ) ;
+		}
+
+		// 無音データの初期化
+		for( i = 0 ; i < STREAM_SOUND_BUFFER_UNIT_SAPMLES ; i ++ )
+		{
+			g_NoneSound8bit[ i ]  = 128 ;
+			g_NoneSound16bit[ i ] = 0 ;
+		}
+
+		// API のアドレスを取得
+//		alBufferDataStaticProc = ( alBufferDataStaticProcPtr )alcGetProcAddress( NULL, "alBufferDataStatic" ) ;
+
+		// ALデバイスの作成
+		SoundSysData.PF.ALCdeviceObject = alcOpenDevice( alcGetString( NULL, ALC_DEFAULT_DEVICE_SPECIFIER ) ) ;
+		if( SoundSysData.PF.ALCdeviceObject == NULL )
+		{
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x41\x00\x4c\x00\x20\x00\x6e\x30\xc7\x30\xd0\x30\xa4\x30\xb9\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\xaa\x30\xfc\x30\xd7\x30\xf3\x30\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"OpenAL のデバイスオブジェクトのオープンに失敗しました\n" @*/ )) ;
+			DXST_LOGFILE_TABSUB ;
+			return -1 ;
+		}
+
+		// ALコンテキストの作成
+		SoundSysData.PF.ALCcontectObject = alcCreateContext( SoundSysData.PF.ALCdeviceObject, NULL ) ;
+		if( SoundSysData.PF.ALCcontectObject == NULL )
+		{
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x41\x00\x4c\x00\x20\x00\x6e\x30\xb3\x30\xf3\x30\xc6\x30\xad\x30\xb9\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"OpenAL のコンテキストの作成に失敗しました\n" @*/ )) ;
+			DXST_LOGFILE_TABSUB ;
+			return -1 ;
+		}
+
+//		// マイク許可確認が完了するまで待つ
+//		while( CheckRecordPermissionProcessEnd() == FALSE )
+//		{
+//			usleep( 1000 ) ;
+//		}
+
+		// カレントALコンテキストの設定
+		alcMakeContextCurrent( SoundSysData.PF.ALCcontectObject ) ;
+
+		// サウンド破棄処理の初期化を行う
+		SoundReleaseInfo_Initialize() ;
+
+		// ALBuffer の再生処理を行うスレッドの開始
+		{
+			pthread_attr_t attr ;
+			sched_param param ;
+			int returnCode ;
+
+			pthread_attr_init( &attr ) ;
+			pthread_attr_setstacksize( &attr, 128 * 1024 ) ;
+
+			returnCode = pthread_create(
+				&SoundSysData.PF.ProcessALBufferThread,
+				&attr,
+				ALBufferPlayThreadFunction,
+				NULL
+			) ;
+			if( returnCode != 0 )
+			{
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x41\x00\x4c\x00\x42\x00\x75\x00\x66\x00\x66\x00\x65\x00\x72\x00\x20\x00\x6e\x30\x8d\x51\x1f\x75\xe6\x51\x06\x74\x92\x30\x4c\x88\x46\x30\xb9\x30\xec\x30\xc3\x30\xc9\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x20\x00\x45\x00\x72\x00\x72\x00\x6f\x00\x72\x00\x20\x00\x43\x00\x6f\x00\x64\x00\x65\x00\x20\x00\x3a\x00\x20\x00\x30\x00\x78\x00\x25\x00\x30\x00\x38\x00\x58\x00\x0a\x00\x00"/*@ L"ALBuffer の再生処理を行うスレッドの作成に失敗しました Error Code : 0x%08X\n" @*/, returnCode )) ;
+				DXST_LOGFILE_TABSUB ;
+				return -1 ;
+			}
+
+			_MEMSET( &param, 0, sizeof( param ) ) ;
+			param.sched_priority = sched_get_priority_max( 0 /* SCHED_NORMAL */ ) ;
+			pthread_setschedparam( SoundSysData.PF.ProcessALBufferThread, 0 /* SCHED_NORMAL */, &param ) ;
+		}
+
+		DXST_LOGFILE_TABSUB ;
+
+		DXST_LOGFILE_ADDUTF16LE( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x41\x00\x4c\x00\x1d\x52\x1f\x67\x16\x53\x8c\x5b\x86\x4e\x0a\x00\x00"/*@ L"OpenAL初期化完了\n" @*/ ) ;
 	}
  
 	// ProcessStreamSoundMemAll 等を呼ぶスレッドの開始
@@ -810,10 +831,9 @@ extern int InitializeSoundSystem_PF_Timing0( void )
 			return -1 ;
 		}
 	}
-	
-	DXST_LOGFILE_TABSUB ;
 
-	DXST_LOGFILE_ADDUTF16LE( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x41\x00\x4c\x00\x1d\x52\x1f\x67\x16\x53\x8c\x5b\x86\x4e\x0a\x00\x00"/*@ L"OpenAL初期化完了\n" @*/ ) ;
+	// 初期化フラグを立てる
+	SoundSysData.PF.InitializeFlag = TRUE ;
 
 	// 終了
 	return 0 ;
@@ -845,9 +865,12 @@ extern	int		TerminateSoundSystem_PF_Timing0( void )
 	SoundSysData.PF.ProcessSoundThreadEndRequest = TRUE ;
 	pthread_join( SoundSysData.PF.ProcessSoundThread, NULL ) ;
 
-	// ALBuffer の再生処理を行うスレッドを終了する
-	SoundSysData.PF.ProcessALBufferThreadEndRequest = TRUE ;
-	pthread_join( SoundSysData.PF.ProcessALBufferThread, NULL ) ;
+	if( SoundSysData.EnableSelfMixingFlag == FALSE )
+	{
+		// ALBuffer の再生処理を行うスレッドを終了する
+		SoundSysData.PF.ProcessALBufferThreadEndRequest = TRUE ;
+		pthread_join( SoundSysData.PF.ProcessALBufferThread, NULL ) ;
+	}
 
 	// 正常終了
 	return 0 ;
@@ -860,34 +883,51 @@ extern	int		TerminateSoundSystem_PF_Timing1( void )
 	// サウンド破棄処理の後始末を行う
 	SoundReleaseInfo_Terminate() ;
 
-	// カレントALコンテキストの解除
-	alcMakeContextCurrent( NULL ) ;
-
-	// ALコンテキストの後始末
-	if( SoundSysData.PF.ALCcontectObject )
+	// 自前ミキシングかどうかで処理を分岐
+	if( SoundSysData.EnableSelfMixingFlag )
 	{
-		alcDestroyContext( SoundSysData.PF.ALCcontectObject ) ;
-		SoundSysData.PF.ALCcontectObject = NULL ;
+		SelfMixingPlayer_Terminate() ;
+	}
+	else
+	{
+		// カレントALコンテキストの解除
+		alcMakeContextCurrent( NULL ) ;
+
+		// ALコンテキストの後始末
+		if( SoundSysData.PF.ALCcontectObject )
+		{
+			alcDestroyContext( SoundSysData.PF.ALCcontectObject ) ;
+			SoundSysData.PF.ALCcontectObject = NULL ;
+		}
+
+		// ALデバイスの後始末
+		if( SoundSysData.PF.ALCdeviceObject )
+		{
+			alcCloseDevice( SoundSysData.PF.ALCdeviceObject ) ;
+			SoundSysData.PF.ALCdeviceObject = NULL ;
+		}
+
+		// ストップサウンドバッファ用のクリティカルセクションを削除
+		CriticalSection_Delete( &SoundSysData.PF.StopSoundBufferCriticalSection ) ;
 	}
 
-	// ALデバイスの後始末
-	if( SoundSysData.PF.ALCdeviceObject )
-	{
-		alcCloseDevice( SoundSysData.PF.ALCdeviceObject ) ;
-		SoundSysData.PF.ALCdeviceObject = NULL ;
-	}
-
-	// ストップサウンドバッファ用のクリティカルセクションを削除
-	CriticalSection_Delete( &SoundSysData.PF.StopSoundBufferCriticalSection ) ;
+	// 初期化フラグを倒す
+	SoundSysData.PF.InitializeFlag = FALSE ;
 
 	// 正常終了
+	return 0 ;
+}
+
+// サウンドシステムで周期的に行う処理用の関数の環境依存処理を行う関数
+extern	int		ProcessSoundSystem_PF( void )
+{
 	return 0 ;
 }
 
 // サウンドシステムの初期化チェックの環境依存処理を行う関数( TRUE:初期化されている  FALSE:初期化されていない )
 extern	int		CheckSoundSystem_Initialize_PF( void )
 {
-	return SoundSysData.PF.ALCdeviceObject != NULL ? TRUE : FALSE ;
+	return SoundSysData.PF.ALCdeviceObject != NULL || SoundSysData.PF.InitializeFlag ? TRUE : FALSE ;
 }
 
 // サウンドシステムの総再生時間を取得する

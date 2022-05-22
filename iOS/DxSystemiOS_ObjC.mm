@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		iOS用システムプログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -19,6 +19,7 @@
 #import <OpenAL/alc.h>
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
+#import <AudioToolbox/AudioToolbox.h>
 #import <MessageUI/MessageUI.h>
 #import <MessageUI/MFMailComposeViewController.h>
 #include "DxSystemiOS_ObjC.h"
@@ -26,6 +27,7 @@
 #include "DxGraphicsiOS.h"
 #include "DxInputiOS.h"
 #include "DxSoundiOS.h"
+#include "../DxSound.h"
 #include "../DxSystem.h"
 #include "../DxInput.h"
 #include "../DxMemory.h"
@@ -76,6 +78,7 @@ struct DXLIB_IOS_TOUCH_INFO
 struct DXLIB_IOS_SYSTEMINFO_OBJC
 {
 	UIViewController *				ViewController ;
+	UIView *						DxLibGLView ;
 	CAEAGLLayer *					AEAGLayer ;
 	GLuint							ViewFrameBuffer ;
 	GLuint							ViewRenderBuffer ;
@@ -152,6 +155,7 @@ static void ConvertNSStringtoTCHAR_NoAlloc( NSString *Source, TCHAR *DestBuffer,
     GLuint mColorBuffer ;
 }
 
+- ( void )disableGesture ;
 + ( void )dummyFunction ;
 
 @end
@@ -162,12 +166,15 @@ static void ConvertNSStringtoTCHAR_NoAlloc( NSString *Source, TCHAR *DestBuffer,
 }
 @property ( nonatomic ) DxLibiCadeReaderView *icadeView ;
 @property ( strong, nonatomic ) EAGLContext *context ;
+@property ( nonatomic ) AudioUnit audioUnit ;
 
 - ( void )setupControllers:( NSNotification * )notification ;
 - ( bool )startInputString:( NSString * )TitleArg Message:( NSString * )MessageArg ;
 - ( void )setupMotionManager;
 + ( void )dummyFunction;
 - ( int )mailApp_Send:( NSString * )MailAddrArg MailCCAddr:( NSString * )MailCCAddrArg MailBCCAddr:( NSString * )MailBCCAddrArg Subject:( NSString * )SubjectArg Text:( NSString * )TextArg ;
+- ( void )initializeAudioUnit ;
+- ( void )terminateAudioUnit ;
 
 @end
 
@@ -337,6 +344,8 @@ DXLIB_IOS_SYSTEMINFO_OBJC g_iOSSysObjC ;
 
 
 @implementation DxLibViewController
+
+@synthesize audioUnit ;
 
 - (void)viewDidLoad
 {
@@ -675,6 +684,104 @@ DXLIB_IOS_SYSTEMINFO_OBJC g_iOSSysObjC ;
     }
 }
 
+OSStatus AudioUnitRenderCallback(
+	void *inRefCon,
+	AudioUnitRenderActionFlags *ioActionFlags,
+	const AudioTimeStamp *inTimeStamp,
+	UInt32 inBusNumber,
+	UInt32 inNumberFrames,
+	AudioBufferList *ioData)
+{
+	if( ioData->mNumberBuffers > 1 )
+	{
+		WriteSelfMixingSample( 
+			( BYTE * )ioData->mBuffers[ 0 ].mData,
+            ( BYTE * )ioData->mBuffers[ 1 ].mData,
+			4,
+			inNumberFrames
+		) ;
+	}
+	else
+	{
+		WriteSelfMixingSample( 
+            ( BYTE * )ioData->mBuffers[ 0 ].mData,
+            ( BYTE * )ioData->mBuffers[ 0 ].mData + 4,
+			8,
+			inNumberFrames
+		) ;
+	}
+
+	return noErr;
+}
+
+- ( void )initializeAudioUnit
+{
+	OSStatus status ;
+
+	// RemoteIO AudioUnitのAudioComponentDescriptionを作成
+	AudioComponentDescription cd;
+	cd.componentType         = kAudioUnitType_Output ;
+	cd.componentSubType      = kAudioUnitSubType_RemoteIO ;
+	cd.componentManufacturer = kAudioUnitManufacturer_Apple ;
+	cd.componentFlags        = 0 ;
+	cd.componentFlagsMask    = 0 ; 
+
+	// Audio Componentの定義を取得
+	AudioComponent comp = AudioComponentFindNext( NULL, &cd ) ;
+
+	// インスタンス化
+	status = AudioComponentInstanceNew( comp, &audioUnit ) ; 
+
+	// コールバック関数の設定
+	AURenderCallbackStruct input ;
+	input.inputProc       = AudioUnitRenderCallback;
+	input.inputProcRefCon = NULL ;
+	status = AudioUnitSetProperty( audioUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0, &input, sizeof( input ) ) ;
+
+	// 自前ミキシングフォーマット情報をセット
+	_MEMSET( &SoundSysData.SelfMixingFormat, 0, sizeof( SoundSysData.SelfMixingFormat ) ) ;
+	SoundSysData.SelfMixingFormat.cbSize          = 0 ;
+	SoundSysData.SelfMixingFormat.wFormatTag      = WAVE_FORMAT_PCM ;
+	SoundSysData.SelfMixingFormat.nChannels       = 2 ;
+	SoundSysData.SelfMixingFormat.nSamplesPerSec  = 48000 ;
+	SoundSysData.SelfMixingFormat.wBitsPerSample  = 32 ;
+	SoundSysData.SelfMixingFormat.nBlockAlign     = SoundSysData.SelfMixingFormat.nChannels * SoundSysData.SelfMixingFormat.wBitsPerSample / 8 ;
+	SoundSysData.SelfMixingFormat.nAvgBytesPerSec = SoundSysData.SelfMixingFormat.nSamplesPerSec * SoundSysData.SelfMixingFormat.nBlockAlign ;
+
+	SoundSysData.SelfMixingFormatValidBitsPerSample = 32 ;
+	SoundSysData.SelfMixingFormatIsMSB = FALSE ;
+	SoundSysData.SelfMixingFormatIsFloat = TRUE ;
+
+	// 自前ミキシング作業用バッファの準備
+	SetupSelfMixingWorkBuffer( SoundSysData.SelfMixingFormatIsFloat, 1024 ) ;
+
+	// 出力フォーマットを設定
+	AudioStreamBasicDescription asbd ;
+	asbd.mSampleRate		= 48000.0 ;
+	asbd.mFormatID			= kAudioFormatLinearPCM ;
+	asbd.mFormatFlags		= kAudioFormatFlagIsFloat ;
+	asbd.mChannelsPerFrame	= 2 ;
+	asbd.mBytesPerPacket	= 8 ;
+	asbd.mBytesPerFrame		= 8 ;
+	asbd.mFramesPerPacket	= 1 ;
+	asbd.mBitsPerChannel	= 32 ;
+	asbd.mReserved			= 0 ;
+	status = AudioUnitSetProperty( audioUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &asbd, sizeof( asbd ) ) ;
+
+	// 初期化
+	status = AudioUnitInitialize( audioUnit ) ;
+
+	// 再生開始
+	status = AudioOutputUnitStart( audioUnit ) ;
+}
+
+-( void ) terminateAudioUnit
+{
+	AudioOutputUnitStop( audioUnit ) ;
+    AudioUnitUninitialize( audioUnit ) ;
+    AudioComponentInstanceDispose( audioUnit ) ;
+}
+
 @end
 
 
@@ -697,11 +804,15 @@ DXLIB_IOS_SYSTEMINFO_OBJC g_iOSSysObjC ;
     return [ CAEAGLLayer class ];
 }
 
-//- (id)initWithFrame:(CGRect)frame
 - ( id ) initWithCoder:(NSCoder *)aDecoder
 {
     self = [super initWithCoder:aDecoder];
-    
+    if( self )
+    {
+        // ビューのアドレスを保存
+        g_iOSSysObjC.DxLibGLView = self;
+    }
+
     return self;
 }
 
@@ -777,6 +888,15 @@ DXLIB_IOS_SYSTEMINFO_OBJC g_iOSSysObjC ;
 	{
 		CFRelease( g_iOSSysObjC.touchBeginPoints ) ;
 		g_iOSSysObjC.touchBeginPoints = NULL ;
+	}
+}
+
+- ( void )disableGesture
+{
+	// ジェスチャー機能無効化
+	for( int i = 0; i < self.window.gestureRecognizers.count; i++ )
+	{
+		self.window.gestureRecognizers[i].delaysTouchesBegan = false ;
 	}
 }
 
@@ -1141,6 +1261,55 @@ int	MailApp_Send_iOS( const char *MailAddr, const char *MailCCAddr, const char *
 
 	return 0 ;
 }
+
+// ジェスチャー無効化
+extern int DisableGesture_iOS( void )
+{
+    DxLibGLView *lDxlibGLView = ( DxLibGLView * )g_iOSSysObjC.DxLibGLView ;
+	[ lDxlibGLView disableGesture ] ;
+
+	return 0 ;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 自前ミキシング用のサウンド再生の準備を行う
+extern int SelfMixingPlayer_Setup( void )
+{
+    DxLibViewController *lDxlibViewController = ( DxLibViewController * )g_iOSSysObjC.ViewController ;
+	[ lDxlibViewController initializeAudioUnit ] ;
+
+	// 正常終了
+	return 0 ;
+}
+
+// 自前ミキシング用のサウンド再生の後始末を行う
+extern int SelfMixingPlayer_Terminate( void )
+{
+    DxLibViewController *lDxlibViewController = ( DxLibViewController * )g_iOSSysObjC.ViewController ;
+	[ lDxlibViewController terminateAudioUnit ] ;
+
+	// 正常終了
+	return 0 ;
+}
+
+
+
+
+
+
 
 
 

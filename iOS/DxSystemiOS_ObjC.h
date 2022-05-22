@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		iOS用システムプログラムヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -56,5 +56,12 @@ extern	int CheckRecordPermissionProcessEnd( void ) ;
 
 // メールアプリ起動
 extern	int	MailApp_Send_iOS( const char *MailAddr, const char *MailCCAddr, const char *MailBCCAddr, const char *Subject, const char *Text ) ;
+
+// 自前ミキシング関係
+extern int SelfMixingPlayer_Setup( void ) ;														// 自前ミキシング用のサウンド再生の準備を行う
+extern int SelfMixingPlayer_Terminate( void ) ;													// 自前ミキシング用のサウンド再生の後始末を行う
+
+// ジェスチャー無効化
+extern int DisableGesture_iOS( void ) ;
 
 #endif // DX_SYSTEMIOS_OBJC_H
