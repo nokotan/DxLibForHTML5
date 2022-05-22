@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		HTML5用メモリ関係プログラム
 // 
-//  	Ver 3.22c
+//  	Ver 3.23 
 // 
 //-----------------------------------------------------------------------------
 
@@ -52,6 +52,12 @@ extern int MemoryTerminate_PF( void )
 
 // メモリ処理の周期的処理の環境依存処理
 extern int MemoryProcess_PF( void )
+{
+	return 0 ;
+}
+
+// メモリのエラーチェックの環境依存処理
+extern int MemoryErrorCheck_PF( void )
 {
 	return 0 ;
 }

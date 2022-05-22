@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		HTML5用Ogg関係プログラム
 // 
-//  	Ver 3.22c
+//  	Ver 3.23 
 // 
 //-----------------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ extern int TheoraDecode_InitializeStream_PF( DECODE_THEORA *DT )
 	// デコード処理スレッドの作成
 	DT->ThreadStopRequest = 1 ;
 	DT->ThreadState = THEORAT_STATE_IDLE ;
-	DT->ThreadStandbyTime = NS_GetNowCount() ;
+	DT->ThreadStandbyTime = NS_GetNowCount( FALSE ) ;
 	if( Thread_Create( &DT->DecodeThreadInfo, TheoraDecode_Thread, DT ) == -1 )
 	{
 		DXST_LOGFILE_ADDA( "Theora \x83\x80\x81\x5b\x83\x72\x81\x5b\x83\x66\x83\x52\x81\x5b\x83\x68\x97\x70\x83\x58\x83\x8c\x83\x62\x83\x68\x82\xcc\x8d\xec\x90\xac\x82\xc9\x8e\xb8\x94\x73\x82\xb5\x82\xdc\x82\xb5\x82\xbd\n"/*@ "Theora ムービーデコード用スレッドの作成に失敗しました\n" @*/ );
