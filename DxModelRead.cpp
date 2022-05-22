@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ読み込みプログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -6391,6 +6391,10 @@ extern int MV1LoadModelToReadModel(
 //					  MBMaterial->Specular.a >= 0.0000001f ) && MBMaterial->Power <= 1.0f ) MBMaterial->Power = 1.0f ;
 				MBMaterial->DrawBlendMode = Material->DrawBlendMode ;
 				MBMaterial->DrawBlendParam = Material->DrawBlendParam ;
+				MBMaterial->DrawAddColor.x = 0 ;
+				MBMaterial->DrawAddColor.y = 0 ;
+				MBMaterial->DrawAddColor.z = 0 ;
+				MBMaterial->DrawAddColor.w = 0 ;
 
 				// テクスチャがある場合はテクスチャを読み込む
 				MBMaterial->DiffuseLayerNum  = Material->DiffuseTexNum ;

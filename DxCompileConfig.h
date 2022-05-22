@@ -2,7 +2,7 @@
 //
 //		ＤＸライブラリ　コンパイルコンフィグヘッダファイル
 //
-//				Ver 3.22c
+//				Ver 3.23 
 //
 // ----------------------------------------------------------------------------
 
@@ -17,6 +17,9 @@
 #define DXCOMPILECONFIG_H
 
 // スタティックライブラリ生成時ライブラリ機能制限用定義 -----------------------
+
+// C言語用としてコンパイルする場合は次のコメントを外してください
+//#define DX_COMPILE_TYPE_C_LANGUAGE
 
 // namespace DxLib を使用しない場合は次のコメントを外してください
 //#define DX_NON_NAMESPACE
@@ -179,6 +182,18 @@
 
 // Live2D Cubism 4 関連の機能を使用しない場合は次のコメントを外してください
 #define DX_NON_LIVE2D_CUBISM4
+
+#ifndef __cplusplus
+	#ifndef DX_COMPILE_TYPE_C_LANGUAGE
+		#define DX_COMPILE_TYPE_C_LANGUAGE
+	#endif // DX_COMPILE_TYPE_C_LANGUAGE
+#endif // __cplusplus
+
+#ifdef DX_COMPILE_TYPE_C_LANGUAGE
+	#ifndef DX_NON_NAMESPACE
+		#define DX_NON_NAMESPACE
+	#endif // DX_NON_NAMESPACE
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
 
 #ifndef __APPLE__
 #ifndef __ANDROID__
@@ -388,7 +403,7 @@
 
 
 
-#if defined( _WIN64 ) || defined( __ANDROID__ ) || defined( __APPLE__ ) || defined( EMSCRIPTEN )
+#if defined( _WIN64 ) || defined( __ANDROID__ ) || defined( __APPLE__ ) || defined( DX_GCC_COMPILE ) || defined( EMSCRIPTEN )
 	#ifndef DX_NON_INLINE_ASM
 		#define DX_NON_INLINE_ASM
 	#endif

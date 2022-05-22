@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ハンドル管理プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -223,6 +223,10 @@ extern int AddHandle( int HandleType, int ASyncThread, int Handle )
 #ifndef DX_NON_ASYNCLOAD
 	// 非同期読み込みが完了したらハンドルを削除するフラグを初期化
 	( *ppHandleInfo )->ASyncLoadFinishDeleteRequestFlag = FALSE ;
+
+	// 非同期読み込みが完了したら呼ばれるコールバック関数の情報を初期化
+	( *ppHandleInfo )->ASyncLoadFinishCallback = NULL ;
+	( *ppHandleInfo )->ASyncLoadFinishCallbackData = NULL ;
 
 	// 非同期スレッドから呼ばれた場合は非同期読み込みカウントを１にする
 	if( ASyncThread )
@@ -555,7 +559,7 @@ extern int AllHandleSub( int HandleType, int (*DeleteCancelCheckFunction)( HANDL
 
 // 非同期読み込み関係
 
-// ハンドルの非同期読み込みが完了しているかどうかを取得する( TRUE:完了している  FALSE:まだ完了していない  -1:エラー )
+// ハンドルの非同期読み込みが完了しているかどうかを取得する( TRUE:まだ完了していない  FALSE:完了している  -1:エラー )
 extern int NS_CheckHandleASyncLoad( int Handle )
 {
 	HANDLEINFO *HandleInfo ;
@@ -661,6 +665,68 @@ extern int NS_SetASyncLoadFinishDeleteFlag(	int Handle )
 	return 0 ;
 }
 
+// ハンドルの非同期読み込み処理が完了したら呼ばれる関数をセットする
+extern int NS_SetASyncLoadFinishCallback( int Handle, void ( *Callback )( int Handle, void *Data ), void *Data )
+{
+	HANDLEINFO *HandleInfo ;
+	int HandleType = ( int )( ( ( DWORD )Handle & DX_HANDLETYPE_MASK ) >> DX_HANDLETYPE_ADDRESS ) ;
+	HANDLEMANAGE *HandleManage = &HandleManageArray[ HandleType ] ;
+
+	if( HandleManage->InitializeFlag == FALSE )
+	{
+		return -1 ;
+	}
+
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
+
+	// エラー判定
+	if( HANDLECHK_ASYNC( HandleType, Handle, HandleInfo ) )
+	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+
+		return -1 ;
+	}
+
+	// 既に非同期読み込みが完了していたらこの場でコールバック関数を呼ぶ
+	if( HandleInfo->ASyncLoadCount == 0 )
+	{
+		Callback( Handle, Data ) ;
+	}
+	else
+	{
+		HandleInfo->ASyncLoadFinishCallback = ( volatile void (*)( int, void * ) )Callback ;
+		HandleInfo->ASyncLoadFinishCallbackData = Data ;
+	}
+
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+
+	return 0 ;
+}
+
+// 指定のハンドルの非同期読み込み処理が終了するまで待つ
+extern int NS_WaitHandleASyncLoad( int Handle )
+{
+	return WaitASyncLoad( Handle ) ;
+}
+
+// 全ての非同期読み込みデータが読み込み終わるまで待つ
+extern int NS_WaitHandleASyncLoadAll( void )
+{
+	while( NS_GetASyncLoadNum() > 0 )
+	{
+		if( NS_ProcessMessage() < 0 )
+		{
+			break ;
+		}
+		Thread_Sleep( 1 ) ;
+	}
+
+	return 0 ;
+}
+
 // ハンドルの非同期読み込み中カウントをインクリメントする
 extern int IncASyncLoadCount( int Handle, int ASyncDataNumber )
 {
@@ -721,10 +787,20 @@ extern int DecASyncLoadCount( int Handle )
 
 	HandleInfo->ASyncLoadCount -- ;
 
-	// カウントが 0 で、且つ削除フラグが立っていたらハンドルを削除する
-	if( HandleInfo->ASyncLoadCount == 0 && HandleInfo->ASyncLoadFinishDeleteRequestFlag )
+	// カウントが 0 だったら処理を分岐
+	if( HandleInfo->ASyncLoadCount == 0 )
 	{
-		SubHandle( Handle ) ;
+		// 読み込みが終わったら削除するフラグが立っていたらハンドルを削除する
+		if( HandleInfo->ASyncLoadFinishDeleteRequestFlag )
+		{
+			SubHandle( Handle ) ;
+		}
+		else
+		// 読み込みが終わったら呼ぶコールバック関数が設定されていたら呼ぶ
+		if( HandleInfo->ASyncLoadFinishCallback != NULL )
+		{
+			HandleInfo->ASyncLoadFinishCallback( Handle, HandleInfo->ASyncLoadFinishCallbackData ) ;
+		}
 	}
 
 	// クリティカルセクションの解放
@@ -800,7 +876,7 @@ extern int WaitASyncLoad( int Handle )
 		while( HandleInfo->ASyncLoadCount != 0 )
 		{
 			ProcessASyncLoadRequestMainThread() ;
-			Thread_Sleep( 0 );
+			Thread_Sleep( 1 );
 		}
 
 		// クリティカルセクションの取得

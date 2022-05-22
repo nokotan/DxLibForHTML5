@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		メモリイメージ制御用プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -177,7 +177,7 @@ extern int LoadImageToMemImg( const wchar_t *FilePath, MEMIMG *MemImg, DWORD Tra
 		lTransColor = NS_GetColor3( GetMemImgColorData( ColorType, UseAlpha, UsePalette ),
 									( int )( ( TransColor >> 16 ) & 0xff ),
 									( int )( ( TransColor >> 8  ) & 0xff ),
-									( int )( ( TransColor >> 0  ) & 0xff ) ) ;
+									( int )( ( TransColor >> 0  ) & 0xff ), 255 ) ;
 	}
 
 	// メモリイメージデータの初期化
@@ -241,7 +241,7 @@ extern void BltMemImg( MEMIMG *DestImg, const MEMIMG *SrcImg, const RECT *SrcRec
 								NULL, 0, NULL,
 								DestPos, SrcRect, FALSE,
 								FALSE, 0,
-								0, FALSE, FALSE ) ;
+								0, FALSE, FALSE, FALSE, FALSE ) ;
 }
 
 // ある MEMIMG の一部を使用する MEMIMG の情報を作成する(派生元が無効になったら派生 MEMIMG も使用不可になる)
@@ -535,7 +535,7 @@ extern void BltBaseImageToMemImg( const BASEIMAGE *RgbBaseImage, const BASEIMAGE
 									NULL, 0, NULL,
 									DestPos, &SrcRect, FALSE,
 									FALSE, 0,
-									0, TRUE, TRUE ) ;
+									0, TRUE, TRUE, FALSE, FALSE ) ;
 	}
 	else
 	// それ以外の場合
@@ -548,7 +548,7 @@ extern void BltBaseImageToMemImg( const BASEIMAGE *RgbBaseImage, const BASEIMAGE
 											AlphaBaseImage->GraphData, AlphaBaseImage->Pitch, &AlphaBaseImage->ColorData,
 											DestPos, &SrcRect, FALSE,
 											UseTransColorConvAlpha, MemImg->Base->TransColor,
-											0, FALSE, FALSE ) < 0 ) return ;
+											0, FALSE, FALSE, FALSE, FALSE ) < 0 ) return ;
 		}
 		else
 		{
@@ -559,7 +559,7 @@ extern void BltBaseImageToMemImg( const BASEIMAGE *RgbBaseImage, const BASEIMAGE
 												NULL, 0, NULL,
 												DestPos, &SrcRect, FALSE,
 												UseTransColorConvAlpha, MemImg->Base->TransColor,
-												0, FALSE, FALSE ) ;
+												0, FALSE, FALSE, FALSE, FALSE ) ;
 			if( Result < 0 ) return ;
 
 			// パレットモードの場合はパレットの数を保存
@@ -805,7 +805,7 @@ extern COLORDATA *GetMemImgColorData( int ColorType, int UseAlpha, int UsePalett
 				
 				if( Init == 0 ){
 					Init = 1 ;
-					CreateColorData( &ColorData, 8, MEMIMG_X8A8R5G6B5_R, MEMIMG_X8A8R5G6B5_G, MEMIMG_X8A8R5G6B5_B, MEMIMG_X8A8R5G6B5_A ) ;
+					CreateColorData( &ColorData, 8, MEMIMG_X8A8R5G6B5_R, MEMIMG_X8A8R5G6B5_G, MEMIMG_X8A8R5G6B5_B, MEMIMG_X8A8R5G6B5_A, 0, 0, FALSE ) ;
 				}
 				return &ColorData ;
 			}else{
@@ -814,7 +814,7 @@ extern COLORDATA *GetMemImgColorData( int ColorType, int UseAlpha, int UsePalett
 				
 				if( Init == 0 ){
 					Init = 1 ;
-					CreateColorData( &ColorData, 32, MEMIMG_X8A8R5G6B5_R, MEMIMG_X8A8R5G6B5_G, MEMIMG_X8A8R5G6B5_B, MEMIMG_X8A8R5G6B5_A ) ;
+					CreateColorData( &ColorData, 32, MEMIMG_X8A8R5G6B5_R, MEMIMG_X8A8R5G6B5_G, MEMIMG_X8A8R5G6B5_B, MEMIMG_X8A8R5G6B5_A, 0, 0, FALSE ) ;
 				}
 				return &ColorData ;
 			}
@@ -826,7 +826,7 @@ extern COLORDATA *GetMemImgColorData( int ColorType, int UseAlpha, int UsePalett
 				
 				if( Init == 0 ){
 					Init = 1 ;
-					 CreateColorData( &ColorData, 8, MEMIMG_R5G6B5_R, MEMIMG_R5G6B5_G, MEMIMG_R5G6B5_B, MEMIMG_R5G6B5_A ) ;
+					 CreateColorData( &ColorData, 8, MEMIMG_R5G6B5_R, MEMIMG_R5G6B5_G, MEMIMG_R5G6B5_B, MEMIMG_R5G6B5_A, 0, 0, FALSE ) ;
 				}
 				return &ColorData ;
 			}else{
@@ -835,7 +835,7 @@ extern COLORDATA *GetMemImgColorData( int ColorType, int UseAlpha, int UsePalett
 				
 				if( Init == 0 ){
 					Init = 1 ;
-					 CreateColorData( &ColorData, UsePalette == 1 ? 8 : 16, MEMIMG_R5G6B5_R, MEMIMG_R5G6B5_G, MEMIMG_R5G6B5_B, MEMIMG_R5G6B5_A ) ;
+					 CreateColorData( &ColorData, UsePalette == 1 ? 8 : 16, MEMIMG_R5G6B5_R, MEMIMG_R5G6B5_G, MEMIMG_R5G6B5_B, MEMIMG_R5G6B5_A, 0, 0, FALSE ) ;
 				}
 				return &ColorData ;
 			}
@@ -849,7 +849,7 @@ extern COLORDATA *GetMemImgColorData( int ColorType, int UseAlpha, int UsePalett
 				
 				if( Init == 0 ){
 					Init = 1 ;
-					 CreateColorData( &ColorData, 8, MEMIMG_ARGB8_R, MEMIMG_ARGB8_G, MEMIMG_ARGB8_B, MEMIMG_ARGB8_A ) ;
+					 CreateColorData( &ColorData, 8, MEMIMG_ARGB8_R, MEMIMG_ARGB8_G, MEMIMG_ARGB8_B, MEMIMG_ARGB8_A, 0, 0, FALSE ) ;
 				}
 				return &ColorData ;
 			}else{
@@ -858,7 +858,7 @@ extern COLORDATA *GetMemImgColorData( int ColorType, int UseAlpha, int UsePalett
 				
 				if( Init == 0 ){
 					Init = 1 ;
-					CreateColorData( &ColorData, 32, MEMIMG_ARGB8_R, MEMIMG_ARGB8_G, MEMIMG_ARGB8_B, MEMIMG_ARGB8_A ) ;
+					CreateColorData( &ColorData, 32, MEMIMG_ARGB8_R, MEMIMG_ARGB8_G, MEMIMG_ARGB8_B, MEMIMG_ARGB8_A, 0, 0, FALSE ) ;
 				}
 				return &ColorData ;
 			}
@@ -869,7 +869,7 @@ extern COLORDATA *GetMemImgColorData( int ColorType, int UseAlpha, int UsePalett
 				
 				if( Init == 0 ){
 					Init = 1 ;
-					CreateColorData( &ColorData, 8, MEMIMG_XRGB8_R, MEMIMG_XRGB8_G, MEMIMG_XRGB8_B, MEMIMG_XRGB8_A ) ;
+					CreateColorData( &ColorData, 8, MEMIMG_XRGB8_R, MEMIMG_XRGB8_G, MEMIMG_XRGB8_B, MEMIMG_XRGB8_A, 0, 0, FALSE ) ;
 				}
 				return &ColorData ;
 			}else{
@@ -878,7 +878,7 @@ extern COLORDATA *GetMemImgColorData( int ColorType, int UseAlpha, int UsePalett
 				
 				if( Init == 0 ){
 					Init = 1 ;
-					CreateColorData( &ColorData, 32, MEMIMG_XRGB8_R, MEMIMG_XRGB8_G, MEMIMG_XRGB8_B, MEMIMG_XRGB8_A ) ;
+					CreateColorData( &ColorData, 32, MEMIMG_XRGB8_R, MEMIMG_XRGB8_G, MEMIMG_XRGB8_B, MEMIMG_XRGB8_A, 0, 0, FALSE ) ;
 				}
 				return &ColorData ;
 			}
@@ -1119,7 +1119,7 @@ extern void BltMemImgToBaseImage( BASEIMAGE *BaseImage, const MEMIMG *MemImg, in
 								DestPos, &SrcRect, FALSE,
 								FALSE, TransColor,
 								0, FALSE,
-								FALSE, TransFlag ) ;
+								FALSE, TransFlag, FALSE ) ;
 }
 
 // イメージを初期化する

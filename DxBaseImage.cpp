@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＢａｓｅＩｍａｇｅプログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // ----------------------------------------------------------------------------
 
@@ -199,6 +199,7 @@ struct DDSCOLORTABLE
 // 画像読み込み関数
 static	int LoadBmpImage( STREAMDATA *Stream, BASEIMAGE *BaseImage, int GetFormatOnly ) ;					// ＢＭＰ画像の読みこみ
 static	int LoadArgbImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) ;						// ＡＲＧＢ画像の読みこみ
+static	int LoadDxLibBaseImage( STREAMDATA *Stream, BASEIMAGE *BaseImage, int GetFormatOnly ) ;				// BASEIMAGE画像の読みこみ
 
 #ifndef DX_NON_TGA
 static	int LoadTargaImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) ;					// ＴＧＡ画像の読みこみ
@@ -233,6 +234,7 @@ int ( *DefaultImageLoadFunc[] )( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetF
 	LoadTiffImage ,
 #endif
 	LoadArgbImage ,
+	LoadDxLibBaseImage ,
 	NULL 
 } ;
 
@@ -1045,6 +1047,8 @@ extern int CreateGraphImageOrDIBGraph_UseGParam(
 	int hr ;
 	BASEIMAGE GraphI ;
 	STREAMDATA Src ;
+	LONGLONG FileBytes ;
+	void *FileImage = NULL ;
 
 	// バージョン４の読み込み関数に掛ける
 	{
@@ -1056,11 +1060,33 @@ extern int CreateGraphImageOrDIBGraph_UseGParam(
 				return -1 ;
 			}
 
-			Src.DataPoint = fp ;
+			// 最初にメモリにまるごと読み込む
+			GParam->StreamDataShred2.Seek( fp, 0, SEEK_END ) ;
+			FileBytes = GParam->StreamDataShred2.Tell( fp ) ;
+			GParam->StreamDataShred2.Seek( fp, 0, SEEK_SET ) ;
+			FileImage = DXALLOC( FileBytes ) ;
+			if( FileImage == NULL )
+			{
+				return -1 ;
+			}
+			GParam->StreamDataShred2.Read( FileImage, FileBytes, 1, fp ) ;
+			GParam->StreamDataShred2.Close( fp ) ;
+
+			Src.DataPoint = MemStreamOpen( FileImage, FileBytes ) ;
+			if( Src.DataPoint == NULL )
+			{
+				return -1 ;
+			}
 
 			// 何故か直接代入すると Android でクラッシュする…
-//			Src.ReadShred = GParam->FileStreamDataShred ;
-			_MEMCPY( &Src.ReadShred, &GParam->FileStreamDataShred, sizeof( GParam->FileStreamDataShred ) ) ;
+//			Src.ReadShred = GParam->MemStreamDataShred ;
+			_MEMCPY( &Src.ReadShred, &GParam->MemStreamDataShred, sizeof( GParam->MemStreamDataShred ) ) ;
+
+// 			Src.DataPoint = fp ;
+// 
+// 			// 何故か直接代入すると Android でクラッシュする…
+// //			Src.ReadShred = GParam->FileStreamDataShred ;
+// 			_MEMCPY( &Src.ReadShred, &GParam->FileStreamDataShred, sizeof( GParam->FileStreamDataShred ) ) ;
 		}
 		else
 		{
@@ -1077,7 +1103,7 @@ extern int CreateGraphImageOrDIBGraph_UseGParam(
 		hr = CreateGraphImageType2_UseGParam( &GParam->CreateGraphImageType2GParam, &Src, &GraphI ) ;
 		if( hr == 0 )
 		{
-			if( DataImageType != LOADIMAGE_TYPE_FILE )
+//			if( DataImageType != LOADIMAGE_TYPE_FILE )
 				STCLOSE( &Src ) ;
 			goto END ;
 		}
@@ -1097,7 +1123,7 @@ END :
 		if( ReverseFlag == TRUE )
 		{
 			// 画像フォーマットが DX_BASEIMAGE_FORMAT_NORMAL 以外だった場合は DX_BASEIMAGE_FORMAT_NORMAL に変換する
-			NS_ConvertNormalFormatBaseImage( &GraphI ) ;
+			NS_ConvertNormalFormatBaseImage( &GraphI, TRUE ) ;
 
 			// 反転
 			NS_ReverseGraphImage( &GraphI ) ;
@@ -1117,7 +1143,7 @@ END :
 				// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 				if( GraphI.ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 				{
-					if( NS_ConvertNormalFormatBaseImage( &GraphI ) < 0 )
+					if( NS_ConvertNormalFormatBaseImage( &GraphI, TRUE ) < 0 )
 						return -1 ;
 				}
 
@@ -1134,7 +1160,7 @@ END :
 					BASEIMAGE TempBaseImage ;
 					TempBaseImage = GraphI ;
 					NS_CreateARGB8ColorBaseImage( GraphI.Width, GraphI.Height, &GraphI ) ;
-					NS_BltBaseImage( 0, 0, &TempBaseImage, &GraphI ) ;
+					NS_BltBaseImage2( 0, 0, &TempBaseImage, &GraphI ) ;
 					NS_ReleaseBaseImage( &TempBaseImage ) ;
 				}
 
@@ -1167,7 +1193,7 @@ END :
 			// ＢＭＰデータ を欲しかった場合は GraphImage データを ＢＭＰ データに変換する
 
 			// 画像フォーマットが DX_BASEIMAGE_FORMAT_NORMAL 以外だった場合は DX_BASEIMAGE_FORMAT_NORMAL に変換する
-			NS_ConvertNormalFormatBaseImage( &GraphI ) ;
+			NS_ConvertNormalFormatBaseImage( &GraphI, TRUE ) ;
 
 			// BITMAPINFO 構造体の情報を格納するメモリ領域の確保
 			if( ( *BmpInfo = ( BITMAPINFO * )DXALLOC( sizeof( BITMAPINFO ) + sizeof( RGBQUAD ) * 256 ) ) == NULL )
@@ -1198,7 +1224,11 @@ END :
 	}
 
 	// もしファイルイメージの場合はファイルを閉じる
-	if( DataImageType == LOADIMAGE_TYPE_FILE ) GParam->StreamDataShred2.Close( fp ) ;
+	if( DataImageType == LOADIMAGE_TYPE_FILE )
+	{
+		DXFREE( FileImage ) ;
+//		GParam->StreamDataShred2.Close( fp ) ;
+	}
 
 	// 終了
 	return 0 ;
@@ -1207,12 +1237,14 @@ ERR:
 	// もしファイルイメージの場合はファイルを閉じる
 	if( DataImageType == LOADIMAGE_TYPE_FILE )
 	{
-		GParam->StreamDataShred2.Close( fp ) ;
+		if( FileImage != NULL )
+		{
+			DXFREE( FileImage ) ;
+		}
+//		GParam->StreamDataShred2.Close( fp ) ;
 	}
-	else
-	{
-		STCLOSE( &Src ) ;
-	}
+
+	STCLOSE( &Src ) ;
 
 	return -1 ;
 }
@@ -1746,7 +1778,9 @@ extern int CreateGraphImage_plus_Alpha_UseGParam(
 
 	// ＲＧＢイメージの読み込み
 	if( CreateGraphImageOrDIBGraph_UseGParam( GParam, FileName, RgbImage, RgbImageSize, RgbImageType, FALSE, ReverseFlag, NotUseTransColor, RgbGraphImage, NULL, NULL ) == -1 )
+	{
 		return -1 ;
+	}
 
 	if( AlphaGraphImage != NULL )
 	{
@@ -2653,7 +2687,7 @@ extern int NS_ConvGraphImageToBitmap( const BASEIMAGE *GraphImage, BITMAPINFO *B
 		 								NULL, 0, NULL,
 		 								DestPoint, &SrcRect, FALSE,
 		 								FALSE, 0,
-		 								DX_SHAVEDMODE_NONE ) ;
+		 								DX_SHAVEDMODE_NONE, FALSE, FALSE, FALSE, FALSE ) ;
 		 							
 			// コピーフラグを立てる
 			CopyFlag = TRUE ;
@@ -3817,6 +3851,142 @@ ERR :
 
 
 
+
+
+
+// BASEIMAGE画像の読みこみ
+
+/* BASEIMAGE画像フォーマット
+
+4byte "DBIM"
+
+4byte Width											幅
+4byte Height										高さ
+4byte Pitch											ピッチ
+4byte MipMapCount									ミップマップの数
+4byte GraphDataCount								グラフィックイメージの数
+4byte ImageAddr										イメージデータが格納されているアドレス(バイト単位)
+8byte ImageBytes									イメージデータのサイズ(バイト数)
+
+1byte Format										フォーマット( DX_BASEIMAGE_FORMAT_NORMAL 等 )
+1byte ChannelNum									チャンネル数
+1byte ChannelBitDepth								１チャンネル辺りのビット深度
+1byte FloatTypeFlag									浮動小数点型かどうか( TRUE:浮動小数点型  FALSE:整数型 )
+1byte PixelByte										１ピクセルあたりのバイト数
+
+< Format が DX_BASEIMAGE_FORMAT_NORMAL 且つ ChannelNum 又は ChannelBitDepth が 0 の時のみ存在 >
+
+1byte ColorBitDepth									ビット深度
+1byte NoneLoc,  NoneWidth							使われていないビットのアドレスと幅
+1byte RedWidth, GreenWidth, BlueWidth, AlphaWidth 	各色のビット幅
+1byte RedLoc,   GreenLoc  , BlueLoc  , AlphaLoc   	各色の配置されているビットアドレス
+4byte RedMask , GreenMask , BlueMask , AlphaMask  	各色のビットマスク
+4byte NoneMask										使われていないビットのマスク
+
+< Format が DX_BASEIMAGE_FORMAT_NORMAL 且つ ChannelNum 又は ChannelBitDepth が 0 且つ ColorBitDepth が 8 以下の場合のみ存在 >
+
+4byte MaxPaletteNo									使用しているパレット番号の最大値( 0 の場合は 255 とみなす )
+
+< Format が DX_BASEIMAGE_FORMAT_NORMAL 且つ ChannelNum 又は ChannelBitDepth が 0 且つ ColorBitDepth が 8 以下の場合のみ
+  パレットの数だけ存在　ColorBitDepth  8=256個  4=16個  1=2個 >
+1byte  Blue											パレットの青成分
+1byte  Green										パレットの緑成分
+1byte  Red											パレットの赤成分
+1byte  Alpha										パレットのアルファ成分
+
+< 以降に ImageBytes のサイズのイメージデータが存在 ( ImageAddr の位置からなので、上記データの直後とは限らない >
+
+*/
+static	int LoadDxLibBaseImage( STREAMDATA *Stream, BASEIMAGE *BaseImage, int GetFormatOnly )
+{
+	DWORD_PTR sp ;
+	STREAMDATASHRED *sstr ;
+	BYTE ID[ 4 ] ;
+	DWORD ImageAddr ;
+	ULONGLONG ImageBytes ;
+
+	sstr = &Stream->ReadShred ;
+	sp = Stream->DataPoint ;
+
+	if( sstr->Read( ID, 4, 1, sp ) <= 0 ) return -1	;						// ヘッダの読み込み
+	if( _MEMCMP( ID, "DBIM", 4 ) != 0 ) return -1 ;							// ＩＤ検査
+
+	_MEMSET( BaseImage, 0, sizeof( BASEIMAGE ) ) ;
+
+	if( sstr->Read( &BaseImage->Width,          12, 1, sp ) <= 0 ) return -1 ;
+//	if( sstr->Read( &BaseImage->Width,           4, 1, sp ) <= 0 ) return -1 ;
+//	if( sstr->Read( &BaseImage->Height,          4, 1, sp ) <= 0 ) return -1 ;
+//	if( sstr->Read( &BaseImage->Pitch,           4, 1, sp ) <= 0 ) return -1 ;
+	if( sstr->Read( &BaseImage->MipMapCount,     8, 1, sp ) <= 0 ) return -1 ;
+//	if( sstr->Read( &BaseImage->MipMapCount,     4, 1, sp ) <= 0 ) return -1 ;
+//	if( sstr->Read( &BaseImage->GraphDataCount,  4, 1, sp ) <= 0 ) return -1 ;
+	if( sstr->Read( &ImageAddr,                  4, 1, sp ) <= 0 ) return -1 ;
+	if( sstr->Read( &ImageBytes,                 8, 1, sp ) <= 0 ) return -1 ;
+
+	if( sstr->Read( &BaseImage->ColorData.Format,          5, 1, sp ) <= 0 ) return -1 ;
+//	if( sstr->Read( &BaseImage->ColorData.Format,          1, 1, sp ) <= 0 ) return -1 ;
+//	if( sstr->Read( &BaseImage->ColorData.ChannelNum,      1, 1, sp ) <= 0 ) return -1 ;
+//	if( sstr->Read( &BaseImage->ColorData.ChannelBitDepth, 1, 1, sp ) <= 0 ) return -1 ;
+//	if( sstr->Read( &BaseImage->ColorData.FloatTypeFlag,   1, 1, sp ) <= 0 ) return -1 ;
+//	if( sstr->Read( &BaseImage->ColorData.PixelByte,       1, 1, sp ) <= 0 ) return -1 ;
+
+	if( BaseImage->ColorData.Format == DX_BASEIMAGE_FORMAT_NORMAL &&
+		( BaseImage->ColorData.ChannelBitDepth == 0 || BaseImage->ColorData.ChannelNum == 0 ) )
+	{
+		if( sstr->Read( &BaseImage->ColorData.ColorBitDepth, 31, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.ColorBitDepth,  1, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.NoneLoc,        1, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.NoneWidth,      1, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.RedWidth,       1, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.GreenWidth,     1, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.BlueWidth,      1, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.AlphaWidth,     1, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.RedLoc,         1, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.GreenLoc,       1, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.BlueLoc,        1, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.AlphaLoc,       1, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.RedMask,        4, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.GreenMask,      4, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.BlueMask,       4, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.AlphaMask,      4, 1, sp ) <= 0 ) return -1 ;
+//		if( sstr->Read( &BaseImage->ColorData.NoneMask,       4, 1, sp ) <= 0 ) return -1 ;
+
+		if( BaseImage->ColorData.ColorBitDepth <= 8 )
+		{
+			if( sstr->Read( &BaseImage->ColorData.MaxPaletteNo, 4, 1, sp ) <= 0 ) return -1 ;
+			if( sstr->Read( &BaseImage->ColorData.Palette, 4 * ( 1 << BaseImage->ColorData.ColorBitDepth ), 1, sp ) <= 0 ) return -1 ;
+		}
+	}
+
+	if( GetFormatOnly == FALSE )
+	{
+		sstr->Seek( sp, ImageAddr, SEEK_SET ) ;
+		BaseImage->GraphData = DXALLOC( ( size_t )ImageBytes ) ;
+		if( BaseImage->GraphData == NULL )
+		{
+			return -1 ;
+		}
+		if( sstr->Read( BaseImage->GraphData, ImageBytes, 1, sp ) <= 0 )
+		{
+			DXFREE( BaseImage->GraphData ) ;
+			BaseImage->GraphData = NULL ;
+		}
+	}
+
+	// 終了
+	return 0 ;
+}
+
+
+
+
+
+
+
+
+
+
+
 #ifndef DX_NON_TGA
 
 // #ifndef DX_GCC_COMPILE
@@ -4863,7 +5033,7 @@ static int LoadDDSImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnl
 				{
 					// 整数値タイプ
 					NS_CreateColorData( &BaseImage->ColorData, table->BitDepth,
-										table->RedMask, table->GreenMask, table->BlueMask, table->AlphaMask ) ;
+										table->RedMask, table->GreenMask, table->BlueMask, table->AlphaMask, 0, 0, FALSE ) ;
 				}
 				formatget = 1 ;
 			}
@@ -4939,7 +5109,7 @@ static int LoadDDSImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnl
 			{
 				// カラーフォーマットのセット
 				NS_CreateColorData( &BaseImage->ColorData, ( int )head.dwRGBBitCount,
-									head.dwRBitMask, head.dwGBitMask, head.dwBBitMask, head.dwRGBAlphaBitMask ) ;
+									head.dwRBitMask, head.dwGBitMask, head.dwBBitMask, head.dwRGBAlphaBitMask, 0, 0, FALSE ) ;
 									
 				formatget = 1 ;
 			}
@@ -4973,7 +5143,7 @@ static int LoadDDSImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnl
 	if( dxtformat != 0 )
 	{
 		// 共通のカラーフォーマットをセット
-		NS_CreateColorData( &BaseImage->ColorData, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
+		NS_CreateColorData( &BaseImage->ColorData, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0, 0, FALSE ) ;
 
 		// データの読み込み
 		if( GetFormatOnly == FALSE )
@@ -5363,6 +5533,57 @@ extern int NS_CreateARGB8ColorBaseImage( int SizeX, int SizeY, BASEIMAGE *BaseIm
 extern int NS_CreateXRGB8ColorBaseImage( int SizeX, int SizeY, BASEIMAGE *BaseImage )
 {
 	NS_CreateXRGB8ColorData( &BaseImage->ColorData );
+	BaseImage->Width  = SizeX;
+	BaseImage->Height = SizeY;
+	BaseImage->Pitch  = SizeX * BaseImage->ColorData.PixelByte;
+	BaseImage->Pitch  = ( BaseImage->Pitch + 3 ) / 4 * 4;
+	BaseImage->GraphData = DXALLOC( ( size_t )( BaseImage->Pitch * BaseImage->Height ) );
+	if( BaseImage->GraphData == NULL ) return -1;
+	BaseImage->MipMapCount = 0 ;
+	BaseImage->GraphDataCount = 0 ;
+
+	// 終了
+	return 0;
+}
+
+// ＲＧＢＡ８カラーの基本イメージデータを作成する
+extern int NS_CreateRGBA8ColorBaseImage( int SizeX, int SizeY, BASEIMAGE *BaseImage )
+{
+	NS_CreateRGBA8ColorData( &BaseImage->ColorData );
+	BaseImage->Width  = SizeX;
+	BaseImage->Height = SizeY;
+	BaseImage->Pitch  = SizeX * BaseImage->ColorData.PixelByte;
+	BaseImage->Pitch  = ( BaseImage->Pitch + 3 ) / 4 * 4;
+	BaseImage->GraphData = DXALLOC( ( size_t )( BaseImage->Pitch * BaseImage->Height ) );
+	if( BaseImage->GraphData == NULL ) return -1;
+	BaseImage->MipMapCount = 0 ;
+	BaseImage->GraphDataCount = 0 ;
+
+	// 終了
+	return 0;
+}
+
+// ＡＢＧＲ８カラーの基本イメージデータを作成する
+extern int NS_CreateABGR8ColorBaseImage( int SizeX, int SizeY, BASEIMAGE *BaseImage )
+{
+	NS_CreateABGR8ColorData( &BaseImage->ColorData );
+	BaseImage->Width  = SizeX;
+	BaseImage->Height = SizeY;
+	BaseImage->Pitch  = SizeX * BaseImage->ColorData.PixelByte;
+	BaseImage->Pitch  = ( BaseImage->Pitch + 3 ) / 4 * 4;
+	BaseImage->GraphData = DXALLOC( ( size_t )( BaseImage->Pitch * BaseImage->Height ) );
+	if( BaseImage->GraphData == NULL ) return -1;
+	BaseImage->MipMapCount = 0 ;
+	BaseImage->GraphDataCount = 0 ;
+
+	// 終了
+	return 0;
+}
+
+// ＢＧＲＡ８カラーの基本イメージデータを作成する
+extern int NS_CreateBGRA8ColorBaseImage( int SizeX, int SizeY, BASEIMAGE *BaseImage )
+{
+	NS_CreateBGRA8ColorData( &BaseImage->ColorData );
 	BaseImage->Width  = SizeX;
 	BaseImage->Height = SizeY;
 	BaseImage->Pitch  = SizeX * BaseImage->ColorData.PixelByte;
@@ -6511,7 +6732,7 @@ extern int NS_ConvertPremulAlphaBaseImage( BASEIMAGE *BaseImage )
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( BaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( BaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
@@ -6528,7 +6749,7 @@ extern int NS_ConvertPremulAlphaBaseImage( BASEIMAGE *BaseImage )
 		BASEIMAGE TempBaseImage ;
 		TempBaseImage = *BaseImage ;
 		NS_CreateARGB8ColorBaseImage( BaseImage->Width, BaseImage->Height, BaseImage ) ;
-		NS_BltBaseImage( 0, 0, &TempBaseImage, BaseImage ) ;
+		NS_BltBaseImage2( 0, 0, &TempBaseImage, BaseImage ) ;
 		NS_ReleaseBaseImage( &TempBaseImage ) ;
 	}
 
@@ -6565,7 +6786,7 @@ extern int NS_ConvertInterpAlphaBaseImage( BASEIMAGE *BaseImage )
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( BaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( BaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 	else
@@ -6583,7 +6804,7 @@ extern int NS_ConvertInterpAlphaBaseImage( BASEIMAGE *BaseImage )
 			BASEIMAGE TempBaseImage ;
 			TempBaseImage = *BaseImage ;
 			NS_CreateARGB8ColorBaseImage( BaseImage->Width, BaseImage->Height, BaseImage ) ;
-			NS_BltBaseImage( 0, 0, &TempBaseImage, BaseImage ) ;
+			NS_BltBaseImage2( 0, 0, &TempBaseImage, BaseImage ) ;
 			NS_ReleaseBaseImage( &TempBaseImage ) ;
 		}
 	}
@@ -6763,7 +6984,7 @@ extern int NS_GetDesktopScreenBaseImage( int x1, int y1, int x2, int y2, BASEIMA
 	CaptureImage.Height		= CaptureH ;
 	CaptureImage.Pitch		= CaptureW * 4 ;
 	CaptureImage.GraphData	= ( void * )ImageBuffer ;
-	NS_BltBaseImage( DestX, DestY, &CaptureImage, BaseImage ) ;
+	NS_BltBaseImage2( DestX, DestY, &CaptureImage, BaseImage ) ;
 
 	// DIBの削除
 	WinAPIData.Win32Func.DeleteDCFunc( HMemDC ) ;
@@ -7101,7 +7322,7 @@ extern int NS_SetPixelBaseImage( BASEIMAGE *BaseImage, int x, int y, int  r, int
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( BaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( BaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
@@ -7193,7 +7414,7 @@ extern int NS_SetPixelBaseImageF( BASEIMAGE *BaseImage, int x, int y, float  r, 
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( BaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( BaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
@@ -7291,7 +7512,7 @@ extern int NS_GetPixelBaseImage( const BASEIMAGE *BaseImage, int x, int y, int *
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( ( BASEIMAGE * )BaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( ( BASEIMAGE * )BaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
@@ -7394,7 +7615,7 @@ extern int NS_GetPixelBaseImageF( const BASEIMAGE *BaseImage, int x, int y, floa
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( ( BASEIMAGE * )BaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( ( BASEIMAGE * )BaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
@@ -7500,7 +7721,7 @@ extern int NS_DrawLineBaseImage( BASEIMAGE *BaseImage, int x1, int y1, int x2, i
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( BaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( BaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
@@ -8033,7 +8254,13 @@ extern int NS_DrawCircleBaseImage( BASEIMAGE *BaseImage, int x, int y, int radiu
 }
 
 // 基本イメージデータを転送する
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern int NS_BltBaseImage( int DestX, int DestY, BASEIMAGE *SrcBaseImage, BASEIMAGE *DestBaseImage )
+{
+	return NS_BltBaseImage2( DestX, DestY, SrcBaseImage, DestBaseImage ) ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern int NS_BltBaseImage2( int DestX, int DestY, BASEIMAGE *SrcBaseImage, BASEIMAGE *DestBaseImage )
 {
 	return NS_BltBaseImage( 0, 0, SrcBaseImage->Width, SrcBaseImage->Height, DestX, DestY, SrcBaseImage, DestBaseImage ) ;
 }
@@ -8151,14 +8378,14 @@ extern int NS_BltBaseImage( int SrcX, int SrcY, int SrcSizeX, int SrcSizeY, int 
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( SrcBaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( SrcBaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( SrcBaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( DestBaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( DestBaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( DestBaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
@@ -8201,14 +8428,14 @@ extern	int		NS_BltBaseImageWithTransColor( int SrcX, int SrcY, int SrcSizeX, int
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( SrcBaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( SrcBaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( SrcBaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( DestBaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( DestBaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( DestBaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
@@ -8259,14 +8486,14 @@ extern int NS_BltBaseImageWithAlphaBlend( int SrcX, int SrcY, int SrcSizeX, int 
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( SrcBaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( SrcBaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( SrcBaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
 	// フォーマットが標準フォーマットではなかったら標準フォーマットに変換する
 	if( DestBaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		if( NS_ConvertNormalFormatBaseImage( DestBaseImage ) < 0 )
+		if( NS_ConvertNormalFormatBaseImage( DestBaseImage, TRUE ) < 0 )
 			return -1 ;
 	}
 
@@ -8294,7 +8521,7 @@ extern int NS_BltBaseImageWithAlphaBlend( int SrcX, int SrcY, int SrcSizeX, int 
 		{
 			NS_CreateXRGB8ColorBaseImage( SrcBaseImage->Width, SrcBaseImage->Height, &TempBaseImage ) ;
 		}
-		NS_BltBaseImage( 0, 0, SrcBaseImage, &TempBaseImage ) ; 
+		NS_BltBaseImage2( 0, 0, SrcBaseImage, &TempBaseImage ) ; 
 		UseSrcBaseImage = &TempBaseImage ;
 	}
 	else
@@ -8412,7 +8639,6 @@ extern int NS_BltBaseImageWithAlphaBlend( int SrcX, int SrcY, int SrcSizeX, int 
 	// 終了
 	return 0 ;
 }
-
 
 // 基本イメージデータの左右を反転する
 extern int NS_ReverseBaseImageH( BASEIMAGE *BaseImage )
@@ -10953,7 +11179,7 @@ extern int NS_GraphColorMatchBltVer2( void *DestGraphData,       int DestPitch, 
 		TColor = NS_GetColor3( &DColor,
 									( int )( ( TransColor & 0xff0000 ) >> 16 ),
 									( int )( ( TransColor & 0x00ff00 ) >>  8 ),
-									( int )( ( TransColor & 0x0000ff )       ) ) ;
+									( int )( ( TransColor & 0x0000ff )       ), 255 ) ;
 
 		// ＲＧＢの反転マスクを作成する
 		NRGBMask = ~( DColor.RedMask | DColor.GreenMask | DColor.BlueMask ) ;
@@ -14055,7 +14281,7 @@ NORMALMOVE:
 			TRed   = ( ( TransColor >> 16 ) & 0xff )  ;
 			TGreen = ( ( TransColor >>  8 ) & 0xff )  ;
 			TBlue  = ( ( TransColor       ) & 0xff )  ;
-			Color  = NS_GetColor3( &SColor, ( int )TRed, ( int )TGreen, ( int )TBlue ) ;
+			Color  = NS_GetColor3( &SColor, ( int )TRed, ( int )TGreen, ( int )TBlue, 255 ) ;
 			if( SColor.ColorBitDepth == 8 )
 			{
 				TRed   = SColor.Palette[ Color ].Red ;
@@ -14784,6 +15010,111 @@ extern	int NS_CreateARGB8ColorData( COLORDATA * ColorDataBuf )
 
 	ColorDataBuf->BlueLoc = 0  ;
 	ColorDataBuf->BlueMask = 0x000000ff ;
+	ColorDataBuf->BlueWidth = 8 ;
+
+	// 終了
+	return 0 ;
+}
+
+// ＲＧＢＡ８カラーのカラーフォーマットを構築する
+extern	int NS_CreateRGBA8ColorData( COLORDATA *ColorDataBuf )
+{
+	ColorDataBuf->Format = DX_BASEIMAGE_FORMAT_NORMAL ;
+	ColorDataBuf->ChannelNum = 0 ;
+	ColorDataBuf->ChannelBitDepth = 0 ;
+	ColorDataBuf->FloatTypeFlag = FALSE ;
+	ColorDataBuf->ColorBitDepth = 32 ;
+	ColorDataBuf->PixelByte = 4 ;
+	ColorDataBuf->MaxPaletteNo = 0 ;
+
+	ColorDataBuf->NoneLoc = 0 ;
+	ColorDataBuf->NoneMask = 0x00000000 ;
+	ColorDataBuf->NoneWidth = 0 ;
+
+	ColorDataBuf->AlphaLoc = 0 ;
+	ColorDataBuf->AlphaMask = 0x000000ff ;
+	ColorDataBuf->AlphaWidth = 8 ;
+
+	ColorDataBuf->RedLoc = 24 ;
+	ColorDataBuf->RedMask = 0xff000000 ;
+	ColorDataBuf->RedWidth = 8 ;
+
+	ColorDataBuf->GreenLoc = 16 ;
+	ColorDataBuf->GreenMask = 0x00ff0000 ;
+	ColorDataBuf->GreenWidth = 8 ;
+
+	ColorDataBuf->BlueLoc = 8  ;
+	ColorDataBuf->BlueMask = 0x0000ff00 ;
+	ColorDataBuf->BlueWidth = 8 ;
+
+	// 終了
+	return 0 ;
+}
+
+// ＡＢＧＲ８カラーのカラーフォーマットを構築する
+extern	int NS_CreateABGR8ColorData( COLORDATA *ColorDataBuf )
+{
+	ColorDataBuf->Format = DX_BASEIMAGE_FORMAT_NORMAL ;
+	ColorDataBuf->ChannelNum = 0 ;
+	ColorDataBuf->ChannelBitDepth = 0 ;
+	ColorDataBuf->FloatTypeFlag = FALSE ;
+	ColorDataBuf->ColorBitDepth = 32 ;
+	ColorDataBuf->PixelByte = 4 ;
+	ColorDataBuf->MaxPaletteNo = 0 ;
+
+	ColorDataBuf->NoneLoc = 0 ;
+	ColorDataBuf->NoneMask = 0x00000000 ;
+	ColorDataBuf->NoneWidth = 0 ;
+
+	ColorDataBuf->AlphaLoc = 24 ;
+	ColorDataBuf->AlphaMask = 0xff000000 ;
+	ColorDataBuf->AlphaWidth = 8 ;
+
+	ColorDataBuf->RedLoc = 0 ;
+	ColorDataBuf->RedMask = 0x000000ff ;
+	ColorDataBuf->RedWidth = 8 ;
+
+	ColorDataBuf->GreenLoc = 8 ;
+	ColorDataBuf->GreenMask = 0x0000ff00 ;
+	ColorDataBuf->GreenWidth = 8 ;
+
+	ColorDataBuf->BlueLoc = 16  ;
+	ColorDataBuf->BlueMask = 0x00ff0000 ;
+	ColorDataBuf->BlueWidth = 8 ;
+
+	// 終了
+	return 0 ;
+}
+
+// ＢＧＲＡ８カラーのカラーフォーマットを構築する
+extern	int NS_CreateBGRA8ColorData( COLORDATA *ColorDataBuf )
+{
+	ColorDataBuf->Format = DX_BASEIMAGE_FORMAT_NORMAL ;
+	ColorDataBuf->ChannelNum = 0 ;
+	ColorDataBuf->ChannelBitDepth = 0 ;
+	ColorDataBuf->FloatTypeFlag = FALSE ;
+	ColorDataBuf->ColorBitDepth = 32 ;
+	ColorDataBuf->PixelByte = 4 ;
+	ColorDataBuf->MaxPaletteNo = 0 ;
+
+	ColorDataBuf->NoneLoc = 0 ;
+	ColorDataBuf->NoneMask = 0x00000000 ;
+	ColorDataBuf->NoneWidth = 0 ;
+
+	ColorDataBuf->AlphaLoc = 0 ;
+	ColorDataBuf->AlphaMask = 0x000000ff ;
+	ColorDataBuf->AlphaWidth = 8 ;
+
+	ColorDataBuf->RedLoc = 8 ;
+	ColorDataBuf->RedMask = 0x0000ff00 ;
+	ColorDataBuf->RedWidth = 8 ;
+
+	ColorDataBuf->GreenLoc = 16 ;
+	ColorDataBuf->GreenMask = 0x00ff0000 ;
+	ColorDataBuf->GreenWidth = 8 ;
+
+	ColorDataBuf->BlueLoc = 24  ;
+	ColorDataBuf->BlueMask = 0xff000000 ;
 	ColorDataBuf->BlueWidth = 8 ;
 
 	// 終了

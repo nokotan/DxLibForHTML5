@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ログプログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -61,6 +61,7 @@ static void CreateErrorLogFilePath( wchar_t *FilePathBuffer, size_t BufferBytes 
 	if( LogData.LogOutDirectory[ 0 ] == L'\0' )
 	{
 		DX_FGETDIR( FilePathBuffer, BufferBytes ) ; 
+		_WCSCPY_S( LogData.LogOutDirectory, sizeof( LogData.LogOutDirectory ), FilePathBuffer ) ;
 	}
 	else
 	{
@@ -155,7 +156,7 @@ extern int LogFileInitialize( void )
 	LogData.LogFileTabStop = FALSE ;
 
 	// スタート時のタイムスタンプを取得
-	LogData.LogStartTime = NS_GetNowCount() ;
+	LogData.LogStartTime = NS_GetNowCount( FALSE ) ;
 
 	// 初期化フラグを立てる
 	LogData.InitializeFlag = TRUE ;
@@ -204,7 +205,7 @@ extern int LogFileAdd_WCHAR_T( int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など
 		StringLength = ( DWORD )_WCSLEN( String ) ;
 		if( StringLength * 2 + 16 + LogData.LogFileTabNum > sizeof( DefaultBuffer ) / sizeof( wchar_t ) - 1 )
 		{
-			AllocBuffer = ( wchar_t * )NS_DxAlloc( ( StringLength * 2 + 16 + LogData.LogFileTabNum ) * sizeof( wchar_t ) ) ;
+			AllocBuffer = ( wchar_t * )NS_DxAlloc( ( StringLength * 2 + 16 + LogData.LogFileTabNum ) * sizeof( wchar_t ), NULL, -1 ) ;
 			UseBuffer   = AllocBuffer ;
 		}
 		else
@@ -222,7 +223,7 @@ extern int LogFileAdd_WCHAR_T( int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など
 		// タイムスタンプを出力
 		if( LogData.NonUseTimeStampFlag == 0 )
 		{
-			_SWPRINTF( Dest, L"%d:", NS_GetNowCount() - LogData.LogStartTime ) ;
+			_SWPRINTF( Dest, L"%d:", NS_GetNowCount( FALSE ) - LogData.LogStartTime ) ;
 			Dest += _WCSLEN( Dest ) ;
 		}
 
@@ -1052,6 +1053,7 @@ static int AddCharLog( const wchar_t *C )
 {
 	int ScWidth, ScHeight ;
 	int Width = 0, Length, i ;
+	int Color[ 2 ] ;
 
 	if( LogData.LogInitializeFlag == FALSE )
 	{
@@ -1095,10 +1097,24 @@ static int AddCharLog( const wchar_t *C )
 	// 描画幅を加算
 	LogData.LogDrawWidth += Width ;
 
+	// 色を決定
+	if( LogData.LogCharColorEnable )
+	{
+		Color[ 0 ] = LogData.LogCharColor[ 0 ] ;
+		Color[ 1 ] = LogData.LogCharColor[ 1 ] ;
+	}
+	else
+	{
+		Color[ 0 ] = NS_GetColor( 255,255,255 ) ;
+		Color[ 1 ] = NS_GetColor( 0,0,0 ) ;
+	}
+
 	// 文字を追加
 	for( i = 0 ; i < Length ; i ++ )
 	{
 		LogData.LogString[ LogData.LogY ][ LogData.LogX + i ] = C[ i ]  ;
+		LogData.LogStringColor[ LogData.LogY ][ LogData.LogX + i ][ 0 ] = Color[ 0 ] ;
+		LogData.LogStringColor[ LogData.LogY ][ LogData.LogX + i ][ 1 ] = Color[ 1 ] ;
 	}
 	LogData.LogString[ LogData.LogY ][ LogData.LogX + i ] = L'\0' ;
 
@@ -1258,11 +1274,15 @@ extern int DrawLog( void )
 {
 	int StrHeight , i ;
 	int DrawX, DrawY ;
+	int DrawXTemp ;
 	int DrawW, DrawH ;
 	int FontSize = -1 ;
 	int FontHandle ;
 	int Color ;
 	int EdgeColor ;
+	wchar_t String[ LOG_MAXLENGTH ] ;
+	int Addr ;
+	int StrLength ;
 
 	if( LogData.LogInitializeFlag == FALSE )
 	{
@@ -1312,7 +1332,37 @@ extern int DrawLog( void )
 	EdgeColor = NS_GetColor( 0, 0, 0 ) ;
 	for( i = 0 ; i < StrHeight ; i ++ )
 	{
-		DrawStringToHandle_WCHAR_T( DrawX , DrawY + i * FontSize , LogData.LogString[ i ] , _WCSLEN( LogData.LogString[ i ] ) , Color, FontHandle , EdgeColor, FALSE ) ;
+		DrawXTemp = DrawX ;
+		Addr = 0 ;
+		StrLength = 0 ;
+		Color     = LogData.LogStringColor[ i ][ Addr ][ 0 ] ;
+		EdgeColor = LogData.LogStringColor[ i ][ Addr ][ 1 ] ;
+		while( LogData.LogString[ i ][ Addr ] != L'\0' )
+		{
+			if( Color     != LogData.LogStringColor[ i ][ Addr ][ 0 ] ||
+				EdgeColor != LogData.LogStringColor[ i ][ Addr ][ 1 ] )
+			{
+				String[ StrLength ] = L'\0' ;
+				DrawStringToHandle_WCHAR_T( DrawXTemp , DrawY + i * FontSize , String , StrLength , Color, FontHandle , EdgeColor, FALSE ) ;
+				DrawXTemp += GetDrawStringWidthToHandle_WCHAR_T( String, 0, StrLength, FontHandle, FALSE ) ;
+				StrLength = 0 ;
+				Color     = LogData.LogStringColor[ i ][ Addr ][ 0 ] ;
+				EdgeColor = LogData.LogStringColor[ i ][ Addr ][ 1 ] ;
+			}
+			String[ StrLength ] = LogData.LogString[ i ][ Addr ] ;
+			StrLength ++ ;
+			Addr ++ ;
+		}
+
+		if( StrLength > 0 )
+		{
+			String[ StrLength ] = L'\0' ;
+			DrawStringToHandle_WCHAR_T( DrawXTemp , DrawY + i * FontSize , String , StrLength , Color, FontHandle , EdgeColor, FALSE ) ;
+			DrawXTemp += GetDrawStringWidthToHandle_WCHAR_T( String, 0, StrLength, FontHandle, FALSE ) ;
+			StrLength = 0 ;
+		}
+
+//		DrawStringToHandle_WCHAR_T( DrawX , DrawY + i * FontSize , LogData.LogString[ i ] , _WCSLEN( LogData.LogString[ i ] ) , Color, FontHandle , EdgeColor, FALSE ) ;
 	}
 
 	// 終了
@@ -1463,6 +1513,18 @@ extern int NS_clsDx( void )
 
 	// ログ出力フラグを倒す
 	LogData.LogDrawFlag = FALSE ;
+
+	// 終了
+	return 0 ;
+}
+
+// printf や puts で表示する文字列の色を指定する
+extern int NS_setPrintColorDx( int Color, int EdgeColor )
+{
+	// 色情報を保存する
+	LogData.LogCharColorEnable = TRUE ;
+	LogData.LogCharColor[ 0 ] = Color ;
+	LogData.LogCharColor[ 1 ] = EdgeColor ;
 
 	// 終了
 	return 0 ;

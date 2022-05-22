@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字列入力プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -3053,14 +3053,14 @@ extern int InputStringToCustom_WCHAR_T(
 	// 画面を保存するためのメモリを確保
 	DrawWidth			= DrawRect.right  - DrawRect.left ;
 	DrawHeight			= DrawRect.bottom - DrawRect.top ; 
-	ScreenGraphFront	= MakeGraph( ScreenWidth, ScreenHeight ) ;
-	ScreenGraphBack		= MakeGraph( ScreenWidth, ScreenHeight ) ;
+	ScreenGraphFront	= MakeGraph( ScreenWidth, ScreenHeight, FALSE ) ;
+	ScreenGraphBack		= MakeGraph( ScreenWidth, ScreenHeight, FALSE ) ;
 	SetDrawScreen( DX_SCREEN_FRONT ) ;
 	SetDrawArea( 0, 0, ScreenWidth, ScreenHeight ) ;
-	GetDrawScreenGraph( 0, 0, ScreenWidth, ScreenHeight, ScreenGraphFront ) ;
+	GetDrawScreenGraph( 0, 0, ScreenWidth, ScreenHeight, ScreenGraphFront, TRUE ) ;
 	SetDrawScreen( DX_SCREEN_BACK ) ;
 	SetDrawArea( 0, 0, ScreenWidth, ScreenHeight ) ;
-	GetDrawScreenGraph( 0, 0, ScreenWidth, ScreenHeight, ScreenGraphBack ) ;
+	GetDrawScreenGraph( 0, 0, ScreenWidth, ScreenHeight, ScreenGraphBack, TRUE ) ;
 
 	// 文字入力用バッファの確保
 //	if( ( Buffer = ( wchar_t * )DXCALLOC( BufLength + 1 ) ) == NULL ) return -1 ;
@@ -3126,8 +3126,8 @@ extern int InputStringToCustom_WCHAR_T(
 
 	// グラフィックデータを消す
 	DeleteKeyInput( InputHandle ) ;
-	DeleteGraph( ScreenGraphFront ) ;
-	DeleteGraph( ScreenGraphBack ) ;
+	DeleteGraph( ScreenGraphFront, FALSE ) ;
+	DeleteGraph( ScreenGraphBack, FALSE ) ;
 
 	// 描画設定情報を元に戻す
 	Graphics_DrawSetting_SetScreenDrawSettingInfo( &ScreenDrawSettingInfo ) ;
@@ -3145,7 +3145,7 @@ extern int InputStringToCustom_WCHAR_T(
 // 文字列の入力取得
 extern int NS_KeyInputString( int x , int y , size_t CharMaxLength , TCHAR *StrBuffer , int CancelValidFlag )
 {
-	return NS_InputStringToCustom( x , y , CharMaxLength , StrBuffer , CancelValidFlag , FALSE , FALSE, FALSE ) ;
+	return NS_InputStringToCustom( x , y , CharMaxLength , StrBuffer , CancelValidFlag , FALSE , FALSE, FALSE, FALSE, TRUE ) ;
 }
 
 // 文字列の入力取得
@@ -3157,7 +3157,7 @@ extern int KeyInputString_WCHAR_T( int x , int y , size_t CharMaxLength , wchar_
 // 半角文字列のみの入力取得
 extern int NS_KeyInputSingleCharString( int x , int y , size_t CharMaxLength , TCHAR *StrBuffer , int CancelValidFlag )
 {
-	return NS_InputStringToCustom( x , y, CharMaxLength , StrBuffer , CancelValidFlag , TRUE , FALSE, FALSE ) ;
+	return NS_InputStringToCustom( x , y, CharMaxLength , StrBuffer , CancelValidFlag , TRUE , FALSE, FALSE, FALSE, TRUE ) ;
 }
 
 // 半角文字列のみの入力取得
@@ -4885,7 +4885,8 @@ DEFAULTCHARADD:
 					Input->Point + CharLen  <= Input->StrLength )
 				{
 					// バッファに空きがない時の処理
-					while( StrLength2 + CharLen2 > Input->MaxStrLength )
+					while( StrLength2   + CharLen2 > Input->MaxStrLength ||
+						   Input->Point + CharLen  > Input->MaxStrLength )
 					{
 						int Pos, CLen = 0 ;
 
@@ -4996,10 +4997,10 @@ extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCand
 	// カーソル点滅処理
 	if( CharBuf.CBrinkFlag == TRUE )
 	{
-		if( NS_GetNowCount() - CharBuf.CBrinkCount > CharBuf.CBrinkWait )
+		if( NS_GetNowCount( FALSE ) - CharBuf.CBrinkCount > CharBuf.CBrinkWait )
 		{
 			CharBuf.CBrinkDrawFlag = CharBuf.CBrinkDrawFlag == TRUE ? FALSE : TRUE ;
-			CharBuf.CBrinkCount = NS_GetNowCount() ;
+			CharBuf.CBrinkCount = NS_GetNowCount( FALSE ) ;
 		}
 	}
 	else
@@ -5235,7 +5236,7 @@ static int Conv_char_Pos_To_wchar_t_Pos( const wchar_t *wchar_str, int char_pos 
 	}
 
 	wchar_count = 0 ;
-	for( i = 0 ; i < char_pos ; )
+	for( i = 0 ; i < char_pos && wchar_str[ wchar_count ] != 0; )
 	{
 		int SrcCharBytes ;
 		DWORD CharCode = GetCharCode( ( char * )&wchar_str[ wchar_count ], WCHAR_T_CHARCODEFORMAT, &SrcCharBytes ) ;
@@ -5359,7 +5360,7 @@ extern int NS_SetKeyInputCursorBrinkFlag( int Flag )
 // キー入力時のカーソル点滅処理のカウンタをリセット
 static int ResetKeyInputCursorBrinkCount( void )
 {
-	CharBuf.CBrinkCount = NS_GetNowCount() ;
+	CharBuf.CBrinkCount = NS_GetNowCount( FALSE ) ;
 	CharBuf.CBrinkDrawFlag = TRUE ;
 	
 	// 終了
@@ -5591,12 +5592,17 @@ extern int NS_SetKeyInputCursorPosition( int Position, int InputHandle )
 	if( KEYHCHK( InputHandle, Input ) ) return -1 ;
 
 	if( Position < 0                ) Position = 0 ;
-	if( Position > Input->StrLength ) Position = Input->StrLength ;
 
 	// UNICODE 以外の場合は、マルチバイト文字列としての文字位置を設定する
 #ifdef UNICODE
+
+	if( Position > Input->StrLength ) Position = Input->StrLength ;
 	Input->Point = Position ;
+
 #else // UNICODE
+	int SelectLength_char = Conv_wchar_t_Pos_To_char_Pos( Input->Buffer, Input->StrLength ) ;
+	if( Position > SelectLength_char ) Position = SelectLength_char ;
+
 	Input->Point = Conv_char_Pos_To_wchar_t_Pos( Input->Buffer, Position ) ;
 #endif // UNICODE
 

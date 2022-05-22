@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		非同期読み込み処理プログラムヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -45,6 +45,7 @@ struct ASYNCLOADDATA_COMMON
 {
 	int						Index ;								// 非同期読み込みデータの配列番号
 	int						Run ;								// 読み込み処理を開始しているかどうか
+	volatile int			*DeleteOneSetAddr ;					// 削除される時に 1 を代入するアドレス
 	int						StartTime ;							// データを登録した際の時間
 	void					( *ProcessFunction )( struct ASYNCLOADDATA_COMMON *Data ) ;
 	BYTE					Data[ 4 ] ;
@@ -81,17 +82,20 @@ struct ASYNCLOADDATA
 	int						ThreadEndRequestFlag ;							// 非同期読み込み処理の終了を促すフラグ
 	int						ThreadNum ;										// 非同期読み込み処理を行うスレッドの数
 	int						ThreadMaxResumeNum ;							// 非同期読み込み処理を同時に行うスレッドの数
-	ASYNCLOADTHREADINFO		Thread[ ASYNCLOADTHREAD_MAXNUM ] ;				// 非同期読み込み処理を行うスレッドの情報
+	ASYNCLOADTHREADINFO		Thread[ ASYNCLOADTHREAD_MAXNUM + 1 ] ;			// 非同期読み込み処理を行うスレッドの情報
 	volatile int			ThreadResumeNum ;								// 動作している非同期読み込みスレッドの数
 	DX_CRITICAL_SECTION		CriticalSection ;								// 非同期読み込み処理全般( 非同期読み込みスレッドへのメッセージ＋非同期読み込みデータアクセス時使用 )で使用するクリティカルセクション
 
-	ASYNCLOAD_MAINTHREAD_REQUESTINFO	*MainThreadRequestInfo[ ASYNCLOADTHREAD_MAXNUM ] ;		// メインスレッドへの処理依頼
+	ASYNCLOAD_MAINTHREAD_REQUESTINFO	*MainThreadRequestInfo[ ASYNCLOADTHREAD_MAXNUM + 1 ] ;	// メインスレッドへの処理依頼
 	volatile int						MainThreadRequestInfoNum ;								// メインスレッドへの処理依頼の数
 	volatile int						MainThreadRequestSuspendThreadNum ;						// メインスレッドへの処理依頼をしているから止まっているスレッドの数
 
 	ASYNCLOADDATA_COMMON	*Data[ ASYNCLOADDATA_MAXNUM ] ;					// 非同期読み込みデータのポインタ配列へのポインタ
 	int						DataNum ;										// 非同期読み込みデータの数
 	int						DataArea ;										// 非同期読み込みデータがある範囲
+
+	volatile int			MainThread_RunDataIndex_Enable ;				// メインスレッドから実行を指定された非同期読み込みデータのインデックスが有効かどうか
+	volatile int			MainThread_RunDataIndex ;						// メインスレッドから実行を指定された非同期読み込みデータのインデックス
 } ;
 
 // 内部大域変数宣言 --------------------------------------------------------------
@@ -130,6 +134,7 @@ extern	float		GetASyncLoadParamFloat( BYTE *Data, int *Addr ) ;								// 非同期
 extern	wchar_t *	GetASyncLoadParamString( BYTE *Data, int *Addr ) ;								// 非同期読み込みデータのパラメータから文字列パラメータを取得
 extern	int			AddASyncLoadData( ASYNCLOADDATA_COMMON *ASyncData ) ;							// 非同期読み込みデータを追加する
 extern	int			DeleteASyncLoadData( int DeleteIndex, int MainThread = FALSE ) ;				// 指定の非同期読み込みデータを削除する
+extern	int			MainThreadProcessASyncLoadData( int Index ) ;									// 指定の非同期読み込みデータをメインスレッドで実行する、メインスレッドでのみ使用可能( 戻り値  0:正常終了  -1:エラー )
 extern	int			ProcessASyncLoad( int ThreadNumber ) ;											// 非同期読み込みの処理を行う
 extern	int			CheckMainThread( void ) ;														// 現在のスレッドがメインスレッドかどうかを取得する( TRUE:メインスレッド  FALSE:それ以外のスレッド )
 

@@ -2,7 +2,7 @@
 //
 //		ＤＸライブラリ　ムービー再生処理用プログラム
 //
-//				Ver 3.22c
+//				Ver 3.23 
 //
 // ----------------------------------------------------------------------------
 
@@ -138,13 +138,13 @@ extern int TerminateMovieHandle( HANDLEINFO *HandleInfo )
 #ifndef DX_NON_FILTER
 	if( Movie->YGrHandle >= 0 )
 	{
-		NS_DeleteGraph( Movie->YGrHandle ) ;
+		NS_DeleteGraph( Movie->YGrHandle, FALSE ) ;
 		Movie->YGrHandle = -1 ;
 	}
 
 	if( Movie->UVGrHandle >= 0 )
 	{
-		NS_DeleteGraph( Movie->UVGrHandle ) ;
+		NS_DeleteGraph( Movie->UVGrHandle, FALSE ) ;
 		Movie->UVGrHandle = -1 ;
 	}
 #endif // DX_NON_FILTER
@@ -172,7 +172,7 @@ extern int TerminateMovieHandle( HANDLEINFO *HandleInfo )
 		}
 
 #ifndef DX_NON_SOUND
-		NS_DeleteSoundMem( Movie->TheoraVorbisHandle ) ;
+		NS_DeleteSoundMem( Movie->TheoraVorbisHandle, FALSE ) ;
 		Movie->TheoraVorbisHandle = 0 ;
 #endif // DX_NON_SOUND
 		Movie->TheoraHandle = 0 ;
@@ -440,10 +440,10 @@ extern int PlayMovie_( int MovieHandle, int PlayType, int SysPlay )
 		THEORADECODE_INFO Info ;
 
 		// 再生開始時の時間を取得
-//		Movie->TheoraPlayTime = NS_GetNowHiPerformanceCount() ;
+//		Movie->TheoraPlayTime = NS_GetNowHiPerformanceCount( FALSE ) ;
 
 		// 再生開始時の時間を取得
-		Movie->TheoraPrevTimeCount = NS_GetNowHiPerformanceCount() ;
+		Movie->TheoraPrevTimeCount = NS_GetNowHiPerformanceCount( FALSE ) ;
 
 		// 再生時間をセット
 		TheoraDecode_GetInfo( Movie->TheoraHandle, &Info ) ;
@@ -582,7 +582,7 @@ extern int SeekMovie( int MovieHandle, int Time )
 		TheoraDecode_SeekToTime( Movie->TheoraHandle, Time * 1000 ) ;
 
 		// 再生開始タイムを変更する
-//		Movie->TheoraPlayTime = NS_GetNowHiPerformanceCount() ;
+//		Movie->TheoraPlayTime = NS_GetNowHiPerformanceCount( FALSE ) ;
 		TheoraDecode_GetInfo( Movie->TheoraHandle, &Info ) ;
 		CurFrame = TheoraDecode_GetCurrentFrame( Movie->TheoraHandle ) ;
 		Movie->TheoraPlayNowTime = _DTOL( 1000000.0 / Movie->TheoraFrameRate * CurFrame ) ;
@@ -852,7 +852,7 @@ extern int SeekMovieToFrame( int MovieHandle, int Frame )
 		TheoraDecode_SeekToFrame( Movie->TheoraHandle, Frame ) ;
 
 		// 再生開始タイムを変更する
-//		Movie->TheoraPlayTime = NS_GetNowHiPerformanceCount() ;
+//		Movie->TheoraPlayTime = NS_GetNowHiPerformanceCount( FALSE ) ;
 		TheoraDecode_GetInfo( Movie->TheoraHandle, &Info ) ;
 		CurFrame = TheoraDecode_GetCurrentFrame( Movie->TheoraHandle ) ;
 		Movie->TheoraPlayNowTime = _DTOL( 1000000.0 / Movie->TheoraFrameRate * CurFrame ) ;
@@ -867,7 +867,7 @@ extern int SeekMovieToFrame( int MovieHandle, int Frame )
 		NS_SetSoundCurrentTime( _DTOL( Frame * 1000 / Movie->TheoraFrameRate ), Movie->TheoraVorbisHandle ) ;
 		if( Movie->PlayFlag )
 		{
-			NS_PlaySoundMem( Movie->TheoraVorbisHandle, FALSE ) ;
+			NS_PlaySoundMem( Movie->TheoraVorbisHandle, FALSE, TRUE ) ;
 		}
 #endif // DX_NON_SOUND
 	}
@@ -984,7 +984,7 @@ extern int UpdateMovie( int MovieHandle, int AlwaysFlag )
 				LONGLONG Temp64_1, Temp64_2 ;
 				DWORD Temp128[ 4 ] ;
 
-				NowTime = NS_GetNowHiPerformanceCount() ;
+				NowTime = NS_GetNowHiPerformanceCount( FALSE ) ;
 
 				// 再生済み時間を進める
 				if( Movie->TheoraPlaySpeedRate < 0.999999999 || Movie->TheoraPlaySpeedRate > 1.0000000001 )
@@ -1052,7 +1052,7 @@ extern int UpdateMovie( int MovieHandle, int AlwaysFlag )
 					// ループする場合で、再生タイプが動画基準の場合はサウンドも再度再生を開始する
 					if( Movie->TheoraLoopType == 0 )
 					{
-						NS_PlaySoundMem( Movie->TheoraVorbisHandle, DX_PLAYTYPE_BACK ) ;
+						NS_PlaySoundMem( Movie->TheoraVorbisHandle, DX_PLAYTYPE_BACK, TRUE ) ;
 					}
 #endif // DX_NON_SOUND
 				}
@@ -1163,7 +1163,7 @@ extern int DisableMovieAll( void )
 					TheoraDecode_GetInfo( Movie->TheoraHandle, &Info ) ;
 
 					// 今の再生時間分フレームを進める
-					NowTime = NS_GetNowHiPerformanceCount() ;
+					NowTime = NS_GetNowHiPerformanceCount( FALSE ) ;
 					NowFrame = _DTOL( ( double )( ( NowTime - Movie->TheoraPlayTime ) * Movie->TheoraFrameRate ) / 1000000 ) ;
 					CurFrame = TheoraDecode_GetCurrentFrame( Movie->TheoraHandle ) ;
 					if( CurFrame != NowFrame )
@@ -1253,7 +1253,7 @@ extern int RestoreMovieAll( void )
 					THEORADECODE_INFO Info ;
 
 					// 再生開始時の時間を取得
-					Movie->TheoraPlayTime = NS_GetNowHiPerformanceCount() ;
+					Movie->TheoraPlayTime = NS_GetNowHiPerformanceCount( FALSE ) ;
 
 					// 既に再生済みのフレーム数分だけ前に再生したことにする
 					TheoraDecode_GetInfo( Movie->TheoraHandle, &Info ) ;

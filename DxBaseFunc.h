@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準関数の互換関数プログラムヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -705,7 +705,7 @@ __inline double _DABS( double Real )
 
 __inline int _DTOL( double Real )
 {
-#if !defined( DX_NON_INLINE_ASM ) && !defined( BC_COMPILER )
+#if ( !defined( DX_NON_INLINE_ASM ) && !defined( BC_COMPILER ) ) || ( defined( WINDOWS_DESKTOP_OS ) && !defined( _WIN64 ) && defined( _MSC_VER ) && _MSC_VER < 1700 )
 	DWORD Result ;
 	WORD STFlag, DSTFlag ;
 	__asm
@@ -727,7 +727,7 @@ __inline int _DTOL( double Real )
 
 __inline int _FTOL( float Real )
 {
-#if !defined( DX_NON_INLINE_ASM ) && !defined( BC_COMPILER )
+#if ( !defined( DX_NON_INLINE_ASM ) && !defined( BC_COMPILER ) ) || ( defined( WINDOWS_DESKTOP_OS ) && !defined( _WIN64 ) && defined( _MSC_VER ) && _MSC_VER < 1700 )
 	DWORD Result ;
 	WORD STFlag, DSTFlag ;
 	__asm

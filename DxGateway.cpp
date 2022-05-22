@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		内部との出入り口プログラムファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -907,6 +907,14 @@ extern int clsDx( void )
 	DXFUNC_END
 	return Result ;
 }
+extern int setPrintColorDx( int Color, int EdgeColor )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_setPrintColorDx( Color, EdgeColor ) ;
+	DXFUNC_END
+	return Result ;
+}
 
 #endif // DX_NON_PRINTF_DX
 
@@ -1342,6 +1350,14 @@ extern int GetPcInfo( TCHAR *OSString, TCHAR *DirectXString,
 	DXFUNC_END
 	return Result ;
 }
+extern int GetWindowOSVersion( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetWindowOSVersion() ;
+	DXFUNC_END
+	return Result ;
+}
 extern int GetUseMMXFlag( void )
 {
 	int Result ;
@@ -1530,11 +1546,21 @@ extern int SetActiveStateChangeCallBackFunction( int (*CallBackFunction)( int Ac
 	DXFUNC_END
 	return Result ;
 }
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern int SetWindowText( const TCHAR *WindowText )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_SetWindowText( WindowText ) ;
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern int SetWindowTextDX( const TCHAR *WindowText )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetWindowTextDX( WindowText ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -1911,6 +1937,14 @@ extern int SetWindowUserCloseEnableFlag( int Flag )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetUseBorderlessWindowFlag( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseBorderlessWindowFlag( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int SetDxLibEndPostQuitMessageFlag( int Flag )
 {
 	int Result ;
@@ -2106,6 +2140,30 @@ extern int SetASyncLoadFinishDeleteFlag( int Handle )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetASyncLoadFinishCallback( int Handle, void ( *Callback )( int Handle, void *Data ), void *Data )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetASyncLoadFinishCallback( Handle, Callback, Data ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int WaitHandleASyncLoad( int Handle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_WaitHandleASyncLoad( Handle ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int WaitHandleASyncLoadAll( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_WaitHandleASyncLoadAll() ;
+	DXFUNC_END
+	return Result ;
+}
 extern int GetASyncLoadNum( void )
 {
 	int Result ;
@@ -2248,11 +2306,11 @@ extern int DragFileInfoClear( void )
 	DXFUNC_END
 	return Result ;
 }
-extern int GetDragFilePath( TCHAR *FilePathBuffer )
+extern int GetDragFilePath( TCHAR *FilePathBuffer, int FilePathBufferBytes )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_GetDragFilePath( FilePathBuffer ) ;
+	Result = NS_GetDragFilePath( FilePathBuffer, FilePathBufferBytes ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -2742,11 +2800,21 @@ extern int ClearMenuItemSelect( void )
 	DXFUNC_END
 	return Result ;
 }
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern int GetMenuItemID( const TCHAR *ItemName ) 
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetMenuItemID( ItemName )  ;
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern int GetMenuItemIDDX( const TCHAR *ItemName ) 
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetMenuItemIDDX( ItemName )  ;
 	DXFUNC_END
 	return Result ;
 }
@@ -3053,6 +3121,12 @@ extern int WaitKey( void )
 	return Result ;
 }
 #endif // DX_NON_INPUT
+extern int SleepThread( int WaitTime )
+{
+	int Result ;
+	Result = NS_SleepThread( WaitTime ) ;
+	return Result ;
+}
 
 // カウンタ及び時刻取得系関数
 extern int GetNowCount( int UseRDTSCFlag  )
@@ -3177,6 +3251,40 @@ extern int SRand( int Seed )
 	DXFUNC_END
 	return Result ;
 }
+#ifndef DX_NON_MERSENNE_TWISTER
+extern DWORD_PTR CreateRandHandle( int Seed )
+{
+	DWORD_PTR Result ;
+	DXFUNC_BEGIN
+	Result = NS_CreateRandHandle( Seed ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DeleteRandHandle( DWORD_PTR RandHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DeleteRandHandle( RandHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SRandHandle( DWORD_PTR RandHandle, int Seed )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SRandHandle( RandHandle, Seed ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetRandHandle( DWORD_PTR RandHandle, int RandMax )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetRandHandle( RandHandle, RandMax ) ;
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_NON_MERSENNE_TWISTER
 
 // バッテリー関連
 extern int GetBatteryLifePercent( void )
@@ -4283,6 +4391,14 @@ extern int GetHitKeyStateAll( char *KeyStateBuf )
 	DXFUNC_END
 	return Result ;
 }
+extern int GetHitKeyStateAllEx( int *KeyStateArray )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetHitKeyStateAllEx( KeyStateArray ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int GetJoypadNum( void )
 {
 	int Result ;
@@ -4483,6 +4599,15 @@ extern	int GetJoypadName( int InputType, TCHAR *InstanceNameBuffer, TCHAR *Produ
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetJoypadName( InputType, InstanceNameBuffer, ProductNameBuffer );
+	DXFUNC_END
+	return Result ;
+}
+
+extern int GetJoypadType( int PadIndex )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetJoypadType( PadIndex );
 	DXFUNC_END
 	return Result ;
 }
@@ -4710,11 +4835,21 @@ extern int ResetGraphPalette( int GrHandle )
 }
 
 // 簡易グラフィック関係関数
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern unsigned int GetPixel( int x, int y )
 {
 	unsigned int Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetPixel( x, y ) ;
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern unsigned int GetPixelDX( int x, int y )
+{
+	unsigned int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetPixelDX( x, y ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -5103,6 +5238,7 @@ extern const COLORDATA * GetTexColorData( int AlphaCh, int AlphaTest, int ColorB
 	DXFUNC_END
 	return Result ;
 }
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern const COLORDATA * GetTexColorData( const IMAGEFORMATDESC *Format )
 {
 	const COLORDATA * Result ;
@@ -5116,6 +5252,23 @@ extern const COLORDATA * GetTexColorData( int FormatIndex )
 	const COLORDATA * Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetTexColorData(  FormatIndex ) ;
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern const COLORDATA * GetTexColorData2( const IMAGEFORMATDESC *Format )
+{
+	const COLORDATA * Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetTexColorData2( Format ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern const COLORDATA * GetTexColorData3( int FormatIndex )
+{
+	const COLORDATA * Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetTexColorData3(  FormatIndex ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -5614,12 +5767,24 @@ extern int DrawChipMap( int Sx, int Sy, int XNum, int YNum, const int *MapData, 
 	DXFUNC_END
 	return Result ;
 }
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern int DrawChipMap( int MapWidth, int MapHeight, const int *MapData, int ChipTypeNum, const int *ChipGrHandle, int TransFlag,
 										int MapDrawPointX, int MapDrawPointY, int MapDrawWidth, int MapDrawHeight, int ScreenX, int ScreenY )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_DrawChipMap(  MapWidth,  MapHeight,  MapData,  ChipTypeNum, ChipGrHandle,  TransFlag,
+										 MapDrawPointX,  MapDrawPointY,  MapDrawWidth,  MapDrawHeight,  ScreenX,  ScreenY ) ;
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern int DrawChipMap2( int MapWidth, int MapHeight, const int *MapData, int ChipTypeNum, const int *ChipGrHandle, int TransFlag,
+										int MapDrawPointX, int MapDrawPointY, int MapDrawWidth, int MapDrawHeight, int ScreenX, int ScreenY )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawChipMap2(  MapWidth,  MapHeight,  MapData,  ChipTypeNum, ChipGrHandle,  TransFlag,
 										 MapDrawPointX,  MapDrawPointY,  MapDrawWidth,  MapDrawHeight,  ScreenX,  ScreenY ) ;
 	DXFUNC_END
 	return Result ;
@@ -5714,11 +5879,27 @@ extern int DrawRectGraphF( float DestX, float DestY, int SrcX, int SrcY, int Wid
 	DXFUNC_END
 	return Result ;
 }
+extern int DrawRectGraphF2( float DestX, float DestY, float SrcX, float SrcY, float  Width, float  Height, int GraphHandle, int TransFlag, int ReverseXFlag, int ReverseYFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawRectGraphF2(  DestX,  DestY,  SrcX,  SrcY,  Width,  Height,  GraphHandle,  TransFlag,  ReverseXFlag, ReverseYFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int DrawRectExtendGraphF( float DestX1, float DestY1, float DestX2, float DestY2, int SrcX, int SrcY, int SrcWidth, int SrcHeight, int GraphHandle, int TransFlag )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_DrawRectExtendGraphF(  DestX1,  DestY1,  DestX2,  DestY2,  SrcX,  SrcY,  SrcWidth,  SrcHeight,  GraphHandle,  TransFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawRectExtendGraphF2( float DestX1, float DestY1, float DestX2, float DestY2, float SrcX, float SrcY, float SrcWidth, float SrcHeight, int GraphHandle, int TransFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawRectExtendGraphF2(  DestX1,  DestY1,  DestX2,  DestY2,  SrcX,  SrcY,  SrcWidth,  SrcHeight,  GraphHandle,  TransFlag ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -5783,6 +5964,14 @@ extern int DrawBlendGraph( int x, int y, int GrHandle, int TransFlag, int BlendG
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_DrawBlendGraph( x, y, GrHandle, TransFlag,  BlendGraph,  BorderParam,  BorderRange ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawBlendGraphF( float x, float y, int GrHandle, int TransFlag, int BlendGraph, int BorderParam, int BorderRange )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawBlendGraphF( x, y, GrHandle, TransFlag, BlendGraph, BorderParam, BorderRange ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -6001,11 +6190,21 @@ extern int DrawPolygon3DBase( const VERTEX_3D *Vertex, int VertexNum, int Primit
 	DXFUNC_END
 	return Result ;
 }
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern int DrawPolygon3D( const VERTEX_3D *Vertex, int PolygonNum, int GrHandle, int TransFlag )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_DrawPolygon3D( Vertex, PolygonNum, GrHandle, TransFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern int DrawPolygon3D2( const VERTEX_3D *Vertex, int PolygonNum, int GrHandle, int TransFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawPolygon3D2( Vertex, PolygonNum, GrHandle, TransFlag ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -8655,11 +8854,35 @@ extern int SetDrawBright( int RedBright, int GreenBright, int BlueBright )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetDrawAddColor( int Red, int Green, int Blue )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetDrawAddColor( Red, Green, Blue ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetDrawAddColor( int *Red, int *Green, int *Blue )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetDrawAddColor( Red, Green, Blue ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int SetIgnoreDrawGraphColor( int EnableFlag )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_SetIgnoreDrawGraphColor( EnableFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetIgnoreDrawGraphColor( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetIgnoreDrawGraphColor() ;
 	DXFUNC_END
 	return Result ;
 }
@@ -9187,27 +9410,11 @@ extern int LoadGraphToResource( int ResourceID )
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadGraphToResourceWithStrLen( const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength )
-{
-	int Result ;
-	DXFUNC_BEGIN
-	Result = NS_LoadGraphToResourceWithStrLen( ResourceName, ResourceNameLength, ResourceType, ResourceTypeLength ) ;
-	DXFUNC_END
-	return Result ;
-}
 extern int LoadDivGraphToResource( int ResourceID, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_LoadDivGraphToResource( ResourceID, AllNum, XNum,  YNum,  XSize,  YSize, HandleArray ) ;
-	DXFUNC_END
-	return Result ;
-}
-extern int LoadDivGraphToResourceWithStrLen( const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray )
-{
-	int Result ;
-	DXFUNC_BEGIN
-	Result = NS_LoadDivGraphToResourceWithStrLen( ResourceName, ResourceNameLength, ResourceType, ResourceTypeLength, AllNum, XNum, YNum,   XSize,  YSize, HandleArray ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -9219,11 +9426,101 @@ extern int LoadDivGraphFToResource( int ResourceID, int AllNum, int XNum, int YN
 	DXFUNC_END
 	return Result ;
 }
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
+extern int LoadGraphToResource( const TCHAR *ResourceName, const TCHAR *ResourceType )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_LoadGraphToResource( ResourceName, ResourceType ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int LoadGraphToResourceWithStrLen( const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_LoadGraphToResourceWithStrLen( ResourceName, ResourceNameLength, ResourceType, ResourceTypeLength ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int LoadDivGraphToResource( const TCHAR *ResourceName, const TCHAR *ResourceType, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_LoadDivGraphToResource( ResourceName, ResourceType, AllNum, XNum,  YNum,  XSize,  YSize, HandleArray ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int LoadDivGraphToResourceWithStrLen( const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_LoadDivGraphToResourceWithStrLen( ResourceName, ResourceNameLength, ResourceType, ResourceTypeLength, AllNum, XNum, YNum,   XSize,  YSize, HandleArray ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int LoadDivGraphFToResource( const TCHAR *ResourceName, const TCHAR *ResourceType, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_LoadDivGraphFToResource( ResourceName, ResourceType, AllNum, XNum,  YNum,  XSize,  YSize, HandleArray ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int LoadDivGraphFToResourceWithStrLen( const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_LoadDivGraphFToResourceWithStrLen( ResourceName, ResourceNameLength, ResourceType, ResourceTypeLength, AllNum, XNum, YNum, XSize, YSize, HandleArray ) ;
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern int LoadGraphToResource2( const TCHAR *ResourceName, const TCHAR *ResourceType )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_LoadGraphToResource2( ResourceName, ResourceType ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int LoadGraphToResourceWithStrLen2( const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_LoadGraphToResourceWithStrLen2( ResourceName, ResourceNameLength, ResourceType, ResourceTypeLength ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int LoadDivGraphToResource2( const TCHAR *ResourceName, const TCHAR *ResourceType, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_LoadDivGraphToResource2( ResourceName, ResourceType, AllNum, XNum,  YNum,  XSize,  YSize, HandleArray ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int LoadDivGraphToResourceWithStrLen2( const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_LoadDivGraphToResourceWithStrLen2( ResourceName, ResourceNameLength, ResourceType, ResourceTypeLength, AllNum, XNum, YNum,   XSize,  YSize, HandleArray ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int LoadDivGraphFToResource2( const TCHAR *ResourceName, const TCHAR *ResourceType, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_LoadDivGraphFToResource2( ResourceName, ResourceType, AllNum, XNum,  YNum,  XSize,  YSize, HandleArray ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int LoadDivGraphFToResourceWithStrLen2( const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_LoadDivGraphFToResourceWithStrLen2( ResourceName, ResourceNameLength, ResourceType, ResourceTypeLength, AllNum, XNum, YNum, XSize, YSize, HandleArray ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -9237,30 +9534,6 @@ extern int CreateGraphFromID3D11Texture2D( const void *pID3D11Texture2D )
 	return Result ;
 }
 #endif // DX_NON_DIRECT3D11
-extern int LoadGraphToResource( const TCHAR *ResourceName, const TCHAR *ResourceType )
-{
-	int Result ;
-	DXFUNC_BEGIN
-	Result = NS_LoadGraphToResource( ResourceName, ResourceType ) ;
-	DXFUNC_END
-	return Result ;
-}
-extern int LoadDivGraphToResource( const TCHAR *ResourceName, const TCHAR *ResourceType, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray )
-{
-	int Result ;
-	DXFUNC_BEGIN
-	Result = NS_LoadDivGraphToResource( ResourceName, ResourceType, AllNum, XNum,  YNum,  XSize,  YSize, HandleArray ) ;
-	DXFUNC_END
-	return Result ;
-}
-extern int LoadDivGraphFToResource( const TCHAR *ResourceName, const TCHAR *ResourceType, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray )
-{
-	int Result ;
-	DXFUNC_BEGIN
-	Result = NS_LoadDivGraphFToResource( ResourceName, ResourceType, AllNum, XNum,  YNum,  XSize,  YSize, HandleArray ) ;
-	DXFUNC_END
-	return Result ;
-}
 
 extern	const void*	GetGraphID3D11Texture2D( int GrHandle )
 {
@@ -10099,99 +10372,99 @@ extern int LoadReverseGraphWithStrLen( const TCHAR *FileName, size_t FileNameLen
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadDivGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag )
+extern int LoadDivGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag , int XStride, int YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadDivGraph( FileName, AllNum,  XNum,  YNum,  XSize,  YSize, HandleArray,  NotUse3DFlag ) ;
+	Result = NS_LoadDivGraph( FileName, AllNum,  XNum,  YNum,  XSize,  YSize, HandleArray,  NotUse3DFlag , XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadDivGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag )
+extern int LoadDivGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag , int XStride, int YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadDivGraphWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, XSize, YSize, HandleArray, NotUse3DFlag ) ;
+	Result = NS_LoadDivGraphWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, XSize, YSize, HandleArray, NotUse3DFlag , XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadDivGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag )
+extern int LoadDivGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag , float XStride, float YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadDivGraphF( FileName, AllNum,  XNum,  YNum,  XSize,  YSize, HandleArray,  NotUse3DFlag ) ;
+	Result = NS_LoadDivGraphF( FileName, AllNum,  XNum,  YNum,  XSize,  YSize, HandleArray,  NotUse3DFlag , XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadDivGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag )
+extern int LoadDivGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag, float XStride, float YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadDivGraphFWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, XSize, YSize, HandleArray, NotUse3DFlag ) ;
+	Result = NS_LoadDivGraphFWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, XSize, YSize, HandleArray, NotUse3DFlag, XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadDivBmpToGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray, int TextureFlag, int ReverseFlag )
+extern int LoadDivBmpToGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray, int TextureFlag, int ReverseFlag, int XStride, int YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadDivBmpToGraph( FileName, AllNum,  XNum,  YNum,  SizeX,  SizeY,  HandleArray,  TextureFlag,  ReverseFlag ) ;
+	Result = NS_LoadDivBmpToGraph( FileName, AllNum,  XNum,  YNum,  SizeX,  SizeY,  HandleArray,  TextureFlag,  ReverseFlag, XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadDivBmpToGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag, int ReverseFlag )
+extern int LoadDivBmpToGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag, int ReverseFlag, int XStride, int YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadDivBmpToGraphWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+	Result = NS_LoadDivBmpToGraphWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag, XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadDivBmpToGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag )
+extern int LoadDivBmpToGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag, float XStride, float YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadDivBmpToGraphF( FileName, AllNum,  XNum,  YNum,  SizeX,  SizeY,  HandleArray,  TextureFlag,  ReverseFlag ) ;
+	Result = NS_LoadDivBmpToGraphF( FileName, AllNum,  XNum,  YNum,  SizeX,  SizeY,  HandleArray,  TextureFlag,  ReverseFlag, XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadDivBmpToGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag )
+extern int LoadDivBmpToGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag, float XStride, float YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadDivBmpToGraphFWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+	Result = NS_LoadDivBmpToGraphFWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag, XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadReverseDivGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag )
+extern int LoadReverseDivGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag, int XStride, int YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadReverseDivGraph( FileName, AllNum,  XNum,  YNum,  XSize,  YSize, HandleArray,  NotUse3DFlag ) ;
+	Result = NS_LoadReverseDivGraph( FileName, AllNum,  XNum,  YNum,  XSize,  YSize, HandleArray,  NotUse3DFlag, XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadReverseDivGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag )
+extern int LoadReverseDivGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag, int XStride, int YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadReverseDivGraphWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, XSize, YSize, HandleArray, NotUse3DFlag ) ;
+	Result = NS_LoadReverseDivGraphWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, XSize, YSize, HandleArray, NotUse3DFlag, XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadReverseDivGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag )
+extern int LoadReverseDivGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag, float XStride, float YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadReverseDivGraphF( FileName, AllNum,  XNum,  YNum,  XSize,  YSize, HandleArray,  NotUse3DFlag ) ;
+	Result = NS_LoadReverseDivGraphF( FileName, AllNum,  XNum,  YNum,  XSize,  YSize, HandleArray,  NotUse3DFlag, XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int LoadReverseDivGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag )
+extern int LoadReverseDivGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag, float XStride, float YStride )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_LoadReverseDivGraphFWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, XSize, YSize, HandleArray, NotUse3DFlag ) ;
+	Result = NS_LoadReverseDivGraphFWithStrLen( FileName, FileNameLength, AllNum, XNum, YNum, XSize, YSize, HandleArray, NotUse3DFlag, XStride, YStride ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -10316,27 +10589,11 @@ extern int CreateGraphFromGraphImage( const BASEIMAGE *RGBImage, int TextureFlag
 	DXFUNC_END
 	return Result ;
 }
-extern int CreateGraphFromGraphImage( const BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int TextureFlag , int ReverseFlag )
-{
-	int Result ;
-	DXFUNC_BEGIN
-	Result = NS_CreateGraphFromGraphImage( RGBImage, AlphaBaseImage, TextureFlag , ReverseFlag ) ;
-	DXFUNC_END
-	return Result ;
-}
 extern int ReCreateGraphFromGraphImage( const BASEIMAGE *RGBImage, int GrHandle, int TextureFlag , int ReverseFlag )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_ReCreateGraphFromGraphImage( RGBImage, GrHandle, TextureFlag , ReverseFlag ) ;
-	DXFUNC_END
-	return Result ;
-}
-extern int ReCreateGraphFromGraphImage( const BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int GrHandle, int TextureFlag , int ReverseFlag )
-{
-	int Result ;
-	DXFUNC_BEGIN
-	Result = NS_ReCreateGraphFromGraphImage( RGBImage, AlphaBaseImage, GrHandle, TextureFlag , ReverseFlag ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -10356,22 +10613,6 @@ extern int CreateDivGraphFFromGraphImage( BASEIMAGE *RGBImage, int AllNum, int X
 	DXFUNC_END
 	return Result ;
 }
-extern int CreateDivGraphFromGraphImage( BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray,int TextureFlag , int ReverseFlag  )
-{
-	int Result ;
-	DXFUNC_BEGIN
-	Result = NS_CreateDivGraphFromGraphImage( RGBImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray,TextureFlag , ReverseFlag ) ;
-	DXFUNC_END
-	return Result ;
-}
-extern int CreateDivGraphFFromGraphImage( BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray,int TextureFlag , int ReverseFlag  )
-{
-	int Result ;
-	DXFUNC_BEGIN
-	Result = NS_CreateDivGraphFFromGraphImage( RGBImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray,TextureFlag , ReverseFlag ) ;
-	DXFUNC_END
-	return Result ;
-}
 extern int ReCreateDivGraphFromGraphImage( BASEIMAGE *RGBImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, const int *HandleArray,int TextureFlag , int ReverseFlag )
 {
 	int Result ;
@@ -10388,6 +10629,39 @@ extern int ReCreateDivGraphFFromGraphImage( BASEIMAGE *RGBImage, int AllNum, int
 	DXFUNC_END
 	return Result ;
 }
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
+extern int CreateGraphFromGraphImage( const BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int TextureFlag , int ReverseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_CreateGraphFromGraphImage( RGBImage, AlphaBaseImage, TextureFlag , ReverseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int ReCreateGraphFromGraphImage( const BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int GrHandle, int TextureFlag , int ReverseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_ReCreateGraphFromGraphImage( RGBImage, AlphaBaseImage, GrHandle, TextureFlag , ReverseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int CreateDivGraphFromGraphImage( BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray,int TextureFlag , int ReverseFlag  )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_CreateDivGraphFromGraphImage( RGBImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray,TextureFlag , ReverseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int CreateDivGraphFFromGraphImage( BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray,int TextureFlag , int ReverseFlag  )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_CreateDivGraphFFromGraphImage( RGBImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray,TextureFlag , ReverseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int ReCreateDivGraphFromGraphImage( BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, const int *HandleArray,int TextureFlag , int ReverseFlag )
 {
 	int Result ;
@@ -10401,6 +10675,55 @@ extern int ReCreateDivGraphFFromGraphImage( BASEIMAGE *RGBImage, const BASEIMAGE
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_ReCreateDivGraphFFromGraphImage( RGBImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray,TextureFlag , ReverseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern int CreateGraphFromGraphImage2( const BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int TextureFlag , int ReverseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_CreateGraphFromGraphImage2( RGBImage, AlphaBaseImage, TextureFlag , ReverseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int ReCreateGraphFromGraphImage2( const BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int GrHandle, int TextureFlag , int ReverseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_ReCreateGraphFromGraphImage2( RGBImage, AlphaBaseImage, GrHandle, TextureFlag , ReverseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int CreateDivGraphFromGraphImage2( BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray,int TextureFlag , int ReverseFlag  )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_CreateDivGraphFromGraphImage2( RGBImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray,TextureFlag , ReverseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int CreateDivGraphFFromGraphImage2( BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray,int TextureFlag , int ReverseFlag  )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_CreateDivGraphFFromGraphImage2( RGBImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray,TextureFlag , ReverseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int ReCreateDivGraphFromGraphImage2( BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, const int *HandleArray,int TextureFlag , int ReverseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_ReCreateDivGraphFromGraphImage2( RGBImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray,TextureFlag , ReverseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int ReCreateDivGraphFFromGraphImage2( BASEIMAGE *RGBImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray,int TextureFlag , int ReverseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_ReCreateDivGraphFFromGraphImage2( RGBImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray,TextureFlag , ReverseFlag ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -11832,6 +12155,22 @@ extern int GetCreateGraphChannelBitDepth( void )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetCreateGraphChannelBitDepth( ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetCreateGraphInitGraphDelete( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetCreateGraphInitGraphDelete( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetCreateGraphInitGraphDelete( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetCreateGraphInitGraphDelete() ;
 	DXFUNC_END
 	return Result ;
 }
@@ -14165,6 +14504,30 @@ extern	int		MakeXRGB8ColorSoftImage( int SizeX, int SizeY )
 	DXFUNC_END
 	return Result ;
 }
+extern	int		MakeRGBA8ColorSoftImage( int SizeX, int SizeY )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MakeRGBA8ColorSoftImage(  SizeX,  SizeY ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern	int		MakeABGR8ColorSoftImage( int SizeX, int SizeY )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MakeABGR8ColorSoftImage(  SizeX,  SizeY ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern	int		MakeBGRA8ColorSoftImage( int SizeX, int SizeY )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MakeBGRA8ColorSoftImage(  SizeX,  SizeY ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern	int		MakeARGB4ColorSoftImage( int SizeX, int SizeY )
 {
 	int Result ;
@@ -14218,6 +14581,14 @@ extern	int		MakePAL8ColorSoftImage( int SizeX, int SizeY, int UseAlpha )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_MakePAL8ColorSoftImage(  SizeX,  SizeY,  UseAlpha ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern	int		MakeColorDataSoftImage( int SizeX, int SizeY, const COLORDATA *ColorData )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MakeColorDataSoftImage( SizeX, SizeY, ColorData ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -14544,6 +14915,22 @@ extern	int			ReverseSoftImage( int SIHandle )
 	DXFUNC_END
 	return Result ;
 }
+extern	int			ConvertPremulAlphaSoftImage( int SIHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_ConvertPremulAlphaSoftImage( SIHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern	int			ConvertInterpAlphaSoftImage( int SIHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_ConvertInterpAlphaSoftImage( SIHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern	int			CheckPixelAlphaSoftImage( int SIHandle )
 {
 	int Result ;
@@ -14764,6 +15151,30 @@ extern	int		CreateXRGB8ColorBaseImage( int SizeX, int SizeY, BASEIMAGE *BaseImag
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_CreateXRGB8ColorBaseImage(  SizeX,  SizeY, BaseImage );
+	DXFUNC_END
+	return Result ;
+}
+extern	int		CreateRGBA8ColorBaseImage( int SizeX, int SizeY, BASEIMAGE *BaseImage )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_CreateRGBA8ColorBaseImage(  SizeX,  SizeY, BaseImage );
+	DXFUNC_END
+	return Result ;
+}
+extern	int		CreateABGR8ColorBaseImage( int SizeX, int SizeY, BASEIMAGE *BaseImage )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_CreateABGR8ColorBaseImage(  SizeX,  SizeY, BaseImage );
+	DXFUNC_END
+	return Result ;
+}
+extern	int		CreateBGRA8ColorBaseImage( int SizeX, int SizeY, BASEIMAGE *BaseImage )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_CreateBGRA8ColorBaseImage(  SizeX,  SizeY, BaseImage );
 	DXFUNC_END
 	return Result ;
 }
@@ -15067,11 +15478,21 @@ extern	int		BltBaseImage( int SrcX, int SrcY, int SrcSizeX, int SrcSizeY, int De
 	DXFUNC_END
 	return Result ;
 }
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern	int		BltBaseImage( int DestX, int DestY, BASEIMAGE *SrcBaseImage, BASEIMAGE *DestBaseImage )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_BltBaseImage(  DestX, DestY, SrcBaseImage, DestBaseImage );
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern	int		BltBaseImage2( int DestX, int DestY, BASEIMAGE *SrcBaseImage, BASEIMAGE *DestBaseImage )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_BltBaseImage2(  DestX, DestY, SrcBaseImage, DestBaseImage );
 	DXFUNC_END
 	return Result ;
 }
@@ -15320,6 +15741,24 @@ extern int CreateARGB8ColorData( COLORDATA * ColorDataBuf )
 {
 	int Result ;
 	Result = NS_CreateARGB8ColorData( ColorDataBuf ) ;
+	return Result ;
+}
+extern int CreateRGBA8ColorData( COLORDATA *ColorDataBuf )
+{
+	int Result ;
+	Result = NS_CreateRGBA8ColorData( ColorDataBuf ) ;
+	return Result ;
+}
+extern int CreateABGR8ColorData( COLORDATA *ColorDataBuf )
+{
+	int Result ;
+	Result = NS_CreateABGR8ColorData( ColorDataBuf ) ;
+	return Result ;
+}
+extern int CreateBGRA8ColorData( COLORDATA *ColorDataBuf )
+{
+	int Result ;
+	Result = NS_CreateBGRA8ColorData( ColorDataBuf ) ;
 	return Result ;
 }
 extern int CreateARGB4ColorData( COLORDATA * ColorDataBuf )
@@ -16580,6 +17019,7 @@ extern int PlaySoundFileWithStrLen(	const TCHAR *FileName, size_t FileNameLength
 	DXFUNC_END
 	return Result ;
 }
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern int PlaySound( const TCHAR *FileName, int PlayType )
 {
 	int Result ;
@@ -16593,6 +17033,23 @@ extern int PlaySoundWithStrLen( const TCHAR *FileName, size_t FileNameLength, in
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_PlaySoundWithStrLen( FileName, FileNameLength, PlayType ) ;
+	DXFUNC_END
+	return Result ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern int PlaySoundDX( const TCHAR *FileName, int PlayType )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_PlaySoundDX( FileName, PlayType ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int PlaySoundDXWithStrLen( const TCHAR *FileName, size_t FileNameLength, int PlayType )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_PlaySoundDXWithStrLen( FileName, FileNameLength, PlayType ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -17041,11 +17498,11 @@ extern	int			ResetSoftSoundPlayer( int SSoundPlayerHandle )
 	DXFUNC_END
 	return Result ;
 }
-extern	int			GetStockDataLengthSoftSoundPlayer( int SSoundPlayerHandle )
+extern	int			GetStockDataLengthSoftSoundPlayer( int SSoundPlayerHandle, int *SoundBufferStockSamples )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_GetStockDataLengthSoftSoundPlayer( SSoundPlayerHandle ) ;
+	Result = NS_GetStockDataLengthSoftSoundPlayer( SSoundPlayerHandle, SoundBufferStockSamples ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -17742,6 +18199,14 @@ extern int MV1SetUseOrigShader( int UseFlag )
 	DXFUNC_END
 	return Result ;
 }
+extern int MV1SetDrawMode( int DrawMode /* DX_MV1_DRAWMODE_NORMAL 等 */ )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1SetDrawMode( DrawMode ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int MV1SetSemiTransDrawMode( int DrawMode )
 {
 	int Result ;
@@ -18158,6 +18623,14 @@ extern int MV1PhysicsResetState( int MHandle )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_MV1PhysicsResetState( MHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int MV1SetPrioritizePhysicsOverAnimFlag( int MHandle, int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1SetPrioritizePhysicsOverAnimFlag( MHandle, Flag ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -18999,6 +19472,34 @@ extern int MV1GetMaterialDrawAlphaTestParam( int MHandle, int MaterialIndex )
 	DXFUNC_END
 	return Result ;
 }
+
+extern int MV1SetMaterialDrawAddColorAll( int MHandle, int Red, int Green, int Blue )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1SetMaterialDrawAddColorAll(  MHandle,  Red,  Green,  Blue ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int MV1SetMaterialDrawAddColor( int MHandle, int MaterialIndex, int Red, int Green, int Blue )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1SetMaterialDrawAddColor(  MHandle,  MaterialIndex,  Red,  Green,  Blue ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int MV1GetMaterialDrawAddColor( int MHandle, int MaterialIndex, int *Red, int *Green, int *Blue )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1GetMaterialDrawAddColor(  MHandle,  MaterialIndex, Red, Green, Blue ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 
 extern int MV1SetMaterialTypeAll( int MHandle, int Type )
 {

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字コード関係プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // ----------------------------------------------------------------------------
 
@@ -316,10 +316,10 @@ static void SetupCharCodeCP936TableInfo( void )
 			Src[ 0 ] = ( char )( ( i & 0xff00 ) >> 8 ) ;
 			Src[ 1 ] = ( char )( i & 0xff ) ;
 			Src[ 2 ] = 0 ;
-			if( ( ( BYTE )Src[ 0 ] & 80 ) == 0 )
-			{
-				continue ;
-			}
+//			if( ( ( BYTE )Src[ 0 ] & 80 ) == 0 )
+//			{
+//				continue ;
+//			}
 		}
 
 		result = WinAPIData.Win32Func.MultiByteToWideCharFunc( 936, MB_ERR_INVALID_CHARS, Src, -1, Dest, 8 ) ;
@@ -364,10 +364,10 @@ static void SetupCharCodeCP949TableInfo( void )
 			Src[ 0 ] = ( char )( ( i & 0xff00 ) >> 8 ) ;
 			Src[ 1 ] = ( char )( i & 0xff ) ;
 			Src[ 2 ] = 0 ;
-			if( ( ( BYTE )Src[ 0 ] & 80 ) == 0 )
-			{
-				continue ;
-			}
+//			if( ( ( BYTE )Src[ 0 ] & 80 ) == 0 )
+//			{
+//				continue ;
+//			}
 		}
 
 		result = WinAPIData.Win32Func.MultiByteToWideCharFunc( 949, MB_ERR_INVALID_CHARS, Src, -1, Dest, 8 ) ;
@@ -412,10 +412,10 @@ static void SetupCharCodeCP950TableInfo( void )
 			Src[ 0 ] = ( char )( ( i & 0xff00 ) >> 8 ) ;
 			Src[ 1 ] = ( char )( i & 0xff ) ;
 			Src[ 2 ] = 0 ;
-			if( ( ( BYTE )Src[ 0 ] & 80 ) == 0 )
-			{
-				continue ;
-			}
+//			if( ( ( BYTE )Src[ 0 ] & 80 ) == 0 )
+//			{
+//				continue ;
+//			}
 		}
 
 		result = WinAPIData.Win32Func.MultiByteToWideCharFunc( 950, MB_ERR_INVALID_CHARS, Src, -1, Dest, 8 ) ;
@@ -7561,7 +7561,7 @@ extern int CL_vsnprintf( int CharCodeFormat, int IsWChar, int CharCharCodeFormat
 							{
 								int DataSize ;
 
-								DataSize = ( ( int )CL_strlen( UseCharCodeFormat, ParamP ) + 1 ) * GetCharCodeFormatUnitSize( UseCharCodeFormat ) ;
+								DataSize = ( ( int )CL_strlen( UseCharCodeFormat, ParamP ) + 1 ) * GetCharCodeFormatUnitSize( CharCodeFormat ) * 8 ;
 								if( ( size_t )DataSize > sizeof( ParamPBuffer ) )
 								{
 									ParamPTempBuffer = ( char * )DXALLOC( DataSize ) ;

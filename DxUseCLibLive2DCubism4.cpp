@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Live2D Cubism4 関係
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -8826,7 +8826,7 @@ void D_CubismOffscreenFrame_DxLib::Clear(float r, float g, float b, float a)
 	SetDrawScreen( _GraphHandle ) ;
 	GetBackgroundColor( &lBackupBackgroundColorR, &lBackupBackgroundColorG, &lBackupBackgroundColorB, &lBackupBackgroundColorA ) ;
 	SetBackgroundColor( (int)( r * 255.0f ), (int)( g * 255.0f ), (int)( b * 255.0f ), (int)( a * 255.0f ) ) ;
-	ClearDrawScreen() ;
+	ClearDrawScreen( NULL ) ;
 	SetBackgroundColor( lBackupBackgroundColorR, lBackupBackgroundColorG, lBackupBackgroundColorB, lBackupBackgroundColorA ) ;
 	SetDrawScreen( lBackupDrawScreen ) ;
 }
@@ -8856,7 +8856,7 @@ bool D_CubismOffscreenFrame_DxLib::CreateOffscreenFrame(DWORD displayBufferWidth
 
 void D_CubismOffscreenFrame_DxLib::DestroyOffscreenFrame()
 {
-	DeleteGraph( _GraphHandle ) ;
+	DeleteGraph( _GraphHandle, FALSE ) ;
 	_GraphHandle = -1 ;
 }
 
@@ -10541,7 +10541,7 @@ D_LAppModel::~D_LAppModel()
 	// テクスチャの開放 
 	for( DWORD d = 0; d < _bindTextureId.GetSize(); d++ )
 	{
-		DeleteGraph( _bindTextureId[ d ] );
+		DeleteGraph( _bindTextureId[ d ], FALSE );
 	}
 	_bindTextureId.Clear();
 }

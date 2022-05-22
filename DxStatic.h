@@ -2,7 +2,7 @@
 //
 //		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ@“à•”g—pŠÖ˜A—pƒwƒbƒ_ƒtƒ@ƒCƒ‹
 //
-//				Ver 3.22c
+//				Ver 3.23 
 //
 // ----------------------------------------------------------------------------
 
@@ -291,6 +291,7 @@ extern	int			NS_WaitTimer( int WaitTime ) ;												// w’è‚ÌŠÔ‚¾‚¯ˆ—‚ğ‚Æ
 #ifndef DX_NON_INPUT
 extern	int			NS_WaitKey( void ) ;														// ƒL[‚Ì“ü—Í‘Ò‚¿
 #endif // DX_NON_INPUT
+extern	int			NS_SleepThread( int WaitTime ) ;											// w’è‚ÌŠÔ‚¾‚¯ƒXƒŒƒbƒh‚ğ–°‚ç‚¹‚é
 
 // ƒJƒEƒ“ƒ^‹y‚Ñæ“¾ŒnŠÖ”
 extern	int			NS_GetNowCount(				int UseRDTSCFlag = FALSE ) ;				// ƒ~ƒŠ•b’PˆÊ‚Ì¸“x‚ğ‚ÂƒJƒEƒ“ƒ^‚ÌŒ»İ’l‚ğ“¾‚é
@@ -310,6 +311,15 @@ extern	int			NS_GetDateTime(				DATEDATA *DateBuf ) ;						// Œ»İ‚ğæ“¾‚·‚é
 // —”æ“¾
 extern	int			NS_GetRand( int RandMax ) ;												// —”‚ğæ“¾‚·‚é( RandMax : •Ô‚Á‚Ä—ˆ‚é’l‚ÌÅ‘å’l )
 extern	int			NS_SRand(	 int Seed ) ;													// —”‚Ì‰Šú’l‚ğİ’è‚·‚é
+
+#ifndef DX_NON_MERSENNE_TWISTER
+
+extern	DWORD_PTR	NS_CreateRandHandle( int Seed ) ;											// —”ƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( –ß‚è’l@0ˆÈŠO:—”ƒnƒ“ƒhƒ‹@0:ƒGƒ‰[ )
+extern	int			NS_DeleteRandHandle( DWORD_PTR RandHandle ) ;								// —”ƒnƒ“ƒhƒ‹‚ğíœ‚·‚é
+extern	int			NS_SRandHandle( DWORD_PTR RandHandle, int Seed ) ;							// —”ƒnƒ“ƒhƒ‹‚Ì‰Šú’l‚ğÄİ’è‚·‚é
+extern	int			NS_GetRandHandle( DWORD_PTR RandHandle, int RandMax ) ;						// —”ƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä—”‚ğæ“¾‚·‚é( RandMax : •Ô‚Á‚Ä—ˆ‚é’l‚ÌÅ‘å’l )
+
+#endif // DX_NON_MERSENNE_TWISTER
 
 // ƒoƒbƒeƒŠ[ŠÖ˜A
 extern	int			NS_GetBatteryLifePercent( void ) ;											// “d’r‚Ìc—Ê‚ğ % ‚Åæ“¾‚·‚é( –ß‚è’lF 100=ƒtƒ‹[“dó‘Ô  0=[“dc—Ê–³‚µ )
@@ -383,6 +393,7 @@ extern 	int			NS_printfDx(			 const TCHAR *FormatString , ... ) ;				// ŠÈˆÕ‰æ–Ê
 extern	int			NS_putsDx(				 const TCHAR *String, int NewLine = TRUE ) ;		// puts ‚Æ“¯‚¶ˆø”‚Å‰æ–Ê‚É•¶š—ñ‚ğ•\¦‚·‚é‚½‚ß‚ÌŠÖ”
 extern	int			NS_putsDxWithStrLen(	 const TCHAR *String, size_t StringLength, int NewLine = TRUE ) ;	// puts ‚Æ“¯‚¶ˆø”‚Å‰æ–Ê‚É•¶š—ñ‚ğ•\¦‚·‚é‚½‚ß‚ÌŠÖ”
 extern	int			NS_clsDx(				 void ) ;											// ŠÈˆÕ‰æ–Êo—Í‚ğƒNƒŠƒA‚·‚é
+extern	int			NS_setPrintColorDx(     int Color, int EdgeColor = 0 ) ;													// printf ‚â puts ‚Å•\¦‚·‚é•¶š—ñ‚ÌF‚ğw’è‚·‚é
 #endif
 
 #endif // DX_NON_LOG
@@ -411,6 +422,9 @@ extern	int			NS_GetUseASyncLoadFlag(			void ) ;									// “Ç‚İ‚İˆ—Œn‚ÌŠÖ”‚
 extern	int			NS_CheckHandleASyncLoad(		int Handle ) ;								// ƒnƒ“ƒhƒ‹‚Ì”ñ“¯Šú“Ç‚İ‚İ‚ªŠ®—¹‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( TRUE:‚Ü‚¾Š®—¹‚µ‚Ä‚¢‚È‚¢  FALSE:Š®—¹‚µ‚Ä‚¢‚é  -1:ƒGƒ‰[ )
 extern	int			NS_GetHandleASyncLoadResult(	int Handle ) ;								// ƒnƒ“ƒhƒ‹‚Ì”ñ“¯Šú“Ç‚İ‚İˆ—‚Ì–ß‚è’l‚ğæ“¾‚·‚é( ”ñ“¯Šú“Ç‚İ‚İ’†‚Ìê‡‚Íˆê‚Â‘O‚Ì”ñ“¯Šú“Ç‚İ‚İˆ—‚Ì–ß‚è’l‚ª•Ô‚Á‚Ä‚«‚Ü‚· )
 extern	int			NS_SetASyncLoadFinishDeleteFlag(	int Handle ) ;								// ƒnƒ“ƒhƒ‹‚Ì”ñ“¯Šú“Ç‚İ‚İˆ—‚ªŠ®—¹‚µ‚½‚çƒnƒ“ƒhƒ‹‚ğíœ‚·‚éƒtƒ‰ƒO‚ğ—§‚Ä‚é
+extern	int			NS_SetASyncLoadFinishCallback(	int Handle, void ( *Callback )( int Handle, void *Data ), void *Data ) ;	// ƒnƒ“ƒhƒ‹‚Ì”ñ“¯Šú“Ç‚İ‚İˆ—‚ªŠ®—¹‚µ‚½‚çŒÄ‚Î‚ê‚éŠÖ”‚ğƒZƒbƒg‚·‚é
+extern	int			NS_WaitHandleASyncLoad(					int Handle ) ;								// w’è‚Ìƒnƒ“ƒhƒ‹‚Ì”ñ“¯Šú“Ç‚İ‚İˆ—‚ªI—¹‚·‚é‚Ü‚Å‘Ò‚Â
+extern	int			NS_WaitHandleASyncLoadAll(				void ) ;									// ‘S‚Ä‚Ì”ñ“¯Šú“Ç‚İ‚İƒf[ƒ^‚ª“Ç‚İ‚İI‚í‚é‚Ü‚Å‘Ò‚Â
 extern	int			NS_GetASyncLoadNum(			void ) ;									// ”ñ“¯Šú“Ç‚İ‚İ’†‚Ìˆ—‚Ì”‚ğæ“¾‚·‚é
 extern	int			NS_SetASyncLoadThreadNum(		int ThreadNum ) ;							// ”ñ“¯Šú“Ç‚İ‚İˆ—‚ğs‚¤ƒXƒŒƒbƒh‚Ì”‚ğİ’è‚·‚é
 
@@ -471,6 +485,7 @@ extern	int			NS_GetMouseDispFlag(				void ) ;												// ƒ}ƒEƒX‚ğ•\¦‚·‚é‚©‚Ç
 extern	int			NS_GetAlwaysRunFlag(				void ) ;												// ƒEƒCƒ“ƒhƒE‚ªƒAƒNƒeƒBƒu‚Å‚Í‚È‚¢ó‘Ô‚Å‚àˆ—‚ğ‘±s‚·‚é‚©Aƒtƒ‰ƒO‚ğæ“¾‚·‚é
 extern	int			NS__GetSystemInfo(					int *DxLibVer , int *DirectXVer , int *WindowsVer ) ;	// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Æ DirectX ‚Ìƒo[ƒWƒ‡ƒ“‚Æ Windows ‚Ìƒo[ƒWƒ‡ƒ“‚ğ“¾‚é
 extern	int			NS_GetPcInfo(						TCHAR *OSString , TCHAR *DirectXString , TCHAR *CPUString , int *CPUSpeed /* ’PˆÊMHz */ , double *FreeMemorySize /* ’PˆÊMByte */ , double *TotalMemorySize , TCHAR *VideoDriverFileName , TCHAR *VideoDriverString , double *FreeVideoMemorySize /* ’PˆÊMByte */ , double *TotalVideoMemorySize ) ;	// ‚o‚b‚Ìî•ñ‚ğ“¾‚é
+extern	int			NS_GetWindowOSVersion(				void ) ;												// WindowsOS‚Ìƒo[ƒWƒ‡ƒ“‚ğæ“¾‚·‚é( –ß‚è’l : DX_WINDOWSVERSION_10 ‚È‚Ç )
 extern	int			NS_GetUseMMXFlag(					void ) ;												// ‚l‚l‚w‚ªg‚¦‚é‚©‚Ç‚¤‚©‚Ìî•ñ‚ğ“¾‚é
 extern	int			NS_GetUseSSEFlag(					void ) ;												// ‚r‚r‚d‚ªg‚¦‚é‚©‚Ç‚¤‚©‚Ìî•ñ‚ğ“¾‚é
 extern	int			NS_GetUseSSE2Flag(					void ) ;												// ‚r‚r‚d‚Q‚ªg‚¦‚é‚©‚Ç‚¤‚©‚Ìî•ñ‚ğ“¾‚é
@@ -497,7 +512,10 @@ extern	int			NS_LoadPauseGraph(							const TCHAR *FileName ) ;															//
 extern	int			NS_LoadPauseGraphWithStrLen(				const TCHAR *FileName, size_t FileNameLength ) ;									// ƒAƒNƒeƒBƒuƒEƒCƒ“ƒhƒE‚ª‘¼‚Ìƒ\ƒtƒg‚ÉˆÚ‚Á‚Ä‚¢‚éÛ‚É•\¦‚·‚é‰æ‘œ‚ğƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İ‚Ş( FileName ‚É NULL ‚ğ“n‚·‚±‚Æ‚Å‰ğœ)
 extern	int			NS_LoadPauseGraphFromMem(					const void *MemImage , int MemImageSize ) ;												// ƒAƒNƒeƒBƒuƒEƒCƒ“ƒhƒE‚ª‘¼‚Ìƒ\ƒtƒg‚ÉˆÚ‚Á‚Ä‚¢‚éÛ‚É•\¦‚·‚é‰æ‘œ‚Ìƒ[ƒh(NULL ‚Å‰ğœ)
 extern	int			NS_SetActiveStateChangeCallBackFunction(	int (* CallBackFunction )( int ActiveState , void *UserData ) , void *UserData ) ;	// ƒEƒCƒ“ƒhƒE‚ÌƒAƒNƒeƒBƒuó‘Ô‚É•Ï‰»‚ª‚ ‚Á‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”‚ğƒZƒbƒg‚·‚é( NULL ‚ğƒZƒbƒg‚·‚é‚ÆŒÄ‚Î‚ê‚È‚­‚È‚é )
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern	int			NS_SetWindowText(							const TCHAR *WindowText ) ;															// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚ÌƒEƒCƒ“ƒhƒEƒeƒLƒXƒg‚ğ•ÏX‚·‚é
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern	int			NS_SetWindowTextDX(						const TCHAR *WindowText                          ) ;								// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚ÌƒEƒCƒ“ƒhƒEƒeƒLƒXƒg‚ğ•ÏX‚·‚é
 extern	int			NS_SetWindowTextWithStrLen(				const TCHAR *WindowText, size_t WindowTextLength ) ;								// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚ÌƒEƒCƒ“ƒhƒEƒeƒLƒXƒg‚ğ•ÏX‚·‚é
 extern	int			NS_SetMainWindowText(						const TCHAR *WindowText                          ) ;								// SetWindowText ‚Ì•Ê–¼ŠÖ”
 extern	int			NS_SetMainWindowTextWithStrLen(			const TCHAR *WindowText, size_t WindowTextLength ) ;								// SetWindowText ‚Ì•Ê–¼ŠÖ”
@@ -534,6 +552,7 @@ extern	int			NS_SetDialogBoxHandle(						HWND WindowHandle ) ;																//
 extern	int			NS_SetWindowVisibleFlag(					int Flag ) ;																		// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
 extern	int			NS_SetWindowMinimizeFlag(					int Flag ) ;																		// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚ğÅ¬‰»‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
 extern	int			NS_SetWindowUserCloseEnableFlag(			int Flag ) ;																		// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚Ì~ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Éƒ‰ƒCƒuƒ‰ƒŠ‚ª©“®“I‚ÉƒEƒCƒ“ƒhƒE‚ğ•Â‚¶‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
+extern	int			NS_SetUseBorderlessWindowFlag(				int Flag ) ;																		// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚ğƒ{[ƒ_[ƒŒƒXƒEƒBƒ“ƒhƒE‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:ƒ{[ƒ_[ƒŒƒXƒEƒBƒ“ƒhƒE@FALSE:’ÊíƒEƒBƒ“ƒhƒE )
 extern	int			NS_SetDxLibEndPostQuitMessageFlag(			int Flag ) ;																		// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠI—¹‚É PostQuitMessage ‚ğŒÄ‚Ô‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
 extern	int			NS_SetUserWindow(							HWND WindowHandle ) ;																// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Åg—p‚·‚éƒEƒCƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹‚ğƒZƒbƒg‚·‚é(DxLib_Init ‚ğÀs‚·‚éˆÈ‘O‚Å‚Ì‚İ—LŒø)
 extern	int			NS_SetUserChildWindow(						HWND WindowHandle ) ;																// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Åg—p‚·‚é•\¦—p‚ÌqƒEƒCƒ“ƒhƒE‚Ìƒnƒ“ƒhƒ‹‚ğƒZƒbƒg‚·‚é(DxLib_Init ‚ğÀs‚·‚éˆÈ‘O‚Å‚Ì‚İ—LŒø)
@@ -549,7 +568,7 @@ extern	int			NS_SetWindows10_WM_CHAR_CancelTime(		int MilliSecond ) ;											
 // ƒhƒ‰ƒbƒO•ƒhƒƒbƒv‚³‚ê‚½ƒtƒ@ƒCƒ‹ŠÖŒW
 extern	int			NS_SetDragFileValidFlag(		int Flag ) ;											// ƒtƒ@ƒCƒ‹‚Ìƒhƒ‰ƒbƒO•ƒhƒƒbƒv‹@”\‚ğ—LŒø‚É‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
 extern	int			NS_DragFileInfoClear(			void ) ;												// ƒhƒ‰ƒbƒO•ƒhƒƒbƒv‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Ìî•ñ‚ğ‰Šú‰»‚·‚é
-extern	int			NS_GetDragFilePath(			TCHAR *FilePathBuffer ) ;								// ƒhƒ‰ƒbƒO•ƒhƒƒbƒv‚³‚ê‚½ƒtƒ@ƒCƒ‹–¼‚ğæ“¾‚·‚é( -1:æ“¾‚Å‚«‚È‚©‚Á‚½  0:æ“¾‚Å‚«‚½ )
+extern	int			NS_GetDragFilePath(			TCHAR *FilePathBuffer, int FilePathBufferBytes DEFAULTPARAM( = -1 ) ) ;								// ƒhƒ‰ƒbƒO•ƒhƒƒbƒv‚³‚ê‚½ƒtƒ@ƒCƒ‹–¼‚ğæ“¾‚·‚é( -1:æ“¾‚Å‚«‚È‚©‚Á‚½  0:æ“¾‚Å‚«‚½ )
 extern	int			NS_GetDragFileNum(				void ) ;												// ƒhƒ‰ƒbƒO•ƒhƒƒbƒv‚³‚ê‚½ƒtƒ@ƒCƒ‹‚Ì”‚ğæ“¾‚·‚é
 
 // ƒEƒCƒ“ƒhƒE•`‰æ—Ìˆæİ’èŒnŠÖ”
@@ -620,7 +639,10 @@ extern	int			NS_SetMenuItemMark_ID(			int ItemID, int Mark ) ;																		
 
 extern	int			NS_DeleteMenuItemAll(			void ) ;																							// ƒƒjƒ…[‚Ì‘S‚Ä‚Ì‘I‘ğ€–Ú‚ğíœ‚·‚é
 extern	int			NS_ClearMenuItemSelect(		void ) ;																							// ƒƒjƒ…[‚ª‘I‘ğ‚³‚ê‚½‚©‚Ç‚¤‚©‚Ìî•ñ‚ğ‰Šú‰»
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern	int			NS_GetMenuItemID(				const TCHAR *ItemName ) ;																			// ƒƒjƒ…[‚Ì€–Ú–¼‚©‚ç‚h‚c‚ğæ“¾‚·‚é
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern	int			NS_GetMenuItemIDDX(				const TCHAR *ItemName ) ;																			// ƒƒjƒ…[‚Ì€–Ú–¼‚©‚ç‚h‚c‚ğæ“¾‚·‚é
 extern	int			NS_GetMenuItemIDWithStrLen(			const TCHAR *ItemName, size_t ItemNameLength ) ;																	// ƒƒjƒ…[‚Ì€–Ú–¼‚©‚ç€–Ú¯•Ê”Ô†‚ğæ“¾‚·‚é
 extern	int			NS_GetMenuItemName(			int ItemID, TCHAR *NameBuffer ) ;																	// ƒƒjƒ…[‚Ì€–Ú–¼‚©‚ç‚h‚c‚ğæ“¾‚·‚é
 extern	int			NS_LoadMenuResource(			int MenuResourceID ) ;																				// ƒƒjƒ…[‚ğƒŠƒ\[ƒX‚©‚ç“Ç‚İ‚Ş
@@ -995,6 +1017,7 @@ extern	int			NS_GetWinSockLastError( void ) ;				// WinSock ‚ÅÅŒã‚É”­¶‚µ‚½ƒGƒ‰
 extern	int			NS_CheckHitKey(							int KeyCode ) ;															// ƒL[ƒ{[ƒh‚Ì‰Ÿ‰ºó‘Ô‚ğæ“¾‚·‚é
 extern	int			NS_CheckHitKeyAll(							int CheckType = DX_CHECKINPUT_ALL ) ;									// ‚Ç‚ê‚©ˆê‚Â‚Å‚àƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğæ“¾( ‰Ÿ‚³‚ê‚Ä‚¢‚½‚ç–ß‚è’l‚ª 0 ˆÈŠO‚É‚È‚é )
 extern	int			NS_GetHitKeyStateAll(						DX_CHAR *KeyStateBuf ) ;												// ‚·‚×‚Ä‚ÌƒL[‚Ì‰Ÿ‰ºó‘Ô‚ğæ“¾‚·‚é( KeyStateBuf:charŒ^256ŒÂ•ª‚Ì”z—ñ‚Ìæ“ªƒAƒhƒŒƒX )
+extern	int			NS_GetHitKeyStateAllEx(					int *KeyStateArray ) ;													// ‚·‚×‚Ä‚ÌƒL[‚Ì‰Ÿ‰ºó‘Ô‚ğæ“¾‚·‚é( KeyStateBuf:intŒ^256ŒÂ•ª‚Ì”z—ñ‚Ìæ“ªƒAƒhƒŒƒXA”z—ñ‚ÌŠe—v‘f‚Ìó‘Ô@0:‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢@1F‰Ÿ‚³‚ê‚½‚P‰ñ‚ß@2ˆÈãF‰Ÿ‚³‚ê‘±‚¯‚Ä‚¢‚é‰ñ”@-1F‰Ÿ‚³‚ê‚Ä—£‚³‚ê‚½‚P‰ñ‚ß@-2ˆÈ‰º:‰Ÿ‚³‚ê‚Ä—£‚³‚ê‚Ä‚©‚ç‚Ì‰ñ” )
 extern	int			NS_GetJoypadNum(							void ) ;																// ƒWƒ‡ƒCƒpƒbƒh‚ªÚ‘±‚³‚ê‚Ä‚¢‚é”‚ğæ“¾‚·‚é
 extern	int			NS_GetJoypadButtonNum(						int InputType ) ;														// ƒWƒ‡ƒCƒpƒbƒh‚Ìƒ{ƒ^ƒ“‚Ì”‚ğæ“¾‚·‚é
 extern	int			NS_GetJoypadInputState(					int InputType ) ;														// ƒWƒ‡ƒCƒpƒbƒh‚Ì“ü—Íó‘Ô‚ğæ“¾‚·‚é
@@ -1022,6 +1045,7 @@ extern	int			NS_SetUseXInputFlag(						int Flag ) ;															// Xbox360ƒRƒ“
 extern	int			NS_SetUseXboxControllerDirectInputFlag(	int Flag ) ;															// Xbox360ƒRƒ“ƒgƒ[ƒ‰‚â Xbox OneƒRƒ“ƒgƒ[ƒ‰‚ğ DirectInputƒRƒ“ƒgƒ[ƒ‰‚Æ‚µ‚Ä‚àŒŸo‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:DirectInputƒRƒ“ƒgƒ[ƒ‰‚Æ‚µ‚Ä‚àŒŸo‚·‚é  FALSE:DirectInputƒRƒ“ƒgƒ[ƒ‰‚Æ‚µ‚Ä‚ÍŒŸo‚µ‚È‚¢(ƒfƒtƒHƒ‹ƒg) )
 extern	int			NS_GetJoypadGUID(							int PadIndex, GUID *GuidInstanceBuffer, GUID *GuidProductBuffer ) ;		// ƒWƒ‡ƒCƒpƒbƒh‚Ì‚f‚tI‚c‚ğ“¾‚é
 extern	int			NS_GetJoypadName(							int InputType, TCHAR *InstanceNameBuffer, TCHAR *ProductNameBuffer ) ;	// ƒWƒ‡ƒCƒpƒbƒh‚ÌƒfƒoƒCƒX“o˜^–¼‚Æ»•i“o˜^–¼‚ğæ“¾‚·‚é
+extern	int			NS_GetJoypadType(							int PadIndex ) ;														// ƒWƒ‡ƒCƒpƒbƒh‚Ìƒ^ƒCƒv‚ğæ“¾‚·‚é( –ß‚è’lFƒWƒ‡ƒCƒpƒbƒhƒ^ƒCƒv( DX_PADTYPE_XBOX_360 ‚È‚Ç ) )
 extern	int			NS_ConvertKeyCodeToVirtualKey(				int KeyCode ) ;															// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒL[ƒR[ƒh( KEY_INPUT_A ‚È‚Ç )‚É‘Î‰‚·‚é Windows ‚Ì‰¼‘zƒL[ƒR[ƒh( VK_LEFT ‚È‚Ç ) ‚ğæ“¾‚·‚é( KeyCode:•ÏŠ·‚µ‚½‚¢‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒL[ƒR[ƒh@–ß‚è’lFWindows‚Ì‰¼‘zƒL[ƒR[ƒh )
 extern	int			NS_ConvertVirtualKeyToKeyCode(				int VirtualKey ) ;														//  Windows ‚Ì‰¼‘zƒL[ƒR[ƒh( VK_LEFT ‚È‚Ç ) ‚É‘Î‰‚·‚é‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒL[ƒR[ƒh( KEY_INPUT_A ‚È‚Ç )‚ğæ“¾‚·‚é( VirtualKey:•ÏŠ·‚µ‚½‚¢Windows‚Ì‰¼‘zƒL[ƒR[ƒh@–ß‚è’lF‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒL[ƒR[ƒh )
 #endif // WINDOWS_DESKTOP_OS
@@ -1087,30 +1111,38 @@ extern	int			NS_LoadGraph(							const TCHAR *FileName,                        i
 extern	int			NS_LoadGraphWithStrLen(				const TCHAR *FileName, size_t FileNameLength, int NotUse3DFlag = FALSE ) ;																							// ‰æ‘œƒtƒ@ƒCƒ‹‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_LoadReverseGraph(					const TCHAR *FileName,                        int NotUse3DFlag = FALSE ) ;																							// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ”½“]‚µ‚½‚à‚Ì‚ÅƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_LoadReverseGraphWithStrLen(			const TCHAR *FileName, size_t FileNameLength, int NotUse3DFlag = FALSE ) ;																							// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ”½“]‚µ‚½‚à‚Ì‚ÅƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadDivGraph(						const TCHAR *FileName,                        int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE ) ;				// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadDivGraphWithStrLen(				const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE ) ;				// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadDivGraphF(						const TCHAR *FileName,                        int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE ) ;				// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadDivGraphFWithStrLen(			const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE ) ;				// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadDivBmpToGraph(					const TCHAR *FileName,                        int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag, int ReverseFlag ) ;		// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadDivBmpToGraphWithStrLen(		const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag, int ReverseFlag ) ;		// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadDivBmpToGraphF(					const TCHAR *FileName,                        int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag ) ;		// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadDivBmpToGraphFWithStrLen(		const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag ) ;		// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadReverseDivGraph(				const TCHAR *FileName,                        int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE ) ;				// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ”½“]‚µ‚½‚à‚Ì‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadReverseDivGraphWithStrLen(		const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE ) ;				// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ”½“]‚µ‚½‚à‚Ì‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadReverseDivGraphF(				const TCHAR *FileName,                        int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE ) ;				// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ”½“]‚µ‚½‚à‚Ì‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_LoadReverseDivGraphFWithStrLen(		const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE ) ;				// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ”½“]‚µ‚½‚à‚Ì‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadDivGraph(						const TCHAR *FileName,                        int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag DEFAULTPARAM( = FALSE ) , int   XStride DEFAULTPARAM( = 0 ) , int   YStride DEFAULTPARAM( = 0 ) ) ;	// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadDivGraphWithStrLen(				const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag DEFAULTPARAM( = FALSE ) , int   XStride DEFAULTPARAM( = 0 ) , int   YStride DEFAULTPARAM( = 0 ) ) ;	// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadDivGraphF(						const TCHAR *FileName,                        int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag DEFAULTPARAM( = FALSE ) , float XStride DEFAULTPARAM( = 0 ) , float YStride DEFAULTPARAM( = 0 ) ) ;	// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadDivGraphFWithStrLen(			const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag DEFAULTPARAM( = FALSE ) , float XStride DEFAULTPARAM( = 0 ) , float YStride DEFAULTPARAM( = 0 ) ) ;	// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadDivBmpToGraph(					const TCHAR *FileName,                        int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag, int ReverseFlag , int   XStride DEFAULTPARAM( = 0 ) , int   YStride DEFAULTPARAM( = 0 ) ) ;			// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadDivBmpToGraphWithStrLen(		const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag, int ReverseFlag , int   XStride DEFAULTPARAM( = 0 ) , int   YStride DEFAULTPARAM( = 0 ) ) ;			// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadDivBmpToGraphF(					const TCHAR *FileName,                        int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag , float XStride DEFAULTPARAM( = 0 ) , float YStride DEFAULTPARAM( = 0 ) ) ;			// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadDivBmpToGraphFWithStrLen(		const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag , float XStride DEFAULTPARAM( = 0 ) , float YStride DEFAULTPARAM( = 0 ) ) ;			// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadReverseDivGraph(				const TCHAR *FileName,                        int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag DEFAULTPARAM( = FALSE ) , int   XStride DEFAULTPARAM( = 0 ) , int   YStride DEFAULTPARAM( = 0 ) ) ;	// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ”½“]‚µ‚½‚à‚Ì‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadReverseDivGraphWithStrLen(		const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag DEFAULTPARAM( = FALSE ) , int   XStride DEFAULTPARAM( = 0 ) , int   YStride DEFAULTPARAM( = 0 ) ) ;	// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ”½“]‚µ‚½‚à‚Ì‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadReverseDivGraphF(				const TCHAR *FileName,                        int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag DEFAULTPARAM( = FALSE ) , float XStride DEFAULTPARAM( = 0 ) , float YStride DEFAULTPARAM( = 0 ) ) ;	// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ”½“]‚µ‚½‚à‚Ì‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadReverseDivGraphFWithStrLen(		const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag DEFAULTPARAM( = FALSE ) , float XStride DEFAULTPARAM( = 0 ) , float YStride DEFAULTPARAM( = 0 ) ) ;	// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ”½“]‚µ‚½‚à‚Ì‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_LoadBlendGraph(						const TCHAR *FileName ) ;																																			// ‰æ‘œƒtƒ@ƒCƒ‹‚©‚çƒuƒŒƒ“ƒh—pƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_LoadBlendGraphWithStrLen(			const TCHAR *FileName, size_t FileNameLength ) ;																													// ‰æ‘œƒtƒ@ƒCƒ‹‚©‚çƒuƒŒƒ“ƒh—pƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 #ifdef WINDOWS_DESKTOP_OS
 extern	int			NS_LoadGraphToResource(			int ResourceID ) ;																													// ‰æ‘œƒŠƒ\[ƒX‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_LoadDivGraphToResource(			int ResourceID, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray ) ;										// ‰æ‘œƒŠƒ\[ƒX‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_LoadDivGraphFToResource(		int ResourceID, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray ) ;										// ‰æ‘œƒŠƒ\[ƒX‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( floatŒ^ )
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern	int			NS_LoadGraphToResource(			const TCHAR *ResourceName, const TCHAR *ResourceType ) ;																			// ‰æ‘œƒŠƒ\[ƒX‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_LoadGraphToResourceWithStrLen(		const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength ) ;																				// ‰æ‘œƒŠƒ\[ƒX‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_LoadDivGraphToResource(				const TCHAR *ResourceName,                            const TCHAR *ResourceType,                            int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray ) ;	// ‰æ‘œƒŠƒ\[ƒX‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_LoadDivGraphToResourceWithStrLen(	const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray ) ;	// ‰æ‘œƒŠƒ\[ƒX‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_LoadDivGraphFToResource(			const TCHAR *ResourceName,                            const TCHAR *ResourceType,                            int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray ) ;	// ‰æ‘œƒŠƒ\[ƒX‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( floatŒ^ )
 extern	int			NS_LoadDivGraphFToResourceWithStrLen(	const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray ) ;	// ‰æ‘œƒŠƒ\[ƒX‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( floatŒ^ )
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern	int			NS_LoadGraphToResource2(				const TCHAR *ResourceName,                            const TCHAR *ResourceType                            ) ;																				// ‰æ‘œƒŠƒ\[ƒX‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadGraphToResourceWithStrLen2(		const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength ) ;																				// ‰æ‘œƒŠƒ\[ƒX‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadDivGraphToResource2(			const TCHAR *ResourceName,                            const TCHAR *ResourceType,                            int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray ) ;	// ‰æ‘œƒŠƒ\[ƒX‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadDivGraphToResourceWithStrLen2(	const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray ) ;	// ‰æ‘œƒŠƒ\[ƒX‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_LoadDivGraphFToResource2(			const TCHAR *ResourceName,                            const TCHAR *ResourceType,                            int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray ) ;	// ‰æ‘œƒŠƒ\[ƒX‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( floatŒ^ )
+extern	int			NS_LoadDivGraphFToResourceWithStrLen2(	const TCHAR *ResourceName, size_t ResourceNameLength, const TCHAR *ResourceType, size_t ResourceTypeLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray ) ;	// ‰æ‘œƒŠƒ\[ƒX‚ğ•ªŠ„‚µ‚ÄƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( floatŒ^ )
 #ifndef DX_NON_DIRECT3D11
 extern	int			NS_CreateGraphFromID3D11Texture2D( const void *pID3D11Texture2D ) ;									// ID3D11Texture2D ‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 #endif // DX_NON_DIRECT3D11
@@ -1129,18 +1161,26 @@ extern	int			NS_CreateDivGraphFFromBmp(         const BITMAPINFO *RGBBmpInfo, co
 extern	int			NS_ReCreateDivGraphFromBmp(        const BITMAPINFO *RGBBmpInfo, const void *RGBBmpImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray,          int TextureFlag = TRUE , int ReverseFlag = FALSE , const BITMAPINFO *AlphaBmpInfo = NULL , const void *AlphaBmpImage = NULL ) ;	// ƒrƒbƒgƒ}ƒbƒvƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
 extern	int			NS_ReCreateDivGraphFFromBmp(       const BITMAPINFO *RGBBmpInfo, const void *RGBBmpImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray,          int TextureFlag = TRUE , int ReverseFlag = FALSE , const BITMAPINFO *AlphaBmpInfo = NULL , const void *AlphaBmpImage = NULL ) ;	// ƒrƒbƒgƒ}ƒbƒvƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é( float”Å )
 extern	int			NS_CreateDXGraph(					const BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage,                                                                                 int TextureFlag ) ;																									// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çƒTƒCƒY‚ğŠ„‚èo‚µA‚»‚ê‚É‡‚Á‚½ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_CreateGraphFromGraphImage(      const BASEIMAGE *RgbBaseImage,                                                                                                                  int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_CreateGraphFromGraphImage(      const BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage,                                                                                 int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_ReCreateGraphFromGraphImage(    const BASEIMAGE *RgbBaseImage,                                  int GrHandle,                                                                   int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚ÌƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
-extern	int			NS_ReCreateGraphFromGraphImage(    const BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int GrHandle,                                                                   int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚ÌƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
-extern	int			NS_CreateDivGraphFromGraphImage(         BASEIMAGE *RgbBaseImage,                                  int AllNum, int XNum, int YNum, int   SizeX, int   SizeY,       int *HandleArray, int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_CreateDivGraphFFromGraphImage(        BASEIMAGE *RgbBaseImage,                                  int AllNum, int XNum, int YNum, float SizeX, float SizeY,       int *HandleArray, int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( float”Å )
-extern	int			NS_CreateDivGraphFromGraphImage(         BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY,       int *HandleArray, int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
-extern	int			NS_CreateDivGraphFFromGraphImage(        BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY,       int *HandleArray, int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( float”Å )
-extern	int			NS_ReCreateDivGraphFromGraphImage(       BASEIMAGE *RgbBaseImage,                                  int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
-extern	int			NS_ReCreateDivGraphFFromGraphImage(      BASEIMAGE *RgbBaseImage,                                  int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é( float”Å )
-extern	int			NS_ReCreateDivGraphFromGraphImage(       BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
-extern	int			NS_ReCreateDivGraphFFromGraphImage(      BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag = TRUE , int ReverseFlag = FALSE ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é( float”Å )
+extern	int			NS_CreateGraphFromGraphImage(			const BASEIMAGE *RgbBaseImage,                                                                                                                  int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_ReCreateGraphFromGraphImage(		const BASEIMAGE *RgbBaseImage,                                  int GrHandle,                                                                   int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚ÌƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
+extern	int			NS_CreateDivGraphFromGraphImage(		      BASEIMAGE *RgbBaseImage,                                  int AllNum, int XNum, int YNum, int   SizeX, int   SizeY,       int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_CreateDivGraphFFromGraphImage(		      BASEIMAGE *RgbBaseImage,                                  int AllNum, int XNum, int YNum, float SizeX, float SizeY,       int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( float”Å )
+extern	int			NS_ReCreateDivGraphFromGraphImage(		      BASEIMAGE *RgbBaseImage,                                  int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
+extern	int			NS_ReCreateDivGraphFFromGraphImage(	      BASEIMAGE *RgbBaseImage,                                  int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é( float”Å )
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
+extern	int			NS_CreateGraphFromGraphImage(			const BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage,                                                                                 int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_ReCreateGraphFromGraphImage(		const BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int GrHandle,                                                                   int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚ÌƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
+extern	int			NS_CreateDivGraphFromGraphImage(		      BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY,       int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_CreateDivGraphFFromGraphImage(		      BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY,       int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( float”Å )
+extern	int			NS_ReCreateDivGraphFromGraphImage(		      BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
+extern	int			NS_ReCreateDivGraphFFromGraphImage(	      BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é( float”Å )
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern	int			NS_CreateGraphFromGraphImage2(			const BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage,                                                                                 int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_ReCreateGraphFromGraphImage2(		const BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int GrHandle,                                                                   int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚ÌƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
+extern	int			NS_CreateDivGraphFromGraphImage2(		      BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY,       int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
+extern	int			NS_CreateDivGraphFFromGraphImage2(		      BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY,       int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( float”Å )
+extern	int			NS_ReCreateDivGraphFromGraphImage2(	      BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
+extern	int			NS_ReCreateDivGraphFFromGraphImage2(	      BASEIMAGE *RgbBaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag DEFAULTPARAM( = TRUE ) , int ReverseFlag DEFAULTPARAM( = FALSE ) ) ;																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚©‚çŠù‘¶‚Ì•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Éƒf[ƒ^‚ğ“]‘—‚·‚é( float”Å )
 extern	int			NS_CreateGraph(                    int Width, int Height, int Pitch, const void *RGBImage, const void *AlphaImage = NULL , int GrHandle = -1 ) ;																																			// ƒƒ‚ƒŠã‚Ìƒrƒbƒgƒ}ƒbƒvƒCƒ[ƒW‚©‚çƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_CreateDivGraph(                 int Width, int Height, int Pitch, const void *RGBImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, const void *AlphaImage = NULL ) ;																						// ƒƒ‚ƒŠã‚Ìƒrƒbƒgƒ}ƒbƒvƒCƒ[ƒW‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 extern	int			NS_CreateDivGraphF(                int Width, int Height, int Pitch, const void *RGBImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, const void *AlphaImage = NULL ) ;																						// ƒƒ‚ƒŠã‚Ìƒrƒbƒgƒ}ƒbƒvƒCƒ[ƒW‚©‚ç•ªŠ„ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( float”Å )
@@ -1184,6 +1224,8 @@ extern	int			NS_SetCreateGraphColorBitDepth(				int BitDepth ) ;								// ì¬‚
 extern	int			NS_GetCreateGraphColorBitDepth(				void ) ;										// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒN‚ÌF[“x‚ğæ“¾‚·‚é
 extern	int			NS_SetCreateGraphChannelBitDepth(				int BitDepth ) ;								// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒN‚Ì‚Pƒ`ƒƒƒ“ƒlƒ‹•Ó‚è‚Ìƒrƒbƒg[“x‚ğİ’è‚·‚é
 extern	int			NS_GetCreateGraphChannelBitDepth(				void ) ;										// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒN‚Ì‚Pƒ`ƒƒƒ“ƒlƒ‹•Ó‚è‚Ìƒrƒbƒg[“x‚ğæ“¾‚·‚é
+extern	int			NS_SetCreateGraphInitGraphDelete(				int Flag ) ;									// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğ InitGraph() ‚Åíœ‚³‚ê‚é‚©‚ğİ’è‚·‚é( Flag  TRUE:InitGraph‚Åíœ‚³‚ê‚é(ƒfƒtƒHƒ‹ƒg)  FALSE:InitGraph‚Åíœ‚³‚ê‚È‚¢ )
+extern	int			NS_GetCreateGraphInitGraphDelete(				void ) ;										// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğ InitGraph() ‚Åíœ‚³‚ê‚é‚©‚ğæ“¾‚·‚é( Flag  TRUE:InitGraph‚Åíœ‚³‚ê‚é(ƒfƒtƒHƒ‹ƒg)  FALSE:InitGraph‚Åíœ‚³‚ê‚È‚¢ )
 extern	int			NS_SetDrawValidGraphCreateFlag(				int Flag ) ;									// •`‰æ‰Â”\‚ÈƒOƒ‰ƒtƒBƒbƒN‚ğì¬‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é( TRUE:•`‰æ‰Â”\  FALSE:•`‰æ•s‰Â”\ )
 extern	int			NS_GetDrawValidGraphCreateFlag(				void ) ;										// •`‰æ‰Â”\‚ÈƒOƒ‰ƒtƒBƒbƒN‚ğì¬‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğæ“¾‚·‚é
 extern	int			NS_SetDrawValidFlagOf3DGraph(					int Flag ) ;									// SetDrawValidGraphCreateFlag ‚Ì‹Œ–¼Ì
@@ -1259,8 +1301,12 @@ extern	const void*	NS_GetGraphID3D11DepthStencilView(	int GrHandle ) ;										
 #endif
 
 extern	const COLORDATA*	NS_GetTexColorData(				int AlphaCh, int AlphaTest, int ColorBitDepth, int DrawValid = FALSE ) ;				// ƒJƒ‰[ƒf[ƒ^‚ğ“¾‚é
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern	const COLORDATA*	NS_GetTexColorData(				const IMAGEFORMATDESC *Format ) ;														// ƒtƒH[ƒ}ƒbƒg‚ÉŠî‚Ã‚¢‚½ƒJƒ‰[ƒf[ƒ^‚ğ“¾‚é
 extern	const COLORDATA*	NS_GetTexColorData(				int FormatIndex ) ;																		// w’è‚ÌƒtƒH[ƒ}ƒbƒgƒCƒ“ƒfƒbƒNƒX‚ÌƒJƒ‰[ƒf[ƒ^‚ğ“¾‚é
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern	const COLORDATA*	NS_GetTexColorData2(			const IMAGEFORMATDESC *Format ) ;														// ƒtƒH[ƒ}ƒbƒg‚ÉŠî‚Ã‚¢‚½ƒJƒ‰[ƒf[ƒ^‚ğ“¾‚é
+extern	const COLORDATA*	NS_GetTexColorData3(			int FormatIndex /* DX_GRAPHICSIMAGE_FORMAT_3D_RGB32 “™ */ ) ;							// w’è‚ÌƒtƒH[ƒ}ƒbƒgƒCƒ“ƒfƒbƒNƒX‚ÌƒJƒ‰[ƒf[ƒ^‚ğ“¾‚é
 extern	int			NS_GetMaxGraphTextureSize(			int *SizeX, int *SizeY ) ;																// ƒOƒ‰ƒtƒBƒbƒN‚Ég—p‚³‚ê‚éÅ‘åƒeƒNƒXƒ`ƒƒƒTƒCƒY‚ğæ“¾‚·‚é
 extern	int			NS_GetValidRestoreShredPoint(		void ) ;																				// ƒOƒ‰ƒtƒBƒbƒN•œŒ³ŠÖ”‚Ì—L–³‚ğæ“¾																
 extern	int			NS_GetCreateGraphColorData(		COLORDATA *ColorData, IMAGEFORMATDESC *Format ) ;										// ‚±‚ê‚©‚çV‚½‚ÉƒOƒ‰ƒtƒBƒbƒN‚ğì¬‚·‚éê‡‚Ég—p‚·‚éƒJƒ‰[î•ñ‚ğæ“¾‚·‚é
@@ -1343,7 +1389,10 @@ extern	int			NS_DrawTurnGraphF(           float xf, float yf,                   
 extern	int			NS_DrawReverseGraphF(        float xf, float yf,                                                                       int GrHandle, int TransFlag, int ReverseXFlag = FALSE , int ReverseYFlag = FALSE ) ;		// ‰æ‘œ‚Ì”½“]•`‰æ( À•Ww’è‚ª float ”Å )
 
 extern	int			NS_DrawChipMap(              int Sx, int Sy, int XNum, int YNum, const int *MapData, int ChipTypeNum, int MapDataPitch, const int *ChipGrHandle, int TransFlag ) ;																											// ƒ`ƒbƒvƒOƒ‰ƒtƒBƒbƒN‚ğg‚Á‚½ƒ}ƒbƒv•`‰æ
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern	int			NS_DrawChipMap(              int MapWidth, int MapHeight,        const int *MapData, int ChipTypeNum,                   const int *ChipGrHandle, int TransFlag, int MapDrawPointX, int MapDrawPointY, int MapDrawWidth, int MapDrawHeight, int ScreenX, int ScreenY ) ;	// ƒ`ƒbƒvƒOƒ‰ƒtƒBƒbƒN‚ğg‚Á‚½ƒ}ƒbƒv•`‰æ
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern	int			NS_DrawChipMap2(             int MapWidth, int MapHeight,        const int *MapData, int ChipTypeNum,                   const int *ChipGrHandle, int TransFlag, int MapDrawPointX, int MapDrawPointY, int MapDrawWidth, int MapDrawHeight, int ScreenX, int ScreenY ) ;	// ƒ`ƒbƒvƒOƒ‰ƒtƒBƒbƒN‚ğg‚Á‚½ƒ}ƒbƒv•`‰æ
 extern	int			NS_DrawTile(                 int x1, int y1, int x2, int y2, int Tx, int Ty, double ExtRate, double Angle, int GrHandle, int TransFlag ) ;																														// ƒOƒ‰ƒtƒBƒbƒN‚ğw’è—Ìˆæ‚Éƒ^ƒCƒ‹ó‚É•`‰æ‚·‚é
 
 extern	int			NS_DrawRectGraph(            int DestX,  int DestY,                          int SrcX, int SrcY, int    Width, int    Height,                         int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE ) ;				// ƒOƒ‰ƒtƒBƒbƒN‚Ìw’è‹éŒ`•”•ª‚Ì‚İ‚ğ•`‰æ
@@ -1357,7 +1406,9 @@ extern	int			NS_DrawRectRotaGraphFast3(   int x, int y, int SrcX, int SrcY, int 
 extern	int			NS_DrawRectModiGraph(        int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int SrcX, int SrcY, int Width, int Height,               int GraphHandle, int TransFlag ) ;							// ‰æ‘œ‚Ìw’è‹éŒ`•”•ª‚Ì‚İ‚ğ©—R•ÏŒ`•`‰æ
 
 extern	int			NS_DrawRectGraphF(           float DestX,  float DestY,                              int SrcX, int SrcY, int    Width, int    Height,                           int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE ) ;	// ƒOƒ‰ƒtƒBƒbƒN‚Ìw’è‹éŒ`•”•ª‚Ì‚İ‚ğ•`‰æ
+extern	int			NS_DrawRectGraphF2(          float DestX,  float DestY,                              float SrcX, float SrcY, float  Width, float  Height,                           int GraphHandle, int TransFlag, int ReverseXFlag DEFAULTPARAM( = FALSE ) , int ReverseYFlag DEFAULTPARAM( = FALSE ) ) ;	// ‰æ‘œ‚Ìw’è‹éŒ`•”•ª‚Ì‚İ‚ğ“™”{•`‰æ( À•Ww’è‚ª float ”Å( ‰æ‘œ“àÀ•W‚Ìw’è‚à float ”Å ) )
 extern	int			NS_DrawRectExtendGraphF(     float DestX1, float DestY1, float DestX2, float DestY2, int SrcX, int SrcY, int SrcWidth, int SrcHeight,                           int GraphHandle, int TransFlag ) ;					// ƒOƒ‰ƒtƒBƒbƒN‚Ìw’è‹éŒ`•”•ª‚Ì‚İ‚ğŠg‘å•`‰æ
+extern	int			NS_DrawRectExtendGraphF2(    float DestX1, float DestY1, float DestX2, float DestY2, float SrcX, float SrcY, float SrcWidth, float SrcHeight,                   int GraphHandle, int TransFlag ) ;															// ‰æ‘œ‚Ìw’è‹éŒ`•”•ª‚Ì‚İ‚ğŠg‘å•`‰æ( À•Ww’è‚ª float ”Å( ‰æ‘œ“àÀ•W‚Ìw’è‚à float ”Å ) )
 extern	int			NS_DrawRectRotaGraphF(       float x, float y, int SrcX, int SrcY, int Width, int Height,                       double ExtRate,                   double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE ) ; 
 extern	int			NS_DrawRectRotaGraph2F(      float x, float y, int SrcX, int SrcY, int Width, int Height, float cxf, float cyf, double ExtRate,                   double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE ) ; 
 extern	int			NS_DrawRectRotaGraph3F(      float x, float y, int SrcX, int SrcY, int Width, int Height, float cxf, float cyf, double ExtRateX, double ExtRateY, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE ) ; 
@@ -1367,6 +1418,7 @@ extern	int			NS_DrawRectRotaGraphFast3F(  float x, float y, int SrcX, int SrcY, 
 extern	int			NS_DrawRectModiGraphF(       float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, int SrcX, int SrcY, int Width, int Height,         int GraphHandle, int TransFlag ) ;					// ‰æ‘œ‚Ìw’è‹éŒ`•”•ª‚Ì‚İ‚ğ©—R•ÏŒ`•`‰æ( À•Ww’è‚ª float ”Å )
 
 extern	int			NS_DrawBlendGraph(           int x, int y, int GrHandle, int TransFlag,                 int BlendGraph, int BorderParam, int BorderRange ) ;									// ƒuƒŒƒ“ƒh‰æ‘œ‚Æ‡¬‚µ‚Ä‰æ‘œ‚ğ•`‰æ‚·‚é
+extern	int			NS_DrawBlendGraphF(          float x, float y, int GrHandle, int TransFlag,                 int BlendGraph, int BorderParam, int BorderRange ) ;									// ƒuƒŒƒ“ƒh‰æ‘œ‚Æ‡¬‚µ‚Ä‰æ‘œ‚ğ“™”{•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawBlendGraphPos(        int x, int y, int GrHandle, int TransFlag, int bx, int by, int BlendGraph, int BorderParam, int BorderRange ) ;									// ƒuƒŒƒ“ƒh‰æ‘œ‚Æ‡¬‚µ‚Ä‰æ‘œ‚ğ•`‰æ‚·‚é( ƒuƒŒƒ“ƒh‰æ‘œ‚Ì‹N“_À•W‚ğw’è‚·‚é”Å )
 
 extern	int			NS_DrawCircleGauge(          int CenterX, int CenterY, double Percent, int GrHandle, double StartPercent = 0.0 , double Scale = 1.0 , int ReverseX = FALSE , int ReverseY = FALSE ) ;														// ‰~ƒOƒ‰ƒt“I‚È•`‰æ‚ğs‚¤( GrHandle ‚Ì‰æ‘œ‚Ìã‰º¶‰E‚Ì’[‚Í“§‰ßF‚É‚µ‚Ä‚¨‚­•K—v‚ª‚ ‚è‚Ü‚· )
@@ -1396,7 +1448,10 @@ extern	int			NS_DrawPolygonIndexed2D(                    const VERTEX2D  *Vertex
 extern	int			NS_DrawPolygonIndexed3D(                    const VERTEX3D  *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum,                                                      int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p )
 extern	int			NS_DrawPolygonIndexed3DBase(                const VERTEX_3D *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum,   int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p )( ‹Œƒo[ƒWƒ‡ƒ“—p )
 extern	int			NS_DrawPolygon3DBase(                       const VERTEX_3D *Vertex, int VertexNum,                                                int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ‹Œƒo[ƒWƒ‡ƒ“—p )
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern	int			NS_DrawPolygon3D(                           const VERTEX_3D *Vertex, int PolygonNum,                                                                                                    int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ‹Œƒo[ƒWƒ‡ƒ“—p )
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern	int			NS_DrawPolygon3D2(                          const VERTEX_3D *Vertex, int PolygonNum,                                                                                                    int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ‹Œƒo[ƒWƒ‡ƒ“—p )
 
 extern	int			NS_DrawPolygonBase(                         const VERTEX    *Vertex, int VertexNum,                                                int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag, int UVScaling = FALSE ) ;		// ‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPrimitive2D(                         const VERTEX2D  *Vertex, int VertexNum,                                                int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
@@ -1434,10 +1489,13 @@ extern	int			NS_SetBlendGraphPosition(				int x, int y ) ;												// ƒuƒŒƒ“ƒ
 extern	int			NS_SetBlendGraphPositionMode(			int BlendGraphPositionMode /* DX_BLENDGRAPH_POSMODE_DRAWGRAPH ‚È‚Ç */ ) ;	// ƒuƒŒƒ“ƒh‰æ‘œ‚Ì“K‰À•Wƒ‚[ƒh‚ğİ’è‚·‚é
 extern	int			NS_SetDrawBright(						int RedBright, int GreenBright, int BlueBright ) ;				// •`‰æ‹P“x‚ğƒZƒbƒg
 extern	int			NS_GetDrawBright(						int *Red, int *Green, int *Blue ) ;								// •`‰æ‹P“x‚ğæ“¾‚·‚é
+extern	int			NS_SetDrawAddColor(					int Red, int Green, int Blue ) ;								// •`‰æƒJƒ‰[‚É‰ÁZ‚·‚éF‚ğİ’è‚·‚é
+extern	int			NS_GetDrawAddColor(					int *Red, int *Green, int *Blue ) ;								// •`‰æƒJƒ‰[‚É‰ÁZ‚·‚éF‚ğæ“¾‚·‚é
 extern	int			NS_SetWriteAlphaChannelFlag(			int Flag ) ;													// •`‰ææ‚ÌƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹‚Ì“à—e‚ğ‘‚«Š·‚¦‚é‚©‚ğİ’è‚·‚é( FALSE:‘‚«Š·‚¦‚È‚¢  TRUE:‘‚«Š·‚¦‚é( ƒfƒtƒHƒ‹ƒg ) )
 extern	int			NS_GetWriteAlphaChannelFlag(			void ) ;														// •`‰ææ‚ÌƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹‚Ì“à—e‚ğ‘‚«Š·‚¦‚é‚©‚ğæ“¾‚·‚é( FALSE:‘‚«Š·‚¦‚È‚¢  TRUE:‘‚«Š·‚¦‚é( ƒfƒtƒHƒ‹ƒg ) )
 extern	int			NS_CheckSeparateAlphaBlendEnable(		void ) ;														// •`‰ææ‚ÌƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹‚Ì“à—e‚ğ‘‚«Š·‚¦‚È‚¢‚±‚Æ‚ª‚Å‚«‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( TRUE:‘‚«Š·‚¦‚È‚¢‚±‚Æ‚ª‚Å‚«‚é  FALSE:‘‚«Š·‚¦‚È‚¢‚±‚Æ‚ª‚Å‚«‚È‚¢ )
 extern	int			NS_SetIgnoreDrawGraphColor(			int EnableFlag ) ;												// •`‰æ‚·‚é‰æ‘œ‚ÌF¬•ª‚ğ–³‹‚·‚é‚©‚Ç‚¤‚©‚ğw’è‚·‚é( EnableFlag:‚±‚Ì‹@”\‚ğg‚¤‚©‚Ç‚¤‚©( TRUE:g‚¤  FALSE:g‚í‚È‚¢ ) )
+extern	int			NS_GetIgnoreDrawGraphColor(			void ) ;														// •`‰æ‚·‚é‰æ‘œ‚Ì‚q‚f‚a¬•ª‚ğ–³‹‚·‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( –ß‚è’l  ‚±‚Ì‹@”\‚ğg‚¤‚©‚Ç‚¤‚©( TRUE:g‚¤  FALSE:g‚í‚È‚¢ )
 extern	int			NS_SetMaxAnisotropy(					int MaxAnisotropy ) ;											// Å‘åˆÙ•û«‚Ì’l‚ğƒZƒbƒg‚·‚é
 extern	int			NS_GetMaxAnisotropy(					void ) ;														// Å‘åˆÙ•û«’l‚ğæ“¾‚·‚é
 extern	int			NS_SetUseLarge3DPositionSupport(		int UseFlag ) ;													// ‚R‚cˆ—‚Åg—p‚·‚éÀ•W’l‚ª 10000000.0f ‚È‚Ç‚Ì‘å‚«‚È’l‚É‚È‚Á‚Ä‚à•`‰æ‚Ì•ö‚ê‚ğ¬‚³‚­—}‚¦‚éˆ—‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚éADxLib_Init ‚ÌŒÄ‚Ño‚µ‘O‚Å‚Ì‚İg—p‰Â”\( TRUE:•`‰æ‚Ì•ö‚ê‚ğ—}‚¦‚éˆ—‚ğg—p‚·‚é( CPU•‰‰×‚ªã‚ª‚è‚Ü‚· )@@FALSE:•`‰æ‚Ì•ö‚ê‚ğ—}‚¦‚éˆ—‚Íg—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
@@ -1523,7 +1581,10 @@ extern	float		NS_GetFogDensity(						void ) ;														// ƒtƒHƒO‚Ì–§“x‚ğæ“¾
 
 
 // ‰æ–ÊŠÖŒWŠÖ”
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern	unsigned int	NS_GetPixel(									int x, int y ) ;																// w’èÀ•W‚ÌF‚ğæ“¾‚·‚é
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern	unsigned int	NS_GetPixelDX(									int x, int y ) ;																// w’èÀ•W‚ÌF‚ğæ“¾‚·‚é
 extern	COLOR_F			NS_GetPixelF(									int x, int y ) ;																// w’èÀ•W‚ÌF‚ğæ“¾‚·‚é( floatŒ^ )
 extern	int				NS_SetBackgroundColor(							int Red, int Green, int Blue, int Alpha ) ;													// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚ÌƒoƒbƒNƒOƒ‰ƒEƒ“ƒhƒJƒ‰[‚ğİ’è‚·‚é
 extern	int				NS_GetBackgroundColor(							int *Red, int *Green, int *Blue, int *Alpha ) ;												// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚Ì”wŒiF‚ğæ“¾‚·‚é( Red,Green,Blue:‚»‚ê‚¼‚ê ‚O`‚Q‚T‚T )
@@ -2406,12 +2467,15 @@ extern	int			NS_CreateARGBF32ColorBaseImage(   int SizeX, int SizeY,            
 extern	int			NS_CreateARGBF16ColorBaseImage(   int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚`‚q‚f‚aŠeƒ`ƒƒƒ“ƒlƒ‹ 16bit •‚“®¬”“_Œ^ ƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
 extern	int			NS_CreateARGB8ColorBaseImage(     int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚`‚q‚f‚a‚WƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
 extern	int			NS_CreateXRGB8ColorBaseImage(     int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚w‚q‚f‚a‚WƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
-extern	int			NS_CreateRGB8ColorBaseImage(      int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚q‚f‚a‚WƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
+extern	int			NS_CreateRGBA8ColorBaseImage(       int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚q‚f‚a‚`‚WƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
+extern	int			NS_CreateABGR8ColorBaseImage(       int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚`‚a‚f‚q‚WƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
+extern	int			NS_CreateBGRA8ColorBaseImage(       int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚a‚f‚q‚`‚WƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
 extern	int			NS_CreateARGB4ColorBaseImage(     int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚`‚q‚f‚a‚SƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
 extern	int			NS_CreateA1R5G5B5ColorBaseImage(  int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚`‚P‚q‚T‚f‚T‚a‚TƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
 extern	int			NS_CreateX1R5G5B5ColorBaseImage(  int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚w‚P‚q‚T‚f‚T‚a‚TƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
 extern	int			NS_CreateR5G5B5A1ColorBaseImage(  int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚q‚T‚f‚T‚a‚T‚`‚PƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
 extern	int			NS_CreateR5G6B5ColorBaseImage(    int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚q‚T‚f‚U‚a‚TƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
+extern	int			NS_CreateRGB8ColorBaseImage(      int SizeX, int SizeY,                             BASEIMAGE *BaseImage ) ;																					// ‚q‚f‚a‚WƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
 extern	int			NS_CreatePAL8ColorBaseImage(      int SizeX, int SizeY,                             BASEIMAGE *BaseImage, int UseAlpha = FALSE ) ;																// ƒpƒŒƒbƒg‚WƒrƒbƒgƒJƒ‰[‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
 extern	int			NS_CreateColorDataBaseImage(      int SizeX, int SizeY, const COLORDATA *ColorData, BASEIMAGE *BaseImage ) ;																					// w’è‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğì¬‚·‚é
 extern	int			NS_GetBaseImageGraphDataSize(     const BASEIMAGE *BaseImage ) ;																																// Šî–{ƒCƒ[ƒWƒf[ƒ^‚ÌƒCƒ[ƒWƒTƒCƒY‚ğæ“¾‚·‚é( ’PˆÊFbyte )
@@ -2449,7 +2513,10 @@ extern	int			NS_GetPixelBaseImageF(            const BASEIMAGE *BaseImage, int x
 extern	int			NS_DrawLineBaseImage(                   BASEIMAGE *BaseImage, int x1, int y1, int x2, int y2, int r, int g, int b, int a ) ;																			// Šî–{ƒCƒ[ƒWƒf[ƒ^‚Ìw’è‚ÌÀ•W‚Éü‚ğ•`‰æ‚·‚é(ŠeF—v‘f‚Í‚O`‚Q‚T‚T)
 extern	int			NS_DrawCircleBaseImage(                 BASEIMAGE *BaseImage, int x, int y, int radius, int r, int g, int b, int a, int FillFlag = TRUE ) ;															// Šî–{ƒCƒ[ƒWƒf[ƒ^‚Ìw’è‚ÌÀ•W‚É‰~‚ğ•`‰æ‚·‚é(ŠeF—v‘f‚Í‚O`‚Q‚T‚T)
 extern	int			NS_BltBaseImage(                        int SrcX, int SrcY, int SrcSizeX, int SrcSizeY, int DestX, int DestY, BASEIMAGE *SrcBaseImage, BASEIMAGE *DestBaseImage ) ;									// Šî–{ƒCƒ[ƒWƒf[ƒ^‚ğ•Ê‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚É“]‘—‚·‚é
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern	int			NS_BltBaseImage(                                                                        int DestX, int DestY, BASEIMAGE *SrcBaseImage, BASEIMAGE *DestBaseImage ) ;									// Šî–{ƒCƒ[ƒWƒf[ƒ^‚ğ•Ê‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚É“]‘—‚·‚é
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern	int			NS_BltBaseImage2(                                                                       int DestX, int DestY, BASEIMAGE *SrcBaseImage, BASEIMAGE *DestBaseImage ) ;									// Šî–{ƒCƒ[ƒWƒf[ƒ^‚ğ•Ê‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚É“]‘—‚·‚é
 extern	int			NS_BltBaseImageWithTransColor(          int SrcX, int SrcY, int SrcSizeX, int SrcSizeY, int DestX, int DestY, BASEIMAGE *SrcBaseImage, BASEIMAGE *DestBaseImage, int Tr, int Tg, int Tb, int Ta ) ;	// Šî–{ƒCƒ[ƒWƒf[ƒ^‚ğ•Ê‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚É“§‰ßFˆ—•t‚«‚Å“]‘—‚·‚é
 extern	int			NS_BltBaseImageWithAlphaBlend(          int SrcX, int SrcY, int SrcSizeX, int SrcSizeY, int DestX, int DestY, BASEIMAGE *SrcBaseImage, BASEIMAGE *DestBaseImage, int Opacity = 255 ) ;					// Šî–{ƒCƒ[ƒWƒf[ƒ^‚ğ•Ê‚ÌŠî–{ƒCƒ[ƒWƒf[ƒ^‚ÉƒAƒ‹ƒtƒ@’l‚ÌƒuƒŒƒ“ƒh‚ğl—¶‚µ‚½ã‚Å“]‘—‚·‚é( Opacity ‚Í“§–¾“x : 0( Š®‘S“§–¾ ) ` 255( Š®‘S•s“§–¾ ) )( o—Íæ‚ª ARGB8 Œ`®ˆÈŠO‚Ìê‡‚ÍƒGƒ‰[‚É‚È‚è‚Ü‚· )
 extern	int			NS_ReverseBaseImageH(                   BASEIMAGE *BaseImage ) ;																																		// Šî–{ƒCƒ[ƒWƒf[ƒ^‚ğ¶‰E”½“]‚·‚é
@@ -2507,6 +2574,9 @@ extern	int				NS_CreateARGBF32ColorData( COLORDATA *ColorDataBuf ) ;												
 extern	int				NS_CreateARGBF16ColorData( COLORDATA *ColorDataBuf ) ;																		// ‚`‚q‚f‚aŠeƒ`ƒƒƒ“ƒlƒ‹ 16bit •‚“®¬”“_Œ^ƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
 extern	int				NS_CreateXRGB8ColorData(   COLORDATA *ColorDataBuf ) ;																		// ‚w‚q‚f‚a‚WƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
 extern	int				NS_CreateARGB8ColorData(   COLORDATA *ColorDataBuf ) ;																		// ‚`‚q‚f‚a‚WƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
+extern	int				NS_CreateRGBA8ColorData(    COLORDATA *ColorDataBuf ) ;																			// ‚q‚f‚a‚`‚WƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
+extern	int				NS_CreateABGR8ColorData(    COLORDATA *ColorDataBuf ) ;																			// ‚`‚a‚f‚q‚WƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
+extern	int				NS_CreateBGRA8ColorData(    COLORDATA *ColorDataBuf ) ;																			// ‚a‚f‚q‚`‚WƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
 extern	int				NS_CreateARGB4ColorData(   COLORDATA *ColorDataBuf ) ;																		// ‚`‚q‚f‚a‚SƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
 extern	int				NS_CreateA1R5G5B5ColorData( COLORDATA *ColorDataBuf ) ;																		// ‚`‚P‚q‚T‚f‚T‚a‚TƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
 extern	int				NS_CreateX1R5G5B5ColorData( COLORDATA *ColorDataBuf ) ;																		// ‚w‚P‚q‚T‚f‚T‚a‚TƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
@@ -2551,6 +2621,9 @@ extern	int			NS_MakeARGBF32ColorSoftImage(       int SizeX, int SizeY ) ;							
 extern	int			NS_MakeARGBF16ColorSoftImage(       int SizeX, int SizeY ) ;															// ƒ\ƒtƒgƒEƒGƒAƒCƒ[ƒWƒnƒ“ƒhƒ‹‚Ìì¬( RGBA Šeƒ`ƒƒƒ“ƒlƒ‹ 16bit •‚“®¬”“_Œ^ ƒJƒ‰[ )
 extern	int			NS_MakeARGB8ColorSoftImage(         int SizeX, int SizeY ) ;															// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤ƒCƒ[ƒW‚Ìì¬( RGBA8 ƒJƒ‰[ )
 extern	int			NS_MakeXRGB8ColorSoftImage(         int SizeX, int SizeY ) ;															// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤ƒCƒ[ƒW‚Ìì¬( XRGB8 ƒJƒ‰[ )
+extern	int			NS_MakeRGBA8ColorSoftImage(              int SizeX, int SizeY ) ;															// ƒ\ƒtƒgƒEƒGƒAƒCƒ[ƒWƒnƒ“ƒhƒ‹‚Ìì¬( RGBA8 ƒJƒ‰[ )
+extern	int			NS_MakeABGR8ColorSoftImage(              int SizeX, int SizeY ) ;															// ƒ\ƒtƒgƒEƒGƒAƒCƒ[ƒWƒnƒ“ƒhƒ‹‚Ìì¬( ABGR8 ƒJƒ‰[ )
+extern	int			NS_MakeBGRA8ColorSoftImage(              int SizeX, int SizeY ) ;															// ƒ\ƒtƒgƒEƒGƒAƒCƒ[ƒWƒnƒ“ƒhƒ‹‚Ìì¬( BGRA8 ƒJƒ‰[ )
 extern	int			NS_MakeARGB4ColorSoftImage(         int SizeX, int SizeY ) ;															// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤ƒCƒ[ƒW‚Ìì¬( ARGB4 ƒJƒ‰[ )
 extern	int			NS_MakeA1R5G5B5ColorSoftImage(      int SizeX, int SizeY ) ;															// ƒ\ƒtƒgƒEƒGƒAƒCƒ[ƒWƒnƒ“ƒhƒ‹‚Ìì¬( A1R5G5B5 ƒJƒ‰[ )
 extern	int			NS_MakeX1R5G5B5ColorSoftImage(      int SizeX, int SizeY ) ;															// ƒ\ƒtƒgƒEƒGƒAƒCƒ[ƒWƒnƒ“ƒhƒ‹‚Ìì¬( X1R5G5B5 ƒJƒ‰[ )
@@ -2558,6 +2631,7 @@ extern	int			NS_MakeR5G5B5A1ColorSoftImage(      int SizeX, int SizeY ) ;							
 extern	int			NS_MakeR5G6B5ColorSoftImage(        int SizeX, int SizeY ) ;															// ƒ\ƒtƒgƒEƒGƒAƒCƒ[ƒWƒnƒ“ƒhƒ‹‚Ìì¬( R5G6B5 ƒJƒ‰[ )
 extern	int			NS_MakeRGB8ColorSoftImage(          int SizeX, int SizeY ) ;															// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤ƒCƒ[ƒW‚Ìì¬( RGB8 ƒJƒ‰[ )
 extern	int			NS_MakePAL8ColorSoftImage(          int SizeX, int SizeY, int UseAlpha = FALSE ) ;										// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤ƒCƒ[ƒW‚Ìì¬( ƒpƒŒƒbƒg‚Q‚T‚UF ƒJƒ‰[ )
+extern	int			NS_MakeColorDataSoftImage(          int SizeX, int SizeY, const COLORDATA *ColorData ) ;								// ƒ\ƒtƒgƒEƒGƒAƒCƒ[ƒWƒnƒ“ƒhƒ‹‚Ìì¬( COLORDATA ‚ÅƒtƒH[ƒ}ƒbƒgw’è )
 
 extern	int			NS_DeleteSoftImage(                 int SIHandle ) ;																	// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤ƒCƒ[ƒW‚Ì‰ğ•ú
 
@@ -2599,6 +2673,8 @@ extern	int			NS_BltSoftImageWithAlphaBlend(      int SrcX, int SrcY, int SrcSize
 extern	int			NS_ReverseSoftImageH(               int SIHandle ) ;																	// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤ƒCƒ[ƒW‚Ì¶‰E‚ğ”½“]‚·‚é
 extern	int			NS_ReverseSoftImageV(               int SIHandle ) ;																	// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤ƒCƒ[ƒW‚Ìã‰º‚ğ”½“]‚·‚é
 extern	int			NS_ReverseSoftImage(                int SIHandle ) ;																	// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤ƒCƒ[ƒW‚Ìã‰º¶‰E‚ğ”½“]‚·‚é
+extern	int			NS_ConvertPremulAlphaSoftImage(          int SIHandle ) ;																	// ’Êí‚Ìƒ¿ƒ`ƒƒƒ“ƒlƒ‹•t‚«‰æ‘œ‚ğæZÏ‚İƒ¿ƒ`ƒƒƒ“ƒlƒ‹•t‚«‰æ‘œ‚É•ÏŠ·‚·‚é( ƒsƒNƒZƒ‹ƒtƒH[ƒ}ƒbƒg‚ª ARGB8 ˆÈŠO‚Ìê‡‚Í ARGB8 ‚É•ÏŠ·‚³‚ê‚Ü‚· )
+extern	int			NS_ConvertInterpAlphaSoftImage(          int SIHandle ) ;																	// æZÏ‚İƒ¿ƒ`ƒƒƒ“ƒlƒ‹•t‚«‰æ‘œ‚ğ’Êí‚Ìƒ¿ƒ`ƒƒƒ“ƒlƒ‹•t‚«‰æ‘œ‚É•ÏŠ·‚·‚é( ƒsƒNƒZƒ‹ƒtƒH[ƒ}ƒbƒg‚ª ARGB8 ˆÈŠO‚Ìê‡‚Í ARGB8 ‚É•ÏŠ·‚³‚ê‚Ü‚· )
 
 #ifndef DX_NON_FONT
 extern	int			NS_BltStringSoftImage(              int x, int y, const TCHAR *StrData, int DestSIHandle, int DestEdgeSIHandle = -1 ,                                        int VerticalFlag = FALSE ) ;		// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤ƒCƒ[ƒW‚É•¶š—ñƒCƒ[ƒW‚ğ“]‘—‚·‚é
@@ -2813,8 +2889,12 @@ extern	int			NS_StopBeep(							void ) ;																					// ƒr[ƒv‰¹‚ğ~‚ß‚é
 // ƒ‰ƒbƒp[ŠÖ”
 extern	int			NS_PlaySoundFile(						const TCHAR *FileName, int PlayType ) ;														// ƒTƒEƒ“ƒhƒtƒ@ƒCƒ‹‚ğÄ¶‚·‚é
 extern	int			NS_PlaySoundFileWithStrLen(			const TCHAR *FileName, size_t FileNameLength, int PlayType ) ;														// ƒTƒEƒ“ƒhƒtƒ@ƒCƒ‹‚ğÄ¶‚·‚é
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern	int			NS_PlaySound(							const TCHAR *FileName,                        int PlayType ) ;														// PlaySoundFile ‚Ì‹Œ–¼Ì
 extern	int			NS_PlaySoundWithStrLen(				const TCHAR *FileName, size_t FileNameLength, int PlayType ) ;														// PlaySoundFile ‚Ì‹Œ–¼Ì
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+extern	int			NS_PlaySoundDX(							const TCHAR *FileName,                        int PlayType ) ;														// PlaySoundFile ‚Ì‹Œ–¼Ì
+extern	int			NS_PlaySoundDXWithStrLen(				const TCHAR *FileName, size_t FileNameLength, int PlayType ) ;														// PlaySoundFile ‚Ì‹Œ–¼Ì
 extern	int			NS_CheckSoundFile(						void ) ;																					// ƒTƒEƒ“ƒhƒtƒ@ƒCƒ‹‚ÌÄ¶’†‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é
 extern	int			NS_CheckSound(							void ) ;																					// CheckSoundFile ‚Ì‹Œ–¼Ì
 extern	int			NS_StopSoundFile(						void ) ;																					// ƒTƒEƒ“ƒhƒtƒ@ƒCƒ‹‚ÌÄ¶‚ğ’â~‚·‚é
@@ -2874,7 +2954,7 @@ extern	int			NS_StartSoftSoundPlayer(				int SSoundPlayerHandle ) ;													
 extern	int			NS_CheckStartSoftSoundPlayer(			int SSoundPlayerHandle ) ;																	// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤”gŒ`ƒf[ƒ^‚ÌƒvƒŒƒCƒ„[ƒnƒ“ƒhƒ‹‚ÌÄ¶ˆ—‚ªŠJn‚³‚ê‚Ä‚¢‚é‚©æ“¾‚·‚é( TRUE:ŠJn‚µ‚Ä‚¢‚é  FALSE:’â~‚µ‚Ä‚¢‚é )
 extern	int			NS_StopSoftSoundPlayer(				int SSoundPlayerHandle ) ;																	// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤”gŒ`ƒf[ƒ^‚ÌƒvƒŒƒCƒ„[ƒnƒ“ƒhƒ‹‚ÌÄ¶ˆ—‚ğ’â~‚·‚é
 extern	int			NS_ResetSoftSoundPlayer(				int SSoundPlayerHandle ) ;																	// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤”gŒ`ƒf[ƒ^‚ÌƒvƒŒƒCƒ„[ƒnƒ“ƒhƒ‹‚Ìó‘Ô‚ğ‰Šúó‘Ô‚É–ß‚·( ’Ç‰Á‚³‚ê‚½”gŒ`ƒf[ƒ^‚Ííœ‚³‚êAÄ¶ó‘Ô‚¾‚Á‚½ê‡‚Í’â~‚·‚é )
-extern	int			NS_GetStockDataLengthSoftSoundPlayer(	int SSoundPlayerHandle ) ;																	// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤”gŒ`ƒf[ƒ^‚ÌƒvƒŒƒCƒ„[ƒnƒ“ƒhƒ‹‚É’Ç‰Á‚µ‚½”gŒ`ƒf[ƒ^‚Å‚Ü‚¾Ä¶—pƒTƒEƒ“ƒhƒoƒbƒtƒ@‚É“]‘—‚³‚ê‚Ä‚¢‚È‚¢”gŒ`ƒf[ƒ^‚ÌƒTƒ“ƒvƒ‹”‚ğæ“¾‚·‚é
+extern	int			NS_GetStockDataLengthSoftSoundPlayer(	int SSoundPlayerHandle, int *SoundBufferStockSamples = NULL ) ;								// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤”gŒ`ƒf[ƒ^‚ÌƒvƒŒƒCƒ„[ƒnƒ“ƒhƒ‹‚É’Ç‰Á‚µ‚½”gŒ`ƒf[ƒ^‚Å‚Ü‚¾Ä¶—pƒTƒEƒ“ƒhƒoƒbƒtƒ@‚É“]‘—‚³‚ê‚Ä‚¢‚È‚¢”gŒ`ƒf[ƒ^‚ÌƒTƒ“ƒvƒ‹”‚ğæ“¾‚·‚é
 extern	int			NS_CheckSoftSoundPlayerNoneData(		int SSoundPlayerHandle ) ;																	// ƒ\ƒtƒgƒEƒGƒA‚Åˆµ‚¤”gŒ`ƒf[ƒ^‚ÌƒvƒŒƒCƒ„[ƒnƒ“ƒhƒ‹‚ÉÄ¶—pƒTƒEƒ“ƒhƒoƒbƒtƒ@‚É“]‘—‚µ‚Ä‚¢‚È‚¢”gŒ`ƒf[ƒ^‚ª–³‚­AÄ¶—pƒTƒEƒ“ƒhƒoƒbƒtƒ@‚É‚à–³‰¹ƒf[ƒ^ˆÈŠO–³‚¢‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( TRUE:–³‰¹ƒf[ƒ^ˆÈŠO–³‚¢  FALSE:—LŒøƒf[ƒ^‚ª‚ ‚é )
 
 
@@ -3062,6 +3142,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #ifndef DX_NON_INPUT
 #define NS_WaitKey								WaitKey
 #endif // DX_NON_INPUT
+#define NS_SleepThread							SleepThread
 
 // ƒJƒEƒ“ƒ^‹y‚Ñæ“¾ŒnŠÖ”
 #define NS_GetNowCount								GetNowCount
@@ -3081,6 +3162,15 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 // —”æ“¾
 #define NS_GetRand								GetRand
 #define NS_SRand								SRand
+
+#ifndef DX_NON_MERSENNE_TWISTER
+
+#define NS_CreateRandHandle						CreateRandHandle	
+#define NS_DeleteRandHandle						DeleteRandHandle	
+#define NS_SRandHandle							SRandHandle		
+#define NS_GetRandHandle						GetRandHandle		
+
+#endif // DX_NON_MERSENNE_TWISTER
 
 // ƒoƒbƒeƒŠ[ŠÖ˜A
 #define NS_GetBatteryLifePercent				GetBatteryLifePercent
@@ -3148,6 +3238,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_putsDx								putsDx
 #define NS_putsDxWithStrLen						putsDxWithStrLen
 #define NS_clsDx								clsDx
+#define NS_setPrintColorDx						setPrintColorDx
 #endif
 
 #endif // DX_NON_LOG
@@ -3174,6 +3265,9 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_CheckHandleASyncLoad					CheckHandleASyncLoad
 #define NS_GetHandleASyncLoadResult				GetHandleASyncLoadResult
 #define NS_SetASyncLoadFinishDeleteFlag			SetASyncLoadFinishDeleteFlag
+#define NS_SetASyncLoadFinishCallback			SetASyncLoadFinishCallback
+#define NS_WaitHandleASyncLoad					WaitHandleASyncLoad
+#define NS_WaitHandleASyncLoadAll				WaitHandleASyncLoadAll
 #define NS_GetASyncLoadNum						GetASyncLoadNum
 #define NS_SetASyncLoadThreadNum				SetASyncLoadThreadNum
 
@@ -3231,6 +3325,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_GetAlwaysRunFlag						GetAlwaysRunFlag
 #define NS__GetSystemInfo						_GetSystemInfo
 #define NS_GetPcInfo							GetPcInfo
+#define NS_GetWindowOSVersion					GetWindowOSVersion
 #define NS_GetUseMMXFlag						GetUseMMXFlag
 #define NS_GetUseSSEFlag						GetUseSSEFlag
 #define NS_GetUseSSE2Flag						GetUseSSE2Flag
@@ -3257,6 +3352,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_LoadPauseGraphFromMem				LoadPauseGraphFromMem
 #define NS_SetActiveStateChangeCallBackFunction	SetActiveStateChangeCallBackFunction
 #define NS_SetWindowText						SetWindowText
+#define NS_SetWindowTextDX						SetWindowTextDX
 #define NS_SetWindowTextWithStrLen				SetWindowTextWithStrLen
 #define NS_SetMainWindowText					SetMainWindowText
 #define NS_SetMainWindowTextWithStrLen			SetMainWindowTextWithStrLen
@@ -3294,6 +3390,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetWindowVisibleFlag					SetWindowVisibleFlag
 #define NS_SetWindowMinimizeFlag				SetWindowMinimizeFlag
 #define NS_SetWindowUserCloseEnableFlag			SetWindowUserCloseEnableFlag
+#define NS_SetUseBorderlessWindowFlag			SetUseBorderlessWindowFlag
 #define NS_SetDxLibEndPostQuitMessageFlag		SetDxLibEndPostQuitMessageFlag
 #define NS_SetUserWindow						SetUserWindow
 #define NS_SetUserChildWindow					SetUserChildWindow
@@ -3381,6 +3478,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DeleteMenuItemAll					DeleteMenuItemAll
 #define NS_ClearMenuItemSelect					ClearMenuItemSelect
 #define NS_GetMenuItemID						GetMenuItemID
+#define NS_GetMenuItemIDDX						GetMenuItemIDDX
 #define NS_GetMenuItemIDWithStrLen				GetMenuItemIDWithStrLen
 #define NS_GetMenuItemName						GetMenuItemName
 #define NS_LoadMenuResource						LoadMenuResource
@@ -3731,6 +3829,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_CheckHitKey							CheckHitKey
 #define NS_CheckHitKeyAll						CheckHitKeyAll
 #define NS_GetHitKeyStateAll					GetHitKeyStateAll
+#define NS_GetHitKeyStateAllEx					GetHitKeyStateAllEx
 #define NS_SetKeyExclusiveCooperativeLevelFlag	SetKeyExclusiveCooperativeLevelFlag
 #define NS_GetJoypadNum							GetJoypadNum
 #define NS_GetJoypadButtonNum					GetJoypadButtonNum
@@ -3750,6 +3849,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_StopJoypadVibration					StopJoypadVibration
 #define NS_GetJoypadPOVState					GetJoypadPOVState
 #define NS_GetJoypadName						GetJoypadName
+#define NS_GetJoypadType						GetJoypadType
 #define NS_ReSetupJoypad						ReSetupJoypad
 
 #define NS_SetKeyboardNotDirectInputFlag		SetKeyboardNotDirectInputFlag
@@ -3843,6 +3943,12 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_LoadDivGraphToResourceWithStrLen		LoadDivGraphToResourceWithStrLen
 #define NS_LoadDivGraphFToResource				LoadDivGraphFToResource
 #define NS_LoadDivGraphFToResourceWithStrLen	LoadDivGraphFToResourceWithStrLen
+#define NS_LoadGraphToResource2					LoadGraphToResource2
+#define NS_LoadGraphToResourceWithStrLen2		LoadGraphToResourceWithStrLen2
+#define NS_LoadDivGraphToResource2				LoadDivGraphToResource2
+#define NS_LoadDivGraphToResourceWithStrLen2	LoadDivGraphToResourceWithStrLen2
+#define NS_LoadDivGraphFToResource2				LoadDivGraphFToResource2
+#define NS_LoadDivGraphFToResourceWithStrLen2	LoadDivGraphFToResourceWithStrLen2
 #ifndef DX_NON_DIRECT3D11
 #define NS_CreateGraphFromID3D11Texture2D		CreateGraphFromID3D11Texture2D
 #endif // DX_NON_DIRECT3D11
@@ -3867,6 +3973,12 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_CreateDivGraphFFromGraphImage		CreateDivGraphFFromGraphImage
 #define NS_ReCreateDivGraphFromGraphImage		ReCreateDivGraphFromGraphImage
 #define NS_ReCreateDivGraphFFromGraphImage		ReCreateDivGraphFFromGraphImage
+#define NS_CreateGraphFromGraphImage2			CreateGraphFromGraphImage2
+#define NS_ReCreateGraphFromGraphImage2			ReCreateGraphFromGraphImage2
+#define NS_CreateDivGraphFromGraphImage2		CreateDivGraphFromGraphImage2
+#define NS_CreateDivGraphFFromGraphImage2		CreateDivGraphFFromGraphImage2
+#define NS_ReCreateDivGraphFromGraphImage2		ReCreateDivGraphFromGraphImage2
+#define NS_ReCreateDivGraphFFromGraphImage2		ReCreateDivGraphFFromGraphImage2
 #define NS_CreateGraph							CreateGraph
 #define NS_CreateDivGraph						CreateDivGraph
 #define NS_CreateDivGraphF						CreateDivGraphF
@@ -3910,6 +4022,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_GetCreateGraphColorBitDepth			GetCreateGraphColorBitDepth
 #define NS_SetCreateGraphChannelBitDepth		SetCreateGraphChannelBitDepth
 #define NS_GetCreateGraphChannelBitDepth		GetCreateGraphChannelBitDepth
+#define NS_SetCreateGraphInitGraphDelete		SetCreateGraphInitGraphDelete
+#define NS_GetCreateGraphInitGraphDelete		GetCreateGraphInitGraphDelete
 #define NS_SetDrawValidGraphCreateFlag			SetDrawValidGraphCreateFlag
 #define NS_GetDrawValidGraphCreateFlag			GetDrawValidGraphCreateFlag
 #define NS_SetDrawValidFlagOf3DGraph			SetDrawValidFlagOf3DGraph
@@ -3985,8 +4099,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #endif // WINDOWS_DESKTOP_OS
 
 #define NS_GetTexColorData						GetTexColorData
-#define NS_GetTexColorData						GetTexColorData
-#define NS_GetTexColorData						GetTexColorData
+#define NS_GetTexColorData2						GetTexColorData2
+#define NS_GetTexColorData3						GetTexColorData3
 #define NS_GetMaxGraphTextureSize				GetMaxGraphTextureSize
 #define NS_GetValidRestoreShredPoint			GetValidRestoreShredPoint
 #define NS_GetCreateGraphColorData				GetCreateGraphColorData
@@ -4069,6 +4183,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawReverseGraphF							DrawReverseGraphF
 
 #define NS_DrawChipMap									DrawChipMap
+#define NS_DrawChipMap2									DrawChipMap2
 #define NS_DrawTile										DrawTile
 
 #define NS_DrawRectGraph								DrawRectGraph
@@ -4082,7 +4197,9 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawRectModiGraph							DrawRectModiGraph
 
 #define NS_DrawRectGraphF								DrawRectGraphF
+#define NS_DrawRectGraphF2								DrawRectGraphF2
 #define NS_DrawRectExtendGraphF							DrawRectExtendGraphF
+#define NS_DrawRectExtendGraphF2						DrawRectExtendGraphF2
 #define NS_DrawRectRotaGraphF							DrawRectRotaGraphF
 #define NS_DrawRectRotaGraph2F							DrawRectRotaGraph2F
 #define NS_DrawRectRotaGraph3F							DrawRectRotaGraph3F
@@ -4092,6 +4209,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawRectModiGraphF							DrawRectModiGraphF
 
 #define NS_DrawBlendGraph								DrawBlendGraph
+#define NS_DrawBlendGraphF								DrawBlendGraphF
 #define NS_DrawBlendGraphPos							DrawBlendGraphPos
 
 #define NS_DrawCircleGauge								DrawCircleGauge
@@ -4121,7 +4239,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawPolygonIndexed3D							DrawPolygonIndexed3D
 #define NS_DrawPolygonIndexed3DBase						DrawPolygonIndexed3DBase
 #define NS_DrawPolygon3DBase							DrawPolygon3DBase
-#define NS_DrawPolygon3D								DrawPolygon3D
+#define NS_DrawPolygon3D2								DrawPolygon3D2
 
 #define NS_DrawPolygonBase								DrawPolygonBase
 #define NS_DrawPrimitive2D								DrawPrimitive2D
@@ -4156,10 +4274,13 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetBlendGraphPositionMode			SetBlendGraphPositionMode
 #define NS_SetDrawBright						SetDrawBright
 #define NS_GetDrawBright						GetDrawBright
+#define NS_SetDrawAddColor						SetDrawAddColor
+#define NS_GetDrawAddColor						GetDrawAddColor
 #define NS_SetWriteAlphaChannelFlag				SetWriteAlphaChannelFlag
 #define NS_GetWriteAlphaChannelFlag				GetWriteAlphaChannelFlag
 #define NS_CheckSeparateAlphaBlendEnable		CheckSeparateAlphaBlendEnable
 #define NS_SetIgnoreDrawGraphColor				SetIgnoreDrawGraphColor
+#define NS_GetIgnoreDrawGraphColor				GetIgnoreDrawGraphColor
 #define NS_SetMaxAnisotropy						SetMaxAnisotropy
 #define NS_GetMaxAnisotropy						GetMaxAnisotropy
 #define NS_SetUseLarge3DPositionSupport			SetUseLarge3DPositionSupport
@@ -4246,6 +4367,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 
 // ‰æ–ÊŠÖŒWŠÖ”
 #define NS_GetPixel								GetPixel
+#define NS_GetPixelDX							GetPixelDX
 #define NS_GetPixelF							GetPixelF
 #define NS_SetBackgroundColor					SetBackgroundColor
 #define NS_GetBackgroundColor					GetBackgroundColor
@@ -5095,6 +5217,9 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_CreateARGB8ColorBaseImage			CreateARGB8ColorBaseImage
 #define NS_CreateXRGB8ColorBaseImage			CreateXRGB8ColorBaseImage
 #define NS_CreateRGB8ColorBaseImage				CreateRGB8ColorBaseImage
+#define NS_CreateRGBA8ColorBaseImage			CreateRGBA8ColorBaseImage
+#define NS_CreateABGR8ColorBaseImage			CreateABGR8ColorBaseImage
+#define NS_CreateBGRA8ColorBaseImage			CreateBGRA8ColorBaseImage
 #define NS_CreateARGB4ColorBaseImage			CreateARGB4ColorBaseImage
 #define NS_CreateA1R5G5B5ColorBaseImage			CreateA1R5G5B5ColorBaseImage
 #define NS_CreateX1R5G5B5ColorBaseImage			CreateX1R5G5B5ColorBaseImage
@@ -5135,7 +5260,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawLineBaseImage					DrawLineBaseImage
 #define NS_DrawCircleBaseImage					DrawCircleBaseImage
 #define NS_BltBaseImage							BltBaseImage
-#define NS_BltBaseImage							BltBaseImage
+#define NS_BltBaseImage2						BltBaseImage2
 #define NS_BltBaseImageWithTransColor			BltBaseImageWithTransColor
 #define NS_BltBaseImageWithAlphaBlend			BltBaseImageWithAlphaBlend
 #define NS_ReverseBaseImageH					ReverseBaseImageH
@@ -5191,6 +5316,9 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_CreateARGBF16ColorData				CreateARGBF16ColorData
 #define NS_CreateXRGB8ColorData					CreateXRGB8ColorData
 #define NS_CreateARGB8ColorData					CreateARGB8ColorData
+#define NS_CreateRGBA8ColorData					CreateRGBA8ColorData
+#define NS_CreateABGR8ColorData					CreateABGR8ColorData
+#define NS_CreateBGRA8ColorData					CreateBGRA8ColorData
 #define NS_CreateARGB4ColorData					CreateARGB4ColorData
 #define NS_CreateA1R5G5B5ColorData				CreateA1R5G5B5ColorData
 #define NS_CreateX1R5G5B5ColorData				CreateX1R5G5B5ColorData
@@ -5228,6 +5356,9 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_MakeARGBF16ColorSoftImage			MakeARGBF16ColorSoftImage
 #define NS_MakeARGB8ColorSoftImage				MakeARGB8ColorSoftImage
 #define NS_MakeXRGB8ColorSoftImage				MakeXRGB8ColorSoftImage
+#define NS_MakeRGBA8ColorSoftImage				MakeRGBA8ColorSoftImage
+#define NS_MakeABGR8ColorSoftImage				MakeABGR8ColorSoftImage
+#define NS_MakeBGRA8ColorSoftImage				MakeBGRA8ColorSoftImage
 #define NS_MakeARGB4ColorSoftImage				MakeARGB4ColorSoftImage
 #define NS_MakeA1R5G5B5ColorSoftImage			MakeA1R5G5B5ColorSoftImage
 #define NS_MakeX1R5G5B5ColorSoftImage			MakeX1R5G5B5ColorSoftImage
@@ -5235,6 +5366,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_MakeR5G6B5ColorSoftImage				MakeR5G6B5ColorSoftImage
 #define NS_MakeRGB8ColorSoftImage				MakeRGB8ColorSoftImage
 #define NS_MakePAL8ColorSoftImage				MakePAL8ColorSoftImage
+#define NS_MakeColorDataSoftImage				MakeColorDataSoftImage
+
 
 #define NS_DeleteSoftImage						DeleteSoftImage
 
@@ -5276,6 +5409,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_ReverseSoftImageH					ReverseSoftImageH
 #define NS_ReverseSoftImageV					ReverseSoftImageV
 #define NS_ReverseSoftImage						ReverseSoftImage
+#define NS_ConvertPremulAlphaSoftImage			ConvertPremulAlphaSoftImage
+#define NS_ConvertInterpAlphaSoftImage			ConvertInterpAlphaSoftImage
 
 #ifndef DX_NON_FONT
 #define NS_BltStringSoftImage					BltStringSoftImage
@@ -5499,6 +5634,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_PlaySoundFileWithStrLen				PlaySoundFileWithStrLen
 #define NS_PlaySound							PlaySound
 #define NS_PlaySoundWithStrLen					PlaySoundWithStrLen
+#define NS_PlaySoundDX							PlaySoundDX
+#define NS_PlaySoundDXWithStrLen				PlaySoundDXWithStrLen
 #define NS_CheckSoundFile						CheckSoundFile
 #define NS_CheckSound							CheckSound
 #define NS_StopSoundFile						StopSoundFile
