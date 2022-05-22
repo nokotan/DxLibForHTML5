@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		フラグメントシェーダー関連定義
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -48,6 +48,8 @@ struct DX_ANDR_FS_CONST_BUFFER_BASE
 	DX_ANDR_SHADER_INT3			Padding2 ;
 
 	DX_ANDR_SHADER_FLOAT4		IgnoreTextureColor ;	// テクスチャカラー無視処理用カラー
+
+	DX_ANDR_SHADER_FLOAT4		DrawAddColor ;			// 加算する色
 } ;
 
 

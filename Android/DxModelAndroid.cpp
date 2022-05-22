@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム( Android )
 // 
-//  	Ver 3.22c
+//  	Ver 3.23 
 // 
 //-----------------------------------------------------------------------------
 
@@ -2112,6 +2112,9 @@ static bool MV1_ANDR_SetupMeshDrawMaterialCommon( MV1_MESH *Mesh )
 		Graphics_Android_DeviceState_SetFactorColor( &FloatFactorColor ) ;
 	}
 
+	// 加算カラーの設定
+	NS_SetDrawAddColor( MMaterial->DrawAddColor.x, MMaterial->DrawAddColor.y, MMaterial->DrawAddColor.z ) ; 
+
 	// ブレンドモードの設定
 	BlendMode = GSYS.DrawSetting.ShadowMapDraw ? DX_BLENDMODE_NOBLEND : ( Mesh->DrawBlendMode != -1 ? Mesh->DrawBlendMode : MMaterial->DrawBlendMode ) ;
 	switch( BlendMode )
@@ -2208,6 +2211,9 @@ static void MV1_ANDR_SetupToonOutLineMeshDrawMaterialCommon( MV1_MESH *Mesh, flo
 		FloatFactorColor[ 3 ] = ( Mesh->SetupDrawMaterial.OpacityRate * ( Mesh->DrawBlendParam != -1 ? Mesh->DrawBlendParam : MMaterial->DrawBlendParam ) ) / 255.0f ;
 		Graphics_Android_DeviceState_SetFactorColor( &FloatFactorColor ) ;
 	}
+
+	// 加算カラーの設定
+	NS_SetDrawAddColor( MMaterial->DrawAddColor.x, MMaterial->DrawAddColor.y, MMaterial->DrawAddColor.z ) ; 
 
 	// ブレンドモードの設定
 	BlendMode = GSYS.DrawSetting.ShadowMapDraw ? DX_BLENDMODE_NOBLEND : ( Mesh->DrawBlendMode != -1 ? Mesh->DrawBlendMode : MMaterial->DrawBlendMode ) ;

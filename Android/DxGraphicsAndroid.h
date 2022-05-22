@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画処理プログラム( Android )ヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -183,9 +183,10 @@ namespace DxLib
 #define ANDROID_SHADER_UNIFORM_FOG_COLOR						(39)		// フォグカラー
 #define ANDROID_SHADER_UNIFORM_FACTOR_COLOR						(40)		// ファクターカラー
 #define ANDROID_SHADER_UNIFORM_IGNORE_TEXTURE_COLOR				(41)		// テクスチャカラー無視処理用カラー
-#define ANDROID_SHADER_UNIFORM_SHADOWMAP_LIGHT_ENABLE			(42)		// シャドウマップ０・１・２のライト有効情報( x:シャドウマップ０でライトnが有効か  y:シャドウマップ１でライトnが有効か  z:シャドウマップ２でライトnが有効か )
-#define ANDROID_SHADER_UNIFORM_SHADOWMAP_DADJ_GRAD				(43)		// シャドウマップの情報( x:閾値深度補正値  y:グラデーション範囲  )
-#define ANDROID_SHADER_UNIFORM_NUM								(44)
+#define ANDROID_SHADER_UNIFORM_ADD_COLOR						(42)		// 加算カラー
+#define ANDROID_SHADER_UNIFORM_SHADOWMAP_LIGHT_ENABLE			(43)		// シャドウマップ０・１・２のライト有効情報( x:シャドウマップ０でライトnが有効か  y:シャドウマップ１でライトnが有効か  z:シャドウマップ２でライトnが有効か )
+#define ANDROID_SHADER_UNIFORM_SHADOWMAP_DADJ_GRAD				(44)		// シャドウマップの情報( x:閾値深度補正値  y:グラデーション範囲  )
+#define ANDROID_SHADER_UNIFORM_NUM								(45)
 #define ANDROID_SHADER_UNIFORM_OTHER							(-1)
 
 // 頂点バッファのサイズ
@@ -759,6 +760,7 @@ struct GRAPHICS_HARDWARE_ANDROID_CONSTANT
 	DX_ANDR_SHADER_FLOAT4			uFogColor ;									// フォグカラー
 	DX_ANDR_SHADER_FLOAT4			uFactorColor ;								// ファクターカラー
 	DX_ANDR_SHADER_FLOAT4			uIgnoreTextureColor ;						// テクスチャカラー無視処理用カラー
+	DX_ANDR_SHADER_FLOAT4			uAddColor ;									// 加算する色
 
 	DX_ANDR_SHADER_FLOAT4			uShadowMapLightEnable[ 6 ] ;				// シャドウマップ０・１・２のライト有効情報( x:シャドウマップ０でライトnが有効か  y:シャドウマップ１でライトnが有効か  z:シャドウマップ２でライトnが有効か )
 	DX_ANDR_SHADER_FLOAT2			uShadowMap_DAdj_Grad[ 3 ] ;					// シャドウマップの情報( x:閾値深度補正値  y:グラデーション範囲  )

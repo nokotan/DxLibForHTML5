@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用システムプログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -726,7 +726,7 @@ extern int NS_GetNowCount( int /*UseRDTSCFlag*/ )
 	LONGLONG ResultLL ;
 	int Result ;
 
-	ResultLL  = NS_GetNowHiPerformanceCount() / 1000 ;
+	ResultLL  = NS_GetNowHiPerformanceCount( FALSE ) / 1000 ;
 	ResultLL &= 0x7fffffff ;
 	Result    = ( int )ResultLL ;
 
@@ -749,7 +749,7 @@ extern LONGLONG NS_GetNowHiPerformanceCount( int /*UseRDTSCFlag*/ )
 // OSが提供する高精度カウンタの現在の値を得る
 extern ULONGLONG NS_GetNowSysPerformanceCount( void )
 {
-	return ( ULONGLONG )NS_GetNowHiPerformanceCount() ;
+	return ( ULONGLONG )NS_GetNowHiPerformanceCount( FALSE ) ;
 }
 
 // OSが提供する高精度カウンタの周波数( 1秒辺りのカウント数 )を得る
@@ -829,60 +829,6 @@ extern int NS_GetDateTime( DATEDATA *DateBuf )
 }
 
 
-
-// 乱数取得
-
-#ifndef DX_NON_MERSENNE_TWISTER
-
-// 乱数の初期値を設定する
-extern int NS_SRand( int Seed )
-{
-	// 初期値セット
-	srandMT( ( unsigned int )Seed ) ;
-
-	// 終了
-	return 0 ;
-}
-
-// 乱数を取得する( RandMax : 返って来る値の最大値 )
-extern int NS_GetRand( int RandMax )
-{
-	int Result ;
-	LONGLONG RandMaxLL ;
-
-	RandMaxLL = RandMax ;
-	RandMaxLL ++ ;
-	Result = ( int )( ( ( LONGLONG )randMT() * RandMaxLL ) >> 32 ) ;
-
-	return Result ;
-}
-
-#else // DX_NON_MERSENNE_TWISTER
-
-// 乱数の初期値を設定する
-extern int NS_SRand( int Seed )
-{
-	// 初期値セット
-	srand( Seed ) ;
-
-	// 終了
-	return 0 ;
-}
-
-// 乱数を取得する( RandMax : 返って来る値の最大値 )
-extern int NS_GetRand( int RandMax )
-{
-	int Result ;
-	LONGLONG RandMaxLL ;
-
-	RandMaxLL = RandMax ;
-	RandMaxLL ++ ;
-	Result = ( int )( ( ( LONGLONG )rand() * RandMaxLL ) / ( ( LONGLONG )RAND_MAX + 1 ) ) ;
-
-	return Result ;
-}
-
-#endif // DX_NON_MERSENNE_TWISTER
 
 #ifndef DX_NON_NAMESPACE
 
@@ -1117,7 +1063,14 @@ extern int SetAndroidWindowStyle( JNIEnv *env )
 }
 
 // android_main 関数
+#ifdef DX_COMPILE_TYPE_C_LANGUAGE
+extern "C" 
+{
+	extern int android_main( void ) ;
+}
+#else // DX_COMPILE_TYPE_C_LANGUAGE
 extern int android_main( void ) ;
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
 
 // ソフト用スレッドのエントリーポイント
 static void* android_app_entry( void * )
@@ -1771,9 +1724,9 @@ void ANativeActivity_onCreate( ANativeActivity *NativeActivity, void *savedState
 
 		// ランダム係数を初期化
 #ifndef DX_NON_MERSENNE_TWISTER
-		srandMT( ( unsigned int )NS_GetNowCount() ) ;
+		srandMT( ( unsigned int )NS_GetNowCount( FALSE ) ) ;
 #else
-		srand( NS_GetNowCount() ) ;
+		srand( NS_GetNowCount( FALSE ) ) ;
 #endif
 
 		// ミューテックスト条件変数を初期化
@@ -1880,6 +1833,11 @@ extern int NS_ProcessMessage( void )
 	// メモリ関係の周期的処理を行う
 	MemoryProcess() ;
 
+#ifndef DX_NON_SOUND
+	// サウンド関係の周期的処理を行う
+	ProcessSoundSystem() ;
+#endif // DX_NON_SOUND
+
 #ifndef DX_NON_GRAPHICS
 	// 画面関係の周期処理を行う
 	Graphics_Android_FrontScreenProcess() ;
@@ -1970,7 +1928,7 @@ extern int NS_ProcessMessage( void )
 							TOUCHINPUTDATA TouchInputData ;
 
 							TouchInputData.PointNum = 0 ;
-							TouchInputData.Time = ( LONGLONG )NS_GetNowCount() ;
+							TouchInputData.Time = ( LONGLONG )NS_GetNowCount( FALSE ) ;
 
 							AddTouchInputData( &TouchInputData ) ;
 						}
@@ -2031,7 +1989,7 @@ extern int NS_ProcessMessage( void )
 						pthread_mutex_unlock( &g_AndroidSys.Mutex ) ;
 
 						// onDestroy が呼ばれた時刻を記録
-						g_AndroidSys.DestroyRequestedTime = NS_GetNowCount() ;
+						g_AndroidSys.DestroyRequestedTime = NS_GetNowCount( FALSE ) ;
 						break ;
 
 					// ウインドウの変更
@@ -2269,7 +2227,7 @@ extern int NS_ProcessMessage( void )
 
 		if( ActivityNum == 0 )
 		{
-			int NowTime = NS_GetNowCount() ;
+			int NowTime = NS_GetNowCount( FALSE ) ;
 			if( TIME_DISTANCE( NowTime, g_AndroidSys.DestroyRequestedTime ) > 500 )
 			{
 				// 終了開始フラグを立てる

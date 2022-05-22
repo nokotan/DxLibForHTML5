@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用サウンドプログラム
 // 
-//  	Ver 3.22c
+//  	Ver 3.23 
 // 
 //-----------------------------------------------------------------------------
 
@@ -982,6 +982,12 @@ extern	int		TerminateSoundSystem_PF_Timing1( void )
 	CriticalSection_Delete( &SoundSysData.PF.SoundBufferPlayInfosCriticalSection ) ;
 
 	// 正常終了
+	return 0 ;
+}
+
+// サウンドシステムで周期的に行う処理用の関数の環境依存処理を行う関数
+extern	int		ProcessSoundSystem_PF( void )
+{
 	return 0 ;
 }
 
