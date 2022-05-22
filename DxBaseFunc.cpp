@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準関数の互換関数プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -597,7 +597,7 @@ extern	double _LOG10( double Real )
 
 extern LONGLONG _DTOL64( double Real )
 {
-#ifndef DX_NON_INLINE_ASM
+#if !defined( DX_NON_INLINE_ASM ) || ( defined( WINDOWS_DESKTOP_OS ) && !defined( _WIN64 ) && defined( _MSC_VER ) && _MSC_VER < 1700 ) 
 	LONGLONG Result ;
 	WORD STFlag, DSTFlag ;
 	__asm
@@ -619,7 +619,7 @@ extern LONGLONG _DTOL64( double Real )
 
 extern void _FTOL4( float *Real, int *Buffer4 )
 {
-#ifndef DX_NON_INLINE_ASM
+#if !defined( DX_NON_INLINE_ASM ) || ( defined( WINDOWS_DESKTOP_OS ) && !defined( _WIN64 ) && defined( _MSC_VER ) && _MSC_VER < 1700 ) 
 	DWORD src = (DWORD)Real ;
 	DWORD dst = (DWORD)Buffer4 ;
 	WORD STFlag, DSTFlag ;
@@ -652,7 +652,7 @@ extern void _FTOL4( float *Real, int *Buffer4 )
 
 extern void _DTOL4( double *Real, int *Buffer4 )
 {
-#ifndef DX_NON_INLINE_ASM
+#if !defined( DX_NON_INLINE_ASM ) || ( defined( WINDOWS_DESKTOP_OS ) && !defined( _WIN64 ) && defined( _MSC_VER ) && _MSC_VER < 1700 ) 
 	DWORD src = (DWORD)Real ;
 	DWORD dst = (DWORD)Buffer4 ;
 	WORD STFlag, DSTFlag ;

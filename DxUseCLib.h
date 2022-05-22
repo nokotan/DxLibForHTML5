@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用プログラムヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -30,6 +30,19 @@
 
 // 構造体定義 --------------------------------------------------------------------
 
+#ifndef DX_NON_MERSENNE_TWISTER
+
+#define MT_N 624
+
+typedef struct tagMERSENNE_TWISTER_DATA
+{
+	int mti ;                       /* index number */
+	unsigned int mt[ MT_N + 1 ] ;   /* the array for the state vector */
+	unsigned int mtr[ MT_N ] ;      /* the array for the random number */
+} MERSENNE_TWISTER_DATA ;
+
+#endif // DX_NON_MERSENNE_TWISTER
+
 // テーブル-----------------------------------------------------------------------
 
 // 内部大域変数宣言 --------------------------------------------------------------
@@ -47,11 +60,15 @@
 
 #ifndef DX_NON_MERSENNE_TWISTER
 
-// Copyright SYN
-extern unsigned long	CheckMMX(void) ;
+// Copyright SYN--------------------------------------
+extern unsigned int		CheckMMX(void) ;
 extern void				srandMT(unsigned int seed) ;
 extern void				generateMT(void) ;
-extern unsigned long	randMT(void) ;
+extern unsigned int		randMT(void) ;
+// ---------------------------------------------------
+
+extern void				initMTData( MERSENNE_TWISTER_DATA *MTData, unsigned int seed ) ;
+extern unsigned int		randMTData( MERSENNE_TWISTER_DATA *MTData ) ;
 
 #endif // DX_NON_MERSENNE_TWISTER
 

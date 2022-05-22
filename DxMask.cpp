@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		マスクデータ管理プログラム
 // 
-//  	Ver 3.22c
+//  	Ver 3.23 
 // 
 //-----------------------------------------------------------------------------
 
@@ -225,6 +225,7 @@ static void Mask_MakeMask_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int Height ;
 	int Addr ;
 	int Result ;
+	MASKDATA *Mask ;
 
 	Addr = 0 ;
 	MaskHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
@@ -232,6 +233,10 @@ static void Mask_MakeMask_ASync( ASYNCLOADDATA_COMMON *AParam )
 	Height = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = Mask_MakeMask_Static( MaskHandle, Width, Height, TRUE ) ;
+	if( !MASKHCHK_ASYNC( MaskHandle, Mask ) )
+	{
+		Mask->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( MaskHandle ) ;
 	if( Result < 0 )
@@ -434,7 +439,7 @@ extern int NS_GraphImageBltToMask( const BASEIMAGE *BaseImage, int ImageX, int I
 	{
 		UseTempBaseImage = TRUE ;
 		NS_CreateRGB8ColorBaseImage( BaseImage->Width, BaseImage->Height, &TempBaseImage ) ;
-		NS_BltBaseImage( 0, 0, ( BASEIMAGE * )BaseImage, &TempBaseImage ) ;
+		NS_BltBaseImage2( 0, 0, ( BASEIMAGE * )BaseImage, &TempBaseImage ) ;
 		BaseImage = &TempBaseImage ;
 	}
 
@@ -627,7 +632,7 @@ static int Mask_LoadMask_Static(
 	// 通常フォーマットではなかったら通常フォーマットに変換
 	if( BaseImage.ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
-		NS_ConvertNormalFormatBaseImage( &BaseImage ) ;
+		NS_ConvertNormalFormatBaseImage( &BaseImage, TRUE ) ;
 	}
 
 	// マスク保存用サーフェスの作成
@@ -659,12 +664,17 @@ static void Mask_LoadMask_ASync( ASYNCLOADDATA_COMMON *AParam )
 	const wchar_t *FileName ;
 	int Addr ;
 	int Result ;
+	MASKDATA *Mask ;
 
 	Addr = 0 ;
 	MaskHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	FileName = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
 	Result = Mask_LoadMask_Static( MaskHandle, FileName, TRUE ) ;
+	if( !MASKHCHK_ASYNC( MaskHandle, Mask ) )
+	{
+		Mask->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( MaskHandle ) ;
 	if( Result < 0 )
@@ -866,6 +876,7 @@ static void Mask_LoadDivMask_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int Addr ;
 	int i ;
 	int Result ;
+	MASKDATA *Mask ;
 
 	Addr = 0 ;
 	FileName = GetASyncLoadParamString( AParam->Data, &Addr ) ;
@@ -879,7 +890,13 @@ static void Mask_LoadDivMask_ASync( ASYNCLOADDATA_COMMON *AParam )
 	Result = Mask_LoadDivMask_Static( FileName, AllNum, XNum, YNum, XSize, YSize, HandleArray, TRUE ) ;
 
 	for( i = 0 ; i < AllNum ; i ++ )
+	{
+		if( !MASKHCHK_ASYNC( HandleArray[ i ], Mask ) )
+		{
+			Mask->HandleInfo.ASyncLoadResult = Result ;
+		}
 		DecASyncLoadCount( HandleArray[ i ] ) ;
+	}
 
 	if( Result < 0 )
 	{
@@ -1097,6 +1114,7 @@ static void Mask_CreateMaskFromMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int         FileImageSize ;
 	int         Addr ;
 	int         Result ;
+	MASKDATA *Mask ;
 
 	Addr = 0 ;
 	MaskHandle    = GetASyncLoadParamInt(   AParam->Data, &Addr ) ;
@@ -1104,6 +1122,10 @@ static void Mask_CreateMaskFromMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	FileImageSize = GetASyncLoadParamInt(   AParam->Data, &Addr ) ;
 
 	Result = Mask_CreateMaskFromMem_Static( MaskHandle, FileImage, FileImageSize, TRUE ) ;
+	if( !MASKHCHK_ASYNC( MaskHandle, Mask ) )
+	{
+		Mask->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( MaskHandle ) ;
 	if( Result < 0 )
@@ -1281,6 +1303,7 @@ static void Mask_CreateDivMaskFromMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int         Addr ;
 	int         i ;
 	int         Result ;
+	MASKDATA   *Mask ;
 
 	Addr = 0 ;
 	FileImage     =          GetASyncLoadParamVoidP(  AParam->Data, &Addr ) ;
@@ -1295,7 +1318,13 @@ static void Mask_CreateDivMaskFromMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	Result = Mask_CreateDivMaskFromMem_Static( FileImage, FileImageSize, AllNum, XNum, YNum, XSize, YSize, HandleArray, TRUE ) ;
 
 	for( i = 0 ; i < AllNum ; i ++ )
+	{
+		if( !MASKHCHK_ASYNC( HandleArray[ i ], Mask ) )
+		{
+			Mask->HandleInfo.ASyncLoadResult = Result ;
+		}
 		DecASyncLoadCount( HandleArray[ i ] ) ;
+	}
 
 	if( Result < 0 )
 	{

@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		“ü—Íî•ñƒvƒƒOƒ‰ƒ€ƒwƒbƒ_ƒtƒ@ƒCƒ‹
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -216,6 +216,7 @@ extern	int RefreshEffectPlayState_PF( void ) ;										// ƒpƒbƒhƒGƒtƒFƒNƒg‚ÌÄ
 
 extern	int CheckJoypadVibrationEnable_PF( INPUTPADDATA *pad, int EffectIndex ) ;	// w’è‚Ìƒpƒbƒh‚ªU“®‚É‘Î‰‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( TRUE:‘Î‰‚µ‚Ä‚¢‚é  FALSE:‘Î‰‚µ‚Ä‚¢‚È‚¢ )
 extern	int CheckJoypadXInput_PF( int InputType ) ;									// w’è‚Ì“ü—ÍƒfƒoƒCƒX‚ª XInput ‚É‘Î‰‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚éˆ—‚ÌŠÂ‹«ˆË‘¶ˆ—( –ß‚è’l  TRUE:XInput‘Î‰‚Ì“ü—ÍƒfƒoƒCƒX  FALSE:XInput”ñ‘Î‰‚Ì“ü—ÍƒfƒoƒCƒX   -1:ƒGƒ‰[ )( DX_INPUT_KEY ‚â DX_INPUT_KEY_PAD1 ‚È‚ÇAƒL[ƒ{[ƒh‚ª—‚Şƒ^ƒCƒv‚ğ InputType ‚É“n‚·‚ÆƒGƒ‰[‚Æ‚È‚è -1 ‚ğ•Ô‚· )
+extern	int GetJoypadType_PF( int InputType ) ;										// ƒWƒ‡ƒCƒpƒbƒh‚Ìƒ^ƒCƒv‚ğæ“¾‚·‚é( –ß‚è’l  -1:ƒGƒ‰[  0ˆÈã:ƒWƒ‡ƒCƒpƒbƒhƒ^ƒCƒv( DX_PADTYPE_XBOX_360 ‚È‚Ç ) )
 extern	int SetJoypadDeadZone_PF( INPUTPADDATA *pad ) ;								// ƒWƒ‡ƒCƒpƒbƒh‚Ì–³Œøƒ][ƒ“‚Ìİ’è‚ğs‚¤ŠÖ”‚ÌŠÂ‹«ˆË‘¶ˆ—
 
 extern	int		GetMousePoint_PF( int *XBuf, int *YBuf ) ;							// ƒ}ƒEƒX‚ÌˆÊ’u‚ğæ“¾‚·‚éˆ—‚ÌŠÂ‹«ˆË‘¶ˆ—

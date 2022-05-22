@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ログプログラムヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -118,6 +118,9 @@ struct LOGDATA
 	int						LogFontHandleLostFlag ;				// フォントハンドルが削除された際に立つフラグ
 	int						LogX ,LogY ;						// 現在のログのカーソル位置
 	wchar_t					LogString[LOG_MAXHEIGHT][LOG_MAXLENGTH] ; // ログ文字列
+	int						LogStringColor[LOG_MAXHEIGHT][LOG_MAXLENGTH][2] ;	// ログ文字列の色( 0:本体色  1;縁の色 )
+	int						LogCharColorEnable ;				// LogCharColor が有効かどうか
+	int						LogCharColor[2] ;					// ログ文字列に付ける色( 0:本体色  1;縁の色 )
 	int						LogDrawFlag ;						// ログを画面上に表示するか、フラグ
 	int						LogFontSize ;						// ログフォントのサイズ
 	int						LogTabWidth ;						// ログのタブの幅

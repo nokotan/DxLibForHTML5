@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // ----------------------------------------------------------------------------
 
@@ -336,6 +336,27 @@ static BYTE LineBoxOneThicknessTexTga16x16TextureImage[ 16 * 16 ] =
 	0x00,0x00,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x00,0x00,
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+} ;
+
+// 4x4のランダムな方向に回転させるためのノイズテクスチャ画像情報( floatタイプ )
+static BYTE RandomKernelRotationTextureImage[ 4 * 4 * 4 ] = 
+{
+	0x77,0x8b,0x12,0xbf,
+	0x46,0x57,0x4a,0x3e,
+	0x4a,0x39,0x13,0x3f,
+	0xcb,0xb0,0x04,0xbf,
+	0x50,0xcd,0x88,0xbe,
+	0x8c,0x2a,0xbf,0x3e,
+	0xbc,0xee,0x11,0x3f,
+	0xed,0xd8,0x2c,0x3e,
+	0x98,0x09,0xcd,0xbe,
+	0x02,0x4e,0x3a,0xbf,
+	0x04,0x2d,0x66,0xbf,
+	0x6e,0xfb,0x6f,0xbe,
+	0x69,0x7d,0x90,0xbe,
+	0x26,0xf3,0x63,0x3e,
+	0x25,0x65,0xf0,0x3e,
+	0x53,0x6b,0x3e,0x3f,
 } ;
 
 // 描画周りの基本的な情報
@@ -929,10 +950,10 @@ static int Graphics_Screen_CheckDisplaySetting( int ScreenSizeX, int ScreenSizeY
 	int Num, i ;
 	DISPLAYMODEDATA Mode ;
 
-	Num = NS_GetDisplayModeNum() ;
+	Num = NS_GetDisplayModeNum( 0 ) ;
 	for( i = 0 ; i < Num ; i ++ )
 	{
-		Mode = NS_GetDisplayMode( i ) ;
+		Mode = NS_GetDisplayMode( i, 0 ) ;
 		if( Mode.Width         == ScreenSizeX &&
 			Mode.Height        == ScreenSizeY &&
 			Mode.ColorBitDepth == ColorBitDepth )
@@ -1971,7 +1992,7 @@ extern	int NS_DeleteSharingGraph( int GrHandle )
 		if( ( *TmpImage )->Orig == Orig )
 		{
 			BreakFlag = Orig->RefCount == 1 ;
-			NS_DeleteGraph( ( *TmpImage )->HandleInfo.Handle ) ;
+			NS_DeleteGraph( ( *TmpImage )->HandleInfo.Handle, FALSE ) ;
 			if( BreakFlag ) break ;
 		}
 	}
@@ -2116,7 +2137,7 @@ static int DeleteCancelCheckInitGraphFunction( HANDLEINFO *HandleInfo )
 {
 	IMAGEDATA *Image = ( IMAGEDATA * )HandleInfo ;
 
-	return Image->NotInitGraphDelete ;
+	return Image->NotInitGraphDelete || ( Image->NotInitGraphDeleteUser && GSYS.TerminateNowFlag == FALSE ) ;
 }
 
 // 画像データの初期化
@@ -2371,7 +2392,7 @@ extern int NS_ShadowMap_DrawSetup( int SmHandle )
 	NS_SetDrawScreen( SmHandle ) ;
 	for( i = 1 ; i < DX_RENDERTARGET_COUNT ; i ++ )
 	{
-		NS_SetRenderTargetToShader( i, -1 ) ;
+		NS_SetRenderTargetToShader( i, -1, 0, 0 ) ;
 	}
 
 	// シャドウマップへのレンダリングに必要な行列のセットアップ
@@ -2394,7 +2415,7 @@ extern int NS_ShadowMap_DrawSetup( int SmHandle )
 		Enable = GSYS.Screen.EnableBackgroundColor ;
 
 		NS_SetBackgroundColor( 255,255,255,255 ) ;
-		NS_ClearDrawScreen() ;
+		NS_ClearDrawScreen( NULL ) ;
 
 		GSYS.Screen.BackgroundRed = Red ;
 		GSYS.Screen.BackgroundGreen = Green ;
@@ -3098,6 +3119,8 @@ extern	int NS_BltBmpOrGraphImageToDivGraph(
 		FALSE,
 		Width, ( float )Width,
 		Height, ( float )Height,
+		Width, ( float )Width,
+		Height, ( float )Height,
 		GrHandle,
 		ReverseFlag,
 		GSYS.CreateImage.NotUseTransColor ? FALSE : TRUE,
@@ -3198,6 +3221,8 @@ extern	int NS_BltBmpOrGraphImageToDivGraphF(
 		TRUE,
 		_FTOL( Width ),  Width,
 		_FTOL( Height ), Height,
+		_FTOL( Width ),  Width,
+		_FTOL( Height ), Height,
 		GrHandle,
 		ReverseFlag,
 		GSYS.CreateImage.NotUseTransColor ? FALSE : TRUE,
@@ -3293,7 +3318,7 @@ extern int LoadBmpToGraph_WCHAR_T( const wchar_t *FileName, int TextureFlag, int
 // ＢＭＰファイルのメモリへの読みこみ（フラグつき)
 extern int NS_LoadGraph( const TCHAR *GraphName, int NotUse3DFlag )
 {
-	return NS_LoadBmpToGraph( GraphName, !NotUse3DFlag, FALSE ) ;
+	return NS_LoadBmpToGraph( GraphName, !NotUse3DFlag, FALSE, DX_MOVIESURFACE_NORMAL ) ;
 }
 
 // 画像ファイルからグラフィックハンドルを作成する
@@ -3301,7 +3326,7 @@ extern int NS_LoadGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength,
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_LoadBmpToGraph( UseFileNameBuffer, !NotUse3DFlag, FALSE ) ;
+	Result = NS_LoadBmpToGraph( UseFileNameBuffer, !NotUse3DFlag, FALSE, DX_MOVIESURFACE_NORMAL ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
@@ -3315,7 +3340,7 @@ extern int LoadGraph_WCHAR_T( const wchar_t *GraphName, int NotUse3DFlag )
 // ＢＭＰファイルのメモリへの反転読みこみ（フラグつき)
 extern int NS_LoadReverseGraph( const TCHAR *GraphName, int NotUse3DFlag )
 {
-	return NS_LoadBmpToGraph( GraphName, !NotUse3DFlag, TRUE ) ;
+	return NS_LoadBmpToGraph( GraphName, !NotUse3DFlag, TRUE, DX_MOVIESURFACE_NORMAL ) ;
 }
 
 // 画像ファイルを反転したものでグラフィックハンドルを作成する
@@ -3323,7 +3348,7 @@ extern int NS_LoadReverseGraphWithStrLen( const TCHAR *FileName, size_t FileName
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_LoadBmpToGraph( UseFileNameBuffer, !NotUse3DFlag, TRUE ) ;
+	Result = NS_LoadBmpToGraph( UseFileNameBuffer, !NotUse3DFlag, TRUE, DX_MOVIESURFACE_NORMAL ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
@@ -3335,43 +3360,43 @@ extern int LoadReverseGraph_WCHAR_T( const wchar_t *GraphName, int NotUse3DFlag 
 }
 
 // ＢＭＰの分割読みこみ（フラグつき）
-extern int NS_LoadDivGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag )
+extern int NS_LoadDivGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag, int XStride, int YStride )
 {
-	return NS_LoadDivBmpToGraph( FileName, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, FALSE ) ;
+	return NS_LoadDivBmpToGraph( FileName, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, FALSE, XStride, YStride ) ;
 }
 
 // 画像ファイルを分割してグラフィックハンドルを作成する
-extern int NS_LoadDivGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag )
+extern int NS_LoadDivGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag, int XStride, int YStride )
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_LoadDivBmpToGraph( UseFileNameBuffer, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, FALSE ) ;
+	Result = NS_LoadDivBmpToGraph( UseFileNameBuffer, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, FALSE, XStride, YStride ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
 
 // ＢＭＰの分割読みこみ（フラグつき）
-extern int NS_LoadDivGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag )
+extern int NS_LoadDivGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag, float XStride, float YStride )
 {
-	return NS_LoadDivBmpToGraphF( FileName, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, FALSE ) ;
+	return NS_LoadDivBmpToGraphF( FileName, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, FALSE, XStride, YStride ) ;
 }
 
 // 画像ファイルを分割してグラフィックハンドルを作成する
-extern int NS_LoadDivGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag )
+extern int NS_LoadDivGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag, float XStride, float YStride )
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_LoadDivBmpToGraphF( UseFileNameBuffer, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, FALSE ) ;
+	Result = NS_LoadDivBmpToGraphF( UseFileNameBuffer, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, FALSE, XStride, YStride ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
 
 // ＢＭＰの分割読みこみ
-extern int NS_LoadDivBmpToGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray, int TextureFlag, int ReverseFlag )
+extern int NS_LoadDivBmpToGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray, int TextureFlag, int ReverseFlag, int XStride, int YStride )
 {
 #ifdef UNICODE
 	return LoadDivBmpToGraph_WCHAR_T(
-		FileName, AllNum, XNum, YNum, FALSE, SizeX, ( float )SizeX, SizeY, ( float )SizeY, HandleArray, TextureFlag, ReverseFlag
+		FileName, AllNum, XNum, YNum, FALSE, SizeX, ( float )SizeX, SizeY, ( float )SizeY, HandleArray, TextureFlag, ReverseFlag, XStride, ( float )XStride, YStride, ( float )YStride
 	) ;
 #else
 	int Result ;
@@ -3379,7 +3404,7 @@ extern int NS_LoadDivBmpToGraph( const TCHAR *FileName, int AllNum, int XNum, in
 	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, return -1 )
 
 	Result = LoadDivBmpToGraph_WCHAR_T(
-		UseFileNameBuffer, AllNum, XNum, YNum, FALSE, SizeX, ( float )SizeX, SizeY, ( float )SizeY, HandleArray, TextureFlag, ReverseFlag
+		UseFileNameBuffer, AllNum, XNum, YNum, FALSE, SizeX, ( float )SizeX, SizeY, ( float )SizeY, HandleArray, TextureFlag, ReverseFlag, XStride, ( float )XStride, YStride, ( float )YStride
 	) ;
 
 	TCHAR_TO_WCHAR_T_STRING_END( FileName )
@@ -3389,27 +3414,27 @@ extern int NS_LoadDivBmpToGraph( const TCHAR *FileName, int AllNum, int XNum, in
 }
 
 // 画像ファイルを分割してグラフィックハンドルを作成する
-extern int NS_LoadDivBmpToGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray, int TextureFlag, int ReverseFlag )
+extern int NS_LoadDivBmpToGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray, int TextureFlag, int ReverseFlag, int XStride, int YStride )
 {
 	int Result ;
 #ifdef UNICODE
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = LoadDivBmpToGraph_WCHAR_T( UseFileNameBuffer, AllNum, XNum, YNum, FALSE, SizeX, ( float )SizeX, SizeY, ( float )SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+	Result = LoadDivBmpToGraph_WCHAR_T( UseFileNameBuffer, AllNum, XNum, YNum, FALSE, SizeX, ( float )SizeX, SizeY, ( float )SizeY, HandleArray, TextureFlag, ReverseFlag, XStride, ( float )XStride, YStride, ( float )YStride ) ;
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( FileName )
 #else
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = LoadDivBmpToGraph_WCHAR_T( UseFileNameBuffer, AllNum, XNum, YNum, FALSE, SizeX, ( float )SizeX, SizeY, ( float )SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+	Result = LoadDivBmpToGraph_WCHAR_T( UseFileNameBuffer, AllNum, XNum, YNum, FALSE, SizeX, ( float )SizeX, SizeY, ( float )SizeY, HandleArray, TextureFlag, ReverseFlag, XStride, ( float )XStride, YStride, ( float )YStride ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( FileName )
 #endif
 	return Result ;
 }
 
 // ＢＭＰの分割読みこみ
-extern int NS_LoadDivBmpToGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag )
+extern int NS_LoadDivBmpToGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag, float XStride, float YStride )
 {
 #ifdef UNICODE
 	return LoadDivBmpToGraph_WCHAR_T(
-		FileName, AllNum, XNum, YNum, TRUE, _FTOL( SizeX ), SizeX, _FTOL( SizeY ), SizeY, HandleArray, TextureFlag, ReverseFlag
+		FileName, AllNum, XNum, YNum, TRUE, _FTOL( SizeX ), SizeX, _FTOL( SizeY ), SizeY, HandleArray, TextureFlag, ReverseFlag, _FTOL( XStride ), XStride, _FTOL( YStride ), YStride
 	) ;
 #else
 	int Result ;
@@ -3417,7 +3442,7 @@ extern int NS_LoadDivBmpToGraphF( const TCHAR *FileName, int AllNum, int XNum, i
 	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, return -1 )
 
 	Result = LoadDivBmpToGraph_WCHAR_T(
-		UseFileNameBuffer, AllNum, XNum, YNum, TRUE, _FTOL( SizeX ), SizeX, _FTOL( SizeY ), SizeY, HandleArray, TextureFlag, ReverseFlag
+		UseFileNameBuffer, AllNum, XNum, YNum, TRUE, _FTOL( SizeX ), SizeX, _FTOL( SizeY ), SizeY, HandleArray, TextureFlag, ReverseFlag, _FTOL( XStride ), XStride, _FTOL( YStride ), YStride
 	) ;
 
 	TCHAR_TO_WCHAR_T_STRING_END( FileName )
@@ -3427,59 +3452,59 @@ extern int NS_LoadDivBmpToGraphF( const TCHAR *FileName, int AllNum, int XNum, i
 }
 
 // 画像ファイルを分割してグラフィックハンドルを作成する
-extern int NS_LoadDivBmpToGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag )
+extern int NS_LoadDivBmpToGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag, float XStride, float YStride )
 {
 	int Result ;
 #ifdef UNICODE
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = LoadDivBmpToGraph_WCHAR_T( UseFileNameBuffer, AllNum, XNum, YNum, TRUE, _FTOL( SizeX ), SizeX, _FTOL( SizeY ), SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+	Result = LoadDivBmpToGraph_WCHAR_T( UseFileNameBuffer, AllNum, XNum, YNum, TRUE, _FTOL( SizeX ), SizeX, _FTOL( SizeY ), SizeY, HandleArray, TextureFlag, ReverseFlag, _FTOL( XStride ), XStride, _FTOL( YStride ), YStride ) ;
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( FileName )
 #else
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = LoadDivBmpToGraph_WCHAR_T( UseFileNameBuffer, AllNum, XNum, YNum, TRUE, _FTOL( SizeX ), SizeX, _FTOL( SizeY ), SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+	Result = LoadDivBmpToGraph_WCHAR_T( UseFileNameBuffer, AllNum, XNum, YNum, TRUE, _FTOL( SizeX ), SizeX, _FTOL( SizeY ), SizeY, HandleArray, TextureFlag, ReverseFlag, _FTOL( XStride ), XStride, _FTOL( YStride ), YStride ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( FileName )
 #endif
 	return Result ;
 }
 
 // ＢＭＰの分割読みこみ
-extern int LoadDivBmpToGraph_WCHAR_T( const wchar_t *FileName, int AllNum, int XNum, int YNum, int IsFloat, int SizeXI, float SizeXF, int SizeYI, float SizeYF, int *HandleArray, int TextureFlag, int ReverseFlag )
+extern int LoadDivBmpToGraph_WCHAR_T( const wchar_t *FileName, int AllNum, int XNum, int YNum, int IsFloat, int SizeXI, float SizeXF, int SizeYI, float SizeYF, int *HandleArray, int TextureFlag, int ReverseFlag, int XStrideI, float XStrideF, int YStrideI, float YStrideF )
 {
 	LOADGRAPH_GPARAM GParam ;
 
 	Graphics_Image_InitLoadGraphGParam( &GParam ) ;
 
-	return Graphics_Image_LoadDivBmpToGraph_UseGParam( &GParam, FALSE, FileName, AllNum, XNum, YNum, IsFloat, SizeXI, SizeXF, SizeYI, SizeYF, HandleArray, TextureFlag, ReverseFlag, GetASyncLoadFlag(), FALSE ) ;
+	return Graphics_Image_LoadDivBmpToGraph_UseGParam( &GParam, FALSE, FileName, AllNum, XNum, YNum, IsFloat, SizeXI, SizeXF, SizeYI, SizeYF, HandleArray, TextureFlag, ReverseFlag, XStrideI, XStrideF, YStrideI, YStrideF, GetASyncLoadFlag(), FALSE ) ;
 }
 
 // ＢＭＰの反転分割読みこみ（フラグつき）
-extern int NS_LoadReverseDivGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag )
+extern int NS_LoadReverseDivGraph( const TCHAR *FileName, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag, int XStride, int YStride )
 {
-	return NS_LoadDivBmpToGraph( FileName, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, TRUE ) ;
+	return NS_LoadDivBmpToGraph( FileName, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, TRUE, XStride, YStride ) ;
 }
 
 // 画像ファイルを反転したものを分割してグラフィックハンドルを作成する
-extern int NS_LoadReverseDivGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag )
+extern int NS_LoadReverseDivGraphWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray, int NotUse3DFlag, int XStride, int YStride )
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_LoadDivBmpToGraph( UseFileNameBuffer, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, TRUE ) ;
+	Result = NS_LoadDivBmpToGraph( UseFileNameBuffer, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, TRUE, XStride, YStride ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
 
 // ＢＭＰの反転分割読みこみ（フラグつき）
-extern int NS_LoadReverseDivGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag )
+extern int NS_LoadReverseDivGraphF( const TCHAR *FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag, float XStride, float YStride )
 {
-	return NS_LoadDivBmpToGraphF( FileName, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, TRUE ) ;
+	return NS_LoadDivBmpToGraphF( FileName, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, TRUE, XStride, YStride ) ;
 }
 
 // 画像ファイルを反転したものを分割してグラフィックハンドルを作成する
-extern int NS_LoadReverseDivGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag )
+extern int NS_LoadReverseDivGraphFWithStrLen( const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag, float XStride, float YStride )
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_LoadDivBmpToGraphF( UseFileNameBuffer, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, TRUE ) ;
+	Result = NS_LoadDivBmpToGraphF( UseFileNameBuffer, AllNum, XNum, YNum, XSize, YSize, HandleArray, !NotUse3DFlag, TRUE, XStride, YStride ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
@@ -3678,7 +3703,7 @@ extern int NS_CreateDXGraph( const BASEIMAGE *RgbBaseImage, const BASEIMAGE *Alp
 	Result = Graphics_Image_CreateDXGraph_UseGParam( &GParam, NewGraphHandle, RgbBaseImage, AlphaBaseImage, TextureFlag ) ;
 	if( Result < 0 )
 	{
-		NS_DeleteGraph( NewGraphHandle ) ;
+		NS_DeleteGraph( NewGraphHandle, FALSE ) ;
 		return -1 ;
 	}
 
@@ -3688,11 +3713,79 @@ extern int NS_CreateDXGraph( const BASEIMAGE *RgbBaseImage, const BASEIMAGE *Alp
 // GraphImageデータからグラフィックハンドルを作成する
 extern int NS_CreateGraphFromGraphImage( const BASEIMAGE *BaseImage, int TextureFlag, int ReverseFlag )
 {
-	return NS_CreateGraphFromGraphImage( BaseImage, NULL, TextureFlag, ReverseFlag ) ;
+	return NS_CreateGraphFromGraphImage2( BaseImage, NULL, TextureFlag, ReverseFlag ) ;
 }
 
+// GraphImageデータから既存のグラフィックハンドルにデータを転送する
+extern int NS_ReCreateGraphFromGraphImage( const BASEIMAGE *BaseImage, int GrHandle, int TextureFlag, int ReverseFlag )
+{
+	return NS_ReCreateGraphFromGraphImage2( BaseImage, NULL, GrHandle, TextureFlag, ReverseFlag ) ;
+}
+
+// GraphImageデータから分割グラフィックハンドルを作成する
+extern int NS_CreateDivGraphFromGraphImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray,int TextureFlag, int ReverseFlag )
+{
+	return NS_CreateDivGraphFromGraphImage2( BaseImage, NULL, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+}
+
+// GraphImageデータから分割グラフィックハンドルを作成する
+extern int NS_CreateDivGraphFFromGraphImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray,int TextureFlag, int ReverseFlag )
+{
+	return NS_CreateDivGraphFFromGraphImage2( BaseImage, NULL, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+}
+
+// GraphImageデータから既存の分割グラフィックハンドルにデータを転送する
+extern int NS_ReCreateDivGraphFromGraphImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, const int *HandleArray,int TextureFlag, int ReverseFlag )
+{
+	return NS_ReCreateDivGraphFromGraphImage2( BaseImage, NULL, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+}
+
+// GraphImageデータから既存の分割グラフィックハンドルにデータを転送する
+extern int NS_ReCreateDivGraphFFromGraphImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray,int TextureFlag, int ReverseFlag )
+{
+	return NS_ReCreateDivGraphFFromGraphImage2( BaseImage, NULL, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+}
+
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 // GraphImageデータからグラフィックハンドルを作成する
 extern int NS_CreateGraphFromGraphImage( const BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int TextureFlag, int ReverseFlag )
+{
+	return NS_CreateGraphFromGraphImage2( BaseImage, AlphaBaseImage, TextureFlag, ReverseFlag ) ;
+}
+
+// GraphImageデータから既存のグラフィックハンドルにデータを転送する
+extern int NS_ReCreateGraphFromGraphImage( const BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int GrHandle, int TextureFlag, int ReverseFlag )
+{
+	return NS_ReCreateGraphFromGraphImage2( BaseImage, AlphaBaseImage, GrHandle, TextureFlag, ReverseFlag ) ;
+}
+
+// GraphImageデータから分割グラフィックハンドルを作成する
+extern int NS_CreateDivGraphFromGraphImage( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray,int TextureFlag, int ReverseFlag )
+{
+	return NS_CreateDivGraphFromGraphImage2( BaseImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+}
+
+// GraphImageデータから分割グラフィックハンドルを作成する
+extern int NS_CreateDivGraphFFromGraphImage( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray,int TextureFlag, int ReverseFlag )
+{
+	return NS_CreateDivGraphFFromGraphImage2( BaseImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+}
+
+// GraphImageデータから既存の分割グラフィックハンドルにデータを転送する
+extern int NS_ReCreateDivGraphFromGraphImage( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, const int *HandleArray,int TextureFlag, int ReverseFlag )
+{
+	return NS_ReCreateDivGraphFromGraphImage2( BaseImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+}
+
+// GraphImageデータから既存の分割グラフィックハンドルにデータを転送する
+extern int NS_ReCreateDivGraphFFromGraphImage( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray,int TextureFlag, int ReverseFlag )
+{
+	return NS_ReCreateDivGraphFFromGraphImage2( BaseImage, AlphaBaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+
+// GraphImageデータからグラフィックハンドルを作成する
+extern int NS_CreateGraphFromGraphImage2( const BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int TextureFlag, int ReverseFlag )
 {
 	LOADGRAPH_GPARAM GParam ;
 
@@ -3702,13 +3795,7 @@ extern int NS_CreateGraphFromGraphImage( const BASEIMAGE *BaseImage, const BASEI
 }
 
 // GraphImageデータから既存のグラフィックハンドルにデータを転送する
-extern int NS_ReCreateGraphFromGraphImage( const BASEIMAGE *BaseImage, int GrHandle, int TextureFlag, int ReverseFlag )
-{
-	return NS_ReCreateGraphFromGraphImage( BaseImage, NULL, GrHandle, TextureFlag, ReverseFlag ) ;
-}
-
-// GraphImageデータから既存のグラフィックハンドルにデータを転送する
-extern int NS_ReCreateGraphFromGraphImage( const BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int GrHandle, int TextureFlag, int ReverseFlag )
+extern int NS_ReCreateGraphFromGraphImage2( const BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int GrHandle, int TextureFlag, int ReverseFlag )
 {
 	LOADGRAPH_GPARAM GParam ;
 
@@ -3718,19 +3805,7 @@ extern int NS_ReCreateGraphFromGraphImage( const BASEIMAGE *BaseImage, const BAS
 }
 
 // GraphImageデータから分割グラフィックハンドルを作成する
-extern int NS_CreateDivGraphFromGraphImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray,int TextureFlag, int ReverseFlag )
-{
-	return NS_CreateDivGraphFromGraphImage( BaseImage, NULL, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
-}
-
-// GraphImageデータから分割グラフィックハンドルを作成する
-extern int NS_CreateDivGraphFFromGraphImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray,int TextureFlag, int ReverseFlag )
-{
-	return NS_CreateDivGraphFFromGraphImage( BaseImage, NULL, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
-}
-
-// GraphImageデータから分割グラフィックハンドルを作成する
-extern int NS_CreateDivGraphFromGraphImage( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray,int TextureFlag, int ReverseFlag )
+extern int NS_CreateDivGraphFromGraphImage2( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray,int TextureFlag, int ReverseFlag )
 {
 	LOADGRAPH_GPARAM GParam ;
 
@@ -3740,7 +3815,7 @@ extern int NS_CreateDivGraphFromGraphImage( BASEIMAGE *BaseImage, const BASEIMAG
 }
 
 // GraphImageデータから分割グラフィックハンドルを作成する
-extern int NS_CreateDivGraphFFromGraphImage( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray,int TextureFlag, int ReverseFlag )
+extern int NS_CreateDivGraphFFromGraphImage2( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray,int TextureFlag, int ReverseFlag )
 {
 	LOADGRAPH_GPARAM GParam ;
 
@@ -3750,19 +3825,7 @@ extern int NS_CreateDivGraphFFromGraphImage( BASEIMAGE *BaseImage, const BASEIMA
 }
 
 // GraphImageデータから既存の分割グラフィックハンドルにデータを転送する
-extern int NS_ReCreateDivGraphFromGraphImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, const int *HandleArray,int TextureFlag, int ReverseFlag )
-{
-	return NS_ReCreateDivGraphFromGraphImage( BaseImage, NULL, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
-}
-
-// GraphImageデータから既存の分割グラフィックハンドルにデータを転送する
-extern int NS_ReCreateDivGraphFFromGraphImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray,int TextureFlag, int ReverseFlag )
-{
-	return NS_ReCreateDivGraphFFromGraphImage( BaseImage, NULL, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TextureFlag, ReverseFlag ) ;
-}
-
-// GraphImageデータから既存の分割グラフィックハンドルにデータを転送する
-extern int NS_ReCreateDivGraphFromGraphImage( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, const int *HandleArray,int TextureFlag, int ReverseFlag )
+extern int NS_ReCreateDivGraphFromGraphImage2( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, const int *HandleArray,int TextureFlag, int ReverseFlag )
 {
 	LOADGRAPH_GPARAM GParam ;
 
@@ -3772,7 +3835,7 @@ extern int NS_ReCreateDivGraphFromGraphImage( BASEIMAGE *BaseImage, const BASEIM
 }
 
 // GraphImageデータから既存の分割グラフィックハンドルにデータを転送する
-extern int NS_ReCreateDivGraphFFromGraphImage( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray,int TextureFlag, int ReverseFlag )
+extern int NS_ReCreateDivGraphFFromGraphImage2( BASEIMAGE *BaseImage, const BASEIMAGE *AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray,int TextureFlag, int ReverseFlag )
 {
 	LOADGRAPH_GPARAM GParam ;
 
@@ -3845,12 +3908,12 @@ extern int NS_CreateGraph( int Width, int Height, int Pitch, const void *GraphDa
 
 	if( GrHandle != -1 )
 	{
-		NS_ReCreateGraphFromBmp( &BmpInfo, DData, GrHandle, AData != NULL ? &BmpInfo : NULL, AData ) ;
+		NS_ReCreateGraphFromBmp( &BmpInfo, DData, GrHandle, AData != NULL ? &BmpInfo : NULL, AData, TRUE, FALSE ) ;
 		NewGraph = 0 ;
 	}
 	else
 	{
-		NewGraph = NS_CreateGraphFromBmp( &BmpInfo, DData, AData != NULL ? &BmpInfo : NULL, AData ) ;
+		NewGraph = NS_CreateGraphFromBmp( &BmpInfo, DData, AData != NULL ? &BmpInfo : NULL, AData, TRUE, FALSE ) ;
 	}
 
 	// メモリを解放
@@ -4137,7 +4200,7 @@ extern	int		NS_ReCreateDivGraphFFromSoftImage( int SIHandle, int AllNum, int XNu
 // 基本イメージデータからグラフィックハンドルを作成する
 extern	int		NS_CreateGraphFromBaseImage( const BASEIMAGE *BaseImage )
 {
-	return NS_CreateGraphFromGraphImage( BaseImage ) ;
+	return NS_CreateGraphFromGraphImage( BaseImage, TRUE, FALSE ) ;
 }
 
 // 基本イメージの指定の領域を使ってグラフィックハンドルを作成する
@@ -4165,7 +4228,7 @@ extern	int		NS_CreateGraphFromRectBaseImage( const BASEIMAGE *BaseImage, int x, 
 // 基本イメージデータから既存のグラフィックハンドルに画像データを転送する
 extern	int		NS_ReCreateGraphFromBaseImage( const BASEIMAGE *BaseImage, int GrHandle )
 {
-	return NS_ReCreateGraphFromGraphImage( BaseImage, GrHandle ) ;
+	return NS_ReCreateGraphFromGraphImage( BaseImage, GrHandle, TRUE, FALSE ) ;
 }
 
 // 基本イメージの指定の領域を使って既存のグラフィックハンドルに画像データを転送する
@@ -4187,31 +4250,31 @@ extern	int		NS_ReCreateGraphFromRectBaseImage( const BASEIMAGE *BaseImage, int x
 	DummyImage.MipMapCount = 0 ;
 	DummyImage.GraphDataCount = 0 ;
 	DummyImage.GraphData = ( BYTE * )BaseImage->GraphData + x * BaseImage->ColorData.PixelByte + y * BaseImage->Pitch ;
-	return NS_ReCreateGraphFromGraphImage( &DummyImage, GrHandle ) ;
+	return NS_ReCreateGraphFromGraphImage( &DummyImage, GrHandle, TRUE, FALSE ) ;
 }
 
 // 基本イメージデータから分割グラフィックハンドルを作成する
 extern int NS_CreateDivGraphFromBaseImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, int SizeX, int SizeY, int *HandleArray )
 {
-	return NS_CreateDivGraphFromGraphImage( BaseImage,  AllNum,  XNum,  YNum,  SizeX,  SizeY, HandleArray ) ;
+	return NS_CreateDivGraphFromGraphImage( BaseImage,  AllNum,  XNum,  YNum,  SizeX,  SizeY, HandleArray, TRUE, FALSE ) ;
 }
 
 // 基本イメージデータから分割グラフィックハンドルを作成する
 extern int NS_CreateDivGraphFFromBaseImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray )
 {
-	return NS_CreateDivGraphFFromGraphImage( BaseImage,  AllNum,  XNum,  YNum,  SizeX,  SizeY, HandleArray ) ;
+	return NS_CreateDivGraphFFromGraphImage( BaseImage,  AllNum,  XNum,  YNum,  SizeX,  SizeY, HandleArray, TRUE, FALSE ) ;
 }
 
 // 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する
 extern int NS_ReCreateDivGraphFromBaseImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray )
 {
-	return NS_ReCreateDivGraphFromGraphImage( BaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray ) ;
+	return NS_ReCreateDivGraphFromGraphImage( BaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TRUE, FALSE ) ;
 }
 
 // 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する( float版 )
 extern int NS_ReCreateDivGraphFFromBaseImage( BASEIMAGE *BaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray )
 {
-	return NS_ReCreateDivGraphFFromGraphImage( BaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray ) ;
+	return NS_ReCreateDivGraphFFromGraphImage( BaseImage, AllNum, XNum, YNum, SizeX, SizeY, HandleArray, TRUE, FALSE ) ;
 }
 
 // グラフィックデータへのグラフィックの読み込み
@@ -4469,6 +4532,22 @@ extern int NS_SetCreateGraphChannelBitDepth( int BitDepth )
 extern int NS_GetCreateGraphChannelBitDepth( void )
 {
 	return GSYS.CreateImage.ChannelBitDepth ;
+}
+
+// 作成するグラフィックハンドルを InitGraph() で削除されるかを設定する( Flag  TRUE:InitGraphで削除される(デフォルト)  FALSE:InitGraphで削除されない )
+extern int NS_SetCreateGraphInitGraphDelete( int Flag )
+{
+	// 値を保存する
+	GSYS.CreateImage.NotInitGraphDeleteUserFlag = Flag != FALSE ? FALSE : TRUE ;
+	
+	// 終了
+	return 0 ;
+}
+
+// 作成するグラフィックハンドルを InitGraph() で削除されるかを取得する( Flag  TRUE:InitGraphで削除される(デフォルト)  FALSE:InitGraphで削除されない )
+extern int NS_GetCreateGraphInitGraphDelete( void )
+{
+	return GSYS.CreateImage.NotInitGraphDeleteUserFlag != FALSE ? FALSE : TRUE ;
 }
 
 // 描画可能なグラフィックを作成するかどうかのフラグをセットする( TRUE:作成する  FALSE:作成しない )
@@ -4963,9 +5042,9 @@ extern const unsigned int *NS_GetFullColorImage( int GrHandle )
 			int Time ;
 
 			Time = NS_TellMovieToGraph( GrHandle ) ;
-			NS_PlayMovieToGraph( GrHandle ) ;
+			NS_PlayMovieToGraph( GrHandle, DX_PLAYTYPE_BACK, 0 ) ;
 			UpdateMovie( Image->Orig->MovieHandle, TRUE ) ;
-			NS_PauseMovieToGraph( GrHandle ) ;
+			NS_PauseMovieToGraph( GrHandle, 0 ) ;
 			NS_SeekMovieToGraph( GrHandle, Time ) ;
 		}
 		else
@@ -5196,7 +5275,7 @@ extern	int NS_GetGraphSize( int GrHandle, int *SizeXBuf, int *SizeYBuf )
 
 	default :
 		// エラー判定
-		if( !GRAPHCHK_ASYNC( GrHandle, Image ) )
+		if( !GRAPHCHK( GrHandle, Image ) )
 		{
 			if( SizeXBuf ) *SizeXBuf = Image->WidthI ;
 			if( SizeYBuf ) *SizeYBuf = Image->HeightI ;
@@ -5233,7 +5312,7 @@ extern	int NS_GetGraphSizeF( int GrHandle, float *SizeXBuf, float *SizeYBuf )
 
 	default :
 		// エラー判定
-		if( !GRAPHCHK_ASYNC( GrHandle, Image ) )
+		if( !GRAPHCHK( GrHandle, Image ) )
 		{
 			if( SizeXBuf ) *SizeXBuf = Image->WidthF ;
 			if( SizeYBuf ) *SizeYBuf = Image->HeightF ;
@@ -5409,21 +5488,35 @@ extern const COLORDATA * NS_GetTexColorData( int AlphaCh, int AlphaTest, int Col
 	Format.ChannelBitDepth = 0 ;
 	Format.FloatTypeFlag   = FALSE ;
 	Format.BaseFormat      = DX_BASEIMAGE_FORMAT_NORMAL ;
-	return NS_GetTexColorData( &Format ) ;
+	return NS_GetTexColorData2( &Format ) ;
 }
 
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 // フォーマットに基づいたカラーデータを得る
 extern const COLORDATA * NS_GetTexColorData( const IMAGEFORMATDESC *Format )
 {
+	return NS_GetTexColorData2( Format ) ;
+}
+
+// 指定のフォーマットインデックスのカラーデータを得る
+extern const COLORDATA * NS_GetTexColorData( int FormatIndex )
+{
+	return NS_GetTexColorData3( FormatIndex ) ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+
+// フォーマットに基づいたカラーデータを得る
+extern const COLORDATA * NS_GetTexColorData2( const IMAGEFORMATDESC *Format )
+{
 	const COLORDATA * Result ;
 
-	Result = NS_GetTexColorData( NS_GetTexFormatIndex( Format ) ) ;
+	Result = NS_GetTexColorData3( NS_GetTexFormatIndex( Format ) ) ;
 
 	return Result ;
 }
 
 // 指定のフォーマットインデックスのカラーデータを得る
-extern const COLORDATA * NS_GetTexColorData( int FormatIndex )
+extern const COLORDATA * NS_GetTexColorData3( int FormatIndex )
 {
 	static int Initialize = FALSE ;
 	static COLORDATA ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_NUM ] ;
@@ -5436,23 +5529,23 @@ extern const COLORDATA * NS_GetTexColorData( int FormatIndex )
 	{
 		Initialize = TRUE ;
 
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_RGB16                 ],  16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_RGB32                 ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_RGB16           ],  16, 0x00000f00, 0x000000f0, 0x0000000f, 0x0000f000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_RGB32           ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_RGB16       ],  16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00008000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_RGB32       ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DXT1                  ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DXT2                  ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DXT3                  ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DXT4                  ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DXT5                  ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_BC7_UNORM             ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_BC7_UNORM_SRGB        ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM0             ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM1             ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM2             ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM3             ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_RGB16                 ],  16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_RGB32                 ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_RGB16           ],  16, 0x00000f00, 0x000000f0, 0x0000000f, 0x0000f000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_ALPHA_RGB32           ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_RGB16       ],  16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00008000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_ALPHATEST_RGB32       ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DXT1                  ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DXT2                  ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DXT3                  ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DXT4                  ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DXT5                  ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_BC7_UNORM             ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_BC7_UNORM_SRGB        ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM0             ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM1             ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM2             ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_PLATFORM3             ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
 		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_I16              ],   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 4, 16, FALSE ) ;
 		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F16              ],   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 4, 16, TRUE ) ;
 		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_ABGR_F32              ],   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 4, 32, TRUE ) ;
@@ -5464,9 +5557,9 @@ extern const COLORDATA * NS_GetTexColorData( int FormatIndex )
 		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_TWO_I16               ],   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 2, 16, FALSE ) ;
 		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F16               ],   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 2, 16, TRUE ) ;
 		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_TWO_F32               ],   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 2, 32, TRUE ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_RGB16       ],  16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_RGB32       ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000 ) ;
-		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ALPHA_RGB32 ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000 ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_RGB16       ],  16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_RGB32       ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000, 0,  0, FALSE ) ;
+		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ALPHA_RGB32 ],  32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000, 0,  0, FALSE ) ;
 		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_I16    ],   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 4, 16, FALSE ) ;
 		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F16    ],   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 4, 16, TRUE ) ;
 		NS_CreateColorData( &ColorData[ DX_GRAPHICSIMAGE_FORMAT_3D_DRAWVALID_ABGR_F32    ],   0, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 4, 32, TRUE ) ;
@@ -5560,7 +5653,7 @@ extern	int		NS_GetGraphPalette( int GrHandle, int ColorIndex, int *Red, int *Gre
 	case 1: Color = ((DWORD *)MemImg->Base->Palette)[ ColorIndex ]; break;
 	default : return -1 ;
 	}
-	NS_GetColor5( MemImg->Base->ColorDataP, Color, Red, Green, Blue ) ;
+	NS_GetColor5( MemImg->Base->ColorDataP, Color, Red, Green, Blue, NULL ) ;
 	
 	// 終了
 	return 0 ;
@@ -5583,7 +5676,7 @@ extern  int		NS_GetGraphOriginalPalette( int GrHandle, int ColorIndex, int *Red,
 	case 1: Color = ((DWORD *)MemImg->Base->OriginalPalette)[ColorIndex]; break;
 	default : return -1 ;
 	}
-	NS_GetColor5( MemImg->Base->ColorDataP, Color, Red, Green, Blue ) ;
+	NS_GetColor5( MemImg->Base->ColorDataP, Color, Red, Green, Blue, NULL ) ;
 	
 	// 終了
 	return 0 ;
@@ -9185,7 +9278,7 @@ extern int NS_DrawRoundRect( int x1, int y1, int x2, int y2, int rx, int ry, uns
 	// 座標変換がされる場合はアンチエイリアス版を使用する
 	if( GSYS.DrawSetting.Valid2DMatrix )
 	{
-		return NS_DrawRoundRectAA( ( float )x1, ( float )y1, ( float )x2, ( float )y2, ( float )rx, ( float )ry, 16, Color, FillFlag ) ;
+		return NS_DrawRoundRectAA( ( float )x1, ( float )y1, ( float )x2, ( float )y2, ( float )rx, ( float )ry, 16, Color, FillFlag, 1.0f ) ;
 	}
 
 	// 描画矩形を保存
@@ -9256,7 +9349,7 @@ extern int NS_DrawRoundRect( int x1, int y1, int x2, int y2, int rx, int ry, uns
 	GSYS.DrawSetting.DrawAreaF.top    = ( float )GSYS.DrawSetting.DrawArea.top ;
 	GSYS.DrawSetting.DrawAreaF.right  = ( float )GSYS.DrawSetting.DrawArea.right ;
 	GSYS.DrawSetting.DrawAreaF.bottom = ( float )GSYS.DrawSetting.DrawArea.bottom ;
-	NS_DrawOval( x1 + rx, y1 + ry, rx, ry, Color, FillFlag ) ;
+	NS_DrawOval( x1 + rx, y1 + ry, rx, ry, Color, FillFlag, 1 ) ;
 
 	SETRECT( GSYS.DrawSetting.DrawArea, x2 - rx, y1, x2, y1 + ry ) ;
 	RectClipping_Inline( &GSYS.DrawSetting.DrawArea, &BackupDrawRect ) ;
@@ -9265,7 +9358,7 @@ extern int NS_DrawRoundRect( int x1, int y1, int x2, int y2, int rx, int ry, uns
 	GSYS.DrawSetting.DrawAreaF.top    = ( float )GSYS.DrawSetting.DrawArea.top ;
 	GSYS.DrawSetting.DrawAreaF.right  = ( float )GSYS.DrawSetting.DrawArea.right ;
 	GSYS.DrawSetting.DrawAreaF.bottom = ( float )GSYS.DrawSetting.DrawArea.bottom ;
-	NS_DrawOval( x2 - rx - 1, y1 + ry, rx, ry, Color, FillFlag ) ;
+	NS_DrawOval( x2 - rx - 1, y1 + ry, rx, ry, Color, FillFlag, 1 ) ;
 
 	SETRECT( GSYS.DrawSetting.DrawArea, x1, y2 - ry, x1 + rx, y2 ) ;
 	RectClipping_Inline( &GSYS.DrawSetting.DrawArea, &BackupDrawRect ) ;
@@ -9274,7 +9367,7 @@ extern int NS_DrawRoundRect( int x1, int y1, int x2, int y2, int rx, int ry, uns
 	GSYS.DrawSetting.DrawAreaF.top    = ( float )GSYS.DrawSetting.DrawArea.top ;
 	GSYS.DrawSetting.DrawAreaF.right  = ( float )GSYS.DrawSetting.DrawArea.right ;
 	GSYS.DrawSetting.DrawAreaF.bottom = ( float )GSYS.DrawSetting.DrawArea.bottom ;
-	NS_DrawOval( x1 + rx, y2 - ry - 1, rx, ry, Color, FillFlag ) ;
+	NS_DrawOval( x1 + rx, y2 - ry - 1, rx, ry, Color, FillFlag, 1 ) ;
 
 	SETRECT( GSYS.DrawSetting.DrawArea, x2 - rx, y2 - ry, x2, y2 ) ;
 	RectClipping_Inline( &GSYS.DrawSetting.DrawArea, &BackupDrawRect ) ;
@@ -9283,7 +9376,7 @@ extern int NS_DrawRoundRect( int x1, int y1, int x2, int y2, int rx, int ry, uns
 	GSYS.DrawSetting.DrawAreaF.top    = ( float )GSYS.DrawSetting.DrawArea.top ;
 	GSYS.DrawSetting.DrawAreaF.right  = ( float )GSYS.DrawSetting.DrawArea.right ;
 	GSYS.DrawSetting.DrawAreaF.bottom = ( float )GSYS.DrawSetting.DrawArea.bottom ;
-	NS_DrawOval( x2 - rx - 1, y2 - ry - 1, rx, ry, Color, FillFlag ) ;
+	NS_DrawOval( x2 - rx - 1, y2 - ry - 1, rx, ry, Color, FillFlag, 1 ) ;
 
 	// 描画矩形を元に戻す
 	GSYS.DrawSetting.DrawArea = BackupDrawRect ;
@@ -10089,12 +10182,12 @@ extern int NS_Paint( int x, int y, unsigned int FillColor, ULONGLONG BoundaryCol
 //			HardwareMainColorData = Graphics_Hardware_GetMainColorData_PF() ;
 //			FillColor             = NS_GetColor4( MemImageColorData, HardwareMainColorData, FillColor ) ;
 			NS_GetColor2( FillColor, &Red, &Green, &Blue ) ; 
-			FillColor             = NS_GetColor3( MemImageColorData, Red, Green, Blue ) ;
+			FillColor             = NS_GetColor3( MemImageColorData, Red, Green, Blue, 255 ) ;
 			if( BoundaryColor != ULL_NUM( 0xffffffffffffffff ) )
 			{
 //				BoundaryColor = ( ULONGLONG )NS_GetColor4( MemImageColorData, HardwareMainColorData, ( unsigned int )BoundaryColor ) ;
 				NS_GetColor2( ( unsigned int )BoundaryColor, &Red, &Green, &Blue ) ; 
-				BoundaryColor = NS_GetColor3( MemImageColorData, Red, Green, Blue ) ;
+				BoundaryColor = NS_GetColor3( MemImageColorData, Red, Green, Blue, 255 ) ;
 			}
 			PaintMemImg( &MemImg, x, y, FillColor, BoundaryColor ) ;
 
@@ -12029,7 +12122,7 @@ extern	int LoadGraphScreen_WCHAR_T( int x, int y, const wchar_t *GraphName, int 
 	NS_DrawGraph( x, y, GrHandle, TransFlag ) ;
 
 	// グラフィックの削除
-	NS_DeleteGraph( GrHandle ) ;
+	NS_DeleteGraph( GrHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13111,6 +13204,13 @@ extern	int NS_DrawChipMap( int Sx, int Sy, int XNum, int YNum, const int *MapDat
 }
 #undef SETDRAWRECTCODE
 
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
+extern	int NS_DrawChipMap( int MapWidth, int MapHeight, const int *MapData, int ChipTypeNum, const int *ChipGrHandle, int TransFlag, int MapDrawPointX, int MapDrawPointY, int MapDrawWidth, int MapDrawHeight, int ScreenX, int ScreenY )
+{
+	return NS_DrawChipMap2( MapWidth, MapHeight, MapData, ChipTypeNum, ChipGrHandle, TransFlag, MapDrawPointX, MapDrawPointY, MapDrawWidth, MapDrawHeight, ScreenX, ScreenY ) ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+
 // チップグラフィックを使ったマップ描画
 // int MapWidth, MapHeight : マップデータ全体の幅と高さ
 // int *MapData : マップデータが格納されたアドレス
@@ -13120,7 +13220,7 @@ extern	int NS_DrawChipMap( int Sx, int Sy, int XNum, int YNum, const int *MapDat
 // int MapDrawX, MapDrawY : 描画するマップの起点となる左上座標
 // int MapDrawWidth, MapDrawHeight : 起点座標から描画するマップの幅と高さ
 // int ScreenX, ScreenY : マップを描画する画面上の座標
-extern	int NS_DrawChipMap( int MapWidth, int MapHeight, const int *MapData, int ChipTypeNum, const int *ChipGrHandle, int TransFlag, int MapDrawPointX, int MapDrawPointY, int MapDrawWidth, int MapDrawHeight, int ScreenX, int ScreenY )
+extern	int NS_DrawChipMap2( int MapWidth, int MapHeight, const int *MapData, int ChipTypeNum, const int *ChipGrHandle, int TransFlag, int MapDrawPointX, int MapDrawPointY, int MapDrawWidth, int MapDrawHeight, int ScreenX, int ScreenY )
 {
 	int Width, Height ;
 	int Result ;
@@ -13223,7 +13323,7 @@ extern	int NS_DrawRectGraph( int DestX, int DestY, int SrcX, int SrcY, int Width
 		}
 
 		// 削除
-		NS_DeleteGraph( TempHandle ) ;
+		NS_DeleteGraph( TempHandle, FALSE ) ;
 
 		// 終了
 		return 0 ;
@@ -13350,7 +13450,7 @@ extern	int NS_DrawRectExtendGraph( int DestX1, int DestY1, int DestX2, int DestY
 		NS_DrawExtendGraph( DestX1, DestY1, DestX2, DestY2, TempHandle, TransFlag ) ;
 
 		// 削除
-		NS_DeleteGraph( TempHandle ) ;
+		NS_DeleteGraph( TempHandle, FALSE ) ;
 
 		// 終了
 		return 0 ;
@@ -13421,7 +13521,7 @@ extern	int NS_DrawRectRotaGraph( int X, int Y, int SrcX, int SrcY, int Width, in
 	NS_DrawRotaGraph( X, Y, ExtRate, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13442,7 +13542,7 @@ extern int NS_DrawRectRotaGraph2( int x, int y, int SrcX, int SrcY, int Width, i
 	NS_DrawRotaGraph2( x, y, cx, cy, ExtRate, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13463,7 +13563,7 @@ extern int NS_DrawRectRotaGraph3(  int x,   int y,   int SrcX, int SrcY, int Wid
 	NS_DrawRotaGraph3( x, y, cx, cy, ExtRateX, ExtRateY, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13484,7 +13584,7 @@ extern	int NS_DrawRectRotaGraphFast( int X, int Y, int SrcX, int SrcY, int Width
 	NS_DrawRotaGraphFast( X, Y, ExtRate, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13505,7 +13605,7 @@ extern int NS_DrawRectRotaGraphFast2( int x, int y, int SrcX, int SrcY, int Widt
 	NS_DrawRotaGraphFast2( x, y, cx, cy, ExtRate, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13526,7 +13626,7 @@ extern int NS_DrawRectRotaGraphFast3(  int x,   int y,   int SrcX, int SrcY, int
 	NS_DrawRotaGraphFast3( x, y, cx, cy, ExtRateX, ExtRateY, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13548,38 +13648,213 @@ extern int NS_DrawRectModiGraph( int x1, int y1, int x2, int y2, int x3, int y3,
 	NS_DrawModiGraph( x1, y1, x2, y2, x3, y3, x4, y4, TempHandle, TransFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
 }
 
 // グラフィックの指定矩形部分のみを描画
-extern int NS_DrawRectGraphF( float DestX, float DestY, int SrcX, int SrcY, int Width, int Height, int GraphHandle, int TransFlag, int ReverseXFlag, int ReverseYFlag )
+extern int NS_DrawRectGraphF( float DestX, float DestY, int SrcX, int SrcY, int SrcWidth, int SrcHeight, int GraphHandle, int TransFlag, int ReverseXFlag, int ReverseYFlag )
 {
-	int TempHandle ;
+	IMAGEDATA *Image ;
 
-	// サイズ判定
-	if( Width <= 0 || Height <= 0 )
+	GRAPHICS_DRAW_DRAWSIMPLEQUADRANGLEGRAPHF_PARAM Param ;
+	GRAPHICS_DRAW_DRAWSIMPLEANGLEGRAPHF_VERTEX Vertex[ 4 ] ;
+
+	// エラー判定
+	if( GRAPHCHK( GraphHandle, Image ) )
 		return -1 ;
 
-	// 切り取ったグラフィックを作成
-	TempHandle = NS_DerivationGraph( SrcX, SrcY, Width, Height, GraphHandle ) ;
-
-	// 描画
-	if( ReverseXFlag || ReverseYFlag )
+	if( Image->Hard.DrawNum == 1 )
 	{
-		NS_DrawReverseGraphF( DestX, DestY, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
+		Param.QuadrangleNum = 1 ;
+		Param.Vertex        = Vertex ;
+		Param.GraphHandle   = GraphHandle ;
+		Param.TransFlag     = TransFlag ;
+
+		SrcX += Image->Hard.Draw[ 0 ].UsePosXI ;
+		SrcY += Image->Hard.Draw[ 0 ].UsePosYI ;
+		if( ReverseXFlag )
+		{
+			if( ReverseYFlag )
+			{
+				Vertex[ 0 ].x = DestX + SrcWidth ;
+				Vertex[ 0 ].y = DestY + SrcHeight ;
+				Vertex[ 1 ].x = DestX ;
+				Vertex[ 1 ].y = DestY + SrcHeight ;
+				Vertex[ 2 ].x = DestX + SrcWidth ;
+				Vertex[ 2 ].y = DestY ;
+				Vertex[ 3 ].x = DestX ;
+				Vertex[ 3 ].y = DestY ;
+			}
+			else
+			{
+				Vertex[ 0 ].x = DestX + SrcWidth ;
+				Vertex[ 0 ].y = DestY ;
+				Vertex[ 1 ].x = DestX ;
+				Vertex[ 1 ].y = DestY ;
+				Vertex[ 2 ].x = DestX + SrcWidth ;
+				Vertex[ 2 ].y = DestY + SrcHeight ;
+				Vertex[ 3 ].x = DestX ;
+				Vertex[ 3 ].y = DestY + SrcHeight ;
+			}
+		}
+		else
+		if( ReverseYFlag )
+		{
+			Vertex[ 0 ].x = DestX ;
+			Vertex[ 0 ].y = DestY + SrcHeight ;
+			Vertex[ 1 ].x = DestX + SrcWidth ;
+			Vertex[ 1 ].y = DestY + SrcHeight ;
+			Vertex[ 2 ].x = DestX ;
+			Vertex[ 2 ].y = DestY ;
+			Vertex[ 3 ].x = DestX + SrcWidth ;
+			Vertex[ 3 ].y = DestY ;
+		}
+		else
+		{
+			Vertex[ 0 ].x = DestX ;
+			Vertex[ 0 ].y = DestY ;
+			Vertex[ 1 ].x = DestX + SrcWidth ;
+			Vertex[ 1 ].y = DestY ;
+			Vertex[ 2 ].x = DestX ;
+			Vertex[ 2 ].y = DestY + SrcHeight ;
+			Vertex[ 3 ].x = DestX + SrcWidth ;
+			Vertex[ 3 ].y = DestY + SrcHeight ;
+		}
+
+		Vertex[ 0 ].u = ( float )SrcX / Image->Hard.Draw[ 0 ].Tex->TexWidth ;
+		Vertex[ 0 ].v = ( float )SrcY / Image->Hard.Draw[ 0 ].Tex->TexHeight ;
+		Vertex[ 1 ].u = ( float )( SrcX + SrcWidth ) / Image->Hard.Draw[ 0 ].Tex->TexWidth ;
+		Vertex[ 1 ].v = Vertex[ 0 ].v ;
+		Vertex[ 2 ].u = Vertex[ 0 ].u ;
+		Vertex[ 2 ].v = ( float )( SrcY + SrcHeight ) / Image->Hard.Draw[ 0 ].Tex->TexHeight ;
+		Vertex[ 3 ].u = Vertex[ 1 ].u ;
+		Vertex[ 3 ].v = Vertex[ 2 ].v ;
+
+		Graphics_Draw_DrawSimpleQuadrangleGraphF( &Param ) ;
 	}
 	else
 	{
-		NS_DrawGraphF( DestX, DestY, TempHandle, TransFlag ) ;
+		int TempGrHandle;
+		
+		TempGrHandle = NS_DerivationGraph( SrcX, SrcY, SrcWidth, SrcHeight, GraphHandle ) ;
+
+		if( ReverseXFlag || ReverseYFlag )
+		{
+			NS_DrawReverseGraphF( DestX, DestY, TempGrHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
+		}
+		else
+		{
+			NS_DrawGraphF( DestX, DestY, TempGrHandle, TransFlag ) ;
+		}
+
+		NS_DeleteGraph( TempGrHandle, FALSE );
 	}
 
-	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	return 0 ;
+}
 
-	// 終了
+// グラフィックの指定矩形部分のみを描画
+extern int NS_DrawRectGraphF2( float DestX, float DestY, float SrcX, float SrcY, float SrcWidth, float SrcHeight, int GraphHandle, int TransFlag, int ReverseXFlag, int ReverseYFlag )
+{
+	IMAGEDATA *Image ;
+
+	GRAPHICS_DRAW_DRAWSIMPLEQUADRANGLEGRAPHF_PARAM Param ;
+	GRAPHICS_DRAW_DRAWSIMPLEANGLEGRAPHF_VERTEX Vertex[ 4 ] ;
+
+	// エラー判定
+	if( GRAPHCHK( GraphHandle, Image ) )
+		return -1 ;
+
+	if( Image->Hard.DrawNum == 1 )
+	{
+		Param.QuadrangleNum = 1 ;
+		Param.Vertex        = Vertex ;
+		Param.GraphHandle   = GraphHandle ;
+		Param.TransFlag     = TransFlag ;
+
+		SrcX += Image->Hard.Draw[ 0 ].UsePosXF ;
+		SrcY += Image->Hard.Draw[ 0 ].UsePosYF ;
+		if( ReverseXFlag )
+		{
+			if( ReverseYFlag )
+			{
+				Vertex[ 0 ].x = DestX + SrcWidth ;
+				Vertex[ 0 ].y = DestY + SrcHeight ;
+				Vertex[ 1 ].x = DestX ;
+				Vertex[ 1 ].y = DestY + SrcHeight ;
+				Vertex[ 2 ].x = DestX + SrcWidth ;
+				Vertex[ 2 ].y = DestY ;
+				Vertex[ 3 ].x = DestX ;
+				Vertex[ 3 ].y = DestY ;
+			}
+			else
+			{
+				Vertex[ 0 ].x = DestX + SrcWidth ;
+				Vertex[ 0 ].y = DestY ;
+				Vertex[ 1 ].x = DestX ;
+				Vertex[ 1 ].y = DestY ;
+				Vertex[ 2 ].x = DestX + SrcWidth ;
+				Vertex[ 2 ].y = DestY + SrcHeight ;
+				Vertex[ 3 ].x = DestX ;
+				Vertex[ 3 ].y = DestY + SrcHeight ;
+			}
+		}
+		else
+		if( ReverseYFlag )
+		{
+			Vertex[ 0 ].x = DestX ;
+			Vertex[ 0 ].y = DestY + SrcHeight ;
+			Vertex[ 1 ].x = DestX + SrcWidth ;
+			Vertex[ 1 ].y = DestY + SrcHeight ;
+			Vertex[ 2 ].x = DestX ;
+			Vertex[ 2 ].y = DestY ;
+			Vertex[ 3 ].x = DestX + SrcWidth ;
+			Vertex[ 3 ].y = DestY ;
+		}
+		else
+		{
+			Vertex[ 0 ].x = DestX ;
+			Vertex[ 0 ].y = DestY ;
+			Vertex[ 1 ].x = DestX + SrcWidth ;
+			Vertex[ 1 ].y = DestY ;
+			Vertex[ 2 ].x = DestX ;
+			Vertex[ 2 ].y = DestY + SrcHeight ;
+			Vertex[ 3 ].x = DestX + SrcWidth ;
+			Vertex[ 3 ].y = DestY + SrcHeight ;
+		}
+
+		Vertex[ 0 ].u = SrcX / Image->Hard.Draw[ 0 ].Tex->TexWidth ;
+		Vertex[ 0 ].v = SrcY / Image->Hard.Draw[ 0 ].Tex->TexHeight ;
+		Vertex[ 1 ].u = ( SrcX + SrcWidth ) / Image->Hard.Draw[ 0 ].Tex->TexWidth ;
+		Vertex[ 1 ].v = Vertex[ 0 ].v ;
+		Vertex[ 2 ].u = Vertex[ 0 ].u ;
+		Vertex[ 2 ].v = ( SrcY + SrcHeight ) / Image->Hard.Draw[ 0 ].Tex->TexHeight ;
+		Vertex[ 3 ].u = Vertex[ 1 ].u ;
+		Vertex[ 3 ].v = Vertex[ 2 ].v ;
+
+		Graphics_Draw_DrawSimpleQuadrangleGraphF( &Param ) ;
+	}
+	else
+	{
+		int TempGrHandle;
+		
+		TempGrHandle = NS_DerivationGraphF( SrcX, SrcY, SrcWidth, SrcHeight, GraphHandle ) ;
+
+		if( ReverseXFlag || ReverseYFlag )
+		{
+			NS_DrawReverseGraphF( DestX, DestY, TempGrHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
+		}
+		else
+		{
+			NS_DrawGraphF( DestX, DestY, TempGrHandle, TransFlag ) ;
+		}
+
+		NS_DeleteGraph( TempGrHandle, FALSE );
+	}
+
 	return 0 ;
 }
 
@@ -13599,9 +13874,65 @@ extern int NS_DrawRectExtendGraphF( float DestX1, float DestY1, float DestX2, fl
 	NS_DrawExtendGraphF( DestX1, DestY1, DestX2, DestY2, TempHandle, TransFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
+	return 0 ;
+}
+
+// 画像の指定矩形部分のみを拡大描画( 座標指定が float 版( 画像内座標の指定も float 版 ) )
+extern int NS_DrawRectExtendGraphF2( float DestX1, float DestY1, float DestX2, float DestY2, float SrcX, float SrcY, float SrcWidth, float SrcHeight, int GraphHandle, int TransFlag )
+{
+	IMAGEDATA *Image ;
+
+	GRAPHICS_DRAW_DRAWSIMPLEQUADRANGLEGRAPHF_PARAM Param ;
+	GRAPHICS_DRAW_DRAWSIMPLEANGLEGRAPHF_VERTEX Vertex[ 4 ] ;
+
+	// エラー判定
+	if( GRAPHCHK( GraphHandle, Image ) )
+		return -1 ;
+
+	if( Image->Hard.DrawNum == 1 )
+	{
+		Param.QuadrangleNum = 1 ;
+		Param.Vertex        = Vertex ;
+		Param.GraphHandle   = GraphHandle ;
+		Param.TransFlag     = TransFlag ;
+
+		SrcX += Image->Hard.Draw[ 0 ].UsePosXF ;
+		SrcY += Image->Hard.Draw[ 0 ].UsePosYF ;
+
+		Vertex[ 0 ].x = DestX1 ;
+		Vertex[ 0 ].y = DestY1 ;
+		Vertex[ 0 ].u = SrcX / Image->Hard.Draw[ 0 ].Tex->TexWidth ;
+		Vertex[ 0 ].v = SrcY / Image->Hard.Draw[ 0 ].Tex->TexHeight ;
+
+		Vertex[ 1 ].x = DestX2 ;
+		Vertex[ 1 ].y = DestY1 ;
+		Vertex[ 1 ].u = ( SrcX + SrcWidth ) / Image->Hard.Draw[ 0 ].Tex->TexWidth ;
+		Vertex[ 1 ].v = Vertex[ 0 ].v ;
+
+		Vertex[ 2 ].x = DestX1 ;
+		Vertex[ 2 ].y = DestY2 ;
+		Vertex[ 2 ].u = Vertex[ 0 ].u ;
+		Vertex[ 2 ].v = ( SrcY + SrcHeight ) / Image->Hard.Draw[ 0 ].Tex->TexHeight ;
+
+		Vertex[ 3 ].x = DestX2 ;
+		Vertex[ 3 ].y = DestY2 ;
+		Vertex[ 3 ].u = Vertex[ 1 ].u ;
+		Vertex[ 3 ].v = Vertex[ 2 ].v ;
+
+		Graphics_Draw_DrawSimpleQuadrangleGraphF( &Param ) ;
+	}
+	else
+	{
+		int TempGrHandle;
+		
+		TempGrHandle = NS_DerivationGraphF( SrcX, SrcY, SrcWidth, SrcHeight, GraphHandle ) ;
+		NS_DrawExtendGraphF( DestX1, DestY1, DestX2, DestY2, TempGrHandle, TransFlag );
+		NS_DeleteGraph( TempGrHandle, FALSE );
+	}
+
 	return 0 ;
 }
 
@@ -13620,7 +13951,7 @@ extern int NS_DrawRectRotaGraphF( float X, float Y, int SrcX, int SrcY, int Widt
 	NS_DrawRotaGraphF( X, Y, ExtRate, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13641,7 +13972,7 @@ extern int NS_DrawRectRotaGraph2F( float x, float y, int SrcX, int SrcY, int Wid
 	NS_DrawRotaGraph2F( x, y, cxf, cyf, ExtRate, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13662,7 +13993,7 @@ extern int NS_DrawRectRotaGraph3F( float x, float y, int SrcX, int SrcY, int Wid
 	NS_DrawRotaGraph3F( x, y, cxf, cyf, ExtRateX, ExtRateY, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13683,7 +14014,7 @@ extern int NS_DrawRectRotaGraphFastF( float X, float Y, int SrcX, int SrcY, int 
 	NS_DrawRotaGraphFastF( X, Y, ExtRate, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13704,7 +14035,7 @@ extern int NS_DrawRectRotaGraphFast2F( float x, float y, int SrcX, int SrcY, int
 	NS_DrawRotaGraphFast2F( x, y, cxf, cyf, ExtRate, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13725,7 +14056,7 @@ extern int NS_DrawRectRotaGraphFast3F( float x, float y, int SrcX, int SrcY, int
 	NS_DrawRotaGraphFast3F( x, y, cxf, cyf, ExtRateX, ExtRateY, Angle, TempHandle, TransFlag, ReverseXFlag, ReverseYFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13747,7 +14078,7 @@ extern int NS_DrawRectModiGraphF( float x1, float y1, float x2, float y2, float 
 	NS_DrawModiGraphF( x1, y1, x2, y2, x3, y3, x4, y4, TempHandle, TransFlag ) ;
 
 	// 削除
-	NS_DeleteGraph( TempHandle ) ;
+	NS_DeleteGraph( TempHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -13764,6 +14095,23 @@ extern	int NS_DrawBlendGraph( int x, int y, int GrHandle, int TransFlag, int Ble
 
 	NS_SetBlendGraph( BlendGraph, BorderParam, BorderRange ) ;
 	NS_DrawGraph( x, y, GrHandle, TransFlag ) ;
+	NS_SetBlendGraph( B_BlendGraph, B_BorderParam, B_BorderRange ) ;
+
+	// 終了
+	return 0 ;
+}
+
+// ブレンド画像と合成して画像を等倍描画する( 座標指定が float 版 )
+extern	int NS_DrawBlendGraphF( float x, float y, int GrHandle, int TransFlag, int BlendGraph, int BorderParam, int BorderRange )
+{
+	int B_BlendGraph, B_BorderParam, B_BorderRange ;
+
+	B_BlendGraph = GSYS.DrawSetting.BlendGraph ;
+	B_BorderParam = GSYS.DrawSetting.BlendGraphBorderParam ;
+	B_BorderRange = GSYS.DrawSetting.BlendGraphBorderRange ;
+
+	NS_SetBlendGraph( BlendGraph, BorderParam, BorderRange ) ;
+	NS_DrawGraphF( x, y, GrHandle, TransFlag ) ;
 	NS_SetBlendGraph( B_BlendGraph, B_BorderParam, B_BorderRange ) ;
 
 	// 終了
@@ -13823,7 +14171,7 @@ static void DrawCircleGaugePolygon(
 		vert[i].r = 255 ;
 		vert[i].a = 255 ;
 	}
-	NS_DrawPolygon( vert, 1, GraphHandle, TRUE );
+	NS_DrawPolygon( vert, 1, GraphHandle, TRUE, FALSE );
 }
 
 // 円グラフ的な描画を行う
@@ -14310,7 +14658,7 @@ extern int NS_DrawBoxToZBuffer( int x1, int y1, int x2, int y2, int FillFlag, in
 extern int NS_DrawCircleToZBuffer( int x, int y, int r, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */ )
 {
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawCircle( x, y, r, GetColor(255,255,255), FillFlag );
+	NS_DrawCircle( x, y, r, GetColor(255,255,255), FillFlag, 1 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -14362,8 +14710,16 @@ extern int NS_DrawPolygon2D( const VERTEX2D *Vertex, int PolygonNum, int GrHandl
 	return NS_DrawPrimitive2D( Vertex, PolygonNum * 3, DX_PRIMTYPE_TRIANGLELIST, GrHandle, TransFlag ) ;
 }
 
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 // ３Ｄポリゴンを描画する
 extern	int NS_DrawPolygon3D( const VERTEX_3D *Vertex, int PolygonNum, int GrHandle, int TransFlag )
+{
+	return NS_DrawPolygon3D2( Vertex, PolygonNum, GrHandle, TransFlag ) ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+
+// ３Ｄポリゴンを描画する
+extern	int NS_DrawPolygon3D2( const VERTEX_3D *Vertex, int PolygonNum, int GrHandle, int TransFlag )
 {
 	return NS_DrawPolygon3DBase( Vertex, PolygonNum * 3, DX_PRIMTYPE_TRIANGLELIST, GrHandle, TransFlag ) ;
 }
@@ -16272,8 +16628,8 @@ extern	int NS_SetDrawBright( int RedBright, int GreenBright, int BlueBright )
 
 	// 輝度を保存
 	GSYS.DrawSetting.DrawBright.Red   = ( BYTE )RedBright   ;
-	GSYS.DrawSetting.DrawBright.Blue  = ( BYTE )BlueBright  ;
 	GSYS.DrawSetting.DrawBright.Green = ( BYTE )GreenBright ;
+	GSYS.DrawSetting.DrawBright.Blue  = ( BYTE )BlueBright  ;
 
 	// ハードウエアアクセラレーションの設定に反映
 	if( GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
@@ -16295,6 +16651,45 @@ extern int NS_GetDrawBright( int *Red, int *Green, int *Blue )
 	if( Red		!= NULL ) *Red =	GSYS.DrawSetting.DrawBright.Red ;
 	if( Green	!= NULL ) *Green =	GSYS.DrawSetting.DrawBright.Green ;
 	if( Blue	!= NULL ) *Blue =	GSYS.DrawSetting.DrawBright.Blue ;
+
+	// 終了
+	return 0 ;
+}
+
+// 描画カラーに加算する色を設定する
+extern int NS_SetDrawAddColor( int Red, int Green, int Blue )
+{
+	if( GSYS.DrawSetting.DrawAddColorI.x == Red  &&
+		GSYS.DrawSetting.DrawAddColorI.y == Green &&
+		GSYS.DrawSetting.DrawAddColorI.z == Blue )
+	{
+		return 0 ;
+	}
+
+	// 輝度を保存
+	GSYS.DrawSetting.DrawAddColorI.x = Red   ;
+	GSYS.DrawSetting.DrawAddColorI.y = Green ;
+	GSYS.DrawSetting.DrawAddColorI.z = Blue  ;
+	GSYS.DrawSetting.DrawAddColorF.r = Red   / 255.0f ;
+	GSYS.DrawSetting.DrawAddColorF.g = Green / 255.0f ;
+	GSYS.DrawSetting.DrawAddColorF.b = Blue  / 255.0f ;
+
+	// ハードウエアアクセラレーションの設定に反映
+	if( GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+	{
+		Graphics_Hardware_SetDrawAddColor_PF( Red, Green, Blue ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// 描画カラーに加算する色を取得する
+extern int NS_GetDrawAddColor( int *Red, int *Green, int *Blue )
+{
+	if( Red		!= NULL ) *Red =	GSYS.DrawSetting.DrawAddColorI.x ;
+	if( Green	!= NULL ) *Green =	GSYS.DrawSetting.DrawAddColorI.y ;
+	if( Blue	!= NULL ) *Blue =	GSYS.DrawSetting.DrawAddColorI.z ;
 
 	// 終了
 	return 0 ;
@@ -16347,6 +16742,12 @@ extern int NS_SetIgnoreDrawGraphColor( int EnableFlag )
 
 	// 終了
 	return 0 ;
+}
+
+// 描画する画像の色成分を無視するかどうかを取得する( 戻り値 この機能を使うかどうか( TRUE:使う  FALSE:使わない ) )
+extern int NS_GetIgnoreDrawGraphColor( void )
+{
+	return GSYS.DrawSetting.IgnoreGraphColorFlag ;
 }
 
 // 最大異方性の値をセットする
@@ -17146,7 +17547,7 @@ extern	int NS_SetDefTransformMatrix( void )
 	}
 
 	// プロジェクション行列は普通に
-	CreatePerspectiveFovMatrixD( &mat, FOV, D * 0.1, D + FARZ ) ;
+	CreatePerspectiveFovMatrixD( &mat, FOV, D * 0.1, D + FARZ, -1.0f ) ;
 	NS_SetTransformToProjectionD( &mat ) ;
 
 	// 終了
@@ -17895,8 +18296,16 @@ extern float NS_GetFogDensity( void )
 
 // 画面関係関数
 
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 // 指定座標の色を取得する
 extern unsigned int NS_GetPixel( int x, int y )
+{
+	return NS_GetPixelDX( x, y ) ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+
+// 指定座標の色を取得する
+extern unsigned int NS_GetPixelDX( int x, int y )
 {
 	unsigned int Ret = 0xffffffff ;
 
@@ -17960,7 +18369,7 @@ extern COLOR_F NS_GetPixelF( int x, int y )
 	else
 	{
 		// ハードウェアを使用しない場合
-		unsigned int Color = NS_GetPixel( x, y ) ;
+		unsigned int Color = NS_GetPixelDX( x, y ) ;
 		COLOR_F Result ;
 		int ri, gi, bi, ai ;
 		COLORDATA *ColorData = GetMemImgColorData( GSYS.Screen.MainScreenColorBitDepth == 16 ? 0 : 1, FALSE, FALSE ) ;
@@ -18138,11 +18547,11 @@ extern COLORDATA *Graphics_Screen_UserScreenPixelFormatColorData( int PixelForma
 
 	if( InitializeFlag == FALSE )
 	{
-		NS_CreateColorData( &R5G6B5_ColorData,         16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000 ) ;
-		NS_CreateColorData( &R5G5B5X1_ColorData,       16, 0x0000f800, 0x000007c0, 0x0000003e, 0x00000000 ) ;
-		NS_CreateColorData( &X1R5G5B5_ColorData,       16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00000000 ) ;
-		NS_CreateColorData( &X8B8G8R8_ColorData,       32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000 ) ;
-		NS_CreateColorData( &X8R8G8B8_ColorData,       32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000 ) ;
+		NS_CreateColorData( &R5G6B5_ColorData,         16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000, 0, 0, FALSE ) ;
+		NS_CreateColorData( &R5G5B5X1_ColorData,       16, 0x0000f800, 0x000007c0, 0x0000003e, 0x00000000, 0, 0, FALSE ) ;
+		NS_CreateColorData( &X1R5G5B5_ColorData,       16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00000000, 0, 0, FALSE ) ;
+		NS_CreateColorData( &X8B8G8R8_ColorData,       32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000, 0, 0, FALSE ) ;
+		NS_CreateColorData( &X8R8G8B8_ColorData,       32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000, 0, 0, FALSE ) ;
 		InitializeFlag = TRUE ;
 	}
 
@@ -18232,7 +18641,7 @@ extern int NS_ClearDrawScreenZBuffer( const RECT *ClearRect )
 // 画面の状態を初期化する(ClearDrawScreenの旧名称)
 extern int NS_ClsDrawScreen( void )
 {
-	return NS_ClearDrawScreen() ;
+	return NS_ClearDrawScreen( NULL ) ;
 }
 
 // 描画先画面のセット
@@ -18783,10 +19192,11 @@ extern int NS_SetEmulation320x240( int Flag )
 	// フラグを保存
 	GSYS.Screen.Emulation320x240Flag = Flag;
 
-	// フラグが TRUE の場合は画面モードを 320x240 に設定する
+	// フラグが TRUE の場合は画面モードを 320x240 に、スケーリングモードを DX_FSSCALINGMODE_NEAREST に設定する
 	if( Flag != FALSE )
 	{
 		NS_SetGraphMode( 320, 240, GSYS.Screen.MainScreenColorBitDepth, GSYS.Screen.MainScreenRefreshRate ) ;
+		NS_SetFullScreenScalingMode( DX_FSSCALINGMODE_NEAREST, FALSE ) ;
 	}
 
 	// 終了
@@ -19465,7 +19875,7 @@ extern int SaveDrawScreen_WCHAR_T( int x1, int y1, int x2, int y2, const wchar_t
 	{
 		UseTempBaseImage = TRUE ;
 		NS_CreateColorDataBaseImage( BaseImage.Width, BaseImage.Height, &BaseImage.ColorData, &TempBaseImage ) ;
-		NS_BltBaseImage( 0, 0, &BaseImage, &TempBaseImage ) ;
+		NS_BltBaseImage2( 0, 0, &BaseImage, &TempBaseImage ) ;
 		NS_ReverseBaseImageV( &TempBaseImage ) ;
 		UseBaseImage = &TempBaseImage ;
 	}
@@ -19514,7 +19924,7 @@ extern int SaveDrawScreen_WCHAR_T( int x1, int y1, int x2, int y2, const wchar_t
 // 現在描画対象になっている画面をＢＭＰ形式で保存する
 extern int NS_SaveDrawScreenToBMP( int x1, int y1, int x2, int y2, const TCHAR *FileName )
 {
-	return NS_SaveDrawScreen( x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_BMP );
+	return NS_SaveDrawScreen( x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_BMP, 80, TRUE, -1 );
 }
 
 // 現在描画対象になっている画面をＢＭＰ形式で保存する
@@ -19522,7 +19932,7 @@ extern int NS_SaveDrawScreenToBMPWithStrLen( int x1, int y1, int x2, int y2, con
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_SaveDrawScreen( x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_BMP ) ;
+	Result = NS_SaveDrawScreen( x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_BMP, 80, TRUE, -1 ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
@@ -19536,7 +19946,7 @@ extern int SaveDrawScreenToBMP_WCHAR_T( int x1, int y1, int x2, int y2, const wc
 // 現在描画対象になっている画面をＤＤＳ形式で保存する
 extern int NS_SaveDrawScreenToDDS(  int x1, int y1, int x2, int y2, const TCHAR *FileName )
 {
-	return NS_SaveDrawScreen( x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_DDS );
+	return NS_SaveDrawScreen( x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_DDS, 80, TRUE, -1 );
 }
 
 // 現在描画対象になっている画面をＤＤＳ形式で保存する
@@ -19544,7 +19954,7 @@ extern int NS_SaveDrawScreenToDDSWithStrLen( int x1, int y1, int x2, int y2, con
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_SaveDrawScreen( x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_DDS ) ;
+	Result = NS_SaveDrawScreen( x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_DDS, 80, TRUE, -1 ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
@@ -19558,7 +19968,7 @@ extern int SaveDrawScreenToDDS_WCHAR_T( int x1, int y1, int x2, int y2, const wc
 // 現在描画対象になっている画面をＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
 extern int NS_SaveDrawScreenToJPEG( int x1, int y1, int x2, int y2, const TCHAR *FileName, int Quality, int Sample2x1 )
 {
-	return NS_SaveDrawScreen( x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_JPEG, Quality, Sample2x1 );
+	return NS_SaveDrawScreen( x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_JPEG, Quality, Sample2x1, -1 );
 }
 
 // 現在描画対象になっている画面をＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
@@ -19566,7 +19976,7 @@ extern int NS_SaveDrawScreenToJPEGWithStrLen( int x1, int y1, int x2, int y2, co
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_SaveDrawScreen( x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_JPEG, Quality, Sample2x1 ) ;
+	Result = NS_SaveDrawScreen( x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_JPEG, Quality, Sample2x1, -1 ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
@@ -19580,7 +19990,7 @@ extern int SaveDrawScreenToJPEG_WCHAR_T( int x1, int y1, int x2, int y2, const w
 // 現在描画対象になっている画面をＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
 extern int NS_SaveDrawScreenToPNG( int x1, int y1, int x2, int y2, const TCHAR *FileName, int CompressionLevel )
 {
-	return NS_SaveDrawScreen( x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_PNG, 80, CompressionLevel );
+	return NS_SaveDrawScreen( x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_PNG, 80, TRUE, CompressionLevel );
 }
 
 // 現在描画対象になっている画面をＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
@@ -19588,7 +19998,7 @@ extern int NS_SaveDrawScreenToPNGWithStrLen( int x1, int y1, int x2, int y2, con
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_SaveDrawScreen( x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_PNG, 80, CompressionLevel ) ;
+	Result = NS_SaveDrawScreen( x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_PNG, 80, TRUE, CompressionLevel ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
@@ -19720,7 +20130,7 @@ extern int SaveDrawValidGraph_WCHAR_T( int GrHandle, int x1, int y1, int x2, int
 					DXST_LOGFILE_ADDUTF16LE( "\xcf\x63\x3b\x75\xfe\x5b\x61\x8c\x6b\x30\x67\x30\x4d\x30\x8b\x30\xb0\x30\xe9\x30\xd5\x30\xa3\x30\xc3\x30\xaf\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\xdd\x4f\x58\x5b\xe6\x51\x06\x74\x67\x30\x7f\x4f\x28\x75\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"描画対象にできるグラフィックハンドル保存処理で使用するメモリの確保に失敗しました\n" @*/ ) ;
 					return -1 ;
 				}
-				BltBaseImage( 0, 0, &BaseImage, &BaseImageDim[ k ] ) ;
+				BltBaseImage2( 0, 0, &BaseImage, &BaseImageDim[ k ] ) ;
 
 				// 描画先をアンロック
 				Graphics_Screen_UnlockDrawScreen() ;
@@ -19791,7 +20201,7 @@ extern int SaveDrawValidGraph_WCHAR_T( int GrHandle, int x1, int y1, int x2, int
 // 描画対象にできるグラフィックハンドルをＢＭＰ形式で保存する
 extern int NS_SaveDrawValidGraphToBMP(  int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName )
 {
-	return NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_BMP );
+	return NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_BMP, 80, TRUE, -1 );
 }
 
 // 描画対象にできるグラフィックハンドルをＢＭＰ形式で保存する
@@ -19799,7 +20209,7 @@ extern int NS_SaveDrawValidGraphToBMPWithStrLen( int GrHandle, int x1, int y1, i
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_BMP ) ;
+	Result = NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_BMP, 80, TRUE, -1 ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
@@ -19812,7 +20222,7 @@ extern int SaveDrawValidGraphToBMP_WCHAR_T(  int GrHandle, int x1, int y1, int x
 // 描画対象にできるグラフィックハンドルをＤＤＳ形式で保存する
 extern int NS_SaveDrawValidGraphToDDS(  int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName )
 {
-	return NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_DDS );
+	return NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_DDS, 80, TRUE, -1 );
 }
 
 // 描画対象にできるグラフィックハンドルをＤＤＳ形式で保存する
@@ -19820,7 +20230,7 @@ extern int NS_SaveDrawValidGraphToDDSWithStrLen( int GrHandle, int x1, int y1, i
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_DDS );
+	Result = NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_DDS, 80, TRUE, -1 );
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
@@ -19833,7 +20243,7 @@ extern int SaveDrawValidGraphToDDS_WCHAR_T(  int GrHandle, int x1, int y1, int x
 // 描画対象にできるグラフィックハンドルをＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
 extern int NS_SaveDrawValidGraphToJPEG( int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName, int Quality , int Sample2x1 )
 {
-	return NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_JPEG, Quality, Sample2x1 );
+	return NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_JPEG, Quality, Sample2x1, -1 );
 }
 
 // 描画対象にできるグラフィックハンドルをＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
@@ -19841,7 +20251,7 @@ extern int NS_SaveDrawValidGraphToJPEGWithStrLen( int GrHandle, int x1, int y1, 
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_JPEG, Quality, Sample2x1 )  ;
+	Result = NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_JPEG, Quality, Sample2x1, -1 )  ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
@@ -19854,7 +20264,7 @@ extern int SaveDrawValidGraphToJPEG_WCHAR_T( int GrHandle, int x1, int y1, int x
 // 描画対象にできるグラフィックハンドルをＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
 extern int NS_SaveDrawValidGraphToPNG(  int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName, int CompressionLevel )
 {
-	return NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_PNG, 80, CompressionLevel );
+	return NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_PNG, 80, TRUE, CompressionLevel );
 }
 
 // 描画対象にできるグラフィックハンドルをＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
@@ -19862,14 +20272,14 @@ extern int NS_SaveDrawValidGraphToPNGWithStrLen( int GrHandle, int x1, int y1, i
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
-	Result = NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_PNG, 80, CompressionLevel ) ;
+	Result = NS_SaveDrawValidGraph( GrHandle, x1, y1, x2, y2, UseFileNameBuffer, DX_IMAGESAVETYPE_PNG, 80, TRUE, CompressionLevel ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FileName )
 	return Result ;
 }
 
 extern int SaveDrawValidGraphToPNG_WCHAR_T( int GrHandle, int x1, int y1, int x2, int y2, const wchar_t *FileName, int CompressionLevel )
 {
-	return SaveDrawValidGraph_WCHAR_T( GrHandle, x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_PNG, 80, CompressionLevel );
+	return SaveDrawValidGraph_WCHAR_T( GrHandle, x1, y1, x2, y2, FileName, DX_IMAGESAVETYPE_PNG, 80, TRUE, CompressionLevel );
 }
 
 #endif // DX_NON_SAVEFUNCTION
@@ -21975,11 +22385,11 @@ extern int PlayMovie_WCHAR_T( const wchar_t *FileName, int ExRate, int PlayType 
 #ifndef DX_NON_INPUTSTRING
 	NS_ClearInputCharBuf() ;
 #endif // DX_NON_INPUTSTRING
-	KeyOffFlag = NS_CheckHitKeyAll() ;
+	KeyOffFlag = NS_CheckHitKeyAll( DX_CHECKINPUT_ALL ) ;
 #endif // DX_NON_INPUT
 	if( MovieHandle != -1 )
 	{
-		NS_PlayMovieToGraph( MovieHandle ) ;
+		NS_PlayMovieToGraph( MovieHandle, DX_PLAYTYPE_BACK, 0 ) ;
 
 		NS_GetDrawScreenSize( &ScreenW, &ScreenH ) ;
 		NS_GetGraphSize( MovieHandle, &w, &h ) ;
@@ -21994,7 +22404,7 @@ extern int PlayMovie_WCHAR_T( const wchar_t *FileName, int ExRate, int PlayType 
 		DrawScreenMipLevel = GSYS.DrawSetting.TargetScreenMipLevel[ 0 ] ;
 
 		NS_SetDrawScreen( DX_SCREEN_BACK ) ;
-		NS_ClearDrawScreen() ;
+		NS_ClearDrawScreen( NULL ) ;
 
 		while( NS_GetMovieStateToGraph( MovieHandle ) == 1 )
 		{
@@ -22004,7 +22414,7 @@ extern int PlayMovie_WCHAR_T( const wchar_t *FileName, int ExRate, int PlayType 
 			NS_ScreenFlip() ;
 
 #ifndef DX_NON_INPUT
-			State = NS_CheckHitKeyAll() ;
+			State = NS_CheckHitKeyAll( DX_CHECKINPUT_ALL ) ;
 			if( State == FALSE ) 
 			{
 				KeyOffFlag = FALSE ;
@@ -22025,7 +22435,7 @@ extern int PlayMovie_WCHAR_T( const wchar_t *FileName, int ExRate, int PlayType 
 #endif // DX_NON_INPUT
 				) break ;
 		}
-		NS_DeleteGraph( MovieHandle ) ;
+		NS_DeleteGraph( MovieHandle, FALSE ) ;
 
 		NS_SetRenderTargetToShader( 0, DrawScreen, DrawScreenSurface, DrawScreenMipLevel ) ;
 	}
@@ -24577,7 +24987,7 @@ extern int NS_DrawFormatStringToZBuffer( int x, int y, int WriteZMode /* DX_ZWRI
 	va_end( VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawString(  x,  y, String,  GetColor( 255,255,255 ) );
+	NS_DrawString(  x,  y, String,  GetColor( 255,255,255 ), 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -24595,7 +25005,7 @@ extern int NS_DrawFormatVStringToZBuffer( int x, int y, int WriteZMode /* DX_ZWR
 	va_end( VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawVString(  x,  y, String,  GetColor( 255,255,255 ) );
+	NS_DrawVString(  x,  y, String,  GetColor( 255,255,255 ), 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -24613,7 +25023,7 @@ extern int NS_DrawFormatStringToHandleToZBuffer( int x, int y, int FontHandle, i
 	va_end( VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawStringToHandle(  x,  y, String,  GetColor( 255,255,255 ), FontHandle );
+	NS_DrawStringToHandle(  x,  y, String,  GetColor( 255,255,255 ), FontHandle, 0, FALSE );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -24631,7 +25041,7 @@ extern int NS_DrawFormatVStringToHandleToZBuffer( int x, int y, int FontHandle, 
 	va_end( VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawVStringToHandle(  x,  y, String,  GetColor( 255,255,255 ), FontHandle );
+	NS_DrawVStringToHandle(  x,  y, String,  GetColor( 255,255,255 ), FontHandle, 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -24737,7 +25147,7 @@ extern int NS_DrawExtendFormatStringToZBuffer( int x, int y, double ExRateX, dou
 	va_end( VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawExtendString(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ) );
+	NS_DrawExtendString(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -24755,7 +25165,7 @@ extern int NS_DrawExtendFormatVStringToZBuffer( int x, int y, double ExRateX, do
 	va_end( VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawExtendVString(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ) );
+	NS_DrawExtendVString(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -24773,7 +25183,7 @@ extern int NS_DrawExtendFormatStringToHandleToZBuffer( int x, int y, double ExRa
 	va_end( VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawExtendStringToHandle(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), FontHandle );
+	NS_DrawExtendStringToHandle(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), FontHandle, 0, FALSE );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -24791,7 +25201,7 @@ extern int NS_DrawExtendFormatVStringToHandleToZBuffer( int x, int y, double ExR
 	va_end( VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawExtendVStringToHandle(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), FontHandle );
+	NS_DrawExtendVStringToHandle(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), FontHandle, 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -24967,7 +25377,7 @@ extern int DrawFormatStringToZBuffer_VaList( int x, int y, int WriteZMode /* DX_
 	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawString(  x,  y, String,  GetColor( 255,255,255 ) );
+	NS_DrawString(  x,  y, String,  GetColor( 255,255,255 ), 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -24982,7 +25392,7 @@ extern int DrawFormatVStringToZBuffer_VaList( int x, int y, int WriteZMode /* DX
 	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawVString(  x,  y, String,  GetColor( 255,255,255 ) );
+	NS_DrawVString(  x,  y, String,  GetColor( 255,255,255 ), 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -24997,7 +25407,7 @@ extern int DrawExtendFormatStringToZBuffer_VaList( int x, int y, double ExRateX,
 	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawExtendString(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ) );
+	NS_DrawExtendString(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -25012,7 +25422,7 @@ extern int DrawExtendFormatVStringToZBuffer_VaList( int x, int y, double ExRateX
 	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawExtendVString(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ) );
+	NS_DrawExtendVString(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -25057,7 +25467,7 @@ extern int DrawFormatStringToHandleToZBuffer_VaList( int x, int y, int FontHandl
 	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawStringToHandle(  x,  y, String,  GetColor( 255,255,255 ), FontHandle );
+	NS_DrawStringToHandle(  x,  y, String,  GetColor( 255,255,255 ), FontHandle, 0, FALSE );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -25072,7 +25482,7 @@ extern int DrawFormatVStringToHandleToZBuffer_VaList( int x, int y, int FontHand
 	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawVStringToHandle(  x,  y, String,  GetColor( 255,255,255 ), FontHandle );
+	NS_DrawVStringToHandle(  x,  y, String,  GetColor( 255,255,255 ), FontHandle, 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -25087,7 +25497,7 @@ extern int DrawExtendFormatStringToHandleToZBuffer_VaList( int x, int y, double 
 	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawExtendStringToHandle(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), FontHandle );
+	NS_DrawExtendStringToHandle(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), FontHandle, 0, FALSE );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -25102,7 +25512,7 @@ extern int DrawExtendFormatVStringToHandleToZBuffer_VaList( int x, int y, double
 	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
 
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawExtendVStringToHandle(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), FontHandle );
+	NS_DrawExtendVStringToHandle(  x,  y, ExRateX, ExRateY, String,  GetColor( 255,255,255 ), FontHandle, 0 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -25198,7 +25608,7 @@ extern	int		NS_DrawBaseImage( int x, int y, BASEIMAGE *BaseImage )
 	{
 		TempHandle = Graphics_Image_CreateGraphFromGraphImageBase( BaseImage, NULL, TRUE, FALSE ) ;
 		NS_DrawGraph( x, y, TempHandle, BaseImage->ColorData.AlphaWidth ? TRUE : FALSE ) ;
-		NS_DeleteGraph( TempHandle ) ;
+		NS_DeleteGraph( TempHandle, FALSE ) ;
 	}
 
 	return 0 ;
@@ -25263,7 +25673,7 @@ extern	int NS_GetDrawScreenBaseImageDestPos( int x1, int y1, int x2, int y2, BAS
 //	if( BaseImage->Width != BufferImage.Width || BaseImage->Height != BufferImage.Height ) return -1 ;
 
 	// データを転送
-	NS_BltBaseImage( DestX, DestY, &BufferImage, BaseImage ) ;
+	NS_BltBaseImage2( DestX, DestY, &BufferImage, BaseImage ) ;
 
 	// 描画先バッファをアンロック
 	Graphics_Screen_UnlockDrawScreen() ;
@@ -25403,7 +25813,7 @@ extern int Graphics_Initialize( void )
 		int i ;
 		for( i = 0 ; i < 6 ; i ++ )
 		{
-			NS_ClearDrawScreen() ;
+			NS_ClearDrawScreen( NULL ) ;
 
 			// まだＤＸライブラリの初期化が終わっていないので環境依存関数を直接呼ぶ
 			GSYS.Screen.ScreenFlipFlag = TRUE ;
@@ -25436,6 +25846,9 @@ extern int Graphics_Terminate( void )
 	// 既に後始末済みの場合は何もしない
 	if( GSYS.InitializeFlag == FALSE ) return 0 ;
 
+	// 後始末中フラグを立てる
+	GSYS.TerminateNowFlag = TRUE ;
+
 #ifndef DX_NON_MASK
 	// マスク処理の後始末
 	Mask_Terminate() ;
@@ -25453,7 +25866,7 @@ extern int Graphics_Terminate( void )
 #endif
 
 	// 全ての画像を削除
-	NS_InitGraph() ;
+	NS_InitGraph( FALSE ) ;
 
 	// すべての頂点データとインデックスデータを削除
 	NS_InitVertexBuffer() ;
@@ -25525,6 +25938,9 @@ extern int Graphics_Terminate( void )
 
 	// 汎用バッファの解放
 	Graphics_Other_TerminateCommonBuffer() ;
+
+	// 後始末中フラグを倒す
+	GSYS.TerminateNowFlag = FALSE ;
 
 	// 初期化済みフラグを倒す
 	GSYS.InitializeFlag = FALSE ;
@@ -25760,7 +26176,7 @@ LABEL_FULLSCREENMODE_SWITCH :
 			MaxResFullColorDispModeWidth  = 0 ;
 			MaxResFullColorDispModeHeight = 0 ;
 
-			DispModeNum = NS_GetDisplayModeNum() ;
+			DispModeNum = NS_GetDisplayModeNum( 0 ) ;
 			for( i = 0 ; i < DispModeNum ; i ++ )
 			{
 				DispModeData = NS_GetDisplayMode( i, UseDisplayIndex ) ;
@@ -26113,11 +26529,43 @@ extern int Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int Col
 				Graphics_SetupDisplayInfo_PF() ;
 			}
 
-			DisplayInfo = &GSYS.Screen.DisplayInfo[ GSYS.Screen.ValidUseDisplayIndex ? GSYS.Screen.UseDisplayIndex : GSYS.Screen.PrimaryDisplayIndex ] ;
-
-			if( DisplayInfo->DesktopSizeX < ScreenSizeX || DisplayInfo->DesktopSizeY < ScreenSizeY )
+			// ディスプレイの指定がある場合は指定のディスプレイのサイズのみをチェック
+			if( GSYS.Screen.ValidUseDisplayIndex )
 			{
-				goto END ;
+				DisplayInfo = &GSYS.Screen.DisplayInfo[ GSYS.Screen.UseDisplayIndex ] ;
+				if( DisplayInfo->DesktopSizeX < ScreenSizeX || DisplayInfo->DesktopSizeY < ScreenSizeY )
+				{
+					goto END ;
+				}
+			}
+			else
+			{
+				// ない場合は全てのディスプレイの最大サイズと比較
+				int MaxWidth = 0, MaxHeight = 0 ;
+				for( i = 0 ; i < GSYS.Screen.DisplayNum ; i ++ )
+				{
+					DisplayInfo = &GSYS.Screen.DisplayInfo[ i ] ;
+					if( i == 0 )
+					{
+						MaxWidth  = DisplayInfo->DesktopSizeX ;
+						MaxHeight = DisplayInfo->DesktopSizeY ;
+					}
+					else
+					{
+						if( MaxWidth < DisplayInfo->DesktopSizeX )
+						{
+							MaxWidth = DisplayInfo->DesktopSizeX ;
+						}
+						if( MaxHeight < DisplayInfo->DesktopSizeY )
+						{
+							MaxHeight = DisplayInfo->DesktopSizeY ;
+						}
+					}
+				}
+				if( ScreenSizeX > MaxWidth || ScreenSizeY > MaxHeight )
+				{
+					goto END ;
+				}
 			}
 		}
 #endif // WINDOWS_DESKTOP_OS
@@ -26148,7 +26596,7 @@ extern int Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int Col
 	if( GSYS.HardInfo.ChangeGraphModeOnlyChangeSubBackbuffer )
 	{
 		// すべての画像ハンドルを削除
-		NS_InitGraph() ;
+		NS_InitGraph( FALSE ) ;
 
 #ifndef DX_NON_FONT
 		// すべてのフォントハンドルを削除
@@ -26300,7 +26748,7 @@ extern int Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int Col
 		NS_SetRenderTargetToShader( 0, GSYS.DrawSetting.TargetScreen[ 0 ], GSYS.DrawSetting.TargetScreenSurface[ 0 ], GSYS.DrawSetting.TargetScreenMipLevel[ 0 ] ) ;
 		for( i = 1 ; i < GSYS.HardInfo.RenderTargetNum ; i ++ )
 		{
-			NS_SetRenderTargetToShader( i, -1 ) ;
+			NS_SetRenderTargetToShader( i, -1, 0, 0 ) ;
 		}
 	}
 
@@ -26951,6 +27399,7 @@ extern int Graphics_Image_SetupHandle_UseGParam(
 
 	// InitGraph で削除するかどうかをセット
 	Image->NotInitGraphDelete = GParam->NotInitGraphDelete ;
+	Image->NotInitGraphDeleteUser = GParam->NotInitGraphDeleteUser ;
 
 	// 幅と高さを保存
 	Image->UseOrigXI    = 0 ;
@@ -27266,7 +27715,7 @@ extern int Graphics_Image_TerminateHandle( HANDLEINFO *HandleInfo )
 	{
 		if( GSYS.DrawSetting.TargetScreen[ i ] == Image->HandleInfo.Handle )
 		{
-			NS_SetRenderTargetToShader( i, ( int )( i == 0 ? ( int )DX_SCREEN_FRONT : -1 ) ) ;
+			NS_SetRenderTargetToShader( i, ( int )( i == 0 ? ( int )DX_SCREEN_FRONT : -1 ), 0, 0 ) ;
 		}
 	}
 
@@ -27402,6 +27851,7 @@ extern int Graphics_Image_InitializeDerivationHandle( int GrHandle, int IsFloat,
 
 	// InitGraph で削除するかどうかを保存
 	Image->NotInitGraphDelete = SrcImage->NotInitGraphDelete ;
+	Image->NotInitGraphDeleteUser = SrcImage->NotInitGraphDeleteUser ;
 
 	//描画情報の初期化
 	Graphics_Image_InitializeDrawInfo( GrHandle, IsFloat, ASyncThread ) ;
@@ -27904,7 +28354,7 @@ extern int Graphics_Image_DerivationGraph_UseGParam(
 #endif // DX_NON_ASYNCLOAD
 	if( Result < 0 )
 	{
-		NS_DeleteGraph( NewGraphHandle ) ;
+		NS_DeleteGraph( NewGraphHandle, FALSE ) ;
 		return -1 ;
 	}
 
@@ -27945,7 +28395,7 @@ extern int Graphics_Image_OpenMovie_UseGParam(
 	GParam->CreateGraphGParam.InitHandleGParam.CreateImageColorBitDepth = NS_GetColorBitDepth() ;
 #ifndef DX_NON_DSHOW_MOVIE
 	#ifndef DX_NON_OGGTHEORA
-		GParam->CreateGraphGParam.InitHandleGParam.AlphaChannelImageCreateFlag = Movie->A8R8G8B8Flag && Movie->TheoraFlag == FALSE && Movie->PF.pMovieImage->ImageType == 1 ;
+		GParam->CreateGraphGParam.InitHandleGParam.AlphaChannelImageCreateFlag = Movie->A8R8G8B8Flag && Movie->TheoraFlag == FALSE && Movie->PF.pMovieImage != NULL && Movie->PF.pMovieImage->ImageType == 1 ;
 	#else // DX_NON_OGGTHEORA
 		GParam->CreateGraphGParam.InitHandleGParam.AlphaChannelImageCreateFlag = Movie->A8R8G8B8Flag && Movie->PF.pMovieImage->ImageType == 1 ;
 	#endif // DX_NON_OGGTHEORA
@@ -28924,6 +29374,10 @@ extern int Graphics_Image_BltBmpOrGraphImageToDivGraphBase(
 	      float		WidthF,
 	      int		HeightI,
 	      float		HeightF,
+	      int		StrideWI,
+	      float		StrideWF,
+	      int		StrideHI,
+	      float		StrideHF,
 	const int		*GrHandle,
 	      int		ReverseFlag,
 	      int		UseTransColorConvAlpha,
@@ -28988,16 +29442,16 @@ extern int Graphics_Image_BltBmpOrGraphImageToDivGraphBase(
 		// ファイル情報をセット
 		if( ReverseFlag )
 		{
-			DivImage->UseBaseXI = ( ( XNum - 1 ) - x ) * WidthI ;
-			DivImage->UseBaseXF = ( ( XNum - 1 ) - x ) * WidthF ;
+			DivImage->UseBaseXI = ( ( XNum - 1 ) - x ) * StrideWI ;
+			DivImage->UseBaseXF = ( ( XNum - 1 ) - x ) * StrideWF ;
 		}
 		else
 		{
-			DivImage->UseBaseXI = x * WidthI ;
-			DivImage->UseBaseXF = x * WidthF ;
+			DivImage->UseBaseXI = x * StrideWI ;
+			DivImage->UseBaseXF = x * StrideWF ;
 		}
-		DivImage->UseBaseYI = y * HeightI ;
-		DivImage->UseBaseYF = y * HeightF ;
+		DivImage->UseBaseYI = y * StrideHI ;
+		DivImage->UseBaseYF = y * StrideHF ;
 		x ++ ;
 		if( x == XNum )
 		{
@@ -29727,6 +30181,52 @@ extern int Graphics_Image_GetWhiteTexHandle( void )
 	return GSYS.Resource.WhiteTexHandle ;
 }
 
+// ランダムな方向に回転させる為のノイズテクスチャのハンドルを取得する
+extern int Graphics_Image_GetRandomKernelRotationTexHandle( void )
+{
+	if( GSYS.Resource.RandomKernelRotationTexHandle <= 0 )
+	{
+		LOADGRAPH_GPARAM GParam ;
+		BASEIMAGE BaseImage ;
+		int W = 4 ;
+		int H = 4 ;
+		int Size = W * H ;
+		BYTE *Src ;
+		BYTE *Dest ;
+		int i ;
+
+		NS_CreateARGBF32ColorBaseImage( W, H, &BaseImage ) ;
+		Src = RandomKernelRotationTextureImage ;
+		Dest = ( BYTE * )BaseImage.GraphData ;
+		for( i = 0 ; i < Size ; i ++, Src += 4, Dest += 16 )
+		{
+			Dest[ 0 ] = Dest[ 4 ] = Dest[  8 ] = Src[ 0 ] ;
+			Dest[ 1 ] = Dest[ 5 ] = Dest[  9 ] = Src[ 1 ] ;
+			Dest[ 2 ] = Dest[ 6 ] = Dest[ 10 ] = Src[ 2 ] ;
+			Dest[ 3 ] = Dest[ 7 ] = Dest[ 11 ] = Src[ 3 ] ;
+			Dest[ 12 ] = 0x00 ;
+			Dest[ 13 ] = 0x00 ;
+			Dest[ 14 ] = 0x80 ;
+			Dest[ 15 ] = 0x3f ;
+		}
+
+		Graphics_Image_InitLoadGraphGParam( &GParam ) ;
+		Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( &GParam.CreateGraphGParam.InitHandleGParam ) ;
+		GParam.CreateGraphGParam.InitHandleGParam.AlphaTestImageCreateFlag = FALSE ;
+		GParam.CreateGraphGParam.InitHandleGParam.AlphaChannelImageCreateFlag = FALSE ;
+		GParam.CreateGraphGParam.InitHandleGParam.FloatTypeGraphCreateFlag = TRUE ;
+		GParam.CreateGraphGParam.InitHandleGParam.CreateImageChannelNum = 4 ;
+		GParam.CreateGraphGParam.InitHandleGParam.CreateImageChannelBitDepth = 32 ;
+		GSYS.Resource.RandomKernelRotationTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, GSYS.Resource.RandomKernelRotationTexHandle, &BaseImage, NULL ) ;
+		NS_SetDeleteHandleFlag( GSYS.Resource.RandomKernelRotationTexHandle, &GSYS.Resource.RandomKernelRotationTexHandle ) ;
+		NS_SetDeviceLostDeleteGraphFlag( GSYS.Resource.RandomKernelRotationTexHandle, TRUE ) ;
+
+		NS_ReleaseBaseImage( &BaseImage ) ;
+	}
+
+	return GSYS.Resource.RandomKernelRotationTexHandle ;
+}
+
 // アンチエイリアス付きの線を描画するためのテクスチャハンドルを取得する
 extern int Graphics_Image_GetLineTexHandle( int IsPMA )
 {
@@ -30107,6 +30607,7 @@ static void Graphics_Image_MakeGraph_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int AlphaValidFlag ;
 	int Addr ;
 	int Result ;
+	IMAGEDATA *Image ;
 
 	Addr = 0 ;
 	GParam = ( SETUP_GRAPHHANDLE_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -30120,10 +30621,15 @@ static void Graphics_Image_MakeGraph_ASync( ASYNCLOADDATA_COMMON *AParam )
 
 	Result = Graphics_Image_MakeGraph_Static( GParam, GrHandle, SizeX, SizeY, NotUse3DFlag, UsePaletteFlag, PaletteBitDepth, AlphaValidFlag, TRUE ) ;
 
+	if( !GRAPHCHK_ASYNC( GrHandle, Image ) )
+	{
+	 	Image->HandleInfo.ASyncLoadResult = Result ;
+	}
+
 	DecASyncLoadCount( GrHandle ) ;
 	if( Result < 0 )
 	{
-		NS_DeleteGraph( GrHandle ) ;
+		NS_DeleteGraph( GrHandle, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -30223,7 +30729,7 @@ ERR :
 	}
 #endif // DX_NON_ASYNCLOAD
 
-	NS_DeleteGraph( GrHandle ) ;
+	NS_DeleteGraph( GrHandle, FALSE ) ;
 
 	return -1 ;
 }
@@ -30344,6 +30850,7 @@ static void Graphics_Image_CreateGraph_ASync( ASYNCLOADDATA_COMMON *AParam )
 	LOADGRAPH_PARAM *Param ;
 	int Addr ;
 	int Result ;
+	IMAGEDATA *Image ;
 
 	Addr = 0 ;
 	Param = ( LOADGRAPH_PARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -30364,12 +30871,17 @@ static void Graphics_Image_CreateGraph_ASync( ASYNCLOADDATA_COMMON *AParam )
 	}
 
 	Result = Graphics_Image_CreateGraph_Static( Param, TRUE ) ;
+	if( !GRAPHCHK_ASYNC( Param->GrHandle, Image ) )
+	{
+	 	Image->HandleInfo.ASyncLoadResult = Result ;
+	}
+
 	DecASyncLoadCount( Param->GrHandle ) ;
 	if( Param->ReCreateFlag == FALSE )
 	{
 		if( Result < 0 )
 		{
-			NS_DeleteGraph( Param->GrHandle ) ;
+			NS_DeleteGraph( Param->GrHandle, FALSE ) ;
 		}
 	}
 }
@@ -30497,7 +31009,7 @@ ERR :
 
 	if( Param->ReCreateFlag == FALSE )
 	{
-		NS_DeleteGraph( Param->GrHandle ) ;
+		NS_DeleteGraph( Param->GrHandle, FALSE ) ;
 		Param->GrHandle = -1 ;
 	}
 
@@ -30547,6 +31059,10 @@ static int Graphics_Image_CreateDivGraph_Static(
 				Param->SizeXF,
 				Param->SizeYI,
 				Param->SizeYF,
+				Param->StrideXI,
+				Param->StrideXF,
+				Param->StrideYI,
+				Param->StrideYF,
 				Param->HandleArray,
 				Param->TextureFlag,
 				Param->ReverseFlag,
@@ -30625,6 +31141,7 @@ static void Graphics_Image_CreateDivGraph_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int Addr ;
 	int i ;
 	int Result ;
+	IMAGEDATA *Image ;
 
 	Addr = 0 ;
 	Param = ( LOADGRAPH_PARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -30648,18 +31165,28 @@ static void Graphics_Image_CreateDivGraph_ASync( ASYNCLOADDATA_COMMON *AParam )
 
 	Result = Graphics_Image_CreateDivGraph_Static( Param, TRUE ) ;
 
+	if( !GRAPHCHK_ASYNC( Param->BaseHandle, Image ) )
+	{
+	 	Image->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( Param->BaseHandle ) ;
 	for( i = 0 ; i < Param->AllNum ; i ++ )
+	{
+		if( !GRAPHCHK_ASYNC( Param->HandleArray[ i ], Image ) )
+		{
+	 		Image->HandleInfo.ASyncLoadResult = Result ;
+		}
 		DecASyncLoadCount( Param->HandleArray[ i ] ) ;
+	}
 
 	if( Param->ReCreateFlag == FALSE )
 	{
-		NS_DeleteGraph( Param->BaseHandle ) ;
+		NS_DeleteGraph( Param->BaseHandle, FALSE ) ;
 		if( Result < 0 )
 		{
 			for( i = 0 ; i < Param->AllNum ; i ++ )
 			{
-				NS_DeleteGraph( Param->HandleArray[ i ] ) ;
+				NS_DeleteGraph( Param->HandleArray[ i ], FALSE ) ;
 				Param->HandleArray[ i ] = -1 ;
 			}
 		}
@@ -30790,7 +31317,7 @@ extern int Graphics_Image_CreateDivGraph_UseGParam(
 
 		if( Param->ReCreateFlag == FALSE )
 		{
-			NS_DeleteGraph( Param->BaseHandle ) ;
+			NS_DeleteGraph( Param->BaseHandle, FALSE ) ;
 		}
 	}
 
@@ -30826,10 +31353,10 @@ ERR :
 	{
 		for( i = 0 ; i < Param->AllNum ; i ++ )
 		{
-			NS_DeleteGraph( Param->HandleArray[ i ] ) ;
+			NS_DeleteGraph( Param->HandleArray[ i ], FALSE ) ;
 			Param->HandleArray[ i ] = -1 ;
 		}
-		NS_DeleteGraph( Param->BaseHandle ) ;
+		NS_DeleteGraph( Param->BaseHandle, FALSE ) ;
 	}
 
 	return -1 ;
@@ -30898,6 +31425,10 @@ extern int Graphics_Image_LoadDivBmpToGraph_UseGParam(
 	int *HandleArray,
 	int TextureFlag,
 	int ReverseFlag,
+	int   XStrideI,
+	float XStrideF,
+	int   YStrideI,
+	float YStrideF,
 	int ASyncLoadFlag,
 	int ASyncThread
 )
@@ -30918,6 +31449,10 @@ extern int Graphics_Image_LoadDivBmpToGraph_UseGParam(
 	Param.SizeXF = SizeXF ;
 	Param.SizeYI = SizeYI ;
 	Param.SizeYF = SizeYF ;
+	Param.StrideXI = XStrideI ;
+	Param.StrideXF = XStrideF ;
+	Param.StrideYI = YStrideI ;
+	Param.StrideYF = YStrideF ;
 	Param.HandleArray = HandleArray ;
 	Param.TextureFlag = TextureFlag ;
 	Param.ReverseFlag = ReverseFlag ;
@@ -31303,6 +31838,10 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam(
 	float SizeXF,
 	int   SizeYI,
 	float SizeYF,
+	int   StrideXI,
+	float StrideXF,
+	int   StrideYI,
+	float StrideYF,
 	int *HandleArray,
 	int TextureFlag,
 	int ReverseFlag,
@@ -31311,6 +31850,26 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam(
 {
 	int Result ;
 	int GrSizeX, GrSizeY ;
+
+	if( StrideXI == 0 )
+	{
+		StrideXI = SizeXI ;
+	}
+
+	if( StrideYI == 0 )
+	{
+		StrideYI = SizeYI ;
+	}
+
+	if( StrideXF == 0.0f )
+	{
+		StrideXF = SizeXF ;
+	}
+
+	if( StrideYF == 0.0f )
+	{
+		StrideYF = SizeYF ;
+	}
 
 	if( ReCreateFlag == FALSE )
 	{
@@ -31324,17 +31883,17 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam(
 
 		if( ReverseFlag == TRUE )
 		{
-			basexI = ( XNum - 1 ) * SizeXI ;
-			basexF = ( XNum - 1 ) * SizeXF ;
-			addxI = -SizeXI ;
-			addxF = -SizeXF ;
+			basexI = ( XNum - 1 ) * StrideXI ;
+			basexF = ( XNum - 1 ) * StrideXF ;
+			addxI = -StrideXI ;
+			addxF = -StrideXF ;
 		}
 		else
 		{
 			basexI = 0 ;
 			basexF = 0 ;
-			addxI = SizeXI ;
-			addxF = SizeXF ;
+			addxI = StrideXI ;
+			addxF = StrideXF ;
 		}
 
 		// 指定の枚数に分割する
@@ -31344,8 +31903,8 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam(
 			for( j = 0 ; k < AllNum && j < XNum ; j ++, k ++ )
 			{
 				// サイズのチェック
-				if( ( BaseImage->Width  < basexI + addxI * j + SizeXI ) ||
-					( BaseImage->Height < SizeYI         * i + SizeYI ) )
+				if( ( BaseImage->Width  < basexI   + addxI * j + StrideXI ) ||
+					( BaseImage->Height < StrideYI         * i + StrideYI ) )
 				{
 					DXST_LOGFILE_ADDUTF16LE( "\xb0\x30\xe9\x30\xd5\x30\xa3\x30\xc3\x30\xaf\x30\x6e\x30\x06\x52\x72\x52\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x02\x30\x06\x52\x72\x52\x8c\x5f\x6e\x30\xcf\x7d\xb5\x30\xa4\x30\xba\x30\x4c\x30\x06\x52\x72\x52\x43\x51\x6e\x30\x3b\x75\xcf\x50\x88\x30\x8a\x30\x82\x30\x27\x59\x4d\x30\x44\x30\x07\x63\x9a\x5b\x6b\x30\x6a\x30\x63\x30\x66\x30\x57\x30\x7e\x30\x63\x30\x66\x30\x44\x30\x7e\x30\x59\x30\x02\x30\x20\x00\x69\x00\x6e\x00\x20\x00\x43\x00\x72\x00\x65\x00\x61\x00\x74\x00\x65\x00\x44\x00\x69\x00\x76\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x46\x00\x72\x00\x6f\x00\x6d\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x0a\x00\x00"/*@ L"グラフィックの分割に失敗しました。分割後の総サイズが分割元の画像よりも大きい指定になってしまっています。 in CreateDivGraphFromGraphImage\n" @*/ ) ;
 					return -1 ;
@@ -31356,8 +31915,8 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam(
 						IsFloat,
 						basexI + addxI * j,
 						basexF + addxF * j,
-						SizeYI * i,
-						SizeYF * i,
+						StrideYI * i,
+						StrideYF * i,
 						SizeXI,
 						SizeXF,
 						SizeYI,
@@ -31381,7 +31940,7 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam(
 
 		// サイズが違ったらエラー
 		if( NS_GetGraphSize( HandleArray[ 0 ], &GrSizeX, &GrSizeY ) == -1 ) return -1 ;
-		if( BaseImage->Width < XNum * SizeXI || BaseImage->Height < YNum * SizeYI ) return -1 ;
+		if( BaseImage->Width < XNum * StrideXI || BaseImage->Height < YNum * StrideYI ) return -1 ;
 		if( AlphaBaseImage != NULL && ( AlphaBaseImage->Width != BaseImage->Width || AlphaBaseImage->Height != BaseImage->Height ) ) return -1 ;
 
 		LUTRANS_RE_DIV_GPARAM( GParam, BaseImage, HandleArray, AllNum )
@@ -31398,6 +31957,10 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam(
 				SizeXF,
 				SizeYI,
 				SizeYF,
+				StrideXI,
+				StrideXF,
+				StrideYI,
+				StrideYF,
 				HandleArray,
 				ReverseFlag,
 				GParam->NotUseTransColor ? FALSE : TRUE,
@@ -31435,7 +31998,7 @@ extern int Graphics_Image_CreateGraphFromGraphImageBase( BASEIMAGE *BaseImage, c
 #endif // DX_NON_ASYNCLOAD
 	if( Result < 0 )
 	{
-		NS_DeleteGraph( GrHandle ) ;
+		NS_DeleteGraph( GrHandle, FALSE ) ;
 		return -1 ;
 	}
 
@@ -31490,11 +32053,11 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase(
 	Graphics_Image_InitCreateGraphHandleAndBltGraphImageGParam( &GParam ) ;
 
 	// 分割グラフィックハンドルの作成
-	if( Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam( &GParam, FALSE, BaseHandle, BaseImage, AlphaBaseImage, AllNum, XNum, YNum, IsFloat, SizeXI, SizeXF, SizeYI, SizeYF, HandleArray, TextureFlag, ReverseFlag, FALSE ) < 0 )
+	if( Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam( &GParam, FALSE, BaseHandle, BaseImage, AlphaBaseImage, AllNum, XNum, YNum, IsFloat, SizeXI, SizeXF, SizeYI, SizeYF, 0, 0.0f, 0, 0.0f, HandleArray, TextureFlag, ReverseFlag, FALSE ) < 0 )
 		goto ERR ;
 	
 	// 元となったハンドルを解放
-	NS_DeleteGraph( BaseHandle ) ;
+	NS_DeleteGraph( BaseHandle, FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -31502,9 +32065,9 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase(
 ERR :
 	for( i = 0 ; i < AllNum ; i ++ )
 	{
-		NS_DeleteGraph( HandleArray[ i ] ) ;
+		NS_DeleteGraph( HandleArray[ i ], FALSE ) ;
 	}
-	NS_DeleteGraph( BaseHandle ) ;
+	NS_DeleteGraph( BaseHandle, FALSE ) ;
 
 	// エラー終了	
 	return -1 ;
@@ -31535,7 +32098,7 @@ extern int Graphics_Image_ReCreateDivGraphFromGraphImageBase( BASEIMAGE *BaseIma
 
 	Graphics_Image_InitCreateGraphHandleAndBltGraphImageGParam( &GParam ) ;
 
-	Result = Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam( &GParam, TRUE, -1, BaseImage, AlphaBaseImage, AllNum, XNum, YNum, IsFloat, SizeXI, SizeXF, SizeYI, SizeYF, ( int * )HandleArray, TextureFlag, ReverseFlag, FALSE ) ;
+	Result = Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam( &GParam, TRUE, -1, BaseImage, AlphaBaseImage, AllNum, XNum, YNum, IsFloat, SizeXI, SizeXF, SizeYI, SizeYF, 0, 0.0f, 0, 0.0f, ( int * )HandleArray, TextureFlag, ReverseFlag, FALSE ) ;
 
 	// 終了
 	return Result ;
@@ -31584,6 +32147,7 @@ extern void Graphics_Image_InitSetupGraphHandleGParam( SETUP_GRAPHHANDLE_GPARAM 
 	GParam->NotUseAlphaImageLoadFlag			= GSYS.CreateImage.NotUseAlphaImageLoadFlag ;
 	GParam->NotUsePaletteGraphFlag				= GSYS.CreateImage.NotUsePaletteGraphFlag ;
 	GParam->NotInitGraphDelete					= FALSE ;
+	GParam->NotInitGraphDeleteUser				= GSYS.CreateImage.NotInitGraphDeleteUserFlag ;
 
 	GParam->UserPlatformTexture					= NULL ;
 }
@@ -31620,6 +32184,7 @@ extern void Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( SETUP
 	GParam->NotUseAlphaImageLoadFlag			= TRUE ;
 	GParam->NotUsePaletteGraphFlag				= FALSE ;
 	GParam->NotInitGraphDelete					= FALSE ;
+	GParam->NotInitGraphDeleteUser				= FALSE ;
 
 	GParam->UserPlatformTexture					= NULL ;
 }
@@ -31656,6 +32221,7 @@ extern void Graphics_Image_InitSetupGraphHandleGParam_Normal_DrawValid_NoneZBuff
 	GParam->NotUseAlphaImageLoadFlag			= TRUE ;
 	GParam->NotUsePaletteGraphFlag				= FALSE ;
 	GParam->NotInitGraphDelete					= FALSE ;
+	GParam->NotInitGraphDeleteUser				= FALSE ;
 
 	GParam->UserPlatformTexture					= NULL ;
 }
@@ -31785,6 +32351,9 @@ extern	int		Graphics_DrawSetting_Initialize( void )
 	// 描画輝度をセット
 	NS_SetDrawBright( 255, 255, 255 ) ;
 //	GSYS.DrawSetting.bDrawBright = 0xffffff ;
+
+	// 加算色をセット
+	NS_SetDrawAddColor( 0, 0, 0 ) ;
 
 	// フォグの初期設定
 	NS_SetFogMode( DX_FOGMODE_LINEAR ) ;
@@ -33777,6 +34346,7 @@ static void Graphics_Shader_CreateHandle_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int   ImageAfterFree ;
 	int   Addr ;
 	int   Result ;
+	SHADERHANDLEDATA *pShader ;
 
 	Addr = 0 ;
 	ShaderHandle   = GetASyncLoadParamInt(   AParam->Data, &Addr ) ;
@@ -33786,6 +34356,10 @@ static void Graphics_Shader_CreateHandle_ASync( ASYNCLOADDATA_COMMON *AParam )
 	ImageAfterFree = GetASyncLoadParamInt(   AParam->Data, &Addr ) ;
 
 	Result = Graphics_Shader_CreateHandle_Static( ShaderHandle, ShaderType, Image, ImageSize, ImageAfterFree, TRUE ) ;
+	if( !SHADERCHK_ASYNC( ShaderHandle, pShader ) )
+	{
+		pShader->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( ShaderHandle ) ;
 	if( Result < 0 )
 	{
@@ -33933,6 +34507,7 @@ static void Graphics_Shader_LoadShader_ASync( ASYNCLOADDATA_COMMON *AParam )
 	const wchar_t *FileName ;
 	int          Addr ;
 	int          Result ;
+	SHADERHANDLEDATA *pShader ;
 
 	Addr = 0 ;
 	ShaderHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
@@ -33940,6 +34515,10 @@ static void Graphics_Shader_LoadShader_ASync( ASYNCLOADDATA_COMMON *AParam )
 	FileName     = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
 	Result = Graphics_Shader_LoadShader_Static( ShaderHandle, ShaderType, FileName, TRUE ) ;
+	if( !SHADERCHK_ASYNC( ShaderHandle, pShader ) )
+	{
+		pShader->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( ShaderHandle ) ;
 	if( Result < 0 )
 	{
@@ -34140,12 +34719,17 @@ static void Graphics_ShaderConstantBuffer_CreateHandle_ASync( ASYNCLOADDATA_COMM
 	int   BufferSize ;
 	int   Addr ;
 	int   Result ;
+	SHADERCONSTANTBUFFERHANDLEDATA *ShaderConstantBuffer ;
 
 	Addr = 0 ;
 	ShaderConstantBufferHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	BufferSize                 = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = Graphics_ShaderConstantBuffer_CreateHandle_Static( ShaderConstantBufferHandle, BufferSize, TRUE ) ;
+	if( !SHADERCONSTANTBUFFERCHK_ASYNC( ShaderConstantBufferHandle, ShaderConstantBuffer ) )
+	{
+		ShaderConstantBuffer->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( ShaderConstantBufferHandle ) ;
 	if( Result < 0 )
 	{
@@ -34576,6 +35160,7 @@ static void Graphics_ShadowMap_MakeShadowMap_ASync( ASYNCLOADDATA_COMMON *AParam
 	int SizeY ;
 	int Addr ;
 	int Result ;
+	SHADOWMAPDATA *ShadowMap ;
 
 	Addr = 0 ;
 	GParam = ( SETUP_SHADOWMAPHANDLE_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -34584,11 +35169,14 @@ static void Graphics_ShadowMap_MakeShadowMap_ASync( ASYNCLOADDATA_COMMON *AParam
 	SizeY = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = Graphics_ShadowMap_MakeShadowMap_Static( GParam, SmHandle, SizeX, SizeY, TRUE ) ;
-
+	if( !SHADOWMAPCHK_ASYNC( SmHandle, ShadowMap ) )
+	{
+		ShadowMap->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( SmHandle ) ;
 	if( Result < 0 )
 	{
-		NS_DeleteGraph( SmHandle ) ;
+		NS_DeleteGraph( SmHandle, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -34675,7 +35263,7 @@ ERR :
 	}
 #endif // DX_NON_ASYNCLOAD
 
-	NS_DeleteGraph( SmHandle ) ;
+	NS_DeleteGraph( SmHandle, FALSE ) ;
 
 	return -1 ;
 }
@@ -34713,7 +35301,7 @@ extern int Graphics_ShadowMap_SetupHandle_UseGParam( SETUP_SHADOWMAPHANDLE_GPARA
 
 	// エラー終了
 ERR :
-	NS_DeleteGraph( SmHandle ) ;
+	NS_DeleteGraph( SmHandle, FALSE ) ;
 
 	return -1 ;
 }
@@ -34759,6 +35347,8 @@ extern void Graphics_ShadowMap_RefreshVSParam( void )
 // ピクセルシェーダーに設定するシャドウマップの情報を更新する
 extern void Graphics_ShadowMap_RefreshPSParam( void )
 {
+	Graphics_Light_RefreshState() ;
+
 	Graphics_Hardware_ShadowMap_RefreshPSParam_PF() ;
 }
 

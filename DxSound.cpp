@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＳｏｕｎｄ制御プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ namespace DxLib
 #define SSND_PLAYER_STRM_BUFSEC				(256)		// プレイヤーのサウンドバッファのサイズ( 1 / SSND_PLAYER_SEC_DIVNUM　秒 )
 #define SSND_PLAYER_STRM_ONECOPYSEC			(8)			// プレイヤーのサウンドバッファのサイズ( 1 / SSND_PLAYER_SEC_DIVNUM　秒 )
 #define SSND_PLAYER_STRM_SAKICOPYSEC		(256 / 5)	// プレイヤーの再生時に音声データを先行展開しておく最大時間( 単位は SSND_PLAYER_SEC_DIVNUM分の1秒 )
-#define SSND_PLAYER_STRM_MINSAKICOPYSEC		(256 / 20)	// プレイヤーの再生時に音声データを先行展開しておく最小時間( 単位は SSND_PLAYER_SEC_DIVNUM分の1秒 )
+#define SSND_PLAYER_STRM_MINSAKICOPYSEC		(256 / 30)	// プレイヤーの再生時に音声データを先行展開しておく最小時間( 単位は SSND_PLAYER_SEC_DIVNUM分の1秒 )
 
 // ストリーム関係の定義
 #define STS_DIVNUM							(256)		// １秒の分割数
@@ -266,7 +266,7 @@ extern int InitializeSoundSystem( void )
 	// 初期化フラグを立てる
 	SoundSysData.InitializeFlag = TRUE ;
 
-	NS_InitSoundMem() ;
+	NS_InitSoundMem( FALSE ) ;
 	NS_InitSoftSound() ;
 	NS_InitSoftSoundPlayer() ;
 
@@ -325,7 +325,7 @@ extern int TerminateSoundSystem( void )
 	EndSoundCapture() ;
 
 	// すべてのサウンドデータを解放する
-	NS_InitSoundMem() ;
+	NS_InitSoundMem( FALSE ) ;
 
 	// 全てのソフトサウンドデータを解放する
 	NS_InitSoftSound() ;
@@ -383,6 +383,21 @@ extern int TerminateSoundSystem( void )
 	return 0 ;
 }
 
+
+
+
+
+
+
+
+
+
+// サウンドシステムで周期的に行う処理用の関数
+extern int ProcessSoundSystem( void )
+{
+	// 環境依存の処理を行う
+	return ProcessSoundSystem_PF() ;
+}
 
 
 
@@ -561,7 +576,7 @@ extern int TerminateSoundHandle( HANDLEINFO *HandleInfo )
 				if( Sound->Stream.BufferBorrowSoundHandle != HandleInfo->Handle &&
 					UniSound->Stream.DeleteWaitFlag == TRUE )
 				{
-					NS_DeleteSoundMem( Sound->Stream.BufferBorrowSoundHandle ) ;
+					NS_DeleteSoundMem( Sound->Stream.BufferBorrowSoundHandle, FALSE ) ;
 				}
 			}
 			
@@ -2613,6 +2628,8 @@ extern int ProcessStreamSoundMem_UseGParam( int SoundHandle, int ASyncThread )
 		// データ転送処理
 		while( MoveByte != 0 && Sound->Stream.EndWaitFlag == FALSE )
 		{
+			int IsLoopStartSamplePosition = FALSE ;
+
 			// 使用するデータをセット
 			PlayData = &Sound->Stream.File[ Sound->Stream.FileActive ] ;
 
@@ -2625,14 +2642,15 @@ extern int ProcessStreamSoundMem_UseGParam( int SoundHandle, int ASyncThread )
 				MoveByte2 = ( int )( PlayData->LoopStartSamplePosition * Sound->BufferFormat.nBlockAlign - Sound->Stream.FileCompCopyLength ) ;
 				if( MoveByte2 <= 0 )
 					MoveByte2 = 0 ;
+				IsLoopStartSamplePosition = TRUE ;
 			}
 
 			// 転送
 			MoveByte2 = SoundDataCopy( &LockData, &PlayData->ConvData, ( DWORD )MoveByte2 ) ;
 
-			// 転送量が０バイトの場合は次のファイルに移る
+			// 転送量が０バイトの場合で、且つループ開始位置に差し掛かっているか、圧縮データのデコードが終了している場合は次のファイルに移る
 			BreakFlag = FALSE ;
-			if( MoveByte2 == 0 && GetSoundConvertEndState( &PlayData->ConvData ) )
+			if( MoveByte2 == 0 && ( GetSoundConvertEndState( &PlayData->ConvData ) || IsLoopStartSamplePosition ) )
 			{
 //				CurPosition = 0;
 				if( StreamSoundNextData( Sound, &LockData, ( int )CurPosition ) < 0 )
@@ -2916,7 +2934,7 @@ LOOPSTART:
 		// 再生中ではなかったら削除
 		if( NS_CheckSoundMem( List->Handle ) == 0 )
 		{
-			NS_DeleteSoundMem( List->Handle ) ;
+			NS_DeleteSoundMem( List->Handle, FALSE ) ;
 			goto LOOPSTART ;
 		}
 	}
@@ -3015,6 +3033,7 @@ static void LoadSoundMem2_ASync( ASYNCLOADDATA_COMMON *AParam )
 	const wchar_t *WaveName2 ;
 	int Addr ;
 	int Result ;
+	SOUND * Sound ;
 
 	Addr = 0 ;
 	GParam = ( LOADSOUND_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -3023,6 +3042,10 @@ static void LoadSoundMem2_ASync( ASYNCLOADDATA_COMMON *AParam )
 	WaveName2 = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
 	Result = LoadSoundMem2_Static( GParam, SoundHandle, WaveName1, WaveName2, TRUE ) ;
+	if( !SOUNDHCHK_ASYNC( SoundHandle, Sound ) )
+	{
+		Sound->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( SoundHandle ) ;
 	if( Result < 0 )
 	{
@@ -3275,6 +3298,7 @@ static void LoadSoundMem2ByMemImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	size_t ImageSize2 ;
 	int Addr ;
 	int Result ;
+	SOUND * Sound ;
 
 	Addr = 0 ;
 	GParam = ( LOADSOUND_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -3285,6 +3309,10 @@ static void LoadSoundMem2ByMemImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	ImageSize2 = GetASyncLoadParamSize_t( AParam->Data, &Addr ) ;
 
 	Result = LoadSoundMem2ByMemImage_Static( GParam, SoundHandle, FileImageBuffer1, ImageSize1, FileImageBuffer2, ImageSize2, TRUE ) ;
+	if( !SOUNDHCHK_ASYNC( SoundHandle, Sound ) )
+	{
+		Sound->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( SoundHandle ) ;
 	if( Result < 0 )
 	{
@@ -3654,7 +3682,7 @@ static	int BeepSound_Process( void )
 	int NowCount ;
 	SOUND_BEEP_BUFFERDATA *BeepBuf ;
 
-	NowCount = NS_GetNowCount() ;
+	NowCount = NS_GetNowCount( FALSE ) ;
 	BeepBuf = SoundSysData.BeepSoundBuffer ;
 	for( i = 0 ; i < SOUND_BEEPSOUNDBUFFER_NUM ; i ++, BeepBuf ++ )
 	{
@@ -4150,6 +4178,7 @@ static void LoadSoundMemBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int UnionHandle ;
 	int Addr ;
 	int Result ;
+	SOUND * Sound ;
 
 	Addr = 0 ;
 	GParam = ( LOADSOUND_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -4159,6 +4188,10 @@ static void LoadSoundMemBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	UnionHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = LoadSoundMemBase_Static( GParam, SoundHandle, WaveName, BufferNum, UnionHandle, TRUE ) ;
+	if( !SOUNDHCHK_ASYNC( SoundHandle, Sound ) )
+	{
+		Sound->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( SoundHandle ) ;
 	if( Result < 0 )
 	{
@@ -4487,7 +4520,7 @@ extern int NS_DuplicateSoundMem( int SrcSoundHandle, int BufferNum )
 ERR :
 	if( Handle != -1 )
 	{
-		NS_DeleteSoundMem( Handle ) ;
+		NS_DeleteSoundMem( Handle, FALSE ) ;
 	}
 	
 	return -1 ;
@@ -4763,6 +4796,7 @@ static void LoadSoundMemByMemImageBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int UnionHandle ;
 	int Addr ;
 	int Result ;
+	SOUND * Sound ;
 
 	Addr = 0 ;
 	GParam = ( LOADSOUND_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -4774,6 +4808,10 @@ static void LoadSoundMemByMemImageBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	UnionHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = LoadSoundMemByMemImageBase_Static( GParam, SoundHandle, FileImageBuffer, ImageSize, BufferNum, UnionHandle, TRUE ) ;
+	if( !SOUNDHCHK_ASYNC( SoundHandle, Sound ) )
+	{
+		Sound->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( SoundHandle ) ;
 	if( Result < 0 )
 	{
@@ -4925,7 +4963,7 @@ extern int NS_LoadSoundMemByMemImage2( const void *UData, size_t UDataSize, cons
 								 UData, UDataSize ) ;
 	if( res < 0 ) return -1 ;
 	
-	Handle = NS_LoadSoundMemByMemImageBase( WaveImage, WaveImageSize, 1 ) ;
+	Handle = NS_LoadSoundMemByMemImageBase( WaveImage, WaveImageSize, 1, -1 ) ;
 	
 	DXFREE( WaveImage ) ;
 	
@@ -4935,7 +4973,7 @@ extern int NS_LoadSoundMemByMemImage2( const void *UData, size_t UDataSize, cons
 // メモリ上に展開されたファイルイメージからハンドルを作成する(ベース関数)
 extern int NS_LoadSoundMemByMemImageToBufNumSitei( const void *FileImageBuffer, size_t ImageSize, int BufferNum )
 {
-	return NS_LoadSoundMemByMemImageBase( FileImageBuffer, ImageSize, BufferNum ) ;
+	return NS_LoadSoundMemByMemImageBase( FileImageBuffer, ImageSize, BufferNum, -1 ) ;
 }
 
 
@@ -7825,7 +7863,7 @@ extern int GetMP3TagInfo_WCHAR_T( const wchar_t *FileName, TCHAR *TitleBuffer, s
 
 						if( PictureGrHandle != NULL )
 						{
-							*PictureGrHandle = NS_CreateGraphFromMem( ImageData, ( int )( FrameSize - ( DescSize + 5 ) ) ) ;
+							*PictureGrHandle = NS_CreateGraphFromMem( ImageData, ( int )( FrameSize - ( DescSize + 5 ) ), NULL, 0, TRUE, FALSE ) ;
 						}
 					}
 				}
@@ -7919,7 +7957,7 @@ extern int GetMP3TagInfo_WCHAR_T( const wchar_t *FileName, TCHAR *TitleBuffer, s
 
 						if( PictureGrHandle != NULL )
 						{
-							*PictureGrHandle = NS_CreateGraphFromMem( ImageData, ( int )( FrameSize - ( MimeSize + 2 + DescSize ) ) ) ;
+							*PictureGrHandle = NS_CreateGraphFromMem( ImageData, ( int )( FrameSize - ( MimeSize + 2 + DescSize ) ), NULL, 0, TRUE, FALSE ) ;
 						}
 					}
 				}
@@ -8217,13 +8255,13 @@ extern int NS_SetBeepFrequency( int Freq )
 		SoundSysData.BeepSoundBuffer[ OldUseIndex ].VolumeUpRequest = FALSE ;
 		SoundSysData.BeepSoundBuffer[ OldUseIndex ].PlayTime        = FALSE ;
 		SoundSysData.BeepSoundBuffer[ OldUseIndex ].StopRequest     = TRUE ;
-		SoundSysData.BeepSoundBuffer[ OldUseIndex ].StopTime        = NS_GetNowCount() ;
+		SoundSysData.BeepSoundBuffer[ OldUseIndex ].StopTime        = NS_GetNowCount( FALSE ) ;
 
 		SoundBuffer_SetVolume( &BeepBuf->Buffer, 0, -10000 ) ;
 //		SoundBuffer_SetVolume( &BeepBuf->Buffer, 0, 0 ) ;
 //		SoundBuffer_Play( &BeepBuf->Buffer, TRUE ) ;
 		BeepBuf->VolumeUpRequest = TRUE ;
-		BeepBuf->PlayTime        = NS_GetNowCount() ;
+		BeepBuf->PlayTime        = NS_GetNowCount( FALSE ) ;
 		BeepBuf->VolumeUpRequest = FALSE ;
 		BeepBuf->PlayTime        = 0 ;
 		BeepBuf->StopRequest     = FALSE ;
@@ -8272,7 +8310,7 @@ extern int NS_PlayBeep( void )
 //	SoundBuffer_SetVolume( &SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].Buffer, 0, 0 ) ;
 	SoundBuffer_Play( &SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].Buffer, TRUE ) ;
 	SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].VolumeUpRequest = TRUE ;
-	SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].PlayTime        = NS_GetNowCount() ;
+	SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].PlayTime        = NS_GetNowCount( FALSE ) ;
 //	SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].VolumeUpRequest = FALSE ;
 //	SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].PlayTime        = 0 ;
 	SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].StopRequest     = FALSE ;
@@ -8314,7 +8352,7 @@ extern int NS_StopBeep( void )
 	SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].VolumeUpRequest = FALSE ;
 	SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].PlayTime        = FALSE ;
 	SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].StopRequest     = TRUE ;
-	SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].StopTime        = NS_GetNowCount() ;
+	SoundSysData.BeepSoundBuffer[ SoundSysData.BeepSoundBufferUseIndex ].StopTime        = NS_GetNowCount( FALSE ) ;
 
 	// 再生中フラグを倒す
 	SoundSysData.BeepPlay = FALSE ;
@@ -8541,7 +8579,7 @@ extern	int NS_SetEnableSoundCaptureFlag( int Flag )
 	if( SoundSysData.EnableSoundCaptureFlag == Flag ) return 0 ;
 
 	// 全てのサウンドハンドルを削除する
-	NS_InitSoundMem() ;
+	NS_InitSoundMem( FALSE ) ;
 	
 	// フラグをセットする
 	SoundSysData.EnableSoundCaptureFlag = Flag ;
@@ -10771,14 +10809,28 @@ extern int SoundBuffer_ConvertFrequency( void *SrcBuffer, int SrcSamples, void *
 
 // ラッパー関数
 
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
 // PlaySoundFile の旧名称
 extern int NS_PlaySound( const TCHAR *FileName, int PlayType )
+{
+	return NS_PlaySoundDX( FileName, PlayType ) ;
+}
+
+// PlaySoundFile の旧名称
+extern int NS_PlaySoundWithStrLen( const TCHAR *FileName, size_t FileNameLength, int PlayType )
+{
+	return NS_PlaySoundDXWithStrLen( FileName, FileNameLength, PlayType ) ;
+}
+#endif // DX_COMPILE_TYPE_C_LANGUAGE
+
+// PlaySoundFile の旧名称
+extern int NS_PlaySoundDX( const TCHAR *FileName, int PlayType )
 {
 	return NS_PlaySoundFile( FileName, PlayType ) ;
 }
 
 // PlaySoundFile の旧名称
-extern int NS_PlaySoundWithStrLen( const TCHAR *FileName, size_t FileNameLength, int PlayType )
+extern int NS_PlaySoundDXWithStrLen( const TCHAR *FileName, size_t FileNameLength, int PlayType )
 {
 	int Result ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FileName, FileNameLength, return -1 )
@@ -10862,7 +10914,7 @@ extern int PlaySoundFile_WCHAR_T( const wchar_t *FileName , int PlayType )
 	// 以前再生中だったデータを止める
 	if( SoundSysData.PlayWavSoundHandle != -1 )
 	{
-		NS_DeleteSoundMem( SoundSysData.PlayWavSoundHandle ) ;
+		NS_DeleteSoundMem( SoundSysData.PlayWavSoundHandle, FALSE ) ;
 	}
 
 	// サウンドデータを読み込む
@@ -10874,7 +10926,7 @@ extern int PlaySoundFile_WCHAR_T( const wchar_t *FileName , int PlayType )
 	}
 
 	// サウンドを再生する
-	NS_PlaySoundMem( SoundSysData.PlayWavSoundHandle , PlayType ) ;
+	NS_PlaySoundMem( SoundSysData.PlayWavSoundHandle , PlayType, TRUE ) ;
 
 	// 終了
 	return 0 ;
@@ -11087,6 +11139,11 @@ extern int SetupSelfMixingWorkBuffer( int IsFloat, int Samples )
 	SoundSysData.SelfMixingBufferSamples = Samples ;
 
 	// バッファを確保
+	if( SoundSysData.SelfMixingBuffer != NULL )
+	{
+		DXFREE( SoundSysData.SelfMixingBuffer ) ;
+		SoundSysData.SelfMixingBuffer = NULL ;
+	}
 	SoundSysData.SelfMixingBuffer = DXALLOC( Samples * sizeof( int ) * 2 ) ;
 	if( SoundSysData.SelfMixingBuffer == NULL )
 	{
@@ -12073,6 +12130,13 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 	// クリティカルセクションの取得
 	CRITICALSECTION_LOCK( &SoundSysData.PlaySoundBufferListCriticalSection ) ;
 
+	// バッファが足りなかったら再確保
+	if( SoundSysData.SelfMixingBufferSamples < ( int )SampleNum )
+	{
+		SoundSysData.SelfMixingBufferSamples = SampleNum ;
+		SoundSysData.SelfMixingBuffer = DXREALLOC( SoundSysData.SelfMixingBuffer, SoundSysData.SelfMixingBufferSamples * sizeof( int ) * 2 ) ;
+	}
+
 	// バッファをゼロ初期化
 	_MEMSET( SoundSysData.SelfMixingBuffer, 0, SoundSysData.SelfMixingBufferSamples * sizeof( int ) * 2 ) ;
 
@@ -12924,6 +12988,7 @@ static void LoadSoftSoundBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	size_t FileImageSize ;
 	int Addr ;
 	int Result ;
+	SOFTSOUND * SSound ;
 
 	Addr = 0 ;
 	GParam = ( LOADSOUND_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -12933,6 +12998,10 @@ static void LoadSoftSoundBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	FileImageSize = GetASyncLoadParamSize_t( AParam->Data, &Addr ) ;
 
 	Result = LoadSoftSoundBase_Static( GParam, SoftSoundHandle, FileName, FileImage, FileImageSize, TRUE ) ;
+	if( !SSND_MASKHCHK_ASYNC( SoftSoundHandle, SSound ) )
+	{
+		SSound->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( SoftSoundHandle ) ;
 	if( Result < 0 )
@@ -13125,6 +13194,7 @@ static void MakeSoftSoundBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int UseFormat_SoftSoundHandle ;
 	int Addr ;
 	int Result ;
+	SOFTSOUND * SSound ;
 
 	Addr = 0 ;
 	SoftSoundHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
@@ -13137,6 +13207,10 @@ static void MakeSoftSoundBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	UseFormat_SoftSoundHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = MakeSoftSoundBase_Static( SoftSoundHandle, IsPlayer, Channels, BitsPerSample, SamplesPerSec, SampleNum, IsFloatType, UseFormat_SoftSoundHandle, TRUE ) ;
+	if( !SSND_MASKHCHK_ASYNC( SoftSoundHandle, SSound ) )
+	{
+		SSound->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( SoftSoundHandle ) ;
 	if( Result < 0 )
@@ -18139,16 +18213,52 @@ END :
 }
 
 // ソフトウエアで扱う波形データのプレイヤーに追加した波形データでまだ再生用サウンドバッファに転送されていない波形データのサンプル数を取得する
-extern	int	NS_GetStockDataLengthSoftSoundPlayer( int SSoundPlayerHandle )
+extern	int	NS_GetStockDataLengthSoftSoundPlayer( int SSoundPlayerHandle, int *SoundBufferStockSamples )
 {
 	SOFTSOUND * SPlayer ;
+	int Result = -1 ;
+
+	if( SoundSysData.InitializeFlag == FALSE ) return -1 ;
 
 	// エラー判定
 	if( SSND_MASKHCHK( SSoundPlayerHandle, SPlayer ) || SPlayer->IsPlayer == 0 )
 		return -1 ;
 
-	// リングバッファにある未転送分のサンプルを返す
-	return SPlayer->Player.StockSampleNum ;
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &HandleManageArray[ DX_HANDLETYPE_SOFTSOUND ].CriticalSection ) ;
+
+	// 更新処理を行う
+	if( _SoftSoundPlayerProcess( SPlayer ) < 0 )
+		goto END ;
+
+	// リングバッファにある未転送分のサンプルをセット
+	Result = SPlayer->Player.StockSampleNum ;
+
+	// サウンドバッファの未再生サイズを取得する指定があったら再生位置から未再生サイズをセットする
+	if( SoundBufferStockSamples != NULL )
+	{
+		DWORD PlayPos, WritePos ;
+
+		// 再生位置の取得
+		SoundBuffer_GetCurrentPosition( &SPlayer->Player.SoundBuffer, &PlayPos, &WritePos ) ;
+
+		// 再生バッファにセットされているデータ量をセットする
+		if( ( DWORD )SPlayer->Player.DataSetCompOffset > PlayPos )
+		{
+			*SoundBufferStockSamples = ( SPlayer->Player.DataSetCompOffset - PlayPos ) / SPlayer->BufferFormat.nBlockAlign;
+		}
+		else
+		{
+			*SoundBufferStockSamples = ( ( SPlayer->Player.SoundBufferSize - PlayPos ) + SPlayer->Player.DataSetCompOffset ) / SPlayer->BufferFormat.nBlockAlign;
+		}
+	}
+
+END :
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_SOFTSOUND ].CriticalSection ) ;
+
+	// 状態を返す
+	return Result ;
 }
 
 // ソフトウエアで扱う波形データのプレイヤーが扱うデータフォーマットを取得する
@@ -19024,6 +19134,7 @@ static void LoadMusicMemByMemImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	size_t FileImageSize ;
 	int Addr ;
 	int Result ;
+	MIDIHANDLEDATA *MusicData ;
 
 	Addr = 0 ;
 	MusicHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
@@ -19031,6 +19142,10 @@ static void LoadMusicMemByMemImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	FileImageSize = GetASyncLoadParamSize_t( AParam->Data, &Addr ) ;
 
 	Result = LoadMusicMemByMemImage_Static( MusicHandle, FileImage, FileImageSize, TRUE ) ;
+	if( !MIDI_MASKHCHK_ASYNC( MusicHandle, MusicData ) )
+	{
+		MusicData->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( MusicHandle ) ;
 	if( Result < 0 )
@@ -19186,12 +19301,17 @@ static void LoadMusicMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	const wchar_t *FileName ;
 	int Addr ;
 	int Result ;
+	MIDIHANDLEDATA *MusicData ;
 
 	Addr = 0 ;
 	MusicHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	FileName = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
 	Result = LoadMusicMem_Static( MusicHandle, FileName, TRUE ) ;
+	if( !MIDI_MASKHCHK_ASYNC( MusicHandle, MusicData ) )
+	{
+		MusicData->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( MusicHandle ) ;
 	if( Result < 0 )
@@ -19421,7 +19541,7 @@ extern int NS_StopMusicMem( int MusicHandle )
 	if( MidiSystemData.DefaultHandle != 0 && MidiSystemData.DefaultHandleToSoundHandleFlag == TRUE )
 	{
 		NS_StopSoundMem( MidiSystemData.DefaultHandle ) ;
-		NS_DeleteSoundMem( MidiSystemData.DefaultHandle ) ;
+		NS_DeleteSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
 
 		MidiSystemData.DefaultHandle = 0 ;
 		return 0 ;
@@ -19604,7 +19724,7 @@ extern int PlayMusic_WCHAR_T( const wchar_t *FileName , int PlayType )
 	{
 		if( MidiSystemData.DefaultHandleToSoundHandleFlag == TRUE )
 		{
-			NS_DeleteSoundMem( MidiSystemData.DefaultHandle ) ;
+			NS_DeleteSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
 		}
 		else
 		{
@@ -19641,7 +19761,7 @@ extern int PlayMusic_WCHAR_T( const wchar_t *FileName , int PlayType )
 		}
 
 		// 再生開始
-		NS_PlaySoundMem( MidiSystemData.DefaultHandle, PlayType ) ;
+		NS_PlaySoundMem( MidiSystemData.DefaultHandle, PlayType, TRUE ) ;
 		MidiSystemData.DefaultHandleToSoundHandleFlag = TRUE ;
 	}
 
@@ -19660,7 +19780,7 @@ extern int NS_PlayMusicByMemImage( const void *FileImageBuffer, size_t FileImage
 	{
 		if( MidiSystemData.DefaultHandleToSoundHandleFlag == TRUE )
 		{
-			NS_DeleteSoundMem( MidiSystemData.DefaultHandle ) ;
+			NS_DeleteSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
 		}
 		else
 		{
@@ -19705,7 +19825,7 @@ extern int NS_StopMusic( void )
 	if( MidiSystemData.DefaultHandleToSoundHandleFlag == TRUE )
 	{
 		NS_StopSoundMem( MidiSystemData.DefaultHandle ) ;
-		NS_DeleteSoundMem( MidiSystemData.DefaultHandle ) ;
+		NS_DeleteSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
 	}
 	else
 	{
@@ -20037,7 +20157,7 @@ static int SoundTypeChangeToStream( int SoundHandle )
 	// 既存ハンドルの削除
 	{
 		NS_StopSoundMem( SoundHandle ) ;					// 再生中だったときのことを考えて止めておく
-		NS_DeleteSoundMem( SoundHandle ) ;					// ハンドルを削除
+		NS_DeleteSoundMem( SoundHandle, FALSE ) ;			// ハンドルを削除
 	}
 
 	// ストリーム再生形式のハンドルとして作り直す

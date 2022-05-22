@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -394,7 +394,7 @@ static	void				MV1SetupTransformMatrix( MATRIX_4X4CT_F * RST BlendMatrix, int Va
 static	int					MV1SetupReferenceMeshFrame( MV1_MODEL *Model, MV1_MODEL_BASE *ModelBase, MV1_FRAME *Frame, MV1_MESH *Mesh, MV1_REF_POLYGONLIST *DestBuffer, int VIndexTarget, bool IsTransform, bool IsPositionOnly ) ;	// 参照用メッシュのセットアップを行う
 static	int					MV1RefreshReferenceMeshFrame( MV1_FRAME *Frame, MV1_MESH *Mesh, int IsPositionOnly, MV1_REF_POLYGONLIST *DestBuffer ) ;	// 参照用メッシュのリフレッシュを行う
 static	void				MV1SetupAnimMatrix( MV1_MODEL *Model ) ;														// アニメーションの行列をセットアップする
-static	void				MV1SetupMatrix( MV1_MODEL *Model ) ;															// 描画用の行列を構築する
+static	void				MV1SetupMatrix( MV1_MODEL *Model, bool PhysicsSkip = false ) ;									// 描画用の行列を構築する
 static	void				MV1SetupDrawMaterial( MV1_FRAME *Frame = NULL, MV1_MESH *Mesh = NULL ) ;						// 描画用のマテリアル情報を構築する、Frame を指定した場合は Mesh は NULLで、Mesh を指定した場合は Frame は NULLである必要があります( 中で渡されたメッシュ自体の更新チェックはしない )
 static	void				MV1BitSetChange( MV1_CHANGE *Change ) ;															// 状態変更管理データに設定されている対象ビットを立てる
 static	void				MV1BitResetChange( MV1_CHANGE *Change ) ;														// 状態変更管理データに設定されている対象ビットを倒す
@@ -1427,9 +1427,7 @@ __inline
 #endif
 int __FTOL( float Real )
 {
-#ifdef DX_NON_INLINE_ASM
-	return (int)Real ;
-#else
+#if ( !defined( DX_NON_INLINE_ASM ) && !defined( BC_COMPILER ) ) || ( defined( WINDOWS_DESKTOP_OS ) && !defined( _WIN64 ) && defined( _MSC_VER ) && _MSC_VER < 1700 )
 	DWORD Result ;
 	WORD STFlag, DSTFlag ;
 	__asm
@@ -1444,6 +1442,8 @@ int __FTOL( float Real )
 		fldcw	STFlag
 	}
 	return (int)Result ;
+#else
+	return (int)Real ;
 #endif
 }
 
@@ -1629,7 +1629,7 @@ static void MV1SetupAnimMatrix( MV1_MODEL *Model )
 }
 
 // 描画用の行列を構築する
-static void MV1SetupMatrix( MV1_MODEL *Model )
+static void MV1SetupMatrix( MV1_MODEL *Model, bool PhysicsSkip )
 {
 	int i, j, mcon ;
 	MV1_FRAME *Frame ;
@@ -1725,7 +1725,7 @@ static void MV1SetupMatrix( MV1_MODEL *Model )
 		bool ParentUseScaling ;
 
 		// 物理演算で行列を導き出すようになっている場合は何もしない
-		if( Frame->PhysicsRigidBody != NULL ) continue ;
+		if( ( Frame->PhysicsRigidBody != NULL || ( Model->PrioritizePhysicsOverAnimFlag && Frame->BaseData->PhysicsRigidBody != NULL ) ) && PhysicsSkip ) continue ;
 
 		// 更新が必要ない場合は何もしない
 		if( MV1CCHK( Frame->LocalWorldMatrixChange ) == 0 ) continue ;
@@ -6269,7 +6269,7 @@ extern int TerminateModelBaseHandle( HANDLEINFO *HandleInfo )
 		}
 
 		// 画像ハンドルを削除
-		NS_DeleteGraph( Texture->GraphHandle ) ;
+		NS_DeleteGraph( Texture->GraphHandle, FALSE ) ;
 		Texture->GraphHandle = 0 ;
 
 		// ファイルパスの解放
@@ -7018,6 +7018,7 @@ extern int MV1CreateCloneModelBase( int SrcMBHandle )
 
 		Material->DrawBlendMode = F1Material->DrawBlendMode ;
 		Material->DrawBlendParam = F1Material->DrawBlendParam ;
+		Material->DrawAddColor = F1Material->DrawAddColor ;
 
 		Material->Type = F1Material->Type ;
 		Material->DiffuseGradBlendType = F1Material->DiffuseGradBlendType ;
@@ -10486,7 +10487,7 @@ ERRORLABEL :
 	}
 	if( *GraphHandle != -1 )
 	{
-		NS_DeleteGraph( *GraphHandle ) ;
+		NS_DeleteGraph( *GraphHandle, FALSE ) ;
 		*GraphHandle = -1 ;
 	}
 
@@ -11949,6 +11950,43 @@ extern int MV1GetMaterialDrawAlphaTestParamBase( int MBHandle, int MaterialIndex
 	return Material->AlphaRef ;
 }
 
+// 指定のマテリアルの描画時の加算カラーを設定する
+extern int MV1SetMaterialDrawAddColorBase( int MBHandle, int MaterialIndex, int Red, int Green, int Blue )
+{
+	MV1BASEMATERIALSTART( MBHandle, ModelBase, Material, MaterialIndex, -1 ) ;
+
+	if( Material->DrawAddColor.x == Red &&
+		Material->DrawAddColor.y == Green &&
+		Material->DrawAddColor.z == Blue )
+	{
+		return 0 ;
+	}
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	// パラメータのセット
+	Material->DrawAddColor.x = Red ;
+	Material->DrawAddColor.y = Green ;
+	Material->DrawAddColor.z = Blue ;
+
+	// 終了
+	return 0 ;
+}
+
+// 指定のマテリアルの描画時の加算カラーを取得する
+extern int MV1GetMaterialDrawAddColorBase( int MBHandle, int MaterialIndex, int *Red, int *Green, int *Blue )
+{
+	MV1BASEMATERIALSTART( MBHandle, ModelBase, Material, MaterialIndex, -1 ) ;
+
+	if( Red   != NULL ) *Red   = Material->DrawAddColor.x ;
+	if( Green != NULL ) *Green = Material->DrawAddColor.y ;
+	if( Blue  != NULL ) *Blue  = Material->DrawAddColor.z ;
+
+	// 終了
+	return 0 ;
+}
+
 
 
 
@@ -12871,16 +12909,16 @@ extern int TerminateModelHandle( HANDLEINFO *HandleInfo )
 		}
 
 		// 参照用メッシュの解放
-		NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, -1, FALSE, FALSE ) ;
-		NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, -1, TRUE,  FALSE ) ;
-		NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, -1, FALSE, TRUE ) ;
-		NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, -1, TRUE,  TRUE ) ;
+		NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, -1, FALSE, FALSE, -1 ) ;
+		NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, -1, TRUE,  FALSE, -1 ) ;
+		NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, -1, FALSE, TRUE,  -1 ) ;
+		NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, -1, TRUE,  TRUE,  -1 ) ;
 		for( i = 0 ; i < Model->BaseData->FrameNum ; i ++ )
 		{
-			NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, i, FALSE, FALSE ) ;
-			NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, i, TRUE,  FALSE ) ;
-			NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, i, FALSE, TRUE ) ;
-			NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, i, TRUE,  TRUE ) ;
+			NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, i, FALSE, FALSE, -1 ) ;
+			NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, i, TRUE,  FALSE, -1 ) ;
+			NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, i, FALSE, TRUE,  -1 ) ;
+			NS_MV1TerminateReferenceMesh( Model->HandleInfo.Handle, i, TRUE,  TRUE,  -1 ) ;
 		}
 		for( i = 0 ; i < Model->BaseData->MeshNum ; i ++ )
 		{
@@ -12891,10 +12929,10 @@ extern int TerminateModelHandle( HANDLEINFO *HandleInfo )
 		}
 
 		// コリジョン情報の解放
-		NS_MV1TerminateCollInfo( Model->HandleInfo.Handle, -1 ) ;
+		NS_MV1TerminateCollInfo( Model->HandleInfo.Handle, -1, -1 ) ;
 		for( i = 0 ; i < Model->BaseData->FrameNum ; i ++ )
 		{
-			NS_MV1TerminateCollInfo( Model->HandleInfo.Handle, i ) ;
+			NS_MV1TerminateCollInfo( Model->HandleInfo.Handle, i, -1 ) ;
 		}
 		for( i = 0 ; i < Model->BaseData->MeshNum ; i ++ )
 		{
@@ -12950,7 +12988,7 @@ extern int TerminateModelHandle( HANDLEINFO *HandleInfo )
 					Texture->AlphaImage = NULL ;
 				}
 
-				NS_DeleteGraph( Texture->GraphHandle ) ;
+				NS_DeleteGraph( Texture->GraphHandle, FALSE ) ;
 				Texture->GraphHandle = -1 ;
 				Texture->UseGraphHandle = 0 ;
 			}
@@ -13280,6 +13318,7 @@ extern int MV1MakeModel( int MV1ModelHandle, int MV1ModelBaseHandle, int ASyncTh
 		Material->AlphaRef = MBMaterial->AlphaRef ;
 		Material->DrawBlendMode = MBMaterial->DrawBlendMode ;
 		Material->DrawBlendParam = MBMaterial->DrawBlendParam ;
+		Material->DrawAddColor = MBMaterial->DrawAddColor ;
 	}
 
 	// 物理演算の剛体情報をセットアップ
@@ -13907,6 +13946,8 @@ ERRORLABEL :
 static void MV1LoadModelFromMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 {
 	MV1LOADMODEL_GPARAM *GParam ;
+	MV1_MODEL *Model ;
+
 	int MHandle ;
 	const void *FileImage ;
 	int FileSize ;
@@ -13926,6 +13967,10 @@ static void MV1LoadModelFromMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	FileReadFuncData	= GetASyncLoadParamVoidP( AParam->Data, &Addr ) ;
 
 	Result = MV1LoadModelFromMem_Static( GParam, MHandle, FileImage, FileSize, FileReadFunc, FileReleaseFunc, FileReadFuncData, TRUE ) ;
+	if( !MV1MDLCHK_ASYNC( MHandle, Model ) )
+	{
+		Model->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( MHandle ) ;
 	if( Result < 0 )
 	{
@@ -14277,6 +14322,7 @@ ERRORLABEL :
 static void MV1LoadModel_ASync( ASYNCLOADDATA_COMMON *AParam )
 {
 	MV1LOADMODEL_GPARAM *GParam ;
+	MV1_MODEL *Model ;
 	int MHandle ;
 	const wchar_t *FileName ;
 	const wchar_t *Directory ;
@@ -14292,6 +14338,10 @@ static void MV1LoadModel_ASync( ASYNCLOADDATA_COMMON *AParam )
 	Name = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
 	Result = MV1LoadModel_Static( GParam, MHandle, FileName, Directory, Name, TRUE ) ;
+	if( !MV1MDLCHK_ASYNC( MHandle, Model ) )
+	{
+		Model->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( MHandle ) ;
 	if( Result < 0 )
 	{
@@ -15398,6 +15448,10 @@ extern int MV1LoadModelToMV1( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 
 		Material->DrawBlendMode = F1Material->DrawBlendMode ;
 		Material->DrawBlendParam = F1Material->DrawBlendParam ;
+		Material->DrawAddColor.x = 0 ;
+		Material->DrawAddColor.y = 0 ;
+		Material->DrawAddColor.z = 0 ;
+		Material->DrawAddColor.w = 0 ;
 
 		if( F1Material->ToonInfo )
 		{
@@ -15740,6 +15794,7 @@ extern int MV1LoadModelToMV1( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 			if( F1PhysicsRigidBody->TargetFrame )
 			{
 				PhysicsRigidBody->TargetFrame = MBase->Frame + ( ( MV1_FRAME_F1 * )( ( DWORD_PTR )FHeader + ( DWORD_PTR )F1PhysicsRigidBody->TargetFrame ) )->Index ;
+				PhysicsRigidBody->TargetFrame->PhysicsRigidBody = PhysicsRigidBody ;
 			}
 
 			PhysicsRigidBody->RigidBodyGroupIndex = F1PhysicsRigidBody->RigidBodyGroupIndex ;
@@ -21375,7 +21430,7 @@ static int MV1PhysicsCalculationBase_Static( int MHandle, float MillisecondTime,
 		return 0 ;
 	}
 
-	MV1SetupMatrix( Model ) ;
+	MV1SetupMatrix( Model, true ) ;
 
 	StepSimulation_ModelPhysicsInfo( Model, MillisecondTime / 1000.0f ) ;
 
@@ -21401,13 +21456,18 @@ static void MV1PhysicsCalculationBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int MHandle ;
 	float MillisecondTime ;
 	int Addr ;
-//	int Result ;
+	int Result ;
+	MV1_MODEL *Model ;
 
 	Addr = 0 ;
 	MHandle         = GetASyncLoadParamInt(   AParam->Data, &Addr ) ;
 	MillisecondTime = GetASyncLoadParamFloat( AParam->Data, &Addr ) ;
 
-	/*Result =*/ MV1PhysicsCalculationBase_Static( MHandle, MillisecondTime, TRUE ) ;
+	Result = MV1PhysicsCalculationBase_Static( MHandle, MillisecondTime, TRUE ) ;
+	if( !MV1MDLCHK_ASYNC( MHandle, Model ) )
+	{
+		Model->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( MHandle ) ;
 }
 
@@ -21478,6 +21538,18 @@ extern int NS_MV1PhysicsResetState( int MHandle )
 	MV1SetupMatrix( Model ) ;
 	ResetState_ModelPhysicsInfo( Model ) ;
 #endif
+
+	// 終了
+	return 0 ;
+}
+
+// モデルの物理演算をアニメーションより優先するかどうかを設定する( TRUE:物理演算を優先する  FALSE:アニメーションを優先する( デフォルト ) )
+extern int NS_MV1SetPrioritizePhysicsOverAnimFlag( int MHandle, int Flag )
+{
+	MV1START( MHandle, Model, ModelBase, -1 ) ;
+
+	// フラグを保存する
+	Model->PrioritizePhysicsOverAnimFlag = Flag != 0 ? TRUE : FALSE ;
 
 	// 終了
 	return 0 ;
@@ -22016,6 +22088,22 @@ extern int MV1DrawPackDrawModel( void )
 	return MV1DrawModelBase( Model ) ;
 }
 
+// ３Ｄモデルのレンダリングの準備を行う
+extern int MV1_BeginRender( MV1_MODEL *Model )
+{
+	NS_GetDrawAddColor( &MV1Man.BackupDrawAddColor.x, &MV1Man.BackupDrawAddColor.y, &MV1Man.BackupDrawAddColor.z ) ;
+	return MV1_BeginRender_PF( Model ) ;
+}
+
+// ３Ｄモデルのレンダリングの後始末を行う
+extern int MV1_EndRender( void )
+{
+	int Result ;
+	Result = MV1_EndRender_PF() ;
+	NS_SetDrawAddColor( MV1Man.BackupDrawAddColor.x, MV1Man.BackupDrawAddColor.y, MV1Man.BackupDrawAddColor.z ) ;
+	return Result ;
+}
+
 // モデルの描画処理を行う
 static int MV1DrawModelBase( MV1_MODEL *Model )
 {
@@ -22074,7 +22162,7 @@ static int MV1DrawModelBase( MV1_MODEL *Model )
 		MV1_SetupShapeVertex_PF( Model->HandleInfo.Handle ) ;
 
 	// レンダリングの準備
-	MV1_BeginRender_PF( Model ) ;
+	MV1_BeginRender( Model ) ;
 
 	// 描画するメッシュのリストを作成する
 	Frame = Model->Frame ;
@@ -22208,7 +22296,7 @@ static int MV1DrawModelBase( MV1_MODEL *Model )
 	}
 
 	// レンダリングの後始末
-	MV1_EndRender_PF() ;
+	MV1_EndRender() ;
 
 	// 描画ストックの初期化
 	Model->PackDrawStockNum = 0 ;
@@ -22414,7 +22502,7 @@ extern int NS_MV1DrawFrame( int MHandle, int FrameIndex )
 		MV1_SetupShapeVertex_PF( MHandle ) ;
 
 	// レンダリングの準備
-	MV1_BeginRender_PF( Model ) ;
+	MV1_BeginRender( Model ) ;
 
 	// 描画するメッシュの振り分け
 	Mesh = Frame->Mesh ;
@@ -22477,7 +22565,7 @@ extern int NS_MV1DrawFrame( int MHandle, int FrameIndex )
 	}
 
 	// レンダリングの後始末
-	MV1_EndRender_PF() ;
+	MV1_EndRender() ;
 
 	// 終了
 	return 0 ;
@@ -22548,13 +22636,13 @@ extern int NS_MV1DrawMesh( int MHandle, int MeshIndex )
 		MV1_SetupShapeVertex_PF( MHandle ) ;
 
 	// レンダリングの準備
-	MV1_BeginRender_PF( Model ) ;
+	MV1_BeginRender( Model ) ;
 
 	// メッシュの描画
 	MV1_DrawMesh_PF( Mesh ) ;
 
 	// レンダリングの後始末
-	MV1_EndRender_PF() ;
+	MV1_EndRender() ;
 
 	// 終了
 	return 0 ;
@@ -22627,13 +22715,13 @@ extern int NS_MV1DrawTriangleList( int MHandle, int TriangleListIndex )
 		MV1_SetupShapeVertex_PF( MHandle ) ;
 
 	// レンダリングの準備
-	MV1_BeginRender_PF( Model ) ;
+	MV1_BeginRender( Model ) ;
 
 	// トライアングルリストの描画
 	MV1_DrawMesh_PF( Mesh, ( int )( ( int )( ( ( BYTE * )TList - ( BYTE * )Mesh->TriangleList ) ) / ( sizeof( MV1_TRIANGLE_LIST ) + sizeof( MV1_TRIANGLE_LIST_PF ) ) ) ) ;
 
 	// レンダリングの後始末
-	MV1_EndRender_PF() ;
+	MV1_EndRender() ;
 
 	// 終了
 	return 0 ;
@@ -22675,13 +22763,13 @@ extern int NS_MV1DrawModelDebug(
 	// 参照用ポリゴンの取得
 	if( IsPolyLine && IsNormalLine == FALSE )
 	{
-		NS_MV1RefreshReferenceMesh( MHandle, -1, TRUE, TRUE ) ;
-		PolyList = NS_MV1GetReferenceMesh( MHandle, -1, TRUE, TRUE ) ;
+		NS_MV1RefreshReferenceMesh( MHandle, -1, TRUE, TRUE, -1 ) ;
+		PolyList = NS_MV1GetReferenceMesh( MHandle, -1, TRUE, TRUE, -1 ) ;
 	}
 	else
 	{
-		NS_MV1RefreshReferenceMesh( MHandle, -1, TRUE, FALSE ) ;
-		PolyList = NS_MV1GetReferenceMesh( MHandle, -1, TRUE, FALSE ) ;
+		NS_MV1RefreshReferenceMesh( MHandle, -1, TRUE, FALSE, -1 ) ;
+		PolyList = NS_MV1GetReferenceMesh( MHandle, -1, TRUE, FALSE, -1 ) ;
 	}
 
 	// 法線ラインの描画
@@ -22934,6 +23022,24 @@ extern int NS_MV1SetUseOrigShader( int UseFlag )
 
 	// フラグを保存する
 	MV1Man.UseOrigShaderFlag = UseFlag ;
+
+	// 終了
+	return 0 ;
+}
+
+// モデルの描画モードの設定
+extern int NS_MV1SetDrawMode( int DrawMode /* DX_MV1_DRAWMODE_NORMAL 等 */ )
+{
+	if( MV1Man.DrawMode == DrawMode )
+	{
+		return 0 ;
+	}
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	// 描画モードを保存する
+	MV1Man.DrawMode = DrawMode ;
 
 	// 終了
 	return 0 ;
@@ -25682,6 +25788,62 @@ extern int NS_MV1GetMaterialDrawAlphaTestParam( int MHandle, int MaterialIndex )
 	MV1MATERIALSTART( MHandle, Model, ModelBase, Material, MaterialIndex, -1 ) ;
 
 	return Material->AlphaRef ;
+}
+
+// 全てのマテリアルの描画時の加算カラーを設定する{
+extern int NS_MV1SetMaterialDrawAddColorAll( int MHandle, int Red, int Green, int Blue )
+{
+	int i ;
+	MV1START( MHandle, Model, ModelBase, -1 ) ;
+
+	for( i = 0 ; i < ModelBase->MaterialNum ; i ++ )
+	{
+		if( NS_MV1SetMaterialDrawAddColor( MHandle, i, Red, Green, Blue ) != 0 )
+		{
+			return -1 ;
+		}
+	}
+
+	return 0 ;
+}
+
+// 指定のマテリアルの描画時の加算カラーを設定する
+extern int NS_MV1SetMaterialDrawAddColor( int MHandle, int MaterialIndex, int Red, int Green, int Blue )
+{
+	MV1_MESH *Mesh ;
+	int i ;
+	MV1MATERIALSTART( MHandle, Model, ModelBase, Material, MaterialIndex, -1 ) ;
+
+	if( Material->DrawAddColor.x == Red &&
+		Material->DrawAddColor.y == Green &&
+		Material->DrawAddColor.z == Blue )
+	{
+		return 0 ;
+	}
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	// ブレンドモードのセット
+	Material->DrawAddColor.x = Red ;
+	Material->DrawAddColor.y = Green ;
+	Material->DrawAddColor.z = Blue ;
+
+	// 終了
+	return 0 ;
+}
+
+// 指定のマテリアルの描画時の加算カラーを取得する
+extern int NS_MV1GetMaterialDrawAddColor( int MHandle, int MaterialIndex, int *Red, int *Green, int *Blue )
+{
+	MV1MATERIALSTART( MHandle, Model, ModelBase, Material, MaterialIndex, -1 ) ;
+
+	if( Red   != NULL ) *Red   = Material->DrawAddColor.x ;
+	if( Green != NULL ) *Green = Material->DrawAddColor.y ;
+	if( Blue  != NULL ) *Blue  = Material->DrawAddColor.z ;
+
+	// 終了
+	return 0 ;
 }
 
 // 全てのマテリアルのタイプを変更する( Type : DX_MATERIAL_TYPE_NORMAL など )
@@ -29241,7 +29403,7 @@ extern int NS_MV1SetupCollInfo( int MHandle, int FrameIndex, int XDivNum, int YD
 
 		// 参照用ポリゴン情報がない場合は構築する
 		if( Model->RefPolygon[ 1 ][ 1 ] == NULL )
-			if( NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, TRUE, TRUE ) < 0 )
+			if( NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, TRUE, TRUE, -1 ) < 0 )
 				return -1 ;
 
 		// 確保されていない場合のみ確保
@@ -29276,7 +29438,7 @@ extern int NS_MV1SetupCollInfo( int MHandle, int FrameIndex, int XDivNum, int YD
 
 		// 参照用ポリゴン情報がない場合は構築する
 		if( Frame->RefPolygon[ 1 ][ 1 ] == NULL )
-			if( NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, TRUE, TRUE ) < 0 )
+			if( NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, TRUE, TRUE, -1 ) < 0 )
 				return -1 ;
 
 		// 確保されていない場合のみ確保
@@ -29459,11 +29621,11 @@ extern int NS_MV1RefreshCollInfo( int MHandle, int FrameIndex, int MeshIndex )
 
 		// コリジョン情報が無かったらセットアップする
 		if( Model->Collision == NULL )
-			if( NS_MV1SetupCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1SetupCollInfo( MHandle, FrameIndex, 32, 8, 32, -1 ) < 0 )
 				return -1 ;
 
 		// 参照用メッシュの更新
-		NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, TRUE, TRUE ) ;
+		NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, TRUE, TRUE, -1 ) ;
 
 		// コリジョン情報の更新が完了していたら何もしない
 		if( Model->SetupCollision == true )
@@ -29487,11 +29649,11 @@ extern int NS_MV1RefreshCollInfo( int MHandle, int FrameIndex, int MeshIndex )
 
 		// コリジョン情報が無かったらセットアップする
 		if( Frame->Collision == NULL )
-			if( NS_MV1SetupCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1SetupCollInfo( MHandle, FrameIndex, 32, 8, 32, -1 ) < 0 )
 				return -1 ;
 
 		// 参照用メッシュの更新
-		NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, TRUE, TRUE ) ;
+		NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, TRUE, TRUE, -1 ) ;
 
 		// コリジョン情報の更新が完了していたら何もしない
 		if( Frame->SetupCollision == true )
@@ -29687,7 +29849,7 @@ extern MV1_COLL_RESULT_POLY NS_MV1CollCheck_Line( int MHandle, int FrameIndex, V
 
 		// コリジョン情報が無かったらセットアップする
 		if( Model->Collision == NULL )
-			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex, -1 ) < 0 )
 				return Result ;
 
 		// ポリゴン情報のセット
@@ -29705,7 +29867,7 @@ extern MV1_COLL_RESULT_POLY NS_MV1CollCheck_Line( int MHandle, int FrameIndex, V
 
 		// コリジョン情報が無かったらセットアップする
 		if( Frame->Collision == NULL )
-			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex, -1 ) < 0 )
 				return Result ;
 
 		// ポリゴン情報のセット
@@ -29905,7 +30067,7 @@ extern MV1_COLL_RESULT_POLY NS_MV1CollCheck_Line( int MHandle, int FrameIndex, V
 			else
 			if( PosStart.y > Collision->MaxPosition.y )
 			{
-				if( LineDirection.z > 0.0f )
+				if( LineDirection.y > 0.0f )
 					goto END ;
 
 				if( LineDirection.y < -0.0000001f )
@@ -30379,7 +30541,7 @@ extern	MV1_COLL_RESULT_POLY_DIM NS_MV1CollCheck_LineDim( int MHandle, int FrameI
 
 		// コリジョン情報が無かったらセットアップする
 		if( Model->Collision == NULL )
-			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex, -1 ) < 0 )
 				return Result ;
 
 		// ポリゴン情報のセット
@@ -30397,7 +30559,7 @@ extern	MV1_COLL_RESULT_POLY_DIM NS_MV1CollCheck_LineDim( int MHandle, int FrameI
 
 		// コリジョン情報が無かったらセットアップする
 		if( Frame->Collision == NULL )
-			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex, -1 ) < 0 )
 				return Result ;
 
 		// ポリゴン情報のセット
@@ -31076,7 +31238,7 @@ extern	MV1_COLL_RESULT_POLY_DIM NS_MV1CollCheck_Sphere( int MHandle, int FrameIn
 
 		// コリジョン情報が無かったらセットアップする
 		if( Model->Collision == NULL )
-			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex, -1 ) < 0 )
 				return Result ;
 
 		// ポリゴン情報のセット
@@ -31094,7 +31256,7 @@ extern	MV1_COLL_RESULT_POLY_DIM NS_MV1CollCheck_Sphere( int MHandle, int FrameIn
 
 		// コリジョン情報が無かったらセットアップする
 		if( Frame->Collision == NULL )
-			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex, -1 ) < 0 )
 				return Result ;
 
 		// ポリゴン情報のセット
@@ -31315,7 +31477,7 @@ extern MV1_COLL_RESULT_POLY_DIM NS_MV1CollCheck_Capsule( int MHandle, int FrameI
 
 		// コリジョン情報が無かったらセットアップする
 		if( Model->Collision == NULL )
-			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex, -1 ) < 0 )
 				return Result ;
 
 		// ポリゴン情報のセット
@@ -31333,7 +31495,7 @@ extern MV1_COLL_RESULT_POLY_DIM NS_MV1CollCheck_Capsule( int MHandle, int FrameI
 
 		// コリジョン情報が無かったらセットアップする
 		if( Frame->Collision == NULL )
-			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex, -1 ) < 0 )
 				return Result ;
 
 		// ポリゴン情報のセット
@@ -31586,7 +31748,7 @@ extern MV1_COLL_RESULT_POLY_DIM NS_MV1CollCheck_Triangle( int MHandle, int Frame
 
 		// コリジョン情報が無かったらセットアップする
 		if( Model->Collision == NULL )
-			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex, -1 ) < 0 )
 				return Result ;
 
 		// ポリゴン情報のセット
@@ -31604,7 +31766,7 @@ extern MV1_COLL_RESULT_POLY_DIM NS_MV1CollCheck_Triangle( int MHandle, int Frame
 
 		// コリジョン情報が無かったらセットアップする
 		if( Frame->Collision == NULL )
-			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex ) < 0 )
+			if( NS_MV1RefreshCollInfo( MHandle, FrameIndex, -1 ) < 0 )
 				return Result ;
 
 		// ポリゴン情報のセット
@@ -32667,7 +32829,7 @@ extern int NS_MV1RefreshReferenceMesh( int MHandle, int FrameIndex, int IsTransf
 		if( Model->RefPolygon[ IsTransform ][ IsPositionOnly ] == NULL )
 		{
 			Change = true ;
-			if( NS_MV1SetupReferenceMesh( MHandle, FrameIndex, IsTransform, IsPositionOnly ) < 0 )
+			if( NS_MV1SetupReferenceMesh( MHandle, FrameIndex, IsTransform, IsPositionOnly, -1 ) < 0 )
 				return -1 ;
 		}
 
@@ -32708,7 +32870,7 @@ extern int NS_MV1RefreshReferenceMesh( int MHandle, int FrameIndex, int IsTransf
 		if( Frame->RefPolygon[ IsTransform ][ IsPositionOnly ] == NULL )
 		{
 			Change = true ;
-			if( NS_MV1SetupReferenceMesh( MHandle, FrameIndex, IsTransform, IsPositionOnly ) < 0 )
+			if( NS_MV1SetupReferenceMesh( MHandle, FrameIndex, IsTransform, IsPositionOnly, -1 ) < 0 )
 				return -1 ;
 		}
 
@@ -32834,7 +32996,7 @@ extern MV1_REF_POLYGONLIST NS_MV1GetReferenceMesh( int MHandle, int FrameIndex, 
 	{
 		// セットアップがされていなかった場合はセットアップを行う
 		if( Model->RefPolygon[ IsTransform ][ IsPositionOnly ] == NULL )
-			if( NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, IsTransform, IsPositionOnly ) < 0 )
+			if( NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, IsTransform, IsPositionOnly, -1 ) < 0 )
 				goto ERR ;
 
 		return *Model->RefPolygon[ IsTransform ][ IsPositionOnly ] ;
@@ -32850,7 +33012,7 @@ extern MV1_REF_POLYGONLIST NS_MV1GetReferenceMesh( int MHandle, int FrameIndex, 
 
 		// セットアップがされていなかった場合はセットアップを行う
 		if( Frame->RefPolygon[ IsTransform ][ IsPositionOnly ] == NULL )
-			if( NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, IsTransform, IsPositionOnly ) < 0 )
+			if( NS_MV1RefreshReferenceMesh( MHandle, FrameIndex, IsTransform, IsPositionOnly, -1 ) < 0 )
 				goto ERR ;
 
 		return *Frame->RefPolygon[ IsTransform ][ IsPositionOnly ] ;

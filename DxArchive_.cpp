@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		アーカイブ制御プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -2106,16 +2106,6 @@ extern int DXA_STREAM_Initialize( DXARC_STREAM *DXAStream, DXARC *DXA, const BYT
 	DXAStream->UseASyncReadFlag = UseASyncReadFlag ;
 	DXAStream->ASyncState       = DXARC_STREAM_ASYNCSTATE_IDLE ;
 
-	// ファイルから開いている場合はアーカイブファイルのファイルポインタを作成
-	if( DXA->MemoryOpenFlag == FALSE )
-	{
-		DXAStream->ReadOnlyFilePointer = ReadOnlyFileAccessOpen( DXA->FilePath, FALSE, TRUE, FALSE ) ;
-		if( DXAStream->ReadOnlyFilePointer == 0 )
-		{
-			return -1 ;
-		}
-	}
-
 	{
 		DXARC_FILEHEAD *FileH ;
 		DXARC_DIRECTORY *Directory ;
@@ -2124,12 +2114,17 @@ extern int DXA_STREAM_Initialize( DXARC_STREAM *DXAStream, DXARC *DXA, const BYT
 		FileH = DXA_GetFileHeader( DXA, FilePath, &Directory ) ;
 		if( FileH == NULL )
 		{
-			if( DXA->MemoryOpenFlag == FALSE )
-			{
-				ReadOnlyFileAccessClose( DXAStream->ReadOnlyFilePointer ) ;
-				DXAStream->ReadOnlyFilePointer = 0 ;
-			}
 			return -1 ;
+		}
+
+		// ファイルから開いている場合はアーカイブファイルのファイルポインタを作成
+		if( DXA->MemoryOpenFlag == FALSE )
+		{
+			DXAStream->ReadOnlyFilePointer = ReadOnlyFileAccessOpen( DXA->FilePath, FALSE, TRUE, FALSE ) ;
+			if( DXAStream->ReadOnlyFilePointer == 0 )
+			{
+				return -1 ;
+			}
 		}
 
 		// ファイル情報をセット

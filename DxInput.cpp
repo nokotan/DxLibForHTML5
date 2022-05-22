@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＩｎｐｕｔ制御プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -157,7 +157,7 @@ extern int TerminateJoypad( void )
 extern int SetF10Input( void )
 {
 	InputSysData.F10Flag = TRUE ;
-//	InputSysData.F10InputTime = NS_GetNowCount() ;
+//	InputSysData.F10InputTime = NS_GetNowCount( FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -176,7 +176,7 @@ extern int ResetF10Input( void )
 extern int SetF12Input( void )
 {
 	InputSysData.F12Flag = TRUE ;
-//	InputSysData.F12InputTime = NS_GetNowCount() ;
+//	InputSysData.F12InputTime = NS_GetNowCount( FALSE ) ;
 
 	// 終了
 	return 0 ;
@@ -1118,6 +1118,65 @@ extern int NS_GetHitKeyStateAll( char *KeyStateBuf )
 	return 0 ;
 }
 
+// すべてのキーの押下状態を取得する(
+// KeyStateBuf:int型256個分の配列の先頭アドレス
+// 配列の各要素の状態
+//   0:押されていない
+//
+//    1    ：押された１回め
+//    2以上：押され続けている回数
+//
+//   -1    ：押されて離された１回め
+//   -2以下：押されて離されてからの回数 )
+extern int NS_GetHitKeyStateAllEx( int *KeyStateArray )
+{
+	int i ;
+
+	// ソフトが非アクティブの場合はアクティブになるまで待つ
+	CheckActiveState() ;
+
+	// 初期化されていなかったら条件付きで初期化を行う
+	if( InputSysData.InitializeFlag == FALSE )
+	{
+		return AutoInitialize_PF() ;
+	}
+
+	// キーボードの入力状態を更新
+	UpdateKeyboardInputState() ;
+
+	// キーの入力値を変換
+	for( i = 0 ; i < 256 ; i ++ )
+	{
+		if( ( ( BYTE )( InputSysData.KeyInputBuf[ i ] ) >> 7 ) != 0 )
+		{
+			if( KeyStateArray[ i ] <= 0 )
+			{
+				KeyStateArray[ i ] = 1 ;
+			}
+			else
+			if( KeyStateArray[ i ] < 2147483647 )
+			{
+				KeyStateArray[ i ]++ ;
+			}
+		}
+		else
+		{
+			if( KeyStateArray[ i ] > 0 )
+			{
+				KeyStateArray[ i ] = -1 ;
+			}
+			else
+			if( KeyStateArray[ i ] < 0 && KeyStateArray[ i ] > -2147483647 )
+			{
+				KeyStateArray[ i ]-- ;
+			}
+		}
+	}
+
+	// 終了
+	return 0 ;
+}
+
 
 
 
@@ -1194,6 +1253,11 @@ extern int NS_GetJoypadInputState( int InputType )
 		{
 			// 情報の更新
 			UpdateJoypadInputState( JoypadNum ) ;
+			if( ( JoypadNum < -1 || JoypadNum >= InputSysData.PadNum ) && 
+				( InputSysData.PadNum != 0 && ( InputType & DX_INPUT_KEY ) == 0 ) )
+			{
+				return 0 ;
+			}
 
 			// 入力状態を保存
 			iX = pad->State.X ;
@@ -1295,6 +1359,11 @@ extern int NS_GetJoypadAnalogInput( int *XBuf , int *YBuf , int InputType )
 
 		// 入力状態の更新
 		UpdateJoypadInputState( JoypadNum ) ;
+		if( ( JoypadNum < -1 || JoypadNum >= InputSysData.PadNum ) && 
+			( InputSysData.PadNum != 0 && ( InputType & DX_INPUT_KEY ) == 0 ) )
+		{
+			return 0 ;
+		}
 
 		// 入力状態を保存
 		if( XBuf ) *XBuf = pad->State.X ;
@@ -1354,6 +1423,8 @@ extern int NS_GetJoypadAnalogInputRight( int *XBuf, int *YBuf, int InputType )
 
 		// 入力状態の更新
 		UpdateJoypadInputState( JoypadNum ) ;
+		if( JoypadNum < -1 || JoypadNum >= InputSysData.PadNum )
+			return 0 ;
 
 		// 入力状態を保存( XInput かどうかで処理を分岐 )
 		if( NS_CheckJoypadXInput( InputType ) )
@@ -1401,6 +1472,15 @@ extern	int	NS_GetJoypadDirectInputState( int InputType, DINPUT_JOYSTATE *DInputS
 
 	// 入力状態の更新
 	UpdateJoypadInputState( JoypadNum ) ;
+	if( JoypadNum < 0 || JoypadNum >= InputSysData.PadNum )
+	{
+		_MEMSET( DInputState, 0, sizeof( DINPUT_JOYSTATE ) ) ;
+		DInputState->POV[ 0 ] = 0xffffffff ;
+		DInputState->POV[ 1 ] = 0xffffffff ;
+		DInputState->POV[ 2 ] = 0xffffffff ;
+		DInputState->POV[ 3 ] = 0xffffffff ;
+		return -1 ;
+	}
 
 	// 入力状態を代入する
 	if( DInputState )
@@ -1437,6 +1517,29 @@ extern int NS_CheckJoypadXInput( int InputType )
 	return CheckJoypadXInput_PF( InputType ) ;
 }
 
+// ジョイパッドのタイプを取得する( 戻り値  -1:エラー  0以上:ジョイパッドタイプ( DX_PADTYPE_XBOX_360 など ) )
+extern int NS_GetJoypadType( int InputType )
+{
+	int JoypadNum = ( InputType & ~DX_INPUT_KEY ) - 1 ;
+
+	// ソフトが非アクティブの場合はアクティブになるまで待つ
+	CheckActiveState() ;
+
+	// 初期化されていなかったら条件付きで初期化を行う
+	if( InputSysData.InitializeFlag == FALSE )
+	{
+		return AutoInitialize_PF() ;
+	}
+
+	if( JoypadNum < 0 || JoypadNum >= InputSysData.PadNum )
+	{
+		return -1 ;
+	}
+
+	// 環境依存処理に任せる
+	return GetJoypadType_PF( InputType ) ;
+}
+
 // XInput から得られる入力デバイス( Xbox360コントローラ等 )の生のデータを取得する( XInput非対応のパッドの場合はエラーとなり -1 を返す、DX_INPUT_KEY や DX_INPUT_KEY_PAD1 など、キーボードが絡むタイプを InputType に渡すとエラーとなり -1 を返す )
 extern int NS_GetJoypadXInputState(	int InputType, XINPUT_STATE *XInputState )
 {
@@ -1469,6 +1572,11 @@ extern int NS_GetJoypadXInputState(	int InputType, XINPUT_STATE *XInputState )
 
 	// 入力状態の更新
 	UpdateJoypadInputState( JoypadNum ) ;
+	if( JoypadNum < 0 || JoypadNum >= InputSysData.PadNum )
+	{
+		_MEMSET( XInputState, 0, sizeof( XINPUT_STATE ) ) ;
+		return -1 ;
+	}
 
 	// 入力状態を代入する
 	if( XInputState )
@@ -1669,7 +1777,7 @@ extern	int NS_StartJoypadVibration( int InputType, int Power, int Time, int Effe
 	else
 	{
 		// 再生開始時刻などをセット
-		pad->Effect[ EffectIndex ].BackTime	= NS_GetNowCount() ;
+		pad->Effect[ EffectIndex ].BackTime	= NS_GetNowCount( FALSE ) ;
 		pad->Effect[ EffectIndex ].Time		= Time ;
 		pad->Effect[ EffectIndex ].CompTime	= 0 ;
 
@@ -1778,6 +1886,11 @@ extern int NS_GetJoypadPOVState( int InputType, int POVNumber )
 
 	// 情報の更新
 	UpdateJoypadInputState( JoypadNum ) ;
+	if( JoypadNum < 0 || JoypadNum >= InputSysData.PadNum || POVNumber >= 4 )
+	{
+		return -1 ;
+	}
+
 	pov = pad->State.POV[ POVNumber ] ;
 
 	// 中心チェック
@@ -1863,7 +1976,7 @@ extern int JoypadEffectProcess( void )
 	// パッドデバイスの再取得
 	num = InputSysData.PadNum ;
 	Pad = InputSysData.Pad ;
-	time = NS_GetNowCount() ;
+	time = NS_GetNowCount( FALSE ) ;
 	for( i = 0 ; i < num ; i ++, Pad ++ )
 	{
 		for( j = 0 ; j < DINPUTPAD_MOTOR_NUM ; j ++ )

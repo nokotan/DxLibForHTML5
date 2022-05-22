@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		非同期読み込み処理プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -79,8 +79,9 @@ ASYNCLOADTHREADFUNCTION_MACRO( 28 )
 ASYNCLOADTHREADFUNCTION_MACRO( 29 )
 ASYNCLOADTHREADFUNCTION_MACRO( 30 )
 ASYNCLOADTHREADFUNCTION_MACRO( 31 )
+ASYNCLOADTHREADFUNCTION_MACRO( 32 )
 
-void ( *ASyncLoadThreadFunctionList[ ASYNCLOADTHREAD_MAXNUM ] )( THREAD_INFO *pThreadInfo, void *ASyncLoadThreadData ) =
+void ( *ASyncLoadThreadFunctionList[ ASYNCLOADTHREAD_MAXNUM + 1 ] )( THREAD_INFO *pThreadInfo, void *ASyncLoadThreadData ) =
 {
 	ASyncLoadThreadFunctionT0,
 	ASyncLoadThreadFunctionT1,
@@ -114,6 +115,7 @@ void ( *ASyncLoadThreadFunctionList[ ASYNCLOADTHREAD_MAXNUM ] )( THREAD_INFO *pT
 	ASyncLoadThreadFunctionT29,
 	ASyncLoadThreadFunctionT30,
 	ASyncLoadThreadFunctionT31,
+	ASyncLoadThreadFunctionT32,
 } ;
 
 // プログラム --------------------------------------------------------------------
@@ -172,13 +174,13 @@ extern int SetupASyncLoadThread( int ProcessorNum )
 
 	_MEMSET( GASyncLoadData.Thread, 0, sizeof( GASyncLoadData.Thread ) ) ;
 	AInfo = GASyncLoadData.Thread ;
-	for( i = 0 ; i < GASyncLoadData.ThreadNum ; i ++, AInfo ++ )
+	for( i = 0 ; i < GASyncLoadData.ThreadNum + 1 ; i ++, AInfo ++ )
 	{
 		if( Thread_Create( &AInfo->ThreadInfo, ASyncLoadThreadFunctionList[ i ], NULL ) == -1 )
 			return -1 ;
-		Thread_SetPriority( &AInfo->ThreadInfo, DX_THREAD_PRIORITY_LOWEST ) ;
+		Thread_SetPriority( &AInfo->ThreadInfo, i == GASyncLoadData.ThreadNum ? DX_THREAD_PRIORITY_NORMAL : DX_THREAD_PRIORITY_BELOW_NORMAL ) ;
 		AInfo->SuspendFlag = TRUE ;
-		AInfo->SuspendStartTime = NS_GetNowCount() ;
+		AInfo->SuspendStartTime = NS_GetNowCount( FALSE ) ;
 	}
 
 	// 少し寝て、全部のスレッドが寝るのを待つ
@@ -511,9 +513,10 @@ extern int AddASyncLoadData( ASYNCLOADDATA_COMMON *ASyncData )
 	// 初期化内容が確定しているメンバ変数のみ初期化
 	ASyncData->Index = NewIndex ;
 	ASyncData->Run = FALSE ;
+	ASyncData->DeleteOneSetAddr = NULL ;
 
 	// 登録時間を保存
-	ASyncData->StartTime = NS_GetNowCount() ;
+	ASyncData->StartTime = NS_GetNowCount( FALSE ) ;
 
 	// 使用されているポインタが存在する範囲を更新する
 	if( GASyncLoadData.DataArea == NewIndex ) GASyncLoadData.DataArea ++ ;
@@ -562,6 +565,12 @@ extern int DeleteASyncLoadData( int DeleteIndex, int MainThread )
 		return -2 ;
 	}
 
+	// 削除時に 1 を代入するアドレスが設定されていたら 1 を代入する
+	if( ASyncData->DeleteOneSetAddr != NULL )
+	{
+		*ASyncData->DeleteOneSetAddr = 1 ;
+	}
+
 	// 非同期読み込みデータの総数を減らす
 	GASyncLoadData.DataNum -- ;
 
@@ -585,6 +594,86 @@ extern int DeleteASyncLoadData( int DeleteIndex, int MainThread )
 
 	// クリティカルセクションの解放
 	CriticalSection_Unlock( &GASyncLoadData.CriticalSection ) ;
+
+	// 正常終了
+	return 0 ;
+}
+
+// 指定の非同期読み込みデータをメインスレッドで実行する、メインスレッドでのみ使用可能( 戻り値  0:正常終了  -1:エラー )
+extern int MainThreadProcessASyncLoadData( int Index )
+{
+	ASYNCLOADDATA_COMMON *ASyncData ;
+
+	// メインスレッドではなかったらエラー
+	if( CheckMainThread() == FALSE )
+	{
+		return -1 ;
+	}
+
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &GASyncLoadData.CriticalSection ) ;
+
+	// データのアドレスを取得
+	ASyncData = GASyncLoadData.Data[ Index ] ;
+
+	// 指定のインデックスが既に解放されていたら何もしない
+	if( ASyncData == NULL )
+	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &GASyncLoadData.CriticalSection ) ;
+		return -1 ;
+	}
+
+	// 既に処理が走っていたら実行が終了するまで待つ
+	if( ASyncData->Run )
+	{
+		volatile int DeleteFlag = 0 ;
+
+		ASyncData->DeleteOneSetAddr = &DeleteFlag ;
+
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &GASyncLoadData.CriticalSection ) ;
+
+		// 処理が終了するまでループ
+		while( DeleteFlag == 0 )
+		{
+			ProcessASyncLoadRequestMainThread() ;
+			Thread_Sleep( 0 ) ;
+		}
+	}
+	else
+	// まだ処理が走っていない場合は専用のスレッドで実行する
+	{
+		// 処理を開始しているフラグを立てる
+		ASyncData->Run = TRUE ;
+
+		// 処理してほしいデータ番号をセット
+		GASyncLoadData.MainThread_RunDataIndex = Index ;
+		GASyncLoadData.MainThread_RunDataIndex_Enable = TRUE ;
+
+		// メインスレッドから実行を指定された非同期読み込みデータを処理する専用のスレッドを起こす
+		GASyncLoadData.Thread[ GASyncLoadData.ThreadNum ].SuspendFlag = FALSE ;
+		GASyncLoadData.ThreadResumeNum ++ ;
+
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &GASyncLoadData.CriticalSection ) ;
+
+		while( Thread_Resume( &GASyncLoadData.Thread[ GASyncLoadData.ThreadNum ].ThreadInfo ) == 0 ){}
+
+		// 処理が終了するまでループ
+		while( GASyncLoadData.MainThread_RunDataIndex_Enable && NS_ProcessMessage() == 0 )
+		{
+			ProcessASyncLoadRequestMainThread() ;
+			Thread_Sleep( 1 ) ;
+		}
+
+		// スレッドが寝るまでループ
+		while( GASyncLoadData.Thread[ GASyncLoadData.ThreadNum ].SuspendFlag == FALSE && NS_ProcessMessage() == 0 )
+		{
+			ProcessASyncLoadRequestMainThread() ;
+			Thread_Sleep( 1 ) ;
+		}
+	}
 
 	// 正常終了
 	return 0 ;
@@ -666,16 +755,18 @@ void ASyncLoadThreadFunction( THREAD_INFO *pThreadInfo, void * /*ASyncLoadThread
 	int Index = 0 ;
 //	int Ret ;
 	int ThreadNumber ;
+	int MainThread_RunDataThread ;
 	ASYNCLOADDATA_COMMON *Data ;
 	ASYNCLOADTHREADINFO *AInfo ;
 
 	// スレッドの番号を取得しておく
 	AInfo = GASyncLoadData.Thread ;
-	for( ThreadNumber = 0 ; ThreadNumber < ASYNCLOADTHREAD_MAXNUM ; ThreadNumber ++, AInfo ++ )
+	for( ThreadNumber = 0 ; ThreadNumber < ASYNCLOADTHREAD_MAXNUM + 1 ; ThreadNumber ++, AInfo ++ )
 	{
 		if( &AInfo->ThreadInfo == pThreadInfo )
 			break ;
 	}
+	MainThread_RunDataThread = ThreadNumber == GASyncLoadData.ThreadNum ? TRUE : FALSE ;
 
 	for(;;)
 	{
@@ -683,7 +774,8 @@ void ASyncLoadThreadFunction( THREAD_INFO *pThreadInfo, void * /*ASyncLoadThread
 		if( GASyncLoadData.ThreadEndRequestFlag == TRUE ) goto ENDLABEL ;
 
 		// データが無かったら何もしない
-		if( GASyncLoadData.DataArea == 0 )
+		if( ( MainThread_RunDataThread == FALSE && GASyncLoadData.DataArea == 0 ) ||
+			( MainThread_RunDataThread == TRUE  && GASyncLoadData.MainThread_RunDataIndex_Enable == FALSE ) )
 		{
 SLEEP_LABEL :
 			// クリティカルセクションの取得
@@ -691,7 +783,7 @@ SLEEP_LABEL :
 
 			// スレッドを寝かす準備
 			AInfo->SuspendFlag = TRUE ;
-			AInfo->SuspendStartTime = NS_GetNowCount() ;
+			AInfo->SuspendStartTime = NS_GetNowCount( FALSE ) ;
 			GASyncLoadData.ThreadResumeNum -- ;
 
 			// クリティカルセクションの解放
@@ -704,34 +796,43 @@ SLEEP_LABEL :
 			continue ;
 		}
 
-		// 処理されていない一番古いデータを探す
-
 		// クリティカルセクションの取得
 		CRITICALSECTION_LOCK( &GASyncLoadData.CriticalSection ) ;
 
-		// データの範囲のみループ
-		Data = NULL ;
-		for( i = 0 ; i < GASyncLoadData.DataArea ; i ++ )
+		// メインスレッドから指定された非同期読み込みデータを処理するスレッドかどうかで処理を分岐
+		if( MainThread_RunDataThread )
 		{
-			if( GASyncLoadData.Data[ i ] == NULL || GASyncLoadData.Data[ i ]->Run )
-				continue ;
-
-			if( Data != NULL && Data->StartTime < GASyncLoadData.Data[ i ]->StartTime )
-				continue ;
-
-			Data = GASyncLoadData.Data[ i ] ;
-			Index = i ;
+			Index = GASyncLoadData.MainThread_RunDataIndex ;
+			Data = GASyncLoadData.Data[ Index ] ;
 		}
-		if( Data == NULL )
+		else
 		{
-			// クリティカルセクションの解放
-			CriticalSection_Unlock( &GASyncLoadData.CriticalSection ) ;
+			// 処理されていない一番古いデータを探す
 
-			// 誰か居たらスレッドを起こす
-			ResumeASyncLoadThread( 1 ) ;
+			// データの範囲のみループ
+			Data = NULL ;
+			for( i = 0 ; i < GASyncLoadData.DataArea ; i ++ )
+			{
+				if( GASyncLoadData.Data[ i ] == NULL || GASyncLoadData.Data[ i ]->Run )
+					continue ;
 
-			// 寝る
-			goto SLEEP_LABEL ;
+				if( Data != NULL && Data->StartTime < GASyncLoadData.Data[ i ]->StartTime )
+					continue ;
+
+				Data = GASyncLoadData.Data[ i ] ;
+				Index = i ;
+			}
+			if( Data == NULL )
+			{
+				// クリティカルセクションの解放
+				CriticalSection_Unlock( &GASyncLoadData.CriticalSection ) ;
+
+				// 誰か居たらスレッドを起こす
+				ResumeASyncLoadThread( 1 ) ;
+
+				// 寝る
+				goto SLEEP_LABEL ;
+			}
 		}
 
 		// データを処理中フラグを立てる
@@ -760,6 +861,12 @@ SLEEP_LABEL :
 
 		// 担当のデータのアドレスを初期化
 		AInfo->Data = NULL ;
+
+		// メインスレッドから実行を指定された非同期読み込みデータのみを処理するスレッドだった場合は処理完了状態にする
+		if( MainThread_RunDataThread )
+		{
+			GASyncLoadData.MainThread_RunDataIndex_Enable = FALSE ;
+		}
 
 		// クリティカルセクションの解放
 		CriticalSection_Unlock( &GASyncLoadData.CriticalSection ) ;
@@ -791,7 +898,7 @@ extern int ResumeASyncLoadThread( int AddMaxThreadNum )
 
 	// メインスレッドによる処理完了待ちでスレッドを止めていて、且つメインスレッドによる処理が完了しているスレッドを一つ起こす
 	AInfo = GASyncLoadData.Thread ;
-	for( i = 0 ; i < GASyncLoadData.ThreadNum ; i ++, AInfo ++ )
+	for( i = 0 ; i < GASyncLoadData.ThreadNum + 1 ; i ++, AInfo ++ )
 	{
 		if( AInfo->ExitFlag == TRUE ||
 			AInfo->SuspendFlag == FALSE ||
@@ -945,10 +1052,10 @@ extern int ProcessASyncLoadRequestMainThread( void )
 	if( GASyncLoadData.MainThreadRequestInfoNum != 0 )
 	{
 		// 依頼の数だけ繰り返し
-		StartTime = NS_GetNowCount() ;
+		StartTime = NS_GetNowCount( FALSE ) ;
 		for( i = 0 ; i < GASyncLoadData.MainThreadRequestInfoNum ; i ++ )
 		{
-			if( NS_GetNowCount() - StartTime > 2 )
+			if( NS_GetNowCount( FALSE ) - StartTime > 2 )
 				break ;
 
 			Data = GASyncLoadData.MainThreadRequestInfo[ i ] ;
@@ -1024,8 +1131,8 @@ extern int AddASyncLoadRequestMainThreadInfo( ASYNCLOAD_MAINTHREAD_REQUESTINFO *
 	// スレッド番号検出
 	CurrentThreadId = Thread_GetCurrentId() ;
 	AInfo = GASyncLoadData.Thread ;
-	for( i = 0 ; i < ASYNCLOADTHREAD_MAXNUM && Thread_GetId( &AInfo->ThreadInfo ) != CurrentThreadId ; i ++, AInfo ++ ){}
-	if( i == ASYNCLOADTHREAD_MAXNUM )
+	for( i = 0 ; i < ASYNCLOADTHREAD_MAXNUM + 1 && Thread_GetId( &AInfo->ThreadInfo ) != CurrentThreadId ; i ++, AInfo ++ ){}
+	if( i == ASYNCLOADTHREAD_MAXNUM + 1 )
 	{
 		DXST_LOGFILE_ADDUTF16LE( "\x5e\x97\x0c\x54\x1f\x67\xad\x8a\x7f\x30\xbc\x8f\x7f\x30\xb9\x30\xec\x30\xc3\x30\xc9\x30\xe5\x4e\x16\x59\x4b\x30\x89\x30\xe1\x30\xa4\x30\xf3\x30\xb9\x30\xec\x30\xc3\x30\xc9\x30\x78\x30\x6e\x30\xe6\x51\x06\x74\x9d\x4f\x3c\x98\x4c\x30\x4c\x88\x8f\x30\x8c\x30\x7e\x30\x57\x30\x5f\x30\x00"/*@ L"非同期読み込みスレッド以外からメインスレッドへの処理依頼が行われました" @*/ ) ;
 		goto ERR ;
@@ -1048,7 +1155,7 @@ extern int AddASyncLoadRequestMainThreadInfo( ASYNCLOAD_MAINTHREAD_REQUESTINFO *
 
 	// スレッドを寝かす準備
 	AInfo->SuspendFlag = TRUE ;
-	AInfo->SuspendStartTime = NS_GetNowCount() ;
+	AInfo->SuspendStartTime = NS_GetNowCount( FALSE ) ;
 	GASyncLoadData.ThreadResumeNum -- ;
 
 	// メインスレッドへのリクエストを行うからスレッドを止めているかのフラグを立てる

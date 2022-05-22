@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		システムプログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -13,6 +13,7 @@
 #include "DxSystem.h"
 #include "DxMemory.h"
 #include "DxBaseFunc.h"
+#include "DxLog.h"
 #include "DxUseCLib.h"
 
 #ifndef DX_NON_NAMESPACE
@@ -1138,6 +1139,17 @@ extern int NS_WaitTimer( int WaitTime )
 	return 0 ;
 }
 
+// 指定の時間だけスレッドを眠らせる
+extern int NS_SleepThread( int WaitTime )
+{
+	if( WaitTime < 0 ) WaitTime = 0 ;
+
+	Thread_Sleep( ( DWORD )WaitTime ) ;
+
+	// 終了
+	return 0 ;
+}
+
 #ifndef DX_NON_INPUT
 
 // キーの入力待ち
@@ -1145,12 +1157,12 @@ extern int NS_WaitKey( void )
 {
 	int BackCode = 0 ;
 
-	while( ProcessMessage() == 0 && CheckHitKeyAll() != 0 )
+	while( ProcessMessage() == 0 && CheckHitKeyAll( DX_CHECKINPUT_ALL ) != 0 )
 	{
 		Thread_Sleep( 1 ) ;
 	}
 
-	while( ProcessMessage() == 0 && ( BackCode = CheckHitKeyAll() ) == 0 )
+	while( ProcessMessage() == 0 && ( BackCode = CheckHitKeyAll( DX_CHECKINPUT_ALL ) ) == 0 )
 	{
 		Thread_Sleep( 1 ) ;
 	}
@@ -1170,6 +1182,127 @@ extern int NS_WaitKey( void )
 
 
 
+// 乱数取得
+
+#ifndef DX_NON_MERSENNE_TWISTER
+
+// 乱数の初期値を設定する
+extern int NS_SRand( int Seed )
+{
+	// 初期値セット
+	srandMT( ( unsigned int )Seed ) ;
+
+	// 終了
+	return 0 ;
+}
+
+// 乱数を取得する( RandMax : 返って来る値の最大値 )
+extern int NS_GetRand( int RandMax )
+{
+	int Result ;
+	LONGLONG RandMaxLL ;
+
+	RandMaxLL = RandMax ;
+	RandMaxLL ++ ;
+	Result = ( int )( ( ( LONGLONG )randMT() * RandMaxLL ) >> 32 ) ;
+
+	return Result ;
+}
+
+// 乱数ハンドルを作成する( 戻り値　0以外:乱数ハンドル　0:エラー )
+extern DWORD_PTR NS_CreateRandHandle( int Seed )
+{
+	MERSENNE_TWISTER_DATA *MTData ;
+
+	// 新しい乱数ハンドル用のメモリを確保する
+	MTData = ( MERSENNE_TWISTER_DATA * )DXALLOC( sizeof( MERSENNE_TWISTER_DATA ) ) ;
+	if( MTData == NULL )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x71\x4e\x70\x65\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x00"/*@ L"乱数ハンドル用のメモリの確保に失敗しました" @*/ )) ;
+		return 0 ;
+	}
+
+	// 乱数情報を初期化
+	NS_SRandHandle( ( DWORD_PTR )MTData, ( unsigned int )( Seed >= 0 ? Seed : NS_GetRand( 0x7fffffff ) ) ) ;
+
+	// ハンドルを返す
+	return ( DWORD_PTR )MTData ;
+}
+
+// 乱数ハンドルを削除する
+extern int NS_DeleteRandHandle( DWORD_PTR RandHandle )
+{
+	// メモリを解放する
+	if( RandHandle != 0 )
+	{
+		DXFREE( ( void * )RandHandle ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// 乱数ハンドルの初期値を再設定する
+extern int NS_SRandHandle( DWORD_PTR RandHandle, int Seed )
+{
+	// エラーチェック
+	if( RandHandle == 0 )
+	{
+		return -1 ;
+	}
+
+	// 乱数情報を初期化
+	initMTData( ( MERSENNE_TWISTER_DATA * )RandHandle, ( unsigned int )Seed ) ;
+
+	// 終了
+	return 0 ;
+}
+
+// 乱数ハンドルを使用して乱数を取得する( RandMax : 返って来る値の最大値 )
+extern int NS_GetRandHandle( DWORD_PTR RandHandle, int RandMax )
+{
+	int Result ;
+	LONGLONG RandMaxLL ;
+
+	// エラーチェック
+	if( RandHandle == 0 )
+	{
+		return -1 ;
+	}
+
+	RandMaxLL = RandMax ;
+	RandMaxLL ++ ;
+	Result = ( int )( ( ( LONGLONG )randMTData( ( MERSENNE_TWISTER_DATA * )RandHandle ) * RandMaxLL ) >> 32 ) ;
+
+	return Result ;
+}
+
+#else // DX_NON_MERSENNE_TWISTER
+
+// 乱数の初期値を設定する
+extern int NS_SRand( int Seed )
+{
+	// 初期値セット
+	srand( Seed ) ;
+
+	// 終了
+	return 0 ;
+}
+
+// 乱数を取得する( RandMax : 返って来る値の最大値 )
+extern int NS_GetRand( int RandMax )
+{
+	int Result ;
+	LONGLONG RandMaxLL ;
+
+	RandMaxLL = RandMax ;
+	RandMaxLL ++ ;
+	Result = ( int )( ( ( LONGLONG )rand() * RandMaxLL ) / ( ( LONGLONG )RAND_MAX + 1 ) ) ;
+
+	return Result ;
+}
+
+#endif // DX_NON_MERSENNE_TWISTER
 
 
 

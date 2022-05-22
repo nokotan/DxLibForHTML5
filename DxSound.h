@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		ƒTƒEƒ“ƒhƒvƒƒOƒ‰ƒ€ƒwƒbƒ_ƒtƒ@ƒCƒ‹
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -557,6 +557,8 @@ extern	int		Refresh3DSoundParamAll() ;																				// Ä¶’†‚Ì‚·‚×‚Ä‚Ì‚R‚
 extern	int		ProcessPlayFinishDeleteSoundMemAll( void ) ;															// Ä¶‚ªI—¹‚µ‚½‚çƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ğíœ‚·‚éƒTƒEƒ“ƒh‚Ìˆ—‚ğs‚¤
 extern	int		ProcessPlay3DSoundMemAll( void ) ;																		// ‚R‚cƒTƒEƒ“ƒh‚ğÄ¶‚µ‚Ä‚¢‚éƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚É‘Î‚·‚éˆ—‚ğs‚¤
 
+extern	int		ProcessSoundSystem( void ) ;																			// ƒTƒEƒ“ƒhƒVƒXƒeƒ€‚ÅüŠú“I‚És‚¤ˆ——p‚ÌŠÖ”
+
 extern	int		SetupSoftSoundHandle( int SoftSoundHandle, int IsPlayer, int Channels, int BitsPerSample, int SamplesPerSec, int IsFloatType, LONGLONG SampleNum ) ;	// ƒ\ƒtƒgƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ğƒZƒbƒgƒAƒbƒv
 
 extern	int		InitializeSoftSoundHandle( HANDLEINFO *HandleInfo ) ;													// ƒ\ƒtƒgƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚Ì‰Šú‰»
@@ -689,6 +691,8 @@ extern	int		InitializeSoundSystem_PF_Timing1( void ) ;											// ƒTƒEƒ“ƒhƒVƒX
 
 extern	int		TerminateSoundSystem_PF_Timing0( void ) ;											// ƒTƒEƒ“ƒhƒVƒXƒeƒ€‚ÌŒãn––‚ğ‚·‚éŠÖ”‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”( Às‰ÓŠ‹æ•Ê‚O )
 extern	int		TerminateSoundSystem_PF_Timing1( void ) ;											// ƒTƒEƒ“ƒhƒVƒXƒeƒ€‚ÌŒãn––‚ğ‚·‚éŠÖ”‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”( Às‰ÓŠ‹æ•Ê‚P )
+
+extern	int		ProcessSoundSystem_PF( void ) ;														// ƒTƒEƒ“ƒhƒVƒXƒeƒ€‚ÅüŠú“I‚És‚¤ˆ——p‚ÌŠÖ”‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”
 
 extern	int		CheckSoundSystem_Initialize_PF( void ) ;											// ƒTƒEƒ“ƒhƒVƒXƒeƒ€‚Ì‰Šú‰»ƒ`ƒFƒbƒN‚ÌŠÂ‹«ˆË‘¶ˆ—‚ğs‚¤ŠÖ”( TRUE:‰Šú‰»‚³‚ê‚Ä‚¢‚é  FALSE:‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ )
 extern	int		GetSoundSystemTotalPlaySamples_PF( ULONGLONG *TotalPlaySamples, ULONGLONG *Frequency ) ;	// ƒTƒEƒ“ƒhƒVƒXƒeƒ€‚Ì‘Ä¶ŠÔ‚ğæ“¾‚·‚é

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		データタイプ定義ヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -39,6 +39,12 @@ namespace DxLib
 #endif // DX_NON_NAMESPACE
 
 // マクロ定義 --------------------------------------------------------------------
+
+#ifndef DX_COMPILE_TYPE_C_LANGUAGE
+	#define DEFAULTPARAM( param )					param
+#else
+	#define DEFAULTPARAM( param )
+#endif
 
 #define SETRECT( Dest, Left, Top, Right, Bottom )	\
 	( Dest ).left   = Left ;\

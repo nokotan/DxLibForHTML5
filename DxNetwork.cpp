@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		通信関連プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -525,7 +525,7 @@ extern int TerminateNetWork( void )
 		PostMessageWFunc( SockData.MessageWindow, WM_CLOSE, 0, 0 );
 		while( SockData.DestroyFlag == FALSE )
 		{
-			if( NS_ProcessNetMessage() <= 0 ) break ;
+			if( NS_ProcessNetMessage( FALSE ) <= 0 ) break ;
 		}
 	}
 
@@ -913,7 +913,7 @@ extern int TerminateNetworkHandle( HANDLEINFO *HandleInfo )
 			if( Sock->Socket && Sock->Socket != INVALID_SOCKET )
 			{
 				// 通信関係処理
-				NS_ProcessNetMessage() ;
+				NS_ProcessNetMessage( FALSE ) ;
 
 				// 非ブロッキング解除
 				WinAPIData.WinSockFunc.WSAAsyncSelectFunc( Sock->Socket, SockData.MessageWindow, 0, 0 );
@@ -939,23 +939,23 @@ extern int TerminateNetworkHandle( HANDLEINFO *HandleInfo )
 				return 0 ;
 
 			// 通信関係処理
-			NS_ProcessNetMessage() ;
+			NS_ProcessNetMessage( FALSE ) ;
 
 			// 残りのデータをバッファから消去する
 			{
 				int time ;
 				
-				time = NS_GetNowCount() ;
-				while( NS_GetNowCount() - time < 1000 && Sock->RecvComDataVol != 0 )
+				time = NS_GetNowCount( FALSE ) ;
+				while( NS_GetNowCount( FALSE ) - time < 1000 && Sock->RecvComDataVol != 0 )
 				{
-					if( NS_ProcessNetMessage() != 0 ) break ;
+					if( NS_ProcessNetMessage( FALSE ) != 0 ) break ;
 					RecvSocket( HandleInfo->Handle ) ;
 				}
 
-				time = NS_GetNowCount() ;
-				while( NS_GetNowCount() - time < 1000 && Sock->SendBufferR.DataLength != 0 )
+				time = NS_GetNowCount( FALSE ) ;
+				while( NS_GetNowCount( FALSE ) - time < 1000 && Sock->SendBufferR.DataLength != 0 )
 				{
-					if( NS_ProcessNetMessage() != 0 ) break ;
+					if( NS_ProcessNetMessage( FALSE ) != 0 ) break ;
 					SendSocket( HandleInfo->Handle ) ;
 				}
 			}
@@ -1036,7 +1036,7 @@ static int ConnectNetWorkBase_Static(
 	IsIPv6 = IPData_IPv6 != NULL ? TRUE : FALSE ;
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 	
 	// ポートの値を決定
 	pt = Port == -1 ? WinAPIData.WinSockFunc.htonsFunc( WSA_DEFAULTPORT ) : WinAPIData.WinSockFunc.htonsFunc( ( unsigned short )Port ) ;
@@ -1137,11 +1137,11 @@ static int ConnectNetWorkBase_Static(
 	{
 		int StTime ;
 	
-		StTime = NS_GetNowCount() ;
+		StTime = NS_GetNowCount( FALSE ) ;
 		if( SockData.TimeOutWait == 0 ) SockData.TimeOutWait = WSA_TIMEOUTWAIT ;
-		while( ( ( NS_GetNowCount() - StTime ) < SockData.TimeOutWait ) && ( Sock->ConnectionFlag == FALSE ) )
+		while( ( ( NS_GetNowCount( FALSE ) - StTime ) < SockData.TimeOutWait ) && ( Sock->ConnectionFlag == FALSE ) )
 		{
-			if( NS_ProcessNetMessage() != 0 ) break ;
+			if( NS_ProcessNetMessage( FALSE ) != 0 ) break ;
 			Thread_Sleep( 1 ) ;
 		}
 		if( Sock->ConnectionFlag == FALSE )
@@ -1176,6 +1176,7 @@ static void ConnectNetWorkBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int ASync ;
 	int Addr ;
 	int Result ;
+	SOCKETDATA *Sock ;
 
 	Addr = 0 ;
 	GParam = ( CONNECTNETWORK_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -1194,7 +1195,10 @@ static void ConnectNetWorkBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	}
 
 	Result = ConnectNetWorkBase_Static( GParam, NetHandle, IPData_IPv4, IPData_IPv6, Port, ASync, TRUE ) ;
-
+	if( !NETHCHK_ASYNC( NetHandle, Sock ) )
+	{
+		Sock->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( NetHandle ) ;
 	if( Result < 0 )
 	{
@@ -1238,7 +1242,7 @@ extern int ConnectNetWorkBase_UseGParam(
 	CRITICALSECTION_LOCK( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// IPv6 かどうかをセット
 	IsIPv6 = IPData_IPv6 != NULL ? TRUE : FALSE ;
@@ -1441,7 +1445,7 @@ static int PreparationListenNetWork_Base( int IsIPv6, int Port )
 	CRITICALSECTION_LOCK( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// 既に受付中だったら何もせず終了	
 //	if( SockData.CSocket[ MAX_SOCKET_NUM ] != NULL )
@@ -1573,7 +1577,7 @@ extern int AcceptNetWork( void )
 	CRITICALSECTION_LOCK( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
 
 	// 通信関係の処理を行う
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// 接続待ちをしていない場合は何もせず終了
 //	if( ListenSock == NULL )
@@ -1805,15 +1809,15 @@ extern int NS_CloseNetWork( int NetHandle )
 	{
 		int time ;
 		
-		time = NS_GetNowCount() ;
-		while( NS_GetNowCount() - time < 1000 && Sock->RecvComDataVol != 0 )
+		time = NS_GetNowCount( FALSE ) ;
+		while( NS_GetNowCount( FALSE ) - time < 1000 && Sock->RecvComDataVol != 0 )
 		{
 			if( NS_ProcessNetMessage() != 0 ) break ;
 			RecvSocket( NetHandle ) ;
 		}
 
-		time = NS_GetNowCount() ;
-		while( NS_GetNowCount() - time < 1000 && Sock->SendBufferR.DataLength != 0 )
+		time = NS_GetNowCount( FALSE ) ;
+		while( NS_GetNowCount( FALSE ) - time < 1000 && Sock->SendBufferR.DataLength != 0 )
 		{
 			if( NS_ProcessNetMessage() != 0 ) break ;
 			SendSocket( NetHandle ) ;
@@ -1902,7 +1906,7 @@ static int RecvSocket( int NetHandle )
 
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 	
 	// 有効なソケットデータではなかったら何もせず終了
 	if( Sock->UseFlag == FALSE )
@@ -2034,7 +2038,7 @@ static int RecvSocket( int NetHandle )
 			if( Sock->RecvComDataVol == 0 )
 				Sock->RecvBufferToUserOpenSize += Sock->RecvComDataOriginalVol ;
 
-			if( NS_ProcessNetMessage() != 0 ) break ;
+			if( NS_ProcessNetMessage( FALSE ) != 0 ) break ;
 		
 		}// エラーが起きていなくてまだ取得すべきデータがある場合はループ
 		while( RecvLen > 0 && Sock->RecvComDataVol == 0 ) ;
@@ -2088,7 +2092,7 @@ extern int SendSocket( int NetHandle )
 	ProcessRunFlag = TRUE ;
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// 有効なソケットデータではなかったら何もせず終了
 	if( Sock->UseFlag == FALSE )
@@ -2232,7 +2236,7 @@ extern int SendSocket( int NetHandle )
 				Sock->SendComDataVol -= SendVol ;
 			}
 
-			if( NS_ProcessNetMessage() != 0 ) break ;
+			if( NS_ProcessNetMessage( FALSE ) != 0 ) break ;
 		
 		}// エラーが起きていなくてまだ送信すべきデータがある場合はループ
 		while( SendVol != 0 && Sock->SendComDataVol == 0 && Sock->SendBufferR.DataLength != 0 );
@@ -2265,7 +2269,7 @@ extern int NS_GetNetWorkAcceptState( int NetHandle )
 	CRITICALSECTION_LOCK( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// 有効なハンドルではなかったらエラー
 	if( TCPNETHCHK( NetHandle, Sock ) )
@@ -2319,7 +2323,7 @@ extern int NS_GetNetWorkDataLength( int NetHandle )
 	CRITICALSECTION_LOCK( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// 内部データ送受信処理を行う
 	RecvSocket( NetHandle ) ;
@@ -2382,7 +2386,7 @@ extern int NS_GetNetWorkSendDataLength( int NetHandle )
 	CRITICALSECTION_LOCK( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// 有効なハンドルではなかったらエラー
 	if( TCPNETHCHK( NetHandle, Sock ) )
@@ -2440,7 +2444,7 @@ extern int NS_GetNewAcceptNetWork( void )
 	CRITICALSECTION_LOCK( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// 新たに接続した接続先がある場合はその接続ハンドルを返す
 	for( List = HandleManageArray[ DX_HANDLETYPE_NETWORK ].ListFirst.Next ; List->Next != NULL ; List = List->Next )
@@ -2488,7 +2492,7 @@ extern int NS_GetLostNetWork( void )
 	CRITICALSECTION_LOCK( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// まだライブラリユーザーが未確認の切断された接続先を探す
 	for( List = HandleManageArray[ DX_HANDLETYPE_NETWORK ].ListFirst.Next ; List->Next != NULL ; List = List->Next )
@@ -2896,7 +2900,7 @@ static int NetWorkRecv_Static(
 	}
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// 有効なソケットデータではなかったら何もせず終了
 	if( Sock->UseFlag == FALSE )
@@ -3268,7 +3272,7 @@ extern int NS_NetWorkRecvBufferClear( int NetHandle )
 	}
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// 有効なソケットデータではなかったら何もせず終了
 	if( Sock->UseFlag == FALSE )
@@ -3362,7 +3366,7 @@ static int NetWorkSend_Static(
 	}
 
 	// 通信関係処理
-	NS_ProcessNetMessage() ;
+	NS_ProcessNetMessage( FALSE ) ;
 
 	// 有効なソケットデータではなかったら何もせず終了
 	if( Sock->UseFlag == FALSE )
@@ -3646,6 +3650,7 @@ static void MakeUDPSocketBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int RecvPort ;
 	int Addr ;
 	int Result ;
+	SOCKETDATA * Sock ;
 
 	Addr = 0 ;
 	NetHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
@@ -3653,6 +3658,10 @@ static void MakeUDPSocketBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	RecvPort = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = MakeUDPSocketBase_Static( NetHandle, IsIPv6, RecvPort, TRUE ) ;
+	if( !NETHCHK_ASYNC( NetHandle, Sock ) )
+	{
+		Sock->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( NetHandle ) ;
 	if( Result < 0 )
@@ -4761,7 +4770,7 @@ DWORD WINAPI ProcessNetMessageThreadFunction( LPVOID )
 		if( SockData.InitializeFlag == FALSE ) break ;
 
 		// ネットメッセージプロセス処理
-		NS_ProcessNetMessage() ;
+		NS_ProcessNetMessage( FALSE ) ;
 
 		// 待ち
 		Thread_Sleep( 8 ) ;
@@ -4902,7 +4911,7 @@ extern int NS_HTTP_FileDownload( const char *FileURL, const char *SavePath, void
 	}
 
 	// 速度計算の準備
-	StartTime = GetNowCount() ;
+	StartTime = GetNowCount( FALSE ) ;
 
 	// ダウンロード完了まで待つ
 	while( ProcessMessage() == 0 && HTTP_GetState( DHandle ) == HTTP_RES_NOW )
@@ -4921,14 +4930,14 @@ extern int NS_HTTP_FileDownload( const char *FileURL, const char *SavePath, void
 			DrawFormatStringToHandle( CX - width / 2, CY + CommentY, GetColor( 255,255,255 ), Font, Message2, FileName ) ;
 
 			// ダウンロード情報を表示
-			if( GetNowCount() - StartTime > 1000 )
+			if( GetNowCount( FALSE ) - StartTime > 1000 )
 			{
 				int RecvSize, FileSize, LapsTime ;
 				char tempstr[128], timestr[32], numstr1[32], numstr2[32], unit1, unit2 ;
 			
 				RecvSize = HTTP_GetDownloadedFileSize( DHandle ) ;
 				FileSize = HTTP_GetDownloadFileSize( DHandle ) ;
-				LapsTime = GetNowCount() - StartTime ;
+				LapsTime = GetNowCount( FALSE ) - StartTime ;
 
 				// ダウンロードメーターの描画
 				{

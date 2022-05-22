@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ソフトウェアで扱う画像プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -151,12 +151,17 @@ static void LoadSoftImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	const wchar_t *FileName ;
 	int Addr ;
 	int Result ;
+	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	FileName = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
 	Result = LoadSoftImage_Static( SIHandle, FileName, TRUE ) ;
+	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
+	{
+		SoftImg->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
@@ -335,7 +340,7 @@ static int LoadARGB8ColorSoftImage_Static(
 		}
 
 		// ARGB8 形式に変換
-		NS_BltBaseImage( 0, 0, &TempBaseImage, &SoftImg->BaseImage ) ;
+		NS_BltBaseImage2( 0, 0, &TempBaseImage, &SoftImg->BaseImage ) ;
 
 		// 読み込んだ基本イメージは解放
 		NS_ReleaseBaseImage( &TempBaseImage ) ;
@@ -354,12 +359,17 @@ static void LoadARGB8ColorSoftImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	const wchar_t *FileName ;
 	int Addr ;
 	int Result ;
+	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	FileName = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
 	Result = LoadARGB8ColorSoftImage_Static( SIHandle, FileName, TRUE ) ;
+	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
+	{
+		SoftImg->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
@@ -551,7 +561,7 @@ static int LoadXRGB8ColorSoftImage_Static(
 		}
 
 		// XRGB8 形式に変換
-		NS_BltBaseImage( 0, 0, &TempBaseImage, &SoftImg->BaseImage ) ;
+		NS_BltBaseImage2( 0, 0, &TempBaseImage, &SoftImg->BaseImage ) ;
 
 		// 読み込んだ基本イメージは解放
 		NS_ReleaseBaseImage( &TempBaseImage ) ;
@@ -570,12 +580,17 @@ static void LoadXRGB8ColorSoftImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	const wchar_t *FileName ;
 	int Addr ;
 	int Result ;
+	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	FileName = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
 	Result = LoadXRGB8ColorSoftImage_Static( SIHandle, FileName, TRUE ) ;
+	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
+	{
+		SoftImg->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
@@ -747,6 +762,7 @@ static void LoadSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int FileImageSize ;
 	int Addr ;
 	int Result ;
+	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
@@ -754,6 +770,10 @@ static void LoadSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	FileImageSize = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = LoadSoftImageToMem_Static( SIHandle, FileImage, FileImageSize, TRUE ) ;
+	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
+	{
+		SoftImg->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
@@ -899,7 +919,7 @@ static int LoadARGB8ColorSoftImageToMem_Static(
 		}
 
 		// ARGB8 形式に変換
-		NS_BltBaseImage( 0, 0, &TempBaseImage, &SoftImg->BaseImage ) ;
+		NS_BltBaseImage2( 0, 0, &TempBaseImage, &SoftImg->BaseImage ) ;
 
 		// 読み込んだ基本イメージは解放
 		NS_ReleaseBaseImage( &TempBaseImage ) ;
@@ -919,6 +939,7 @@ static void LoadARGB8ColorSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int FileImageSize ;
 	int Addr ;
 	int Result ;
+	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
@@ -926,6 +947,10 @@ static void LoadARGB8ColorSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	FileImageSize = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = LoadARGB8ColorSoftImageToMem_Static( SIHandle, FileImage, FileImageSize, TRUE ) ;
+	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
+	{
+		SoftImg->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
@@ -1071,7 +1096,7 @@ static int LoadXRGB8ColorSoftImageToMem_Static(
 		}
 
 		// XRGB8 形式に変換
-		NS_BltBaseImage( 0, 0, &TempBaseImage, &SoftImg->BaseImage ) ;
+		NS_BltBaseImage2( 0, 0, &TempBaseImage, &SoftImg->BaseImage ) ;
 
 		// 読み込んだ基本イメージは解放
 		NS_ReleaseBaseImage( &TempBaseImage ) ;
@@ -1091,6 +1116,7 @@ static void LoadXRGB8ColorSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int FileImageSize ;
 	int Addr ;
 	int Result ;
+	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
@@ -1098,6 +1124,10 @@ static void LoadXRGB8ColorSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	FileImageSize = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = LoadXRGB8ColorSoftImageToMem_Static( SIHandle, FileImage, FileImageSize, TRUE ) ;
+	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
+	{
+		SoftImg->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
@@ -1322,6 +1352,96 @@ extern	int		NS_MakeXRGB8ColorSoftImage( int SizeX, int SizeY )
 	return NewHandle ;
 }
 
+// ソフトウエアイメージハンドルの作成( RGBA8 カラー )
+extern int NS_MakeRGBA8ColorSoftImage( int SizeX, int SizeY )
+{
+	SOFTIMAGE *SoftImg ;
+	int NewHandle ;
+	int Result ;
+
+	// 新しいソフトイメージハンドルの取得
+	NewHandle = AddHandle( DX_HANDLETYPE_SOFTIMAGE, FALSE, -1 ) ;
+	if( NewHandle == -1 )
+	{
+		return -1 ;
+	}
+	if( SFTIMGCHK_ASYNC( NewHandle, SoftImg ) )
+	{
+		return -1 ;
+	}
+
+	// CreateRGBA8ColorBaseImage を使用
+	Result = NS_CreateRGBA8ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
+	if( Result == -1 )
+	{
+		SubHandle( NewHandle ) ;
+		return -1 ;
+	}
+
+	// 成功したらハンドルを返す
+	return NewHandle ;
+}
+
+// ソフトウエアイメージハンドルの作成( ABGR8 カラー )
+extern int NS_MakeABGR8ColorSoftImage( int SizeX, int SizeY )
+{
+	SOFTIMAGE *SoftImg ;
+	int NewHandle ;
+	int Result ;
+
+	// 新しいソフトイメージハンドルの取得
+	NewHandle = AddHandle( DX_HANDLETYPE_SOFTIMAGE, FALSE, -1 ) ;
+	if( NewHandle == -1 )
+	{
+		return -1 ;
+	}
+	if( SFTIMGCHK_ASYNC( NewHandle, SoftImg ) )
+	{
+		return -1 ;
+	}
+
+	// CreateABGR8ColorBaseImage を使用
+	Result = NS_CreateABGR8ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
+	if( Result == -1 )
+	{
+		SubHandle( NewHandle ) ;
+		return -1 ;
+	}
+
+	// 成功したらハンドルを返す
+	return NewHandle ;
+}
+
+// ソフトウエアイメージハンドルの作成( BGRA8 カラー )
+extern int NS_MakeBGRA8ColorSoftImage( int SizeX, int SizeY )
+{
+	SOFTIMAGE *SoftImg ;
+	int NewHandle ;
+	int Result ;
+
+	// 新しいソフトイメージハンドルの取得
+	NewHandle = AddHandle( DX_HANDLETYPE_SOFTIMAGE, FALSE, -1 ) ;
+	if( NewHandle == -1 )
+	{
+		return -1 ;
+	}
+	if( SFTIMGCHK_ASYNC( NewHandle, SoftImg ) )
+	{
+		return -1 ;
+	}
+
+	// CreateBGRA8ColorBaseImage を使用
+	Result = NS_CreateBGRA8ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
+	if( Result == -1 )
+	{
+		SubHandle( NewHandle ) ;
+		return -1 ;
+	}
+
+	// 成功したらハンドルを返す
+	return NewHandle ;
+}
+
 // ソフトウエアで扱うイメージの作成( ARGB4 カラー )
 extern	int		NS_MakeARGB4ColorSoftImage( int SizeX, int SizeY )
 {
@@ -1522,6 +1642,36 @@ extern	int		NS_MakePAL8ColorSoftImage( int SizeX, int SizeY, int UseAlpha )
 
 	// CreatePAL8ColorBaseImage を使用
 	Result = NS_CreatePAL8ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage, UseAlpha ) ;
+	if( Result == -1 )
+	{
+		SubHandle( NewHandle ) ;
+		return -1 ;
+	}
+
+	// 成功したらハンドルを返す
+	return NewHandle ;
+}
+
+// ソフトウエアイメージハンドルの作成( COLORDATA でフォーマット指定 )
+extern int NS_MakeColorDataSoftImage( int SizeX, int SizeY, const COLORDATA *ColorData )
+{
+	SOFTIMAGE *SoftImg ;
+	int NewHandle ;
+	int Result ;
+
+	// 新しいソフトイメージハンドルの取得
+	NewHandle = AddHandle( DX_HANDLETYPE_SOFTIMAGE, FALSE, -1 ) ;
+	if( NewHandle == -1 )
+	{
+		return -1 ;
+	}
+	if( SFTIMGCHK_ASYNC( NewHandle, SoftImg ) )
+	{
+		return -1 ;
+	}
+
+	// CreateColorDataBaseImage を使用
+	Result = NS_CreateColorDataBaseImage( SizeX, SizeY, ColorData, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
 		SubHandle( NewHandle ) ;
@@ -1972,6 +2122,30 @@ extern	int		NS_ReverseSoftImage( int SIHandle )
 		return -1 ;
 
 	return NS_ReverseBaseImage( &SoftImg->BaseImage ) ;
+}
+
+// 通常のαチャンネル付き画像を乗算済みαチャンネル付き画像に変換する( ピクセルフォーマットが ARGB8 以外の場合は ARGB8 に変換されます )
+extern	int		NS_ConvertPremulAlphaSoftImage( int SIHandle )
+{
+	SOFTIMAGE *SoftImg ;
+
+	// アドレスの取得
+	if( SFTIMGCHK( SIHandle, SoftImg ) )
+		return -1 ;
+
+	return NS_ConvertPremulAlphaBaseImage( &SoftImg->BaseImage ) ;
+}
+
+// 乗算済みαチャンネル付き画像を通常のαチャンネル付き画像に変換する( ピクセルフォーマットが ARGB8 以外の場合は ARGB8 に変換されます )
+extern	int		NS_ConvertInterpAlphaSoftImage( int SIHandle )
+{
+	SOFTIMAGE *SoftImg ;
+
+	// アドレスの取得
+	if( SFTIMGCHK( SIHandle, SoftImg ) )
+		return -1 ;
+
+	return NS_ConvertInterpAlphaBaseImage( &SoftImg->BaseImage ) ;
 }
 
 // ソフトウエアで扱うイメージに含まれるピクセルのアルファ値をチェックする( 戻り値   0:画像にアルファ成分が無い  1:画像にアルファ成分があり、すべて最大(255)値  2:画像にアルファ成分があり、存在するアルファ値は最小(0)と最大(255)のみ　3:画像にアルファ成分があり、最小と最大以外の中間の値がある )  

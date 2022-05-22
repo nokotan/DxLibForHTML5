@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		メモリ関係プログラムヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -95,7 +95,8 @@ extern	int			MemoryTerminate( void ) ;												// メモリ処理の後始末を行う
 extern	int			MemoryProcess( void ) ;													// メモリ処理の周期的処理
 extern	int			MemoryDrawAllocInfo( int x, int y, int Width, int Height ) ;			// メモリの確保状況を描画する
 
-extern	void		MemoryDump( void *buffer, int size ) ;
+extern	void		MemoryDump( void *buffer, int size ) ;									// メモリの情報をログに出力する
+extern	int			MemoryErrorCheck( void ) ;												// メモリのエラーをチェックする
 
 extern	void *		DxAllocBase( size_t AllocSize, size_t Aligned, const char *File = NULL, int Line = -1, int NoMemoryDump = FALSE ) ;	// DxAlloc の内部処理用関数
 extern	void *		DxReallocBase( void *Memory, size_t AllocSize, size_t Aligned, const char *File = NULL, int Line = -1 ) ;			// DxRealloc の内部処理用関数
@@ -112,6 +113,7 @@ extern	ALLOCMEM_SIZE_TYPE	 NormalMemory_AutoAlloc_GetHeapSizeCallback_PF(    int
 extern	int					 NormalMemory_AutoAlloc_DeleteHeapCallback_PF(     int Param, void *Buffer ) ;			// 環境依存の一般的なヒープ用のメモリ領域を確保するためのコールバック関数群の AutoAlloc_DeleteHeapCallback
 
 extern	int			DxDumpAlloc_PF( void ) ;									// 確保しているメモリを列挙する関数の環境依存処理
+extern	int			MemoryErrorCheck_PF( void ) ;								// メモリのエラーチェックの環境依存処理
 
 #ifndef DX_NON_NAMESPACE
 

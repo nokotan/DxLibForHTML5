@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ハンドル管理プログラムヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -12,6 +12,10 @@
 // インクルード ------------------------------------------------------------------
 #include "DxCompileConfig.h"
 #include "DxThread.h"
+
+#ifndef DX_NON_ASYNCLOAD
+	#include "DxASyncLoad.h"
+#endif DX_NON_ASYNCLOAD
 
 #ifndef DX_NON_NAMESPACE
 
@@ -99,7 +103,7 @@ namespace DxLib
 			( ( (HANDLE) & DX_HANDLEINDEX_MASK ) >= HandleManageArray[ (TYPE) ].MaxNum ) ||							\
 			( ( INFO = HandleManageArray[ (TYPE) ].Handle[ (HANDLE) & DX_HANDLEINDEX_MASK ] ) == NULL ) ||			\
 			( (int)( (INFO)->ID << DX_HANDLECHECK_ADDRESS ) != ( (HANDLE) & DX_HANDLECHECK_MASK ) ) ||				\
-			( (INFO)->ASyncLoadCount != 0 ) )
+			( (INFO)->ASyncLoadCount != 0 && ( MainThreadProcessASyncLoadData( (INFO)->ASyncDataNumber ) < 0 || HandleManageArray[ (TYPE) ].Handle[ (HANDLE) & DX_HANDLEINDEX_MASK ] == NULL ) ) )
 
 #else // DX_NON_ASYNCLOAD
 
@@ -162,6 +166,8 @@ struct HANDLEINFO
 	int						ASyncLoadResult ;					// 非同期読み込み処理の結果
 	int						ASyncDataNumber ;					// 非同期読み込み処理番号
 	volatile int			ASyncLoadFinishDeleteRequestFlag ;	// 非同期読み込みが完了したらハンドルを削除するフラグ
+	volatile void			( *ASyncLoadFinishCallback )( int Handle, void *Data ) ;	// 非同期読み込みが完了したら呼ばれるコールバック関数
+	void					*ASyncLoadFinishCallbackData ;		// 非同期読み込みが完了したら呼ばれるコールバック関数に渡す引数
 #endif
 	HANDLELIST				List ;								// ハンドルリストの一つ前と次の要素へのポインタ
 } ;

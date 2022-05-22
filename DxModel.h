@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		ƒ‚ƒfƒ‹ƒf[ƒ^§ŒäƒvƒƒOƒ‰ƒ€
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -362,6 +362,7 @@ struct MV1_MATERIAL_BASE
 
 	int						DrawBlendMode ;						// o—Í‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh( DX_BLENDMODE_NOBLEND “™ )
 	int						DrawBlendParam ;					// o—Í‚ÌƒuƒŒƒ“ƒhƒpƒ‰ƒ[ƒ^
+	INT4					DrawAddColor ;						// o—Í‚Ì‰ÁZƒJƒ‰[
 
 	DWORD					UserData[ 4 ] ;						// ŠO•”’è‹`‚Ìî•ñ
 } ;
@@ -1141,6 +1142,7 @@ struct MV1_MATERIAL
 
 	int						DrawBlendMode ;						// o—Í‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh( DX_BLENDMODE_NOBLEND “™ )
 	int						DrawBlendParam ;					// o—Í‚ÌƒuƒŒƒ“ƒhƒpƒ‰ƒ[ƒ^
+	INT4					DrawAddColor ;						// o—Í‚Ì‰ÁZƒJƒ‰[
 } ;
 
 // ƒgƒ‰ƒCƒAƒ“ƒOƒ‹ƒŠƒXƒg\‘¢‘Ì
@@ -1344,6 +1346,7 @@ struct MV1_MODEL
 	MV1_PHYSICS_RIGIDBODY	*PhysicsRigidBody ;					// „‘Ìî•ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	MV1_PHYSICS_JOINT		*PhysicsJoint ;						// ƒWƒ‡ƒCƒ“ƒgî•ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	int						PhysicsResetRequestFlag ;			// ƒŠƒZƒbƒgƒŠƒNƒGƒXƒgƒtƒ‰ƒO
+	int						PrioritizePhysicsOverAnimFlag ;		// •¨—‰‰Z‚ğƒAƒjƒ[ƒVƒ‡ƒ“‚æ‚è—Dæ‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO( TRUE:•¨—‰‰Z‚ğ—Dæ‚·‚é  FALSE:ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ—Dæ‚·‚é )
 
 	MV1_TRIANGLE_LIST		*TriangleList ;						// ƒgƒ‰ƒCƒAƒ“ƒOƒ‹ƒŠƒXƒgî•ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	MV1_MESH				*Mesh ;								// ƒƒbƒVƒ…î•ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
@@ -1405,6 +1408,7 @@ struct MV1_MODEL_MANAGE
 	bool					Initialize ;							// ‰Šú‰»Ï‚İ‚©Aƒtƒ‰ƒO( true:‰Šú‰»Ï‚İ  false:–¢‰Šú‰» )
 
 	int						UseOrigShaderFlag ;						// ƒ‚ƒfƒ‹‚Ì•`‰æ‚É SetUseVertexShader, SetUsePixelShader ‚Åw’è‚µ‚½ƒVƒF[ƒ_[‚ğg—p‚·‚é‚©‚Ç‚¤‚©( TRUE:g—p‚·‚é  FALSE:g—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
+	int						DrawMode ;								// •`‰æƒ‚[ƒh( DX_MV1_DRAWMODE_NORMAL ‚È‚Ç )
 	int						SemiTransDrawMode ;						// ƒ‚ƒfƒ‹‚Ì”¼“§–¾—v‘f‚ª‚ ‚é•”•ª‚É‚Â‚¢‚Ä‚Ì•`‰æƒ‚[ƒh( DX_SEMITRANSDRAWMODE_ALWAYS “™ )
 
 	int						LoadModelToReMakeNormal ;				// ƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İˆ—‚Å–@ü‚ÌÄŒvZ‚ğs‚¤‚©‚Ç‚¤‚©( TRUE:s‚¤  FALSE:s‚í‚È‚¢ )
@@ -1457,6 +1461,8 @@ struct MV1_MODEL_MANAGE
 
 	void *					WorkBuffer ;						// ì‹Æ—pƒoƒbƒtƒ@
 	size_t					WorkBufferSize ;					// ì‹Æ—pƒoƒbƒtƒ@‚ÌƒTƒCƒY
+
+	INT4					BackupDrawAddColor ;				// ƒ‚ƒfƒ‹•`‰æ‚ÉŒ³‚Ì‰ÁZƒJƒ‰[‚ğ•Û‘¶‚µ‚Ä‚¨‚­‚½‚ß‚Ì•Ï”
 
 	// ƒeƒXƒg—pƒVƒF[ƒ_[
 //	D_IDirect3DPixelShader9  *PS_Test ;
@@ -1702,6 +1708,8 @@ extern	int				MV1SetMaterialDrawAlphaTestBase( int MBHandle, int MaterialIndex, 
 extern	int				MV1GetMaterialDrawAlphaTestEnableBase( int MBHandle, int MaterialIndex ) ;				// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚Ì•`‰æ‚ÌƒAƒ‹ƒtƒ@ƒeƒXƒg‚ğs‚¤‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( –ß‚è’l  TRUE:ƒAƒ‹ƒtƒ@ƒeƒXƒg‚ğs‚¤  FALSE:ƒAƒ‹ƒtƒ@ƒeƒXƒg‚ğs‚í‚È‚¢ )
 extern	int				MV1GetMaterialDrawAlphaTestModeBase( int MBHandle, int MaterialIndex ) ;				// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚Ì•`‰æ‚ÌƒAƒ‹ƒtƒ@ƒeƒXƒg‚ÌƒeƒXƒgƒ‚[ƒh‚ğæ“¾‚·‚é( –ß‚è’l  ƒeƒXƒgƒ‚[ƒh( DX_CMP_GREATER“™ ) )
 extern	int				MV1GetMaterialDrawAlphaTestParamBase( int MBHandle, int MaterialIndex ) ;				// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚Ì•`‰æ‚ÌƒAƒ‹ƒtƒ@ƒeƒXƒg‚Ì•`‰æƒAƒ‹ƒtƒ@’n‚Æ‚Ì”äŠr‚Ég—p‚·‚é’l( 0`255 )‚ğæ“¾‚·‚é
+extern	int				MV1SetMaterialDrawAddColorBase( int MBHandle, int MaterialIndex, int Red, int Green, int Blue ) ;		// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚Ì•`‰æ‚Ì‰ÁZƒJƒ‰[‚ğİ’è‚·‚é
+extern	int				MV1GetMaterialDrawAddColorBase( int MBHandle, int MaterialIndex, int *Red, int *Green, int *Blue ) ;	// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚Ì•`‰æ‚Ì‰ÁZƒJƒ‰[‚ğæ“¾‚·‚é
 
 // Šî–{ƒf[ƒ^“àƒeƒNƒXƒ`ƒƒŠÖŒW
 extern	int				MV1GetTextureNumBase( int MBHandle ) ;													// ƒeƒNƒXƒ`ƒƒ‚Ì”‚ğæ“¾
@@ -1775,6 +1783,8 @@ extern	int				MV1GetNotUseFrameRotation( int MHandle ) ;												// ƒtƒŒ[ƒ€‚
 
 // ƒ‚ƒfƒ‹•`‰æŠÖŒW
 extern	int				MV1DrawPackDrawModel( void ) ;															// “¯•¡”•`‰æ‚Ìˆ×‚É•`‰æ‘Ò‹@‚µ‚Ä‚¢‚éƒ‚ƒfƒ‹‚ğ•`‰æ‚·‚é
+extern	int				MV1_BeginRender( MV1_MODEL *Model ) ;													// ‚R‚cƒ‚ƒfƒ‹‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO‚Ì€”õ‚ğs‚¤
+extern	int				MV1_EndRender( void ) ;																	// ‚R‚cƒ‚ƒfƒ‹‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÌŒãn––‚ğs‚¤
 
 // ƒ‚ƒfƒ‹•¨—‰‰ZŠÖŒW
 extern	int				MV1PhysicsCalculationBase( int MHandle, float MillisecondTime, int ASyncLoadFlag = FALSE ) ;	// ƒ‚ƒfƒ‹‚Ì•¨—‰‰Z‚ğw’èŠÔ•ªŒo‰ß‚µ‚½‚Æ‰¼’è‚µ‚ÄŒvZ‚·‚é( MillisecondTime ‚Åw’è‚·‚éŠÔ‚Ì’PˆÊ‚Íƒ~ƒŠ•b )
@@ -2176,7 +2186,7 @@ extern	int				MV1_TerminateVertexBufferBase_PF( int MV1ModelBaseHandle ) ;						
 extern	int				MV1_TerminateVertexBuffer_PF( int MV1ModelHandle ) ;										// ’¸“_ƒoƒbƒtƒ@‚ÌŒãn––‚ğ‚·‚é( -1:ƒGƒ‰[ )
 extern	int				MV1_SetupShapeVertex_PF( int MHandle ) ;													// ƒVƒFƒCƒvƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv‚ğ‚·‚é
 extern	int				MV1_BeginRender_PF( MV1_MODEL *Model ) ;													// ‚R‚cƒ‚ƒfƒ‹‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO‚Ì€”õ‚ğs‚¤
-extern	int				MV1_EndRender_PF() ;																		// ‚R‚cƒ‚ƒfƒ‹‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÌŒãn––‚ğs‚¤
+extern	int				MV1_EndRender_PF( void ) ;																	// ‚R‚cƒ‚ƒfƒ‹‚ÌƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÌŒãn––‚ğs‚¤
 extern	void			MV1_DrawMesh_PF( MV1_MESH *Mesh, int TriangleListIndex = -1 ) ;								// ƒƒbƒVƒ…•`‰æ•”•ª‚ğ”²‚«o‚µ‚½‚à‚Ì
 
 
@@ -2282,8 +2292,9 @@ extern	int			NS_MV1DrawModelDebug( int MHandle, unsigned int Color, int IsNormal
 //extern	int			NS_MV1DrawAlphaObject( void ) ;														// ƒAƒ‹ƒtƒ@ƒIƒuƒWƒFƒNƒg‚Ì•`‰æ
 
 // •`‰æİ’èŠÖŒW
-extern	int			NS_MV1SetUseOrigShader( int UseFlag ) ;														// ƒ‚ƒfƒ‹‚Ì•`‰æ‚É SetUseVertexShader, SetUsePixelShader ‚Åw’è‚µ‚½ƒVƒF[ƒ_[‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:g—p‚·‚é  FALSE:g—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
-extern	int			NS_MV1SetSemiTransDrawMode(			int DrawMode /* DX_SEMITRANSDRAWMODE_ALWAYS “™ */ ) ;				// ƒ‚ƒfƒ‹‚Ì”¼“§–¾—v‘f‚ª‚ ‚é•”•ª‚É‚Â‚¢‚Ä‚Ì•`‰æƒ‚[ƒh‚ğİ’è‚·‚é
+extern	int			NS_MV1SetUseOrigShader( int UseFlag ) ;													// ƒ‚ƒfƒ‹‚Ì•`‰æ‚É SetUseVertexShader, SetUsePixelShader ‚Åw’è‚µ‚½ƒVƒF[ƒ_[‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:g—p‚·‚é  FALSE:g—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
+extern	int			NS_MV1SetDrawMode( int DrawMode /* DX_MV1_DRAWMODE_NORMAL “™ */ ) ;						// ƒ‚ƒfƒ‹‚Ì•`‰æƒ‚[ƒh‚Ìİ’è
+extern	int			NS_MV1SetSemiTransDrawMode( int DrawMode /* DX_SEMITRANSDRAWMODE_ALWAYS “™ */ ) ;		// ƒ‚ƒfƒ‹‚Ì”¼“§–¾—v‘f‚ª‚ ‚é•”•ª‚É‚Â‚¢‚Ä‚Ì•`‰æƒ‚[ƒh‚ğİ’è‚·‚é
 
 // ƒ‚ƒfƒ‹Šî–{§ŒäŠÖŒW
 //extern	int			   MV1SetupMatrix( int MHandle ) ;														// •`‰æ—p‚Ìs—ñ‚ğ\’z‚·‚é
@@ -2335,6 +2346,7 @@ extern	int			NS_MV1RefreshVertColorFromMaterial( int MHandle ) ;										// ƒ‚ƒ
 extern	int			NS_MV1SetPhysicsWorldGravity(			int MHandle, VECTOR Gravity ) ;										// ƒ‚ƒfƒ‹‚Ì•¨—‰‰Z‚Ìd—Í‚ğİ’è‚·‚é
 extern	int			NS_MV1PhysicsCalculation( int MHandle, float MillisecondTime ) ;						// ƒ‚ƒfƒ‹‚Ì•¨—‰‰Z‚ğw’èŠÔ•ªŒo‰ß‚µ‚½‚Æ‰¼’è‚µ‚ÄŒvZ‚·‚é( MillisecondTime ‚Åw’è‚·‚éŠÔ‚Ì’PˆÊ‚Íƒ~ƒŠ•b )
 extern	int			NS_MV1PhysicsResetState( int MHandle ) ;												// ƒ‚ƒfƒ‹‚Ì•¨—‰‰Z‚Ìó‘Ô‚ğƒŠƒZƒbƒg‚·‚é( ˆÊ’u‚ªƒ[ƒv‚µ‚½‚Æ‚«—p )
+extern	int			NS_MV1SetPrioritizePhysicsOverAnimFlag(	int MHandle, int Flag ) ;											// ƒ‚ƒfƒ‹‚Ì•¨—‰‰Z‚ğƒAƒjƒ[ƒVƒ‡ƒ“‚æ‚è—Dæ‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:•¨—‰‰Z‚ğ—Dæ‚·‚é  FALSE:ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ—Dæ‚·‚é( ƒfƒtƒHƒ‹ƒg ) )
 extern	int			NS_MV1SetUseShapeFlag( int MHandle, int Flag ) ;										// ƒ‚ƒfƒ‹‚ÌƒVƒFƒCƒv‹@”\‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
 extern	int			NS_MV1GetMaterialNumberOrderFlag(		int MHandle ) ;														// ƒ‚ƒfƒ‹‚Ìƒ}ƒeƒŠƒAƒ‹”Ô†‡‚ÉƒƒbƒVƒ…‚ğ•`‰æ‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğæ“¾‚·‚é( TRUE:ƒ}ƒeƒŠƒAƒ‹”Ô†‡‚É•`‰æ  FALSE:•s“§–¾ƒƒbƒVƒ…‚ÌŒã”¼“§–¾ƒƒbƒVƒ… )
 
@@ -2461,6 +2473,9 @@ extern	int			NS_MV1SetMaterialOutLineColorAll(		int MHandle,                    
 extern	int			NS_MV1SetMaterialDrawBlendModeAll(		int MHandle,                    int BlendMode ) ;						// ‘S‚Ä‚Ìƒ}ƒeƒŠƒAƒ‹‚Ì•`‰æƒuƒŒƒ“ƒhƒ‚[ƒh‚ğİ’è‚·‚é( DX_BLENDMODE_ALPHA “™ )
 extern	int			NS_MV1SetMaterialDrawBlendParamAll(	int MHandle,                    int BlendParam ) ;						// ‘S‚Ä‚Ìƒ}ƒeƒŠƒAƒ‹‚Ì•`‰æƒuƒŒƒ“ƒhƒpƒ‰ƒ[ƒ^‚ğİ’è‚·‚é
 extern	int			NS_MV1SetMaterialDrawAlphaTestAll(		int MHandle,                    int Enable, int Mode, int Param ) ;		// ‘S‚Ä‚Ìƒ}ƒeƒŠƒAƒ‹‚Ì•`‰æ‚ÌƒAƒ‹ƒtƒ@ƒeƒXƒg‚Ìİ’è‚ğs‚¤( Enable:ƒ¿ƒeƒXƒg‚ğs‚¤‚©‚Ç‚¤‚©( TRUE:s‚¤  FALSE:s‚í‚È‚¢( ƒfƒtƒHƒ‹ƒg ) ) Mode:ƒeƒXƒgƒ‚[ƒh( DX_CMP_GREATER“™ )  Param:•`‰æƒAƒ‹ƒtƒ@’l‚Æ‚Ì”äŠr‚Ég—p‚·‚é’l( 0`255 ) )
+extern	int			NS_MV1SetMaterialDrawAddColorAll(		int MHandle,                    int Red, int Green, int Blue ) ;		// ‘S‚Ä‚Ìƒ}ƒeƒŠƒAƒ‹‚Ì•`‰æ‚Ì‰ÁZƒJƒ‰[‚ğİ’è‚·‚é
+extern	int			NS_MV1SetMaterialDrawAddColor(			int MHandle, int MaterialIndex, int Red, int Green, int Blue ) ;		// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚Ì•`‰æ‚Ì‰ÁZƒJƒ‰[‚ğİ’è‚·‚é
+extern	int			NS_MV1GetMaterialDrawAddColor(			int MHandle, int MaterialIndex, int *Red, int *Green, int *Blue ) ;		// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚Ì•`‰æ‚Ì‰ÁZƒJƒ‰[‚ğæ“¾‚·‚é
 
 // ƒeƒNƒXƒ`ƒƒŠÖŒW
 extern	int			NS_MV1GetTextureNum( int MHandle ) ;													// ƒeƒNƒXƒ`ƒƒ‚Ì”‚ğæ“¾
@@ -2667,6 +2682,7 @@ extern	MV1_REF_POLYGONLIST	NS_MV1GetReferenceMesh(		int MHandle, int FrameIndex,
 
 // •`‰æİ’èŠÖŒW
 #define NS_MV1SetUseOrigShader							MV1SetUseOrigShader
+#define NS_MV1SetDrawMode								MV1SetDrawMode
 #define NS_MV1SetSemiTransDrawMode						MV1SetSemiTransDrawMode
 
 // ƒ‚ƒfƒ‹Šî–{§ŒäŠÖŒW
@@ -2718,6 +2734,7 @@ extern	MV1_REF_POLYGONLIST	NS_MV1GetReferenceMesh(		int MHandle, int FrameIndex,
 #define NS_MV1SetPhysicsWorldGravity					MV1SetPhysicsWorldGravity
 #define NS_MV1PhysicsCalculation						MV1PhysicsCalculation
 #define NS_MV1PhysicsResetState							MV1PhysicsResetState
+#define NS_MV1SetPrioritizePhysicsOverAnimFlag			MV1SetPrioritizePhysicsOverAnimFlag
 #define NS_MV1SetUseShapeFlag							MV1SetUseShapeFlag
 #define NS_MV1GetMaterialNumberOrderFlag				MV1GetMaterialNumberOrderFlag
 
@@ -2832,6 +2849,9 @@ extern	MV1_REF_POLYGONLIST	NS_MV1GetReferenceMesh(		int MHandle, int FrameIndex,
 #define NS_MV1SetMaterialDrawBlendModeAll				MV1SetMaterialDrawBlendModeAll
 #define NS_MV1SetMaterialDrawBlendParamAll				MV1SetMaterialDrawBlendParamAll
 #define NS_MV1SetMaterialDrawAlphaTestAll				MV1SetMaterialDrawAlphaTestAll
+#define NS_MV1SetMaterialDrawAddColorAll				MV1SetMaterialDrawAddColorAll
+#define NS_MV1SetMaterialDrawAddColor					MV1SetMaterialDrawAddColor
+#define NS_MV1GetMaterialDrawAddColor					MV1GetMaterialDrawAddColor
 
 // ƒeƒNƒXƒ`ƒƒŠÖŒW
 #define NS_MV1GetTextureNum								MV1GetTextureNum

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Ogg関係
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -3772,13 +3772,13 @@ int	TheoraDecode_Terminate( DWORD_PTR Handle )
 
 	if( DT->YGrHandle != -1 )
 	{
-		NS_DeleteGraph( DT->YGrHandle ) ;
+		NS_DeleteGraph( DT->YGrHandle, FALSE ) ;
 		DT->YGrHandle = -1 ;
 	}
 
 	if( DT->UVGrHandle != -1 )
 	{
-		NS_DeleteGraph( DT->UVGrHandle ) ;
+		NS_DeleteGraph( DT->UVGrHandle, FALSE ) ;
 		DT->UVGrHandle = -1 ;
 	}
 
@@ -4067,7 +4067,7 @@ int _TheoraDecode_IncToFrame( DWORD_PTR Handle, int AddNum )
 	DECODE_THEORA *DT = ( DECODE_THEORA * )Handle ;
 	int i, LastKeyFrame, LastKeyFrame2 ;
 #ifdef __DEBUG__
-	LONGLONG time = GetNowHiPerformanceCount() ;
+	LONGLONG time = GetNowHiPerformanceCount( FALSE ) ;
 #endif
 
 	// 指定のフレームをインクリメントするにあたり最後に現れるキーフレームを検出する
@@ -4126,7 +4126,7 @@ int _TheoraDecode_IncToFrame( DWORD_PTR Handle, int AddNum )
 	}
 
 #ifdef __DEBUG__
-	___time3 = GetNowHiPerformanceCount() - time;
+	___time3 = GetNowHiPerformanceCount( FALSE ) - time;
 #endif
 
 	// キーフレームかどうかを返す
@@ -4402,7 +4402,7 @@ extern int TheoraDecode_Thread_LoopProcess( DECODE_THEORA *DT )
 			if( DT->ThreadState != THEORAT_STATE_IDLE )
 			{
 				DT->ThreadState = THEORAT_STATE_IDLE ;
-				DT->ThreadStandbyTime = NS_GetNowCount() ;
+				DT->ThreadStandbyTime = NS_GetNowCount( FALSE ) ;
 			}
 		}
 		else
@@ -4629,7 +4629,7 @@ extern int TheoraDecode_Thread_LoopProcess( DECODE_THEORA *DT )
 		CriticalSection_Unlock( &DT->CriticalSection ) ;
 
 		// ちょっと待つ
-		if( DT->ThreadState == THEORAT_STATE_IDLE /* && NS_GetNowCount() - DT->ThreadStandbyTime > 200 */ )
+		if( DT->ThreadState == THEORAT_STATE_IDLE /* && NS_GetNowCount( FALSE ) - DT->ThreadStandbyTime > 200 */ )
 		{
 			Thread_Sleep( 1 ) ;
 		}
@@ -4645,7 +4645,7 @@ extern int TheoraDecode_Thread_LoopProcess( DECODE_THEORA *DT )
 		CriticalSection_Unlock( &DT->CriticalSection ) ;
 
 		// ちょっと待つ
-		if( DT->ThreadState == THEORAT_STATE_IDLE /* && NS_GetNowCount() - DT->ThreadStandbyTime > 200 */ )
+		if( DT->ThreadState == THEORAT_STATE_IDLE /* && NS_GetNowCount( FALSE ) - DT->ThreadStandbyTime > 200 */ )
 		{
 			Thread_Sleep( 1 ) ;
 		}
@@ -4736,7 +4736,7 @@ int TheoraDecode_SetupImage( DWORD_PTR Handle, int BaseImage, int YUVGrHandle, i
 	}
 
 #ifdef __DEBUG__
-	time = GetNowHiPerformanceCount();
+	time = GetNowHiPerformanceCount( FALSE );
 #endif
 
 	// ＹＵＶイメージのセットアップ指定があって、まだ作成されていなかったら作成する
@@ -4906,7 +4906,7 @@ int TheoraDecode_SetupImage( DWORD_PTR Handle, int BaseImage, int YUVGrHandle, i
 	}
 
 #ifdef __DEBUG__
-	___time = GetNowHiPerformanceCount() - time;
+	___time = GetNowHiPerformanceCount( FALSE ) - time;
 #endif
 
 	// 終了

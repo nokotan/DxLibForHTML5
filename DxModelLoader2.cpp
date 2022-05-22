@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＭＱＯモデルデータ読み込みプログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -311,7 +311,8 @@ extern int MV1LoadModelToMQO( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 	MqoModel.CharCodeFormat = DX_CHARCODEFORMAT_SHIFTJIS ;
 
 	// MQOファイルかどうかを確認
-	if( _MEMCMP( LoadParam->DataBuffer, "Metasequoia Document\r\nFormat Text Ver 1.0\r\n", 22 ) != 0 )
+	if( _MEMCMP( LoadParam->DataBuffer, "Metasequoia Document\r\nFormat Text Ver 1.0\r\n", 22 ) != 0 &&
+		_MEMCMP( LoadParam->DataBuffer, "Metasequoia Document\nFormat Text Ver 1.1\n", 22 ) != 0 )
 	{
 		// MQOZファイルかどうかを確認
 		if( ( ( BYTE * )LoadParam->DataBuffer )[ 0 ] == 0x50 &&
@@ -454,7 +455,7 @@ extern int MV1LoadModelToMQO( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 				static const char *MaterialError2 = "MQO Load Error : No.%d \x82\xcc Material \x82\xcc %s \x82\xcc\x90\x94\x92\x6c\x82\xcc\x8c\xe3\x82\xc9 ) \x82\xaa\x82\xa0\x82\xe8\x82\xdc\x82\xb9\x82\xf1\x82\xc5\x82\xb5\x82\xbd\n"/*@ "MQO Load Error : No.%d の Material の %s の数値の後に ) がありませんでした\n" @*/ ;
 
 				SkipSpace( &MqoModel, 1 ) ;
-				if( *MqoModel.TextNow == '\r' ) break ;
+				if( *MqoModel.TextNow == '\r' || *MqoModel.TextNow == '\n' ) break ;
 
 				if( GetNextString( &MqoModel, String, sizeof( String ) ) != 0 )
 				{

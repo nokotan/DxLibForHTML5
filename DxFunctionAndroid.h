@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android専用関数プロトタイプ宣言用ヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ extern int GetInternalDataPath( TCHAR *PathBuffer, int PathBufferBytes ) ;
 // PathBufferBytes : パスを保存するバッファのサイズ( 単位：バイト )
 // PathIndex : 外部データ保存用のディレクトリパスの番号( 複数個ある場合があるので )
 // IsRemovableFlag : PathIndex で指定したパスが取り外し可能なデバイスかどうかを保存する int型変数のアドレス( 格納された値　TRUE:取り外し可能( SDカード等 )  FALSE:取り外し不可能( 内蔵ストレージ等 ) )
-extern int GetExternalDataPath( TCHAR *PathBuffer, int PathBufferBytes, int PathIndex = 0, int *IsRemovableFlag = NULL ) ;
+extern int GetExternalDataPath( TCHAR *PathBuffer, int PathBufferBytes, int PathIndex DEFAULTPARAM( = 0 ), int *IsRemovableFlag DEFAULTPARAM( = NULL ) ) ;
 
 // ソフトの外部データ保存用のディレクトリパスの数を取得する
 extern int GetExternalDataPathNum( void ) ;
@@ -152,13 +152,13 @@ extern int GetAndroidMetaData_StringWithStrLen( const TCHAR *ValueName, size_t V
 // LightOnTime   : ライトの点灯時間( 単位：ミリ秒 )
 // LightOffTime  : ライトの消灯時間( 単位：ミリ秒 )
 extern int AndroidNotification(
-	const TCHAR *Title, const TCHAR *SubTitle, int Icon = -1, int ShowWhen = TRUE,
-	int AutoCancel = TRUE, int NotifyId = 0, int *Vibrate = NULL, int VibrateLength = 0,
-	unsigned int LightColor = 0, int LightOnTime = 0, int LightOffTime = 0 ) ;
+	const TCHAR *Title, const TCHAR *SubTitle, int Icon DEFAULTPARAM( = -1 ), int ShowWhen DEFAULTPARAM( = TRUE ),
+	int AutoCancel DEFAULTPARAM( = TRUE ), int NotifyId DEFAULTPARAM( = 0 ), int *Vibrate DEFAULTPARAM( = NULL ), int VibrateLength DEFAULTPARAM( = 0 ),
+	unsigned int LightColor DEFAULTPARAM( = 0 ), int LightOnTime DEFAULTPARAM( = 0 ), int LightOffTime DEFAULTPARAM( = 0 ) ) ;
 extern int AndroidNotificationWithStrLen(
-	const TCHAR *Title, size_t TitleLength, const TCHAR *SubTitle, size_t SubTitleLength, int Icon = -1, int ShowWhen = TRUE,
-	int AutoCancel = TRUE, int NotifyId = 0, int *Vibrate = NULL, int VibrateLength = 0,
-	unsigned int LightColor = 0, int LightOnTime = 0, int LightOffTime = 0 ) ;
+	const TCHAR *Title, size_t TitleLength, const TCHAR *SubTitle, size_t SubTitleLength, int Icon DEFAULTPARAM( = -1 ), int ShowWhen DEFAULTPARAM( = TRUE ),
+	int AutoCancel DEFAULTPARAM( = TRUE ), int NotifyId DEFAULTPARAM( = 0 ), int *Vibrate DEFAULTPARAM( = NULL ), int VibrateLength DEFAULTPARAM( = 0 ),
+	unsigned int LightColor DEFAULTPARAM( = 0 ), int LightOnTime DEFAULTPARAM( = 0 ), int LightOffTime DEFAULTPARAM( = 0 ) ) ;
 
 // 通知をキャンセルする
 // NotifyID : 通知ID
@@ -171,8 +171,8 @@ extern int AndroidNotificationCancelAll( void ) ;
 // URL                   : 開くURL
 // BrowserAppPackageName : ブラウザのパッケージ名( NULL で標準ブラウザ )
 // BrowserAppClassName   : ブラウザのクラス名( NULL で標準ブラウザ )
-extern int AndroidJumpURL(           const TCHAR *URL,                   const TCHAR *BrowserAppPackageName = NULL,                                         const TCHAR *BrowserAppClassName = NULL                                       ) ;
-extern int AndroidJumpURLWithStrLen( const TCHAR *URL, size_t URLLength, const TCHAR *BrowserAppPackageName = NULL, size_t BrowserAppPackageNameLength = 0, const TCHAR *BrowserAppClassName = NULL, size_t BrowserAppClassNameLength = 0 ) ;
+extern int AndroidJumpURL(           const TCHAR *URL,                   const TCHAR *BrowserAppPackageName DEFAULTPARAM( = NULL ),                                                         const TCHAR *BrowserAppClassName DEFAULTPARAM( = NULL )                                                       ) ;
+extern int AndroidJumpURLWithStrLen( const TCHAR *URL, size_t URLLength, const TCHAR *BrowserAppPackageName DEFAULTPARAM( = NULL ), size_t BrowserAppPackageNameLength DEFAULTPARAM( = 0 ), const TCHAR *BrowserAppClassName DEFAULTPARAM( = NULL ), size_t BrowserAppClassNameLength DEFAULTPARAM( = 0 ) ) ;
 
 // Wifi の電波強度を取得する( 戻り値：電波の強度 0 ～ 100 )
 // ( 使用するには AndroidManifest.xml に <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> を書き加える必要があります )
@@ -191,18 +191,18 @@ extern int SetUseAndroidKillProcessFlag( int KillProcessFlag ) ;
 
 // OpenGL 関係の情報を取得する
 extern int GetOpenGLInfo(
-	TCHAR **Version = NULL,
-	TCHAR **Renderer = NULL,
-	TCHAR **Vendor = NULL,
-	TCHAR ***ExtensionNames = NULL,
-	TCHAR **Shader_Language_Version = NULL,
-	int *Shader_Max_Vertex_Attribs = NULL,						// GL_MAX_VERTEX_ATTRIBS
-	int *Shader_Max_Vertex_Uniform_Vectors = NULL,				// GL_MAX_VERTEX_UNIFORM_VECTORS
-	int *Shader_Max_Varying_Vectors = NULL,						// GL_MAX_VARYING_VECTORS
-	int *Shader_Max_Combined_Texture_Image_Units = NULL,		// GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS
-	int *Shader_Max_Vertex_Texture_Image_Units = NULL,			// GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS
-	int *Shader_Max_Texture_Image_Units = NULL,					// GL_MAX_TEXTURE_IMAGE_UNITS
-	int *Shader_Max_Fragment_Uniform_Vectors = NULL				// GL_MAX_FRAGMENT_UNIFORM_VECTORS
+	TCHAR **Version DEFAULTPARAM( = NULL ),
+	TCHAR **Renderer DEFAULTPARAM( = NULL ),
+	TCHAR **Vendor DEFAULTPARAM( = NULL ),
+	TCHAR ***ExtensionNames DEFAULTPARAM( = NULL ),
+	TCHAR **Shader_Language_Version DEFAULTPARAM( = NULL ),
+	int *Shader_Max_Vertex_Attribs DEFAULTPARAM( = NULL ),						// GL_MAX_VERTEX_ATTRIBS
+	int *Shader_Max_Vertex_Uniform_Vectors DEFAULTPARAM( = NULL ),				// GL_MAX_VERTEX_UNIFORM_VECTORS
+	int *Shader_Max_Varying_Vectors DEFAULTPARAM( = NULL ),						// GL_MAX_VARYING_VECTORS
+	int *Shader_Max_Combined_Texture_Image_Units DEFAULTPARAM( = NULL ),		// GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS
+	int *Shader_Max_Vertex_Texture_Image_Units DEFAULTPARAM( = NULL ),			// GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS
+	int *Shader_Max_Texture_Image_Units DEFAULTPARAM( = NULL ),					// GL_MAX_TEXTURE_IMAGE_UNITS
+	int *Shader_Max_Fragment_Uniform_Vectors DEFAULTPARAM( = NULL )				// GL_MAX_FRAGMENT_UNIFORM_VECTORS
 ) ;
 
 // グラフィックハンドルのテクスチャオブジェクトを取得する

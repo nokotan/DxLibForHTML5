@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画プログラムヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -514,6 +514,7 @@ struct IMAGEDATA
 	DWORD					LockImagePitch ;				// ロックイメージのピッチ
 
 	int						NotInitGraphDelete ;			// InitGraph で削除しないかどうかのフラグ( TRUE:InitGraphでは削除しない  FALSE:InitGraphで削除する )
+	int						NotInitGraphDeleteUser ;		// InitGraph で削除しないかどうかのフラグ、ユーザー用( TRUE:InitGraphでは削除しない  FALSE:InitGraphで削除する )
 
 	int						DeviceLostDeleteFlag ;			// デバイスロスト時に削除するかどうかのフラグ( TRUE:デバイスロスト時に削除する  FALSE:デバイスロスト時に削除しない )
 
@@ -675,6 +676,7 @@ struct SETUP_GRAPHHANDLE_GPARAM
 	int						NotUseAlphaImageLoadFlag ;				// _a が付いたアルファチャンネル用の画像ファイルを追加で読み込む処理を行わないかどうか( TRUE:行わない  FALSE:行う )
 	int						NotUsePaletteGraphFlag ;				// パレット画像が使用できる場合もパレット画像を使用しないかどうか( TRUE:使用しない  FALSE:使用する )
 	int						NotInitGraphDelete ;					// InitGraph で削除しないかどうかのフラグ( TRUE:InitGraphでは削除しない  FALSE:InitGraphで削除する )
+	int						NotInitGraphDeleteUser ;				// InitGraph で削除しないかどうかのフラグ、ユーザー用( TRUE:InitGraphでは削除しない  FALSE:InitGraphで削除する )
 
 	void *					UserPlatformTexture ;					// ユーザー指定の環境依存テクスチャオブジェクトのアドレス
 } ;
@@ -740,6 +742,10 @@ struct LOADGRAPH_PARAM
 	float					SizeXF ;
 	int						SizeYI ;
 	float					SizeYF ;
+	int						StrideXI ;
+	float					StrideXF ;
+	int						StrideYI ;
+	float					StrideYF ;
 	int *					HandleArray ;
 	int						TextureFlag ;
 	int						ReverseFlag ;
@@ -880,6 +886,9 @@ struct GRAPHICSSYS_DRAWSETTINGDATA
 	} ;
 	int						AlwaysDiffuseColorFlag ;				// レンダリングデバイスがディフューズカラーを使用するかどうかでステートが変化するタイプだった場合、必ずディフューズカラーを使用するようにするかどうかのフラグ
 
+	COLOR_F					DrawAddColorF ;							// 描画色に加算する色( 浮動小数点型 )
+	INT4					DrawAddColorI ;							// 描画色に加算する色( 整数型 )
+
 	int						NotWriteAlphaChannelFlag ;				// アルファチャンネルの内容を書き換えないかどうかのフラグ
 	int						IgnoreGraphColorFlag ;					// 描画する画像の色成分を無視するかどうかのフラグ
 
@@ -978,6 +987,7 @@ struct GRAPHICSSYS_CREATEIMAGEDATA
 //	int						SystemMemImageCreateFlag ;				// システムメモリを使用する画像作成指定フラグ( 標準サーフェスのみ )
 	int						BlendImageFlag ;						// ブレンド処理用画像作成指定フラグ
 	int						NotUseManagedTextureFlag ;				// マネージドテクスチャを使用しないか、フラグ( 1:使用しない  0:使用する )
+	int						NotInitGraphDeleteUserFlag ;			// InitGraph を実行しても削除されない画像を作成するかのフラグ、ユーザー用( 1:InitGraphで削除されない  0:InitGraphで削除される )
 	int						PlatformTextureFormat ;					// 環境依存のテクスチャフォーマットを直接指定するために使用するための変数( DX_TEXTUREFORMAT_DIRECT3D9_R8G8B8 など )
 
 	int						DrawValidFlag ;							// 描画可能画像作成指定フラグ( テクスチャサーフェスのみ )
@@ -1105,6 +1115,7 @@ struct GRAPHICSSYS_RESOURCE
 	DWORD					CommonBufferSize[ COMMON_BUFFER_NUM ] ;	// 汎用バッファのメモリ確保サイズ
 
 	int						WhiteTexHandle ;						// 8x8の白いテクスチャのハンドル
+	int						RandomKernelRotationTexHandle ;			// ランダムな方向に回転させる為のノイズテクスチャ
 	int						LineTexHandle ;							// アンチエイリアス付きの線を描画するためのテクスチャハンドル
 	int						LineTexHandle_PMA ;						// アンチエイリアス付きの線を描画するためのテクスチャハンドル( 乗算済みアルファ画像 )
 	int						LineOneThicknessTexHandle ;				// アンチエイリアス付きの線を描画するためのテクスチャハンドル( 太さ1ピクセル用 )
@@ -1164,6 +1175,8 @@ struct GRAPHICSSYS_SOFTRENDERDATA
 struct GRAPHICSSYSTEMDATA
 {
 	int								InitializeFlag ;						// 初期化フラグ
+
+	int								TerminateNowFlag ;						// 後始末処理中フラグ
 
 //	int								NotDrawFlag ;							// 描画不可能フラグ
 
@@ -1301,6 +1314,10 @@ extern	int		Graphics_Image_BltBmpOrGraphImageToDivGraphBase(
 	      float		WidthF,
 	      int		HeightI,
 	      float		HeightF,
+	      int		StrideWI,
+	      float		StrideWF,
+	      int		StrideHI,
+	      float		StrideHF,
 	const int		*GrHandle,
 	      int		ReverseFlag,
 	      int		UseTransColorConvAlpha = TRUE,
@@ -1353,6 +1370,7 @@ extern	int		Graphics_Image_BltBmpOrBaseImageToGraph3_Make_DrawTex_MoveRect(
 extern	int			Graphics_Image_GetDrawScreenGraphBase( int TargetScreen, int TargetScreenSurface, int TargetScreenMipLevel, int x1, int y1, int x2, int y2, int destX, int destY, int GrHandle ) ;
 extern	IMAGEDATA *	Graphics_Image_GetData( int GrHandle, int ASyncThread = FALSE ) ;				// グラフィックのデータをインデックス値から取り出す
 extern	int			Graphics_Image_GetWhiteTexHandle( void ) ;										// 真っ白のテクスチャのハンドルを取得する
+extern	int			Graphics_Image_GetRandomKernelRotationTexHandle( void ) ;						// ランダムな方向に回転させる為のノイズテクスチャのハンドルを取得する
 extern	int			Graphics_Image_GetLineTexHandle( int IsPMA ) ;									// アンチエイリアス付きの線を描画するためのテクスチャハンドルを取得する
 extern	int			Graphics_Image_GetLineOneThicknessTexHandle( int IsPMA ) ;						// アンチエイリアス付きの線を描画するためのテクスチャハンドルを取得する( 太さ1ピクセル用 )
 extern	int			Graphics_Image_GetLineBoxTexHandle( int IsPMA ) ;								// アンチエイリアス付きの線矩形を描画するためのテクスチャハンドルを取得する
@@ -1363,7 +1381,7 @@ extern	int		Graphics_Image_CreateGraph_UseGParam(                  LOADGRAPH_PAR
 extern	int		Graphics_Image_CreateDivGraph_UseGParam(               LOADGRAPH_PARAM *Param, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;																																																			// 画像データを分割してグラフィックハンドルを作成する関数
 extern	int		Graphics_Image_LoadBmpToGraph_UseGParam(               LOADGRAPH_GPARAM *GParam, int ReCreateFlag, int GrHandle, const wchar_t *GraphName, int TextureFlag, int ReverseFlag, int SurfaceMode = DX_MOVIESURFACE_NORMAL, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;																	// LoadBmpToGraph のグローバル変数にアクセスしないバージョン
 extern	int		Graphics_Image_LoadBmpToGraphW_UseGParam(              LOADGRAPH_GPARAM *GParam, int ReCreateFlag, int GrHandle, const char *GraphNameW, int TextureFlag, int ReverseFlag, int SurfaceMode = DX_MOVIESURFACE_NORMAL, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;																		// LoadBmpToGraph のグローバル変数にアクセスしないバージョン( Visual C++ 6.0 用に引数を char 型にしただけのもの )
-extern	int		Graphics_Image_LoadDivBmpToGraph_UseGParam(            LOADGRAPH_GPARAM *GParam, int ReCreateFlag, const wchar_t *FileName, int AllNum, int XNum, int YNum, int IsFloat, int SizeXI, float SizeXF, int SizeYI, float SizeYF, int *HandleArray, int TextureFlag, int ReverseFlag, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;																	// LoadDivBmpToGraph のグローバル変数にアクセスしないバージョン
+extern	int		Graphics_Image_LoadDivBmpToGraph_UseGParam(            LOADGRAPH_GPARAM *GParam, int ReCreateFlag, const wchar_t *FileName, int AllNum, int XNum, int YNum, int IsFloat, int SizeXI, float SizeXF, int SizeYI, float SizeYF, int *HandleArray, int TextureFlag, int ReverseFlag, int XStrideI = 0, float XStrideF = 0, int YStrideI = 0, float YStrideF = 0, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;																	// LoadDivBmpToGraph のグローバル変数にアクセスしないバージョン
 extern	int		Graphics_Image_CreateGraphFromMem_UseGParam(           LOADGRAPH_GPARAM *GParam, int ReCreateFlag, int GrHandle, const void *MemImage, int MemImageSize, const void *AlphaImage = NULL, int AlphaImageSize = 0, int TextureFlag = TRUE, int ReverseFlag = FALSE, int ASyncLoadFlag = FALSE ) ;																// CreateGraphFromMem のグローバル変数にアクセスしないバージョン
 extern	int		Graphics_Image_CreateDivGraphFromMem_UseGParam(        LOADGRAPH_GPARAM *GParam, int ReCreateFlag, const void *MemImage, int MemImageSize, int AllNum, int XNum, int YNum, int IsFloat, int SizeXI, float SizeXF, int SizeYI, float SizeYF, int *HandleArray,int TextureFlag, int ReverseFlag, const void *AlphaImage, int AlphaImageSize, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;		// CreateDivGraphFromMem のグローバル変数にアクセスしないバージョン
 extern	int		Graphics_Image_CreateGraphFromBmp_UseGParam(           LOADGRAPH_GPARAM *GParam, int ReCreateFlag, int GrHandle, const BITMAPINFO *BmpInfo, const void *GraphData, const BITMAPINFO *AlphaInfo = NULL, const void *AlphaData = NULL, int TextureFlag = TRUE, int ReverseFlag = FALSE, int ASyncLoadFlag = FALSE ) ;											// CreateGraphFromBmp のグローバル変数にアクセスしないバージョン
@@ -1371,7 +1389,7 @@ extern	int		Graphics_Image_CreateDivGraphFromBmp_UseGParam(        LOADGRAPH_GPA
 extern	int		Graphics_Image_CreateGraphFromGraphImage_UseGParam(    LOADGRAPH_GPARAM *GParam, int ReCreateFlag, int GrHandle, const BASEIMAGE *Image, const BASEIMAGE *AlphaImage, int TextureFlag = TRUE , int ReverseFlag = FALSE, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;																	// CreateGraphFromGraphImage のグローバル変数にアクセスしないバージョン
 extern	int		Graphics_Image_CreateDivGraphFromGraphImage_UseGParam( LOADGRAPH_GPARAM *GParam, int ReCreateFlag, const BASEIMAGE *Image, const BASEIMAGE *AlphaImage, int AllNum, int XNum, int YNum, int IsFloat, int SizeXI, float SizeXF, int SizeYI, float SizeYF, int *HandleArray, int TextureFlag = TRUE , int ReverseFlag = FALSE, int ASyncLoadFlag = FALSE ) ;									// CreateDivGraphFromGraphImage のグローバル変数にアクセスしないバージョン
 extern	int		Graphics_Image_CreateGraphFromGraphImageBase_UseGParam(    CREATE_GRAPHHANDLE_AND_BLTGRAPHIMAGE_GPARAM *GParam, int ReCreateFlag, int GrHandle,   BASEIMAGE *Image, const BASEIMAGE *AlphaImage, int TextureFlag, int ASyncThread = FALSE ) ;																							// Graphics_Image_CreateGraphFromGraphImageBase のグローバル変数にアクセスしないバージョン
-extern	int		Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam( CREATE_GRAPHHANDLE_AND_BLTGRAPHIMAGE_GPARAM *GParam, int ReCreateFlag, int BaseHandle, BASEIMAGE *Image, const BASEIMAGE *AlphaImage, int AllNum, int XNum, int YNum, int IsFloat, int SizeXI, float SizeXF, int SizeYI, float SizeYF, int *HandleArray, int TextureFlag, int ReverseFlag, int ASyncThread = FALSE ) ;		// Graphics_Image_CreateDivGraphFromGraphImageBase のグローバル変数にアクセスしないバージョン
+extern	int		Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam( CREATE_GRAPHHANDLE_AND_BLTGRAPHIMAGE_GPARAM *GParam, int ReCreateFlag, int BaseHandle, BASEIMAGE *Image, const BASEIMAGE *AlphaImage, int AllNum, int XNum, int YNum, int IsFloat, int SizeXI, float SizeXF, int SizeYI, float SizeYF, int StrideXI, float StrideXF, int StrideYI, float StrideYF, int *HandleArray, int TextureFlag, int ReverseFlag, int ASyncThread = FALSE ) ;		// Graphics_Image_CreateDivGraphFromGraphImageBase のグローバル変数にアクセスしないバージョン
 extern	int		Graphics_Image_CreateGraphFromGraphImageBase(      BASEIMAGE *Image, const BASEIMAGE *AlphaImage, int TextureFlag, int ASyncThread ) ;																								// CreateGraphFromGraphImage の内部関数
 extern	int		Graphics_Image_CreateDivGraphFromGraphImageBase(   BASEIMAGE *Image, const BASEIMAGE *AlphaImage, int AllNum, int XNum, int YNum, int IsFloat, int SizeXI, float SizeXF, int SizeYI, float SizeYF, int *HandleArray, int TextureFlag, int ReverseFlag ) ;						// CreateDivGraphFromGraphImage の内部関数
 extern	int		Graphics_Image_ReCreateGraphFromGraphImageBase(    BASEIMAGE *Image, const BASEIMAGE *AlphaImage, int GrHandle, int TextureFlag ) ;																									// ReCreateGraphFromGraphImage の内部関数
@@ -1555,6 +1573,7 @@ extern	int		Graphics_Hardware_SetDrawBlendMode_PF( int BlendMode, int BlendParam
 extern	int		Graphics_Hardware_SetDrawAlphaTest_PF( int TestMode, int TestParam ) ;									// 描画時のアルファテストの設定を行う( TestMode:DX_CMP_GREATER等( -1:デフォルト動作に戻す )  TestParam:描画アルファ値との比較に使用する値 )
 extern	int		Graphics_Hardware_SetDrawMode_PF( int DrawMode ) ;														// 描画モードをセットする
 extern	int		Graphics_Hardware_SetDrawBright_PF( int RedBright, int GreenBright, int BlueBright ) ;					// 描画輝度をセット
+extern	int		Graphics_Hardware_SetDrawAddColor_PF( int Red, int Green, int Blue ) ;									// 描画輝度をセット
 extern	int		Graphics_Hardware_SetBlendGraphParamBase_PF( IMAGEDATA *BlendImage, int BlendType, int *Param ) ;		// SetBlendGraphParam の可変長引数パラメータ付き
 extern	int		Graphics_Hardware_SetMaxAnisotropy_PF( int MaxAnisotropy ) ;											// 最大異方性の値をセットする
 extern	int		Graphics_Hardware_SetTransformToWorld_PF( const MATRIX *Matrix ) ;										// ワールド変換用行列をセットする
@@ -1865,7 +1884,7 @@ extern	int		Graphics_Hardware_Paint_PF( int x, int y, unsigned int FillColor, UL
 extern	int			LoadBmpToGraph_WCHAR_T(			const wchar_t *FileName, int TextureFlag, int ReverseFlag, int SurfaceMode = DX_MOVIESURFACE_NORMAL ) ;
 extern	int			LoadGraph_WCHAR_T(				const wchar_t *FileName, int NotUse3DFlag = FALSE ) ;
 extern	int			LoadReverseGraph_WCHAR_T(		const wchar_t *FileName, int NotUse3DFlag = FALSE ) ;
-extern	int			LoadDivBmpToGraph_WCHAR_T(		const wchar_t *FileName, int AllNum, int XNum, int YNum, int IsFloat, int SizeXI, float SizeXF, int SizeYI, float SizeYF, int *HandleArray, int TextureFlag, int ReverseFlag ) ;
+extern	int			LoadDivBmpToGraph_WCHAR_T(		const wchar_t *FileName, int AllNum, int XNum, int YNum, int IsFloat, int SizeXI, float SizeXF, int SizeYI, float SizeYF, int *HandleArray, int TextureFlag, int ReverseFlag, int XStrideI, float XStrideF, int YStrideI, float YStrideF ) ;
 extern	int			LoadBlendGraph_WCHAR_T(			const wchar_t *FileName ) ;
 #ifdef WINDOWS_DESKTOP_OS
 extern	int			LoadGraphToResource_WCHAR_T(	const wchar_t *ResourceName, const wchar_t *ResourceType ) ;
