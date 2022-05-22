@@ -1,17 +1,16 @@
+cmake_minimum_required(VERSION 3.13)
+
 project(DxLibForHTML5)
 
-cmake_minimum_required(VERSION 3.13)
+# Library Configuration
+
+option(DXLIB_BUILD_SHARED_MAIN "Build plugin-style DxLib application loader." OFF)
 
 
 
 # Library Declaration
 
-if (DXLIB_BUILD_SHARED_MAIN)
-    add_executable(DxLib)
-else ()
-    add_library(DxLib STATIC)
-endif ()
-
+add_library(DxLib STATIC)
 add_library(DxDrawFunc STATIC)
 add_library(DxUseCLib STATIC)
 
@@ -72,25 +71,11 @@ target_sources(DxLib
         DxThread.cpp
 )
 
-if (DXLIB_BUILD_SHARED_MAIN)
-    set_target_properties(DxLib
-        PROPERTIES 
-            COMPILE_FLAGS "-s USE_FREETYPE=1 -s ALLOW_MEMORY_GROWTH=1 -s MAIN_MODULE=1"
-            LINK_FLAGS "-s ERROR_ON_UNDEFINED_SYMBOLS=0 -s USE_FREETYPE=1 -s USE_BULLET=1 -s USE_VORBIS=1 -s USE_OGG=1 -s USE_LIBPNG=1 -s USE_ZLIB=1 -s FULL_ES2=1 -s ALLOW_MEMORY_GROWTH=1 -s MAIN_MODULE=1 -s DECLARE_ASM_MODULE_EXPORTS=0"
-            CXX_STANDARD 11
-    )
-
-    target_link_libraries(DxLib
-        DxDrawFunc
-        DxUseCLib
-    )
-else ()
-    set_target_properties(DxLib
-        PROPERTIES 
-            COMPILE_FLAGS "-s USE_FREETYPE=1 -s ALLOW_MEMORY_GROWTH=1"
-            CXX_STANDARD 11
-    )
-endif()
+set_target_properties(DxLib
+    PROPERTIES 
+        COMPILE_FLAGS "-s USE_FREETYPE=1"
+        CXX_STANDARD 11
+)
 
 
 
@@ -104,19 +89,10 @@ target_sources(DxDrawFunc
         DxMemImgDrawFunction3.cpp
 )
 
-if (DXLIB_BUILD_SHARED_MAIN)
-    set_target_properties(DxDrawFunc
-        PROPERTIES 
-            COMPILE_FLAGS "-s SIDE_MODULE=1 -s ALLOW_MEMORY_GROWTH=1"
-            CXX_STANDARD 11
-    )
-else ()
-    set_target_properties(DxDrawFunc
-        PROPERTIES 
-            COMPILE_FLAGS "-s ALLOW_MEMORY_GROWTH=1"
-            CXX_STANDARD 11
-    )
-endif ()
+set_target_properties(DxDrawFunc
+    PROPERTIES 
+        CXX_STANDARD 11
+)
 
 
 
@@ -136,16 +112,53 @@ target_sources(DxUseCLib
         DxUseCLibPhysics.cpp
 )
 
+set_target_properties(DxUseCLib
+    PROPERTIES 
+        COMPILE_FLAGS "-s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -s ALLOW_MEMORY_GROWTH=1"
+        CXX_STANDARD 11
+)
+
+
+
+# DxLibSharedMain
+
+add_executable(DxLibSharedMain EXCLUDE_FROM_ALL
+    Empty.cpp
+)
+
+target_link_libraries(DxLibSharedMain
+    DxLib
+    DxDrawFunc
+    DxUseCLib
+)
+
+set_target_properties(DxLibSharedMain
+    PROPERTIES 
+        COMPILE_FLAGS "-s USE_FREETYPE=1 -s MAIN_MODULE=1"
+        LINK_FLAGS "-s ERROR_ON_UNDEFINED_SYMBOLS=0 -s USE_FREETYPE=1 -s USE_BULLET=1 -s USE_VORBIS=1 -s USE_OGG=1 -s USE_LIBPNG=1 -s USE_ZLIB=1 -s FULL_ES2=1 -s ALLOW_MEMORY_GROWTH=1 -s MAIN_MODULE=1 -s DECLARE_ASM_MODULE_EXPORTS=0"
+        CXX_STANDARD 11
+)
+
+
+
 if (DXLIB_BUILD_SHARED_MAIN)
-    set_target_properties(DxUseCLib
-        PROPERTIES 
-            COMPILE_FLAGS "-s SIDE_MODULE=1 -s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -s ALLOW_MEMORY_GROWTH=1"
-            CXX_STANDARD 11
+    target_compile_options(DxLib
+        PRIVATE
+            "SHELL:-s SIDE_MODULE=1"
     )
-else ()
-    set_target_properties(DxUseCLib
-        PROPERTIES 
-            COMPILE_FLAGS "-s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -s ALLOW_MEMORY_GROWTH=1"
-            CXX_STANDARD 11
+
+    target_compile_options(DxDrawFunc
+        PRIVATE
+            "SHELL:-s SIDE_MODULE=1"
     )
-endif ()
+
+    target_compile_options(DxUseCLib
+        PRIVATE
+            "SHELL:-s SIDE_MODULE=1"
+    )
+
+    set_target_properties(DxLibSharedMain
+    PROPERTIES
+        EXCLUDE_FROM_ALL OFF
+    )
+endif()
