@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -1605,20 +1605,20 @@ ERR:
 
 /* Static member */
 int mti;                   /* index number */
-unsigned long mt[N + 1];   /* the array for the state vector */
-unsigned long mtr[N];      /* the array for the random number */
-unsigned long bInitialized = 0;
-unsigned long bMMX = 0;
+unsigned int mt[N + 1];   /* the array for the state vector */
+unsigned int mtr[N];      /* the array for the random number */
+unsigned int bInitialized = 0;
+unsigned int bMMX = 0;
 
 /* Prototype */
 //#ifndef DX_NON_INLINE_ASM
-//unsigned long CheckMMX(void);
+//unsigned int CheckMMX(void);
 //#endif
 //void srandMT(unsigned long seed);
 #ifdef DX_NON_INLINE_ASM
 void generateMT_C(void);
 #endif
-//unsigned long randMT(void);
+//unsigned int randMT(void);
 
 
 void srandMT(unsigned int seed)
@@ -1653,9 +1653,9 @@ void srandMT(unsigned int seed)
 	#define cpuid __asm __emit 0fh __asm __emit 0a2h
 #endif
 
-unsigned long CheckMMX(void)
+unsigned int CheckMMX(void)
 {
-    unsigned long flag = 0;
+    unsigned int flag = 0;
 	
     _asm{
         push    edx
@@ -1984,8 +1984,8 @@ void generateMT(void)
 void generateMT_C(void)
 {
     int kk;
-    unsigned long y;
-    static unsigned long mag01[2] = {0x0, MATRIX_A}; /* mag01[x] = x * MATRIX_A  for x=0,1 */
+    unsigned int y;
+    static unsigned int mag01[2] = {0x0, MATRIX_A}; /* mag01[x] = x * MATRIX_A  for x=0,1 */
     
     for(kk = 0; kk < N - M; kk++){
         y = (mt[kk] & UPPER_MASK) | (mt[kk + 1] & LOWER_MASK);
@@ -2013,7 +2013,7 @@ void generateMT_C(void)
 #endif
 
 
-unsigned long randMT(void)
+unsigned int randMT(void)
 {
     if(mti >= N){
         if(!bInitialized) srandMT(4357);
@@ -2026,6 +2026,57 @@ unsigned long randMT(void)
     return mtr[mti++]; 
 }
 //=============================================================================
+
+void generateMTData_C( MERSENNE_TWISTER_DATA *MTData )
+{
+    int kk;
+    unsigned int y;
+    static unsigned int mag01[2] = {0x0, MATRIX_A}; /* mag01[x] = x * MATRIX_A  for x=0,1 */
+    
+    for(kk = 0; kk < N - M; kk++){
+        y = (MTData->mt[kk] & UPPER_MASK) | (MTData->mt[kk + 1] & LOWER_MASK);
+        MTData->mt[kk] = MTData->mt[kk + M] ^ (y >> 1) ^ mag01[y & 0x1];
+    }
+
+    MTData->mt[N] = MTData->mt[0];
+
+    for(; kk < N; kk++){
+        y = (MTData->mt[kk] & UPPER_MASK) | (MTData->mt[kk + 1] & LOWER_MASK);
+        MTData->mt[kk] = MTData->mt[kk + (M - N)] ^ (y >> 1) ^ mag01[y & 0x1];
+    }
+
+    for(kk = 0; kk < N; kk++){
+        y = MTData->mt[kk];
+        y ^= TEMPERING_SHIFT_U(y);
+        y ^= TEMPERING_SHIFT_S(y) & TEMPERING_MASK_B;
+        y ^= TEMPERING_SHIFT_T(y) & TEMPERING_MASK_C;
+        y ^= TEMPERING_SHIFT_L(y);
+        MTData->mtr[kk] = y;
+    }
+    MTData->mti = 0;
+}
+
+extern void initMTData( MERSENNE_TWISTER_DATA *MTData, unsigned int seed )
+{
+    int i;
+
+    for(i = 0; i < N; i++){
+         MTData->mt[i] = seed & 0xffff0000;
+         seed = 69069 * seed + 1;
+         MTData->mt[i] |= (seed & 0xffff0000) >> 16;
+         seed = 69069 * seed + 1;
+    }
+
+    generateMTData_C( MTData );
+}
+
+extern unsigned int randMTData( MERSENNE_TWISTER_DATA *MTData )
+{
+    if( MTData->mti >= N ){
+		generateMTData_C( MTData );
+    }
+    return MTData->mtr[MTData->mti++]; 
+}
 
 #endif // DX_NON_MERSENNE_TWISTER
 
@@ -2237,8 +2288,12 @@ extern int SetupSoundConvert_DSMP3( SOUNDCONV *SoundConv )
 	// Nullレンダラーフィルタの作成
 	if( ( FAILED( WinAPIData.Win32Func.CoCreateInstanceFunc( CLSID_NULLRENDERER, 0, CLSCTX_INPROC_SERVER, IID_IBASEFILTER, ( void ** )&NullRenderer ) ) ) )
 	{
-		DXST_LOGFILE_ADDA( "MP3\x95\xcf\x8a\xb7\x97\x70 NullRender \x82\xcc\x8d\xec\x90\xac\x82\xc9\x8e\xb8\x94\x73\x82\xb5\x82\xdc\x82\xb5\x82\xbd"/*@ "MP3変換用 NullRender の作成に失敗しました" @*/ );
-		goto ERR ;
+		WinAPIData.Win32Func.CoInitializeExFunc( NULL, COINIT_APARTMENTTHREADED ) ;
+		if( ( FAILED( WinAPIData.Win32Func.CoCreateInstanceFunc( CLSID_NULLRENDERER, 0, CLSCTX_INPROC_SERVER, IID_IBASEFILTER, ( void ** )&NullRenderer ) ) ) )
+		{
+			DXST_LOGFILE_ADDA( "MP3\x95\xcf\x8a\xb7\x97\x70 NullRender \x82\xcc\x8d\xec\x90\xac\x82\xc9\x8e\xb8\x94\x73\x82\xb5\x82\xdc\x82\xb5\x82\xbd"/*@ "MP3変換用 NullRender の作成に失敗しました" @*/ );
+			goto ERR ;
+		}
 	}
 
 	// グラフィックビルダーオブジェクトの作成

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		メモリ関連プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -168,7 +168,7 @@ extern int MemoryProcess( void )
 
 	DX_ALLOC_ENTER_CRITICAL_SECTION
 
-	Time = NS_GetNowCount() ;
+	Time = NS_GetNowCount( FALSE ) ;
 	if( Time < MemData.StartTime )
 	{
 		NowTime = ( 0x7fffffff - MemData.StartTime ) + Time ;
@@ -627,6 +627,17 @@ extern void	MemoryDump( void *buffer, int size )
 		DXST_LOGFILE_ADDW( string ) ;
 	}
 #endif
+}
+
+// メモリのエラーをチェックする
+extern int MemoryErrorCheck( void )
+{
+	HeapErrorCheck( &MemData.SmallHeap ) ;
+	HeapErrorCheck( &MemData.BigHeap ) ;
+
+	MemoryErrorCheck_PF() ;
+
+	return 0 ;
 }
 
 

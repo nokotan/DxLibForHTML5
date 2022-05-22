@@ -3,9 +3,188 @@
 //　ＤＸライブラリ　非公式ログ
 //
 //　Creator : 山田　巧
-//  Last Access : 2021/1/31
+//  Last Access : 2021/11/23
 // ============================================================================
 
+Ver 3.23	　正式公開のためにバージョン番号を変更。
+Ver 3.22f	　Windows版：DirectInput のジョイパッド初期化処理に関する詳細な
+			ログを出力するように処理を変更。
+			　CPUで扱う画像を乗算済みアルファの画像に変換する ConvertPremulAlphaSoftImage と
+			乗算済みアルファの画像を通常の画像に変換する ConvertInterpAlphaSoftImage を追加。
+			　Windows版：Windows7 で XInput 対応の Xboxコントローラー以外の
+			コントローラーを使用するとメモリの不正なアクセスが発生してしまう
+			バグを修正。
+			　Windows版：WindowsOS のバージョンを取得するための関数
+			GetWindowOSVersion を追加。
+			　Windows版：Zバッファー付き画像を MakeScreen で作成した場合、
+			画像を削除しても Zバッファーの ShaderResourceView が解放されない
+			バグを修正。
+			　Windows版：SetScreenFlipTargetWindow( NULL ); を実行しても
+			描画先のウィンドウ設定が解除できなくなっていたバグを修正。
+			　Windows版：KeyInputString 絵文字などを使用して入力すると
+			メモリの不正なアクセスが発生することがあるバグを修正。
+			　動画ファイルを LoadGraph で読み込むと1ファイル読み込むごとに
+			192byte メモリリークしてしまうバグを修正。
+			　一部の関数を除いて GetHandleASyncLoadResult で正常に関数の
+			非同期読み込みの結果を取得できなかったバグを修正。
+			　DrawStringFToHandle 等の座標を浮動小数点で指定する文字列描画関数で
+			DX_FONTTYPE_EDGE 等の縁付きフォントを使用すると、縁が描画されない
+			バグを修正。
+			　GetStockDataLengthSoftSoundPlayer にサウンドバッファ中の未再生の
+			サンプル数を取得するための第二引数 int *SoundBufferStockSamples を
+			追加。
+			　MakeSoftSoundPlayer 等で作成されるサウンドプレイヤーがサウンド
+			バッファに再生タイミングより先行してサウンドデータをセットしておく
+			時間を20分の1秒から30分の1秒に変更。
+			　Windows版：Direct3D 11 を使用している場合で
+			RefreshDxLibDirect3DSetting を呼んだ際に、レンダーターゲットの
+			再設定も行うように処理を追加。
+			　乱数ハンドルを扱うための関数 CreateRandHandle などを追加。
+			　Windows版：WASAPI を使用してサウンド出力をしている場合に、
+			プログラム実行中にPCの設定でサウンドの再生デバイスを変更すると
+			ＤＸライブラリからのサウンド出力が変更後のサウンドデバイスから
+			行われず、引き続き変更前のサウンドデバイスから出力されて
+			しまう問題を修正。
+			　Windows版：SetJoypadDeadZone を使用しても右スティックの
+			無効ゾーンが変化しない場合があるバグを修正。
+			　Windows版：SetupToolBar を実行してツールバーを有効にしても
+			ツールバーが表示されないことが有るバグを修正。( Direct3D 9 
+			使用時のみ )
+			　Windows版：SetupToolBar を実行しても、ウィンドウスタイルが
+			6 ～ 10 の場合はウィンドウスタイルを変更しないように処理を変更。
+			　Windows版：『ALT + キー』による メニューのショートカットキーが
+			効かないバグを修正。
+			　Windows版：OSのバージョン判定を Windows11 に対応。
+			　Windows版：MakeScreen を実行すると _com_error 例外がスロー
+			される不具合を修正。
+			　Windows版：Direct3D 9 を使用した場合、SetDrawAddColor による
+			加算色の効果が正常に反映されないことがあるバグを修正。
+			　SetIgnoreDrawGraphColor の設定状態を取得するための関数
+			GetIgnoreDrawGraphColor を追加。
+			　DrawModiString を使用するとメモリの不正なアクセスエラーが
+			発生してしまうバグを修正。
+			　Windows版：ボーダーレスウィンドウにするかどうかを設定する
+			関数 SetUseBorderlessWindowFlag を追加。
+			　MakeColorDataSoftImage, MakeRGBA8ColorSoftImage,
+			MakeBGRA8ColorSoftImage, MakeABGR8ColorSoftImage を追加。
+			　Windows版：DxLib_Init の呼び出し前に SetDragFileValidFlag を
+			使用できるように仕様を変更。
+			　Windows版：DxLib_Init の呼び出し前に LoadPauseGraph を使用すると
+			メモリリークが発生するバグを修正。
+			　Unicode版で printfDx などの書式指定文字列の指定子 %S が
+			正常に動作しないバグを修正。
+			　Windows版：プログラムの実行途中で SetCurrentDirectory で
+			カレントディレクトリが変更された場合、Log.txt が保存される
+			ディレクトリも途中で変化してしまっていたバグを修正。
+Ver 3.22e	　正式公開のためにバージョン番号を変更。
+Ver 3.22d	　DxLibModelViewer で使用する FbxSdk のバージョンを 2020 に変更。
+			　Windows版：SetScreenFlipTargetWindow に渡されたウィンドウハンドルが
+			有効かどうかを確認する処理を追加。
+			　SetKeyInputCursorPosition で文字列の長さ未満の位置を指定しても
+			指定した位置よりも手前の位置を指定したことになってしまう事がある
+			バグを修正。
+			　Ogg Vorbis や Opus など圧縮されたサウンドデータのサウンド
+			ハンドルに対して SetLoopStartSamplePosSoundMem などで
+			ループ開始位置をサウンドデータの末端以外にした場合、正常に
+			ループされないバグを修正。
+			　Windows版：セキュリティソフトでウィルスと誤判定される確率を
+			下げるため、インラインアセンブラのコードを無効化。
+			　mqoファイルの Format Text Ver 1.1 に仮対応。
+			　Windows版：DirectX 9 を使用して起動している場合に
+			GraphFilter で DX_GRAPH_FILTER_PMA_HSB を使用すると正常な
+			結果が得られないバグを修正。
+			　Windows版：SetFullSceneAntiAliasingMode で
+			フルシーンアンチエイリアスを行う設定にしていて、且つ
+			Direct3D 11 を使用して起動すると、一部の GPU で正常な描画結果が
+			得られない不具合を修正。
+			　C言語用ライブラリとしてもコンパイルできるようにコードを変更。
+			　Windows版：aviファイルでは TellMovieToGraphToFrame や
+			GetMovieTotalFrameToGraph 等のフレームタイプの関数が正常に
+			動作しなかったバグを修正。
+			　Windows版：PlayMovieToGraph で mp4ファイルを再生した際に
+			ファイルによっては色ずれが発生してしまうことがあるバグを修正。
+			　iOS版：サウンドの再生方式を自前ミキシングに変更。
+			　iOS版：画面の左端のタッチが0.5秒程反応が遅れる不具合を修正。
+			　文字コードBIG5などの文字の一部が正常に表示されないバグを修正。
+			　自作フォント等で画像情報が無い文字のスペースが正常に処理
+			されていなかったバグを修正。
+			　iOS版：DrawRectExtendGraph で大きく拡大した際に指定した
+			領域の隣のドットがはみ出てくるバグを修正。
+			　65535文字以上の文字数のテキストファイルを CreateDXFontData.exe
+			の /A オプションで指定すると不正なメモリアクセスが発生して
+			しまうバグを修正。
+			　Windows版：SetUseASyncLoad( TRUE ) ; を実行して非同期読み込みが
+			有効な状態で mp3 ファイルを LoadSoundMem で読み込もうとすると
+			エラーが発生して読み込めないことがあるバグを修正。
+			　描画元画像の座標も float で指定する DrawRectGraphF2 と
+			DrawRectExtendGraphF2 を追加。
+			　SetMovieColorA8R8G8B8Flag( TRUE ); を実行している状態で
+			mp4 ファイルを LoadGraph で読み込むとメモリの不正なアクセスが
+			発生するバグを修正。
+			　float型カラーテクスチャのカラー値のスケーリングを行うための
+			フィルター DX_GRAPH_FILTER_FLOAT_COLOR_SCALE を追加。
+			　ウィンドウモード時の SetGraphMode で指定できるウィンドウの
+			最大サイズをこれまでプライマリモニタのサイズだった所を
+			全てのモニタで一番大きいサイズまで許容するように処理を変更。
+			　Windows版：SSAOを行うためのフィルター DX_GRAPH_FILTER_SSAO を
+			追加。
+			　指定時間スレッドをスリープさせるための関数 SleepThread を追加。
+			　指定のハンドルの非同期読み込みが終わるまで待つ関数
+			WaitHandleASyncLoad を追加。
+			　全てのハンドルの非同期読み込みが終わるまで待つ関数
+			WaitHandleASyncLoadAll を追加。
+			　非同期読み込みが完了したら呼ばれるコールバック関数を設定する
+			ための関数 SetASyncLoadFinishCallback を追加。
+			　printfDx で表示する文字列の色を指定するための関数
+			setPrintColorDx を追加。
+			　Windows版：SetEmulation320x240( TRUE ); を実行して起動した際に
+			デスクトップの表示倍率が100%以上の場合、ウィンドウ全体に画面が
+			表示されないバグを修正。
+			　Android版, iOS版：MV1DrawModel で３Ｄモデルを描画した
+			直後に GraphFilter 系の関数を使用すると正常にフィルターが
+			適用されないバグを修正。
+			　SetUseLighting( FALSE ); を実行してライティングがOFFになって
+			いる場合は、DrawPolygon3D 等のポリゴン描画で頂点の
+			スペキュラカラーが最終出力の色に加算されるように処理を変更。
+			　Windows版：C++版で size_t の型の戻り値や引数がある関数を
+			C#版で呼ぶとエラーが発生するバグを修正。
+			　描画色に加算する色を設定するための関数 SetDrawAddColor を追加。
+			　SetUseShadowMap を呼んだ際にメモリの不正なアクセスが
+			発生してしまうことがあるバグを修正。
+			　DxaEncode.exe に pngファイルをBaseImageファイルに変換する
+			機能を追加。
+			　BaseImageファイルを読み込む処理を追加。
+			　InitGraph を呼んでも削除されないグラフィックハンドルを作成
+			するかを設定するための関数 SetCreateGraphInitGraphDelete を追加。
+			　画像ファイルの読み込み処理を高速化。
+			　PMD, PMX の物理演算の処理を有効にした際に一部ポリゴンが
+			付いてこなくてポリゴンが伸びるバグを修正。			
+			　ＤＸアーカイブ内のファイルを非同期読み込みした際に一部
+			非効率な処理を行っていた箇所を改善。
+			　LoadDivGraph に1つ辺りの画像サイズとは別に、1区切り辺りの
+			サイズを指定するための引数 XStride と YStride を追加。
+			　非同期読み込み指定で読み込んでいるハンドルを読み込み終了前に
+			使用した場合は、その場で読み込みが完了するまで待つように
+			処理を変更。
+			　描画ブレンドモードに Spine用の DX_BLENDMODE_SPINE_NORMAL 等を追加。
+			　ジョイパッドのタイプを取得するための関数 GetJoypadType を追加。
+			　フォントタイプに DX_FONTTYPE_ANTIALIASING_16X16 と
+			DX_FONTTYPE_ANTIALIASING_EDGE_16X16 を追加。
+			　アンチエイリアスタイプを指定した場合フォントの一部の文字が
+			正常に描画されないバグを修正。
+			　CreateDXFontData.exe で作成されるフォントファイルの一部の
+			文字のデータが正常に生成されないバグを修正。
+			　３Ｄモデルの物理演算をアニメーションより優先するかどうかを
+			設定するための関数 MV1SetPrioritizePhysicsOverAnimFlag を追加。
+			　Windows版：SetChangeScreenModeGraphicsSystemResetFlag( FALSE );
+			を実行した状態で SetGraphMode で画面サイズを変更して表画面に
+			描画すると、変更前の画面サイズの描画範囲になってしまっている
+			バグを修正。
+			　Windows版：プログラム起動中に DirectInput 対応のジョイパッド
+			が接続された場合に自動的に ReSetupJoypad が呼ばれるように
+			処理を変更。
+			　Windows版：Log.txt に検出されたジョイパッドの Product GUID を
+			出力する処理を追加。
 Ver 3.22c	　正式公開のためにバージョン番号を変更。
 Ver 3.22b	　Windows版：SeekMovieToGraph で、mp4ファイルの再生時間以上の
 			値を指定した場合、SeekMovieToGraph から処理が戻ってこなくなる

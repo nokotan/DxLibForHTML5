@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ファイルアクセスプログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -850,6 +850,7 @@ static void FileRead_open_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int ASync ;
 	int Addr ;
 	int Result ;
+	FILEACCESSINFO *FileInfo ;
 
 	Addr = 0 ;
 	FileHandle = GetASyncLoadParamInt(    AParam->Data, &Addr ) ;
@@ -857,7 +858,10 @@ static void FileRead_open_ASync( ASYNCLOADDATA_COMMON *AParam )
 	ASync      = GetASyncLoadParamInt(    AParam->Data, &Addr ) ;
 
 	Result = FileRead_open_Static( FileHandle, FilePath, ASync, TRUE ) ;
-
+	if( !FILEHCHK_ASYNC( FileHandle, FileInfo ) )
+	{
+		FileInfo->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( FileHandle ) ;
 	if( Result < 0 )
 	{
@@ -1843,13 +1847,18 @@ static void FileRead_fullyLoad_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int FileHandle ;
 	const wchar_t *FilePath ;
 	int Addr ;
-	int Result ;
+	int Result = 0 ;
+	FILEACCESSINFO *FileInfo ;
 
 	Addr = 0 ;
 	FileHandle = GetASyncLoadParamInt(    AParam->Data, &Addr ) ;
 	FilePath   = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
 	Result = FileRead_fullyLoad_Static( FileHandle, FilePath, TRUE ) ;
+	if( !FILEHCHK_ASYNC( FileHandle, FileInfo ) )
+	{
+		FileInfo->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( FileHandle ) ;
 	if( Result < 0 )
@@ -5843,8 +5852,13 @@ extern	int ConvertFullPathW_( const wchar_t *Src, wchar_t *Dest, size_t BufferBy
 		}
 		if( g_AddDriveNameNum != 0 && m != g_AddDriveNameNum )
 		{
+			int q ;
+
 			// 落ちない場合は適合した文字列をそのまま残す
-			_MEMCPY( Dest, Src, sizeof( wchar_t ) * n ) ;
+			for( q = 0 ; q < n ; q ++ )
+			{
+				Dest[ q ] = g_AddDriveName[ m ][ q ] ;
+			}
 			Dest[ n ] = L'\0' ;
 
 			j = n ;
@@ -6063,8 +6077,11 @@ extern	int ConvertFullPathW_( const wchar_t *Src, wchar_t *Dest, size_t BufferBy
 			{
 				if( ( RootFolder == FALSE && ( Src[ 0 ] == '\\' || Src[ 0 ] == '/' ) ) || j != 0 )
 				{
-					Dest[ j ] = L'\\' ;
-					j ++ ;
+					if( j > 0 && Dest[ j - 1 ] != L'\\' && Dest[ j - 1 ] != L'/' )
+					{
+						Dest[ j ] = L'\\' ;
+						j ++ ;
+					}
 				}
 
 				_WCSCPY_S( &Dest[j], BufferBytes - j * sizeof( wchar_t ), iden ) ;

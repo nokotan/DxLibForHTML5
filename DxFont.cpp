@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＤｒａｗ制御プログラム
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // ----------------------------------------------------------------------------
 
@@ -707,8 +707,8 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 		int DrawHeight ;
 //		int Result ;
 		int *UseTempScreenHandle ;
-		int TempScreenHeight ;
-		int TempScreenWidth ;
+		int TempScreenHeight = 0 ;
+		int TempScreenWidth = 0 ;
 		int DrawTempScreenHandle[ 2 ] = { -1, -1 } ;
 		SCREENDRAWSETTINGINFO ScreenDrawSettingInfo ;
 
@@ -742,8 +742,8 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 
 			if( UseTempScreenHandle[ 0 ] >= 0 )
 			{
-				DeleteGraph( UseTempScreenHandle[ 0 ] ) ;
-				DeleteGraph( UseTempScreenHandle[ 1 ] ) ;
+				NS_DeleteGraph( UseTempScreenHandle[ 0 ], FALSE ) ;
+				NS_DeleteGraph( UseTempScreenHandle[ 1 ], FALSE ) ;
 				UseTempScreenHandle[ 0 ] = -1 ;
 				UseTempScreenHandle[ 1 ] = -1 ;
 			}
@@ -767,7 +767,7 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 			UseTempScreenHandle[ 1 ] = Graphics_Image_MakeGraph_UseGParam( &GParam, DrawWidth, DrawHeight, FALSE, FALSE, 0, FALSE, FALSE ) ;
 			if( UseTempScreenHandle[ 1 ] < 0 )
 			{
-				NS_DeleteGraph( UseTempScreenHandle[ 0 ] ) ;
+				NS_DeleteGraph( UseTempScreenHandle[ 0 ], FALSE ) ;
 				UseTempScreenHandle[ 0 ] = -1 ;
 				return -1 ;
 			}
@@ -784,7 +784,7 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 		{
 			NS_SetDrawScreen( UseTempScreenHandle[ 0 ] ) ;
 			NS_SetBackgroundColor( 0, 0, 0, 0 ) ;
-			NS_ClearDrawScreen() ;
+			NS_ClearDrawScreen( NULL ) ;
 
 			NS_SetDrawBlendMode( DX_BLENDMODE_PMA_ALPHA, 255 ) ;
 			DrawStringToHandle_WCHAR_T( 0, 0, String, StringLength, Color, Font->HandleInfo.Handle, EdgeColor, VerticalFlag ) ;
@@ -797,7 +797,7 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 		{
 			NS_SetDrawScreen( UseTempScreenHandle[ 0 ] ) ;
 			NS_SetBackgroundColor( 0, 0, 0, 0 ) ;
-			NS_ClearDrawScreen() ;
+			NS_ClearDrawScreen( NULL ) ;
 			NS_SetDrawBlendMode( DX_BLENDMODE_SRCCOLOR, 255 ) ;
 			FontCacheStringDrawToHandleST(
 				TRUE,
@@ -829,7 +829,7 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 
 			NS_SetDrawScreen( UseTempScreenHandle[ 1 ] ) ;
 			NS_SetBackgroundColor( 0, 0, 0, 0 ) ;
-			NS_ClearDrawScreen() ;
+			NS_ClearDrawScreen( NULL ) ;
 			NS_SetDrawBlendMode( DX_BLENDMODE_SRCCOLOR, 255 ) ;
 			FontCacheStringDrawToHandleST(
 				TRUE,
@@ -880,14 +880,14 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 				if( DrawTempScreenHandle[ 0 ] >= 0 )
 				{
 					NS_DrawModiGraph(  x1i, y1i, x2i, y2i, x3i, y3i, x4i, y4i, DrawTempScreenHandle[ 0 ], TRUE ) ;
-					NS_DeleteGraph( DrawTempScreenHandle[ 0 ] ) ;
+					NS_DeleteGraph( DrawTempScreenHandle[ 0 ], FALSE ) ;
 					DrawTempScreenHandle[ 0 ] = -1 ;
 				}
 
 				if( DrawTempScreenHandle[ 1 ] >= 0 )
 				{
 					NS_DrawModiGraph(  x1i, y1i, x2i, y2i, x3i, y3i, x4i, y4i, DrawTempScreenHandle[ 1 ], TRUE ) ;
-					NS_DeleteGraph( DrawTempScreenHandle[ 1 ] ) ;
+					NS_DeleteGraph( DrawTempScreenHandle[ 1 ], FALSE ) ;
 					DrawTempScreenHandle[ 1 ] = -1 ;
 				}
 			}
@@ -896,14 +896,14 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 				if( DrawTempScreenHandle[ 0 ] > 0 )
 				{
 					NS_DrawModiGraphF( x1f, y1f, x2f, y2f, x3f, y3f, x4f, y4f, DrawTempScreenHandle[ 0 ], TRUE ) ;
-					NS_DeleteGraph( DrawTempScreenHandle[ 0 ] ) ;
+					NS_DeleteGraph( DrawTempScreenHandle[ 0 ], FALSE ) ;
 					DrawTempScreenHandle[ 0 ] = -1 ;
 				}
 
 				if( DrawTempScreenHandle[ 1 ] > 0 )
 				{
 					NS_DrawModiGraphF( x1f, y1f, x2f, y2f, x3f, y3f, x4f, y4f, DrawTempScreenHandle[ 1 ], TRUE ) ;
-					NS_DeleteGraph( DrawTempScreenHandle[ 1 ] ) ;
+					NS_DeleteGraph( DrawTempScreenHandle[ 1 ], FALSE ) ;
 					DrawTempScreenHandle[ 1 ] = -1 ;
 				}
 			}
@@ -1541,7 +1541,7 @@ extern int TermFontManage( void )
 		{
 			for( j = 0 ; j < 16 ; j ++ )
 			{
-				NS_DeleteGraph( FSYS.DefaultFontImageGraphHandle[ i ][ j ] ) ;
+				NS_DeleteGraph( FSYS.DefaultFontImageGraphHandle[ i ][ j ], FALSE ) ;
 				FSYS.DefaultFontImageGraphHandle[ i ][ j ] = 0 ;
 			}
 		}
@@ -1890,7 +1890,7 @@ extern int RefreshDefaultFont( void )
 		int j ;
 		TCHAR Char[ 2 ] = { 0 } ;
 
-		FSYS.DefaultFontHandle = NS_LoadFontDataFromMemToHandle( DefaultFontDataFileImage, sizeof( DefaultFontDataFileImage ) ) ;
+		FSYS.DefaultFontHandle = NS_LoadFontDataFromMemToHandle( DefaultFontDataFileImage, sizeof( DefaultFontDataFileImage ), 0 ) ;
 
 		// 画像ファイルがデコードされていなかったらデコードする
 		if( FSYS.DefaultFontImage == NULL )
@@ -1926,7 +1926,7 @@ extern int RefreshDefaultFont( void )
 			NS_SetTransColor( 255,0,255 ) ;
 
 			// グラフィックハンドルの作成
-			NS_CreateDivGraphFromMem( FSYS.DefaultFontImage, DXA_Decode( DefaultFontImage, NULL ), 128, 16, 8, 8, 16, FSYS.DefaultFontImageGraphHandle[ 0 ] ) ;
+			NS_CreateDivGraphFromMem( FSYS.DefaultFontImage, DXA_Decode( DefaultFontImage, NULL ), 128, 16, 8, 8, 16, FSYS.DefaultFontImageGraphHandle[ 0 ], TRUE, FALSE, NULL, 0 ) ;
 
 			// 透過色を元に戻す
 			NS_SetTransColor( TransRed, TransGreen, TransBlue ) ;
@@ -2303,9 +2303,15 @@ extern int FontCacheCharImageBltToHandle(
 	{
 		CharData->DrawX = 0 ;
 		CharData->DrawY = 0 ;
-		CharData->AddX  = 0 ;
+		CharData->AddX = ( short )( ( ImageAddX + ( SampleScale >> 2 ) ) / SampleScale ) ;
 		CharData->SizeX = 0 ;
 		CharData->SizeY = 0 ;
+
+		// エッジ付きの場合は得られるイメージのサイズを大きくする
+		if( ( ManageData->FontType & DX_FONTTYPE_EDGE ) )
+		{
+			CharData->AddX += ( short )( ManageData->EdgeSize * 2 ) ;
+		}
 	}
 	else
 	{
@@ -2517,6 +2523,14 @@ extern int FontCacheCharImageBltToHandle(
 			DWORD	ImagePitch5 ;
 			DWORD	ImagePitch6 ;
 			DWORD	ImagePitch7 ;
+			DWORD	ImagePitch8 ;
+			DWORD	ImagePitch9 ;
+			DWORD	ImagePitch10 ;
+			DWORD	ImagePitch11 ;
+			DWORD	ImagePitch12 ;
+			DWORD	ImagePitch13 ;
+			DWORD	ImagePitch14 ;
+			DWORD	ImagePitch15 ;
 			BYTE *	RSrc ;
 			BYTE *	RDest ;
 			DWORD	RWidth ;
@@ -2554,6 +2568,14 @@ extern int FontCacheCharImageBltToHandle(
 			ImagePitch5		= ( DWORD )( ImagePitch * 5 ) ;
 			ImagePitch6		= ( DWORD )( ImagePitch * 6 ) ;
 			ImagePitch7		= ( DWORD )( ImagePitch * 7 ) ;
+			ImagePitch8		= ( DWORD )( ImagePitch * 8 ) ;
+			ImagePitch9		= ( DWORD )( ImagePitch * 9 ) ;
+			ImagePitch10	= ( DWORD )( ImagePitch * 10 ) ;
+			ImagePitch11	= ( DWORD )( ImagePitch * 11 ) ;
+			ImagePitch12	= ( DWORD )( ImagePitch * 12 ) ;
+			ImagePitch13	= ( DWORD )( ImagePitch * 13 ) ;
+			ImagePitch14	= ( DWORD )( ImagePitch * 14 ) ;
+			ImagePitch15	= ( DWORD )( ImagePitch * 15 ) ;
 
 			// リサンプルスケールによって処理を分岐
 			switch( SampleScale )
@@ -2715,6 +2737,144 @@ extern int FontCacheCharImageBltToHandle(
 					}
 				}
 				break ;
+
+				// １６倍の場合
+			case 16 :
+				if( ManageData->TextureCacheFlag == FALSE || ManageData->TextureCacheColorBitDepth == 16 )
+				{
+					ImageType = DX_FONT_SRCIMAGETYPE_8BIT_MAX16 ;
+					for( i = 0 ; i < RHeight ; i ++ )
+					{
+						for( j = 0 ; j < RWidth ; j ++ )
+						{
+							int MixParam = 
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch2 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch2 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch3 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch3 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch4 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch4 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch5 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch5 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch6 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch6 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch7 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch7 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch8 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch8 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch9 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch9 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch10 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch10 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch11 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch11 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch12 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch12 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch13 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch13 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch14 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch14 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch15 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch15 ] ] ;
+							RDest[ j ] = ( BYTE )( MixParam == 256 ? 255 : MixParam ) ;
+						}
+
+						RSrc  += ImageAddPitch ;
+						RDest += RSrcPitch ;
+					}
+
+					if( MHeight != 0 )
+					{
+						for( i = 0 ; i < MHeight ; i ++ )
+						{
+							for( j = 0 ; j < RWidth ; j ++ )
+							{
+								RDest[ j ] += FSYS.BitCountTable[ RSrc[ j ] ] ;
+							}
+
+							RSrc += ImagePitch ;
+						}
+						for( j = 0 ; j < RWidth ; j ++ )
+						{
+							RDest[ j ] >>= 2 ;
+						}
+					}
+				}
+				else
+				{
+					ImageType = DX_FONT_SRCIMAGETYPE_8BIT_MAX255 ;
+					for( i = 0 ; i < RHeight ; i ++ )
+					{
+						for( j = 0 ; j < RWidth ; j ++ )
+						{
+							int MixParam = 
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch2 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch2 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch3 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch3 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch4 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch4 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch5 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch5 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch6 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch6 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch7 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch7 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch8 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch8 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch9 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch9 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch10 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch10 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch11 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch11 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch12 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch12 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch13 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch13 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch14 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch14 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 0 + ImagePitch15 ] ] +
+								FSYS.BitCountTable[ RSrc[ j * 2 + 1 + ImagePitch15 ] ] ;
+							RDest[ j ] = ( BYTE )( MixParam == 256 ? 255 : MixParam ) ;
+						}
+
+						RSrc  += ImageAddPitch ;
+						RDest += RSrcPitch ;
+					}
+
+					if( MHeight != 0 )
+					{
+						for( i = 0 ; i < MHeight ; i ++ )
+						{
+							for( j = 0 ; j < RWidth ; j ++ )
+							{
+								int SrcTotal ;
+
+								SrcTotal = FSYS.BitCountTable[ RSrc[ j * 2 ] ] + FontSystem.BitCountTable[ RSrc[ j * 2 + 1 ] ] ;
+								if( RDest[ j ] + SrcTotal >= 256 )
+								{
+									RDest[ j ] = 255 ;
+								}
+								else
+								{
+									RDest[ j ] += SrcTotal ;
+								}
+							}
+
+							RSrc += ImagePitch ;
+						}
+					}
+				}
+				break ;
 			}
 
 			ImageBuffer = RDataBuffer ;
@@ -2800,6 +2960,7 @@ extern int FontCacheCharImageBltToHandle(
 				case DX_FONTTYPE_ANTIALIASING : 
 				case DX_FONTTYPE_ANTIALIASING_4X4 : 
 				case DX_FONTTYPE_ANTIALIASING_8X8 : 
+				case DX_FONTTYPE_ANTIALIASING_16X16 : 
 					// DX_FONT_SRCIMAGETYPE_8BIT_MAX16 以外はエラー
 					if( ImageType != DX_FONT_SRCIMAGETYPE_8BIT_MAX16 )
 					{
@@ -5659,7 +5820,7 @@ R1 :
 				}
 				else
 				{
-					BaseImage->ColorData	= *( NS_GetTexColorData( alpha, test, ManageData->TextureCacheColorBitDepth == 16 ? 0 : 1 ) ) ;
+					BaseImage->ColorData	= *( NS_GetTexColorData( alpha, test, ManageData->TextureCacheColorBitDepth == 16 ? 0 : 1, FALSE ) ) ;
 				}
 
 				BaseImage->MipMapCount		= 0 ;
@@ -5712,14 +5873,16 @@ R1 :
 		// １ピクセル分のデータを保存するに当たり必要なビット数をセット
 		switch( ManageData->FontType )
 		{
-		case DX_FONTTYPE_NORMAL :                 BitNum = 1 ; break ;
-		case DX_FONTTYPE_EDGE :                   BitNum = 8 ; break ;
-		case DX_FONTTYPE_ANTIALIASING :           BitNum = 8 ; break ;
-		case DX_FONTTYPE_ANTIALIASING_4X4 :       BitNum = 8 ; break ;
-		case DX_FONTTYPE_ANTIALIASING_8X8 :       BitNum = 8 ; break ;
-		case DX_FONTTYPE_ANTIALIASING_EDGE :      BitNum = 8 ; break ;
-		case DX_FONTTYPE_ANTIALIASING_EDGE_4X4 :  BitNum = 8 ; break ;
-		case DX_FONTTYPE_ANTIALIASING_EDGE_8X8 :  BitNum = 8 ; break ;
+		case DX_FONTTYPE_NORMAL :                   BitNum = 1 ; break ;
+		case DX_FONTTYPE_EDGE :                     BitNum = 8 ; break ;
+		case DX_FONTTYPE_ANTIALIASING :             BitNum = 8 ; break ;
+		case DX_FONTTYPE_ANTIALIASING_4X4 :         BitNum = 8 ; break ;
+		case DX_FONTTYPE_ANTIALIASING_8X8 :         BitNum = 8 ; break ;
+		case DX_FONTTYPE_ANTIALIASING_16X16 :       BitNum = 8 ; break ;
+		case DX_FONTTYPE_ANTIALIASING_EDGE :        BitNum = 8 ; break ;
+		case DX_FONTTYPE_ANTIALIASING_EDGE_4X4 :    BitNum = 8 ; break ;
+		case DX_FONTTYPE_ANTIALIASING_EDGE_8X8 :    BitNum = 8 ; break ;
+		case DX_FONTTYPE_ANTIALIASING_EDGE_16X16 :  BitNum = 8 ; break ;
 		}
 
 		// キャッシュ文字の数を調整
@@ -6220,13 +6383,13 @@ extern int TerminateFontHandle( HANDLEINFO *HandleInfo )
 		{
 			if( ManageData->ModiDrawScreen[ i ] >= 0 )
 			{
-				NS_DeleteGraph( ManageData->ModiDrawScreen[ i ] ) ;
+				NS_DeleteGraph( ManageData->ModiDrawScreen[ i ], FALSE ) ;
 				ManageData->ModiDrawScreen[ i ] = -1 ;
 			}
 
 			if( ManageData->ModiDrawScreenV[ i ] >= 0 )
 			{
-				NS_DeleteGraph( ManageData->ModiDrawScreenV[ i ] ) ;
+				NS_DeleteGraph( ManageData->ModiDrawScreenV[ i ], FALSE ) ;
 				ManageData->ModiDrawScreenV[ i ] = -1 ;
 			}
 		}
@@ -6235,8 +6398,8 @@ extern int TerminateFontHandle( HANDLEINFO *HandleInfo )
 	// テクスチャグラフィック削除
 	if( ManageData->TextureCache >= 0 )
 	{
-		NS_DeleteGraph( ManageData->TextureCache ) ;
-		NS_DeleteGraph( ManageData->TextureCacheSub ) ;
+		NS_DeleteGraph( ManageData->TextureCache, FALSE ) ;
+		NS_DeleteGraph( ManageData->TextureCacheSub, FALSE ) ;
 		ManageData->TextureCache = -1 ;
 		ManageData->TextureCacheSub = -1 ;
 	}
@@ -6423,6 +6586,7 @@ static void CreateFontToHandle_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int Italic ;
 	int Addr ;
 	int Result ;
+	FONTMANAGE *ManageData ;
 
 	Addr = 0 ;
 	GParam = ( CREATEFONTTOHANDLE_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -6436,6 +6600,10 @@ static void CreateFontToHandle_ASync( ASYNCLOADDATA_COMMON *AParam )
 	Italic = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = CreateFontToHandle_Static( GParam, FontHandle, FontName, Size, Thick, FontType, CharSet, EdgeSize, Italic, TRUE ) ;
+	if( !FONTHCHK_ASYNC( FontHandle, ManageData ) )
+	{
+		ManageData->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( FontHandle ) ;
 	if( Result < 0 )
@@ -6758,6 +6926,7 @@ static void LoadFontDataFromMemToHandle_UseGParam_ASync( ASYNCLOADDATA_COMMON *A
 	int EdgeSize ;
 	int Addr ;
 	int Result ;
+	FONTMANAGE *ManageData ;
 
 	Addr = 0 ;
 	GParam = ( CREATEFONTTOHANDLE_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -6768,6 +6937,10 @@ static void LoadFontDataFromMemToHandle_UseGParam_ASync( ASYNCLOADDATA_COMMON *A
 	EdgeSize = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = LoadFontDataFromMemToHandle_UseGParam_Static( GParam, FontHandle, FontDataImage, FontDataImageSize, EdgeSize, TRUE ) ;
+	if( !FONTHCHK_ASYNC( FontHandle, ManageData ) )
+	{
+		ManageData->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( FontHandle ) ;
 	if( Result < 0 )
@@ -6933,6 +7106,7 @@ static void LoadFontDataToHandle_UseGParam_ASync( ASYNCLOADDATA_COMMON *AParam )
 	int EdgeSize ;
 	int Addr ;
 	int Result ;
+	FONTMANAGE *ManageData ;
 
 	Addr = 0 ;
 	GParam = ( CREATEFONTTOHANDLE_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -6941,6 +7115,10 @@ static void LoadFontDataToHandle_UseGParam_ASync( ASYNCLOADDATA_COMMON *AParam )
 	EdgeSize = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
 	Result = LoadFontDataToHandle_UseGParam_Static( GParam, FontHandle, FileName, EdgeSize, TRUE ) ;
+	if( !FONTHCHK_ASYNC( FontHandle, ManageData ) )
+	{
+		ManageData->HandleInfo.ASyncLoadResult = Result ;
+	}
 
 	DecASyncLoadCount( FontHandle ) ;
 	if( Result < 0 )
@@ -8704,7 +8882,7 @@ extern int FontCacheStringDrawToHandleST(
 											TempGraph, TRUE
 										) ;
 									}
-									NS_DeleteGraph( TempGraph ) ;
+									NS_DeleteGraph( TempGraph, FALSE ) ;
 									Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 								}
 
@@ -8721,7 +8899,7 @@ extern int FontCacheStringDrawToHandleST(
 										TRUE
 									) ;
 								}
-								NS_DeleteGraph( TempGraph ) ;
+								NS_DeleteGraph( TempGraph, FALSE ) ;
 							}
 						}
 						else
@@ -8764,7 +8942,7 @@ extern int FontCacheStringDrawToHandleST(
 											TempGraph, TRUE
 										) ;
 									}
-									NS_DeleteGraph( TempGraph ) ;
+									NS_DeleteGraph( TempGraph, FALSE ) ;
 									Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 								}
 
@@ -8781,7 +8959,7 @@ extern int FontCacheStringDrawToHandleST(
 										TRUE/*anti ? FALSE : TRUE*/
 									) ;
 								}
-								NS_DeleteGraph( TempGraph ) ;
+								NS_DeleteGraph( TempGraph, FALSE ) ;
 
 								// 描画可能矩形を元に戻す
 								NS_SetDrawArea( MotoDrawRect.left,  MotoDrawRect.top,
@@ -8813,7 +8991,7 @@ extern int FontCacheStringDrawToHandleST(
 											TempGraph, TRUE
 										) ;
 									}
-									NS_DeleteGraph( TempGraph ) ;
+									NS_DeleteGraph( TempGraph, FALSE ) ;
 									Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 								}
 
@@ -8830,7 +9008,7 @@ extern int FontCacheStringDrawToHandleST(
 										TRUE/*anti ? FALSE : TRUE*/
 									) ;
 								}
-								NS_DeleteGraph( TempGraph ) ;
+								NS_DeleteGraph( TempGraph, FALSE ) ;
 							}
 						}
 					}
@@ -8889,7 +9067,7 @@ extern int FontCacheStringDrawToHandleST(
 											CharData->SizeY,
 											UseManageData->TextureCacheSub,
 											TRUE,
-											FALSE
+											FALSE, FALSE
 										) ;
 									}
 									else
@@ -8903,7 +9081,7 @@ extern int FontCacheStringDrawToHandleST(
 											CharData->SizeY + 2,
 											UseManageData->TextureCacheSub,
 											TRUE,
-											FALSE
+											FALSE, FALSE
 										) ;
 									}
 								}
@@ -8924,7 +9102,7 @@ extern int FontCacheStringDrawToHandleST(
 										CharData->SizeY,
 										UseManageData->TextureCache,
 										TRUE,
-										FALSE
+										FALSE, FALSE
 									) ;
 								}
 								else
@@ -8938,7 +9116,7 @@ extern int FontCacheStringDrawToHandleST(
 										CharData->SizeY + 2,
 										UseManageData->TextureCache,
 										TRUE,
-										FALSE
+										FALSE, FALSE
 									) ;
 								}
 							}
@@ -9352,6 +9530,7 @@ extern int FontCacheStringDrawToHandleST(
 								case DX_FONTTYPE_ANTIALIASING :
 								case DX_FONTTYPE_ANTIALIASING_4X4 :
 								case DX_FONTTYPE_ANTIALIASING_8X8 :
+								case DX_FONTTYPE_ANTIALIASING_16X16 :
 									{
 										WORD Width ;
 
@@ -9635,6 +9814,7 @@ extern int FontCacheStringDrawToHandleST(
 								case DX_FONTTYPE_ANTIALIASING :
 								case DX_FONTTYPE_ANTIALIASING_4X4 :
 								case DX_FONTTYPE_ANTIALIASING_8X8 :
+								case DX_FONTTYPE_ANTIALIASING_16X16 :
 									{
 										WORD Width ;
 
@@ -10178,6 +10358,7 @@ extern int FontCacheStringDrawToHandleST(
 								case DX_FONTTYPE_ANTIALIASING :
 								case DX_FONTTYPE_ANTIALIASING_4X4 :
 								case DX_FONTTYPE_ANTIALIASING_8X8 :
+								case DX_FONTTYPE_ANTIALIASING_16X16 :
 									{
 										WORD Width ;
 
@@ -10558,6 +10739,7 @@ extern int FontCacheStringDrawToHandleST(
 								case DX_FONTTYPE_ANTIALIASING :
 								case DX_FONTTYPE_ANTIALIASING_4X4 :
 								case DX_FONTTYPE_ANTIALIASING_8X8 :
+								case DX_FONTTYPE_ANTIALIASING_16X16 :
 									{
 										WORD Width ;
 
@@ -11274,8 +11456,8 @@ extern int FontCacheStringDrawToHandle_WCHAR_T(
 	orig_y = y ;
 
 	// 色カラー値を取得しておく
-	NS_GetColor5( &DestImage->ColorData, Color, &r, &g, &b ) ;
-	NS_GetColor5( &DestImage->ColorData, EdgeColor, &er, &eg, &eb ) ;
+	NS_GetColor5( &DestImage->ColorData, Color, &r, &g, &b, NULL ) ;
+	NS_GetColor5( &DestImage->ColorData, EdgeColor, &er, &eg, &eb, NULL ) ;
 
 	// 文字列がない場合は終了
 	if( StrData  == NULL || *StrData  == 0 )
@@ -11840,6 +12022,7 @@ extern int FontCacheStringDrawToHandle_WCHAR_T(
 					case DX_FONTTYPE_ANTIALIASING :
 					case DX_FONTTYPE_ANTIALIASING_4X4 :
 					case DX_FONTTYPE_ANTIALIASING_8X8 :
+					case DX_FONTTYPE_ANTIALIASING_16X16 :
 						{
 							WORD wtemp ;
 							BYTE r1, g1, b1 ;
@@ -12147,6 +12330,7 @@ extern int FontCacheStringDrawToHandle_WCHAR_T(
 					case DX_FONTTYPE_ANTIALIASING :
 					case DX_FONTTYPE_ANTIALIASING_4X4 :
 					case DX_FONTTYPE_ANTIALIASING_8X8 :
+					case DX_FONTTYPE_ANTIALIASING_16X16 :
 						{
 							BYTE r1, g1, b1 ;
 							WORD wtemp ;
@@ -13051,7 +13235,7 @@ extern int NS_GetDrawFormatStringWidth( const TCHAR *FormatString, ... )
 
 	// 文字列の幅を得る
 	return NS_GetDrawStringWidthToHandle(
-				String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // 書式付き文字列の描画幅を得る
@@ -13071,7 +13255,7 @@ extern int NS_GetDrawFormatStringWidthToHandle( int FontHandle, const TCHAR *For
 
 	// 文字列の幅を得る
 	return NS_GetDrawStringWidthToHandle(
-				String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // 書式付き文字列の描画幅を得る
@@ -13203,7 +13387,7 @@ extern int NS_GetDrawExtendFormatStringWidth( double ExRateX, const TCHAR *Forma
 
 	// 文字列の幅を得る
 	return NS_GetDrawExtendStringWidthToHandle(
-		ExRateX, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE ) ;
+		ExRateX, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE, FALSE ) ;
 }
 
 // 書式付き文字列の描画幅を得る
@@ -13224,7 +13408,7 @@ extern int NS_GetDrawExtendFormatStringWidthToHandle( double ExRateX, int FontHa
 
 	// 文字列の幅を得る
 	return NS_GetDrawExtendStringWidthToHandle(
-				ExRateX, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				ExRateX, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // 書式付き文字列の描画幅を得る
@@ -13349,7 +13533,7 @@ extern int NS_GetDrawFormatStringSize( int *SizeX, int *SizeY, int *LineCount, c
 
 	// 文字列の幅を得る
 	return NS_GetDrawStringSizeToHandle(
-				SizeX, SizeY, LineCount, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				SizeX, SizeY, LineCount, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // デフォルトフォントハンドルを使用した文字列の描画幅・高さ・行数を取得する( 拡大率付き )
@@ -13373,7 +13557,7 @@ extern int NS_GetDrawExtendFormatStringSize( int *SizeX, int *SizeY, int *LineCo
 
 	// 文字列の幅を得る
 	return NS_GetDrawExtendStringSizeToHandle(
-		SizeX, SizeY, LineCount, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE ) ;
+		SizeX, SizeY, LineCount, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE, FALSE ) ;
 }
 
 // フォントハンドルを使用した文字列の描画幅・高さ・行数を取得する
@@ -13485,7 +13669,7 @@ extern int NS_GetDrawFormatStringSizeToHandle( int *SizeX, int *SizeY, int *Line
 
 	// 文字列の幅を得る
 	return NS_GetDrawStringSizeToHandle(
-				SizeX, SizeY, LineCount, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				SizeX, SizeY, LineCount, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // フォントハンドルを使用した文字列の描画幅・高さ・行数を取得する
@@ -13599,7 +13783,7 @@ extern int NS_GetDrawExtendFormatStringSizeToHandle( int *SizeX, int *SizeY, int
 
 	// 文字列の幅を得る
 	return NS_GetDrawExtendStringSizeToHandle(
-				SizeX, SizeY, LineCount, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				SizeX, SizeY, LineCount, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 
@@ -13624,7 +13808,7 @@ extern int NS_GetDrawFormatStringCharInfo( DRAWCHARINFO *InfoBuffer, size_t Info
 	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
 
 	return NS_GetDrawStringCharInfoToHandle(
-				InfoBuffer, InfoBufferSize, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				InfoBuffer, InfoBufferSize, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // デフォルトフォントハンドルを使用した文字列の１文字毎の情報を取得する
@@ -13648,7 +13832,7 @@ extern int NS_GetDrawExtendFormatStringCharInfo( DRAWCHARINFO *InfoBuffer, size_
 
 	// 文字列の幅を得る
 	return NS_GetDrawExtendStringCharInfoToHandle(
-		InfoBuffer, InfoBufferSize, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE ) ;
+		InfoBuffer, InfoBufferSize, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE, FALSE ) ;
 }
 
 // デフォルトフォントハンドルを使用した二つの文字のペアのカーニング情報を取得する( PairChar:カーニング情報を調べるペアとなる2文字の文字列( 2文字以上あっても先頭の2文字だけ使用されます )  KernAmount:2文字目の文字を基本の位置からずらすドット数を代入するint型変数のアドレス )
@@ -13761,7 +13945,7 @@ extern int NS_GetDrawFormatStringCharInfoToHandle( DRAWCHARINFO *InfoBuffer, siz
 	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
 
 	return NS_GetDrawStringCharInfoToHandle(
-				InfoBuffer, InfoBufferSize, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				InfoBuffer, InfoBufferSize, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // フォントハンドルを使用した文字列の１文字毎の情報を取得する
@@ -13976,7 +14160,7 @@ extern int NS_GetDrawExtendFormatStringCharInfoToHandle( DRAWCHARINFO *InfoBuffe
 	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
 
 	return NS_GetDrawExtendStringCharInfoToHandle(
-				InfoBuffer, InfoBufferSize, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				InfoBuffer, InfoBufferSize, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 
@@ -15844,7 +16028,7 @@ extern int GetDrawFormatStringWidth_VaList( const TCHAR *FormatString, va_list V
 
 	// 文字列の幅を得る
 	return NS_GetDrawStringWidthToHandle(
-				String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // デフォルトフォントハンドルを使用した書式付き文字列の描画幅を取得する( 拡大率付き )
@@ -15856,7 +16040,7 @@ extern int GetDrawExtendFormatStringWidth_VaList( double ExRateX, const TCHAR *F
 
 	// 文字列の幅を得る
 	return NS_GetDrawExtendStringWidthToHandle(
-		ExRateX, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE ) ;
+		ExRateX, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE, FALSE ) ;
 }
 
 // デフォルトフォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する
@@ -15868,7 +16052,7 @@ extern int GetDrawFormatStringSize_VaList( int *SizeX, int *SizeY, int *LineCoun
 
 	// 文字列の幅を得る
 	return NS_GetDrawStringSizeToHandle(
-				SizeX, SizeY, LineCount, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				SizeX, SizeY, LineCount, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // デフォルトフォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する( 拡大率付き )
@@ -15880,7 +16064,7 @@ extern int GetDrawExtendFormatStringSize_VaList( int *SizeX, int *SizeY, int *Li
 
 	// 文字列の幅を得る
 	return NS_GetDrawExtendStringSizeToHandle(
-		SizeX, SizeY, LineCount, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE ) ;
+		SizeX, SizeY, LineCount, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE, FALSE ) ;
 }
 
 // デフォルトフォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
@@ -15891,7 +16075,7 @@ extern int GetDrawFormatStringCharInfo_VaList( DRAWCHARINFO *InfoBuffer, size_t 
 	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
 
 	return NS_GetDrawStringCharInfoToHandle(
-				InfoBuffer, InfoBufferSize, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				InfoBuffer, InfoBufferSize, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // デフォルトフォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
@@ -15903,7 +16087,7 @@ extern int GetDrawExtendFormatStringCharInfo_VaList( DRAWCHARINFO *InfoBuffer, s
 
 	// 文字列の幅を得る
 	return NS_GetDrawExtendStringCharInfoToHandle(
-		InfoBuffer, InfoBufferSize, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE ) ;
+		InfoBuffer, InfoBufferSize, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat,  ( const char * )String ), DX_DEFAULT_FONT_HANDLE, FALSE ) ;
 }
 
 // フォントハンドルを使用した書式付き文字列の描画幅を取得する
@@ -15913,7 +16097,7 @@ extern int GetDrawFormatStringWidthToHandle_VaList( int FontHandle, const TCHAR 
 
 	// 文字列の幅を得る
 	return NS_GetDrawStringWidthToHandle(
-				String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // フォントハンドルを使用した書式付き文字列の描画幅を取得する
@@ -15923,7 +16107,7 @@ extern int GetDrawExtendFormatStringWidthToHandle_VaList( double ExRateX, int Fo
 
 	// 文字列の幅を得る
 	return NS_GetDrawExtendStringWidthToHandle(
-				ExRateX, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				ExRateX, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // フォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する
@@ -15933,7 +16117,7 @@ extern int GetDrawFormatStringSizeToHandle_VaList( int *SizeX, int *SizeY, int *
 
 	// 文字列の幅を得る
 	return NS_GetDrawStringSizeToHandle(
-				SizeX, SizeY, LineCount, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				SizeX, SizeY, LineCount, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // フォントハンドルを使用した書式付き文字列の描画幅・高さ・行数を取得する
@@ -15943,7 +16127,7 @@ extern int GetDrawExtendFormatStringSizeToHandle_VaList( int *SizeX, int *SizeY,
 
 	// 文字列の幅を得る
 	return NS_GetDrawExtendStringSizeToHandle(
-				SizeX, SizeY, LineCount, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				SizeX, SizeY, LineCount, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // フォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
@@ -15952,7 +16136,7 @@ extern int GetDrawFormatStringCharInfoToHandle_VaList( DRAWCHARINFO *InfoBuffer,
 	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
 
 	return NS_GetDrawStringCharInfoToHandle(
-				InfoBuffer, InfoBufferSize, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				InfoBuffer, InfoBufferSize, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // フォントハンドルを使用した書式付き文字列の１文字毎の情報を取得する
@@ -15961,7 +16145,7 @@ extern int GetDrawExtendFormatStringCharInfoToHandle_VaList( DRAWCHARINFO *InfoB
 	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
 
 	return NS_GetDrawExtendStringCharInfoToHandle(
-				InfoBuffer, InfoBufferSize, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle ) ;
+				InfoBuffer, InfoBufferSize, ExRateX, ExRateY, String, ( int )CL_strlen( CharCodeFormat, ( const char * )String ), FontHandle, FALSE ) ;
 }
 
 // デフォルトフォントハンドルを使用して書式指定文字列を描画する

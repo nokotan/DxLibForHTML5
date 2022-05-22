@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		Live2D Cubism4 ŠÖŒWƒvƒƒOƒ‰ƒ€
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // ----------------------------------------------------------------------------
 
@@ -479,6 +479,7 @@ static void Live2DCubism4_LoadModel_ASync( ASYNCLOADDATA_COMMON *AParam )
 	const wchar_t *FilePath ;
 	int Addr ;
 	int Result ;
+	LIVE2DCUBISM4MODEL *Model ;
 
 	Addr = 0 ;
 	GParam = ( LIVE2DCUBISM4_LOADMODEL_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
@@ -486,6 +487,10 @@ static void Live2DCubism4_LoadModel_ASync( ASYNCLOADDATA_COMMON *AParam )
 	FilePath = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
 	Result = Live2DCubism4_LoadModel_Static( GParam, Live2DModelHandle, FilePath, TRUE ) ;
+	if( !LIVE2DCUBISM4MODELCHK_ASYNC( Live2DModelHandle, Model ) )
+	{
+		Model->HandleInfo.ASyncLoadResult = Result ;
+	}
 	DecASyncLoadCount( Live2DModelHandle ) ;
 	if( Result < 0 )
 	{

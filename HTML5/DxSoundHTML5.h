@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		HTML5用サウンドプログラムヘッダファイル
 // 
-// 				Ver 3.22c
+// 				Ver 3.23 
 // 
 // -------------------------------------------------------------------------------
 
@@ -83,6 +83,8 @@ struct SOUNDBUFFER_PF
 // サウンドシステム用環境依存データ構造体
 struct SOUNDSYSTEMDATA_PF
 {
+	int							InitializeFlag ;						// 初期化済みかどうか
+
 	ALCdevice *					ALCdeviceObject ;						// ALデバイスオブジェクト
 	ALCcontext *				ALCcontectObject ;						// ALコンテキストオブジェクト
 
