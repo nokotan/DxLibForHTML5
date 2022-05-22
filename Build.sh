@@ -10,4 +10,4 @@ cd build
 echo "# Start Building"
 
 emcmake cmake .. -DCMAKE_CXX_FLAGS="-O2"
-emmake make
+emmake make -j4
