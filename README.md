@@ -1,6 +1,6 @@
 # DxLibForHTML5
 
-[![Build Status](https://www.travis-ci.com/nokotan/DxLibForHTML5.svg?branch=master)
+![Build Status](https://www.travis-ci.com/nokotan/DxLibForHTML5.svg?branch=master)
 
 ## 概要
 

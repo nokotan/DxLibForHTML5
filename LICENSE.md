@@ -1,4 +1,6 @@
-# DX Library for HTML5 (C) 2020-2022 かめのこにょこにょこ
+# DX Library for HTML5
+
+DX Library for HTML5 (C) 2020-2022 かめのこにょこにょこ
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
