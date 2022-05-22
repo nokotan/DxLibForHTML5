@@ -16459,9 +16459,6 @@ extern	int		Graphics_Initialize_Timing0_PF( void )
 		return -1 ;
 	}
 
-	// このタイミングでジェスチャーを無効化する
-	DisableGesture_HTML5() ;
-
 	// 正常終了
 	return 0 ;
 }
