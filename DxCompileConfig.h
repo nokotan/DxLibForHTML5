@@ -43,10 +43,13 @@
 
 // ＤＸアーカイブがいらない方は次のコメントを外してください
 // ( ＤＸアーカイブを無効にすると、ＤＸアーカイブを内部で使っている関係上 DX_NON_MODEL と DX_NON_FILTER と DX_NON_MOVIE と DX_NON_NORMAL_DRAW_SHADER も有効になります )
-//#define DX_NON_DXA
+// #define DX_NON_DXA
 
 // ムービー機能がいらない方は次のコメントを外してください
 #define DX_NON_MOVIE
+
+// ＢＭＰ画像の読み込み機能がいらない方は次のコメントを外してください
+// #define DX_NON_BMPREAD
 
 // ＴＧＡ画像の読み込み機能がいらない方は次のコメントを外してください
 // #define DX_NON_TGA
@@ -57,7 +60,7 @@
 
 // ＰＮＧ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-//#define DX_NON_PNGREAD
+#define DX_NON_PNGREAD
 
 // ＴＩＦＦ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
@@ -78,6 +81,9 @@
 // 標準 WAVE ファイル以外の音声ファイルを使用しない方は次のコメントを外してください
 //#define DX_NON_ACM
 
+// 標準 WAVE ファイルを使用しない方は次のコメントを外してください
+// #define DX_NON_WAVE
+
 // DirectShow を使用した MP3 ファイルのデコードを行わない場合は次のコメントをはずしてください
 //#define DX_NON_DSHOW_MP3
 
@@ -97,7 +103,7 @@
 #define DX_NON_NETWORK
 
 // マスク機能がいらない方は次のコメントを外してください
-//#define DX_NON_MASK
+// #define DX_NON_MASK
 
 // Ｏｇｇ Ｖｏｒｂｉｓ データを使用しない方は次のコメントをはずしてください
 // ※DxUseCLib.lib も再コンパイルする必要があります
@@ -155,6 +161,9 @@
 
 // フォント描画機能を無効にする場合は次のコメントを外して下さい
 //#define DX_NON_FONT
+
+// ブラウザ依存のフォント描画機能を有効にする場合は次のコメントを外して下さい
+// #define DX_USE_BROWSER_FONT
 
 // サウンド再生機能( ソフトウエアサウンド、MIDI含む )を無効にする場合は次のコメントを外して下さい
 //#define DX_NON_SOUND

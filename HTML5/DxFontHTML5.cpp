@@ -11,7 +11,7 @@
 
 #include "../DxCompileConfig.h"
 
-#ifndef DX_NON_FONT
+#if !defined(DX_NON_FONT) && !defined(DX_USE_BROWSER_FONT)
 
 // インクルード ---------------------------------------------------------------
 #include "DxFontHTML5.h"

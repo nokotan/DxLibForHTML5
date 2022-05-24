@@ -11,6 +11,7 @@ target_sources(DxLib
         DxBaseFuncHTML5.cpp
         DxBaseImageHTML5.cpp
         DxFileHTML5.cpp
+        DxBrowserFontHTML5.cpp
         DxFontHTML5.cpp
         DxGraphicsFilterHTML5.cpp
         DxGraphicsHTML5.cpp

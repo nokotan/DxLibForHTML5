@@ -219,7 +219,9 @@ int YUVTable[ 5 ][ 256 ] ;		// 0:rv  1:gu   2:gv   3:bu   4:y
 // âÊëúì«Ç›çûÇ›ä÷êîîzóÒ
 int ( *DefaultImageLoadFunc[] )( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) =
 {
+#ifndef DX_NON_BMPREAD
 	LoadBmpImage ,
+#endif
 #ifndef DX_NON_JPEGREAD
 	LoadJpegImage ,
 #endif
@@ -229,12 +231,19 @@ int ( *DefaultImageLoadFunc[] )( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetF
 #ifndef DX_NON_TGA
 	LoadTargaImage ,
 #endif
+#ifndef EMSCRIPTEN
 	LoadDDSImage ,
+#endif
 #ifndef DX_NON_TIFFREAD
 	LoadTiffImage ,
 #endif
+#ifndef EMSCRIPTEN
 	LoadArgbImage ,
 	LoadDxLibBaseImage ,
+#endif
+#ifdef EMSCRIPTEN
+	LoadImageFromBrowser ,
+#endif
 	NULL 
 } ;
 
