@@ -25,7 +25,7 @@ add_subdirectory(HTML5)
 # DxLib
 
 target_include_directories(DxLib
-    PUBLIC
+    PRIVATE
         HTML5/
         extlib/freetype/include/
 )
@@ -162,3 +162,60 @@ if (DXLIB_BUILD_SHARED_MAIN)
         EXCLUDE_FROM_ALL OFF
     )
 endif()
+
+
+
+include(GNUInstallDirs)
+
+if ("${CMAKE_CXX_FLAGS}" MATCHES "-flto")
+    set(LIBDIR "${CMAKE_INSTALL_LIBDIR}/wasm32-emscripten/lto")
+else()
+    set(LIBDIR "${CMAKE_INSTALL_LIBDIR}/wasm32-emscripten")
+endif()
+
+install(TARGETS DxLib
+  EXPORT DxLibExport
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${LIBDIR}
+  ARCHIVE DESTINATION ${LIBDIR}
+)
+
+install(EXPORT DxLibExport
+  FILE DxLibConfig.cmake
+  DESTINATION share/cmake/DxLibConfig/
+)
+
+install(TARGETS DxDrawFunc
+  EXPORT DxDrawFuncExport
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${LIBDIR}
+  ARCHIVE DESTINATION ${LIBDIR}
+)
+
+install(EXPORT DxDrawFuncExport
+  FILE DxDrawFuncConfig.cmake
+  DESTINATION share/cmake/DxDrawFuncConfig/
+)
+
+install(TARGETS DxUseCLib
+  EXPORT DxUseCLibExport
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${LIBDIR}
+  ARCHIVE DESTINATION ${LIBDIR}
+)
+
+install(EXPORT DxUseCLibExport
+  FILE DxUseCLibConfig.cmake
+  DESTINATION share/cmake/DxUseCLibConfig/
+)
+
+install(
+    FILES
+        ${PROJECT_SOURCE_DIR}/DxLib.h 
+        ${PROJECT_SOURCE_DIR}/DxCompileConfig.h 
+        ${PROJECT_SOURCE_DIR}/DxDataType.h 
+        ${PROJECT_SOURCE_DIR}/DxDataTypeHTML5.h 
+        ${PROJECT_SOURCE_DIR}/DxFunctionHTML5.h 
+    DESTINATION 
+        ${CMAKE_INSTALL_INCLUDEDIR}
+)
