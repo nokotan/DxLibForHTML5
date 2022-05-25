@@ -764,10 +764,19 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
+
+EM_JS(void, WaitForNextFrame, (), {
+	Asyncify.handleSleep(function(wakeUp) {
+		window.requestAnimationFrame(wakeUp);
+	});
+})
+
 // ウインドウズのメッセージループに代わる処理を行う
 extern int NS_ProcessMessage( void )
 {
 	static int EndFlag = FALSE ;
+
+	WaitForNextFrame();
 
 	// もしフラグがたっていたらなにもせず終了
 	if( EndFlag )

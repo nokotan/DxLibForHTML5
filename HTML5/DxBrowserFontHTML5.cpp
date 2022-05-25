@@ -75,6 +75,9 @@ static int TerminateFontHandle_HTML5( FONTMANAGE *ManageData )
 }
 
 EM_JS(int, InitializeFontRenderingOnBrowser, (), {
+    if (!Module["DxLib"]) {
+		Module["DxLib"] = {};
+	}
     
     Module["DxLib"].TextRenderingCanvas = document.createElement('canvas');
     Module["DxLib"].TextRenderingContext = Module["DxLib"].TextRenderingCanvas.getContext("2d");
@@ -295,6 +298,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
     }
 
     DXFREE(AlphaChannel);
+    free(FontData.Bitmap);
 
 	// 戻り値を返す
 	return 0 ;

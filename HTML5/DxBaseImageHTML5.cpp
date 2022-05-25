@@ -15,6 +15,7 @@
 #include "DxBaseImageHTML5.h"
 #include "../DxStatic.h"
 #include "../DxMemory.h"
+#include "../DxBaseFunc.h"
 
 #include <emscripten.h>
 
@@ -105,12 +106,9 @@ extern int LoadImageFromBrowser(STREAMDATA *Stream, BASEIMAGE *BaseImage, int Ge
 	STREAMDATASHRED *sstr;
 	size_t FileSize;
 	BYTE *ImageData = NULL;
+	BYTE *DecodedImageData = NULL;
+	size_t DecodedImageSize;
 	DECODEDIMAGE DecodedImage;
-
-	if( GetFormatOnly == TRUE )
-	{
-		return 0;
-	}
 
 	{
 		sstr = &Stream->ReadShred ;
@@ -128,11 +126,15 @@ extern int LoadImageFromBrowser(STREAMDATA *Stream, BASEIMAGE *BaseImage, int Ge
 	if( ( sstr->Read( ImageData, sizeof(BYTE), FileSize, sp ) ) <= 0 ) goto ERR ;
 	if( DecodeImageOnBrowser(ImageData, FileSize, &DecodedImage) == -1 ) goto ERR ;
 
+	DecodedImageSize = ( size_t )(DecodedImage.Width *  DecodedImage.Height * 4);
+	DecodedImageData = (BYTE *)DXALLOC( DecodedImageSize ) ;	
+	_MEMCPY(DecodedImageData, DecodedImage.DecodedImage, DecodedImageSize);
+
 	{
 		BaseImage->Width = DecodedImage.Width;
 		BaseImage->Height = DecodedImage.Height;
 		BaseImage->Pitch = DecodedImage.Width * 4;
-		BaseImage->GraphData = DecodedImage.DecodedImage;
+		BaseImage->GraphData = DecodedImageData;
 
 		// アルファチャンネルありにする
 		NS_CreateFullColorData( &BaseImage->ColorData ) ;
@@ -141,9 +143,19 @@ extern int LoadImageFromBrowser(STREAMDATA *Stream, BASEIMAGE *BaseImage, int Ge
 		BaseImage->ColorData.AlphaLoc		= 24 ;
 		BaseImage->ColorData.AlphaWidth		= 8 ;
 		BaseImage->ColorData.AlphaMask		= 0xff000000 ;
+		BaseImage->ColorData.BlueLoc		= 16 ;
+		BaseImage->ColorData.BlueWidth		= 8 ;
+		BaseImage->ColorData.BlueMask		= 0x00ff0000 ;
+		BaseImage->ColorData.GreenLoc		= 8 ;
+		BaseImage->ColorData.GreenWidth		= 8 ;
+		BaseImage->ColorData.GreenMask		= 0x0000ff00 ;
+		BaseImage->ColorData.RedLoc			= 0 ;
+		BaseImage->ColorData.RedWidth		= 8 ;
+		BaseImage->ColorData.RedMask		= 0x000000ff ;
 	}
 
 	DXFREE(ImageData);
+	free(DecodedImage.DecodedImage);
 	
 	return 0;
 
