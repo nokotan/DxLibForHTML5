@@ -45,7 +45,7 @@ namespace DxLib
 
 // データ宣言------------------------------------------------------------------
 
-const static int32_t g_HTML5InputSourceTable[ HTML5_INPUT_SOURCE_NUM ] =
+const static unsigned char g_HTML5InputSourceTable[ HTML5_INPUT_SOURCE_NUM ] =
 {
 	HTML5_INPUT_SOURCE_UNKNOWN,
 	HTML5_INPUT_SOURCE_KEYBOARD,
@@ -54,7 +54,7 @@ const static int32_t g_HTML5InputSourceTable[ HTML5_INPUT_SOURCE_NUM ] =
 	HTML5_INPUT_SOURCE_JOYSTICK
 } ;
 
-const static unsigned short g_HTML5KeyToDXInputKey[][ 2 /* 0:HTML5キーコード  1:DirectInputキーコード  */ ] =
+const static unsigned char g_HTML5KeyToDXInputKey[][ 2 /* 0:HTML5キーコード  1:DirectInputキーコード  */ ] =
 {
 	{ HTML_KEYCODE_BACK,		KEY_INPUT_BACK },		// BackSpaceキー
 	{ HTML_KEYCODE_TAB,			KEY_INPUT_TAB },		// Tabキー
@@ -175,7 +175,7 @@ const static unsigned short g_HTML5KeyToDXInputKey[][ 2 /* 0:HTML5キーコー�
 
 	{ HTML_KEYCODE_BACK,			KEY_INPUT_ESCAPE },		// HTML5 の Backボタン
 
-	{ 0xffff,					0xffff },
+	{ 0xff,					0xff },
 } ;
 
 // 関数プロトタイプ宣言 -------------------------------------------------------
