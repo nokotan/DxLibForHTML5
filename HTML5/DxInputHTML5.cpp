@@ -301,7 +301,7 @@ extern int UpdateKeyboardInputState_PF( int UseProcessMessage )
 		{
 			INPUT_HTML5_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ HTML5_INPUT_SOURCE_KEYBOARD ][ j ] ] ;
 
-			for( i = 0 ; g_HTML5KeyToDXInputKey[i][0] != 0xffff ; i ++ )
+			for( i = 0 ; g_HTML5KeyToDXInputKey[i][0] != 0xff ; i ++ )
 			{
 				InputSysData.KeyInputBuf[ g_HTML5KeyToDXInputKey[ i ][ 1 ] ] |= Info->KeyState[ g_HTML5KeyToDXInputKey[ i ][ 0 ] ] ? 0x80 : 0x00 ;
 			}
