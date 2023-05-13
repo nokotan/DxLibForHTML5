@@ -1,0 +1,25 @@
+name: C/C++ CI
+
+on: [ push ]
+
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+    container: 
+      image: emscripten/emsdk:3.1.20
+    steps:
+      - run: |
+          bash Build.sh
+          mkdir dest
+          mkdir dest/lib
+          cp build/libDxLib.a dest/lib/
+          cp build/libDxUseCLib.a dest/lib/
+          cp build/libDxDrawFunc.a dest/lib/
+          mkdir dest/include
+          cp DxCompileConfig.h dest/include/
+          cp DxDataType.h dest/include/
+          cp DxDataTypeHTML5.h dest/include/
+          cp DxFunctionWin.h dest/include/
+          cp DxLib.h dest/include/
+          zip -r DxLibForHTML5.zip dest
+          tar -cvzf DxLibForHTML5.tgz dest/*
