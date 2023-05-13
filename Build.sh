@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd /src
-
 echo "# Create Build Folder"
 
 mkdir build
@@ -9,5 +7,5 @@ cd build
 
 echo "# Start Building"
 
-emcmake cmake .. -DCMAKE_CXX_FLAGS="-O2"
+emcmake cmake .. -DCMAKE_CXX_FLAGS="-O2 -pthread"
 emmake make -j4
