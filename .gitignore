@@ -12,6 +12,7 @@
 
 #Build Result
 /Build/
+/build
 
 #VS Config
 /.vscode/

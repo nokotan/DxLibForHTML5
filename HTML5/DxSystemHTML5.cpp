@@ -47,6 +47,9 @@
 #include "../DxMemory.h"
 
 #include <emscripten.h>
+#include <emscripten/threading.h>
+#include <emscripten/html5.h>
+#include <emscripten/proxying.h>
 
 EM_JS(int, canvas_width, (), {
 	return Module.canvas.width;
@@ -764,12 +767,35 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
+void WaitedForNextFrame(void* ctx) {
+	emscripten_proxy_finish((em_proxying_ctx*) ctx);
+}
 
-EM_JS(void, WaitForNextFrame, (), {
-	Asyncify.handleSleep(function(wakeUp) {
-		window.requestAnimationFrame(wakeUp);
+int WaitedForCurrentFrame(double, void* ctx) {
+	emscripten_set_timeout(&WaitedForNextFrame, 0, (em_proxying_ctx*) ctx);
+	return 0;
+}
+
+void WaitForNextFrameImpl(em_proxying_ctx* ctx, void*) {
+	emscripten_request_animation_frame(&WaitedForCurrentFrame, ctx);
+}
+
+void WaitForNextFrame() {
+#ifdef ASYNCIFY
+	EM_ASM({
+		Asyncify.handleSleep(function(wakeUp) {
+			window.requestAnimationFrame(wakeUp);
+		});
 	});
-})
+#else
+	auto defaultQueue = emscripten_proxy_get_system_queue();
+	emscripten_proxy_sync_with_ctx(
+		defaultQueue,
+		emscripten_main_browser_thread_id(),
+		&WaitForNextFrameImpl,
+		nullptr);
+#endif
+}
 
 // ウインドウズのメッセージループに代わる処理を行う
 extern int NS_ProcessMessage( void )

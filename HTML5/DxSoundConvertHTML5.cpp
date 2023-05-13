@@ -53,17 +53,19 @@ SOUNDCONVERTDATA_HTML5 GSoundConvertData_HTML5 ;
 
 // 初期化・終了関数
 
-EM_JS(int, InitializeDecodeAudioOnBrowser, (), {
-	if (!Module["DxLib"]) {
-		Module["DxLib"] = {};
-	}
+int InitializeDecodeAudioOnBrowser() {
+	return MAIN_THREAD_EM_ASM_INT({
+		if (!Module["DxLib"]) {
+			Module["DxLib"] = {};
+		}
 
-	Module["DxLib"].audioContext = new AudioContext();
-	Module["DxLib"].NextDecodedAudioId = 1;
-	Module["DxLib"].DecodedAudio = [];
+		Module["DxLib"].audioContext = new AudioContext();
+		Module["DxLib"].NextDecodedAudioId = 1;
+		Module["DxLib"].DecodedAudio = [];
 
-	return 0;
-})
+		return 0;
+	});
+}
 
 // サウンドデータ変換処理の環境依存の初期化を行う
 extern	int InitializeSoundConvert_PF( void )

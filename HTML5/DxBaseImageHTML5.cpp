@@ -50,43 +50,48 @@ int ( *DefaultImageLoadFunc_PF[] )( STREAMDATA *Src, BASEIMAGE *BaseImage, int G
 // プログラム -----------------------------------------------------------------
 
 // 環境依存初期化・終了関数
+int DecodeImageOnBrowser(BYTE* Src, int Size, DECODEDIMAGE* Decoded) {
+#ifdef ASYNCIFY
+	return EM_ASM_INT({
+		return Asyncify.handleSleep(function(wakeUp) {
+			if (!Module["decodeCanvas"]) {
+				Module["decodeCanvas"] = document.createElement('canvas');
+				Module["decodeContext"] = Module["decodeCanvas"].getContext("2d");
+			}
 
-EM_JS(int, DecodeImageOnBrowser, (BYTE* Src, int Size, DECODEDIMAGE* Decoded), {
-	return Asyncify.handleSleep(function(wakeUp) {
-		if (!Module["decodeCanvas"]) {
-			Module["decodeCanvas"] = document.createElement('canvas');
-			Module["decodeContext"] = Module["decodeCanvas"].getContext("2d");
+			const imageData = new Uint8ClampedArray(HEAPU8.buffer, Src, Size);
+			const imageBlob = new Blob([ imageData ]);
+			const image = new Image();
+
+			image.onload = function() {
+				Module["decodeCanvas"].width = image.width;
+				Module["decodeCanvas"].height = image.height;
+				Module["decodeContext"].drawImage(image, 0, 0);
+
+				const decodedImageData = Module["decodeContext"].getImageData(0, 0, image.width, image.height).data;
+				const dataBuffer = Module["_malloc"](decodedImageData.length);
+
+				HEAPU8.set(decodedImageData, dataBuffer);
+
+				HEAPU32[(Decoded>>2)+0] = dataBuffer;
+				HEAPU32[(Decoded>>2)+1] = decodedImageData.length;
+				HEAPU32[(Decoded>>2)+2] = image.width;
+				HEAPU32[(Decoded>>2)+3] = image.height;
+
+				URL.revokeObjectURL(image.src);
+				wakeUp(0);
+			};
+			image.onerror = function() {
+				URL.revokeObjectURL(image.src);
+				wakeUp(-1);
+			};
+			image.src = URL.createObjectURL(imageBlob);
 		}
-
-		const imageData = new Uint8ClampedArray(HEAPU8.buffer, Src, Size);
-		const imageBlob = new Blob([ imageData ]);
-		const image = new Image();
-
-		image.onload = function() {
-			Module["decodeCanvas"].width = image.width;
-			Module["decodeCanvas"].height = image.height;
-			Module["decodeContext"].drawImage(image, 0, 0);
-
-			const decodedImageData = Module["decodeContext"].getImageData(0, 0, image.width, image.height).data;
-			const dataBuffer = Module["_malloc"](decodedImageData.length);
-
-			HEAPU8.set(decodedImageData, dataBuffer);
-
-			HEAPU32[(Decoded>>2)+0] = dataBuffer;
-			HEAPU32[(Decoded>>2)+1] = decodedImageData.length;
-			HEAPU32[(Decoded>>2)+2] = image.width;
-			HEAPU32[(Decoded>>2)+3] = image.height;
-
-			URL.revokeObjectURL(image.src);
-			wakeUp(0);
-		};
-		image.onerror = function() {
-			URL.revokeObjectURL(image.src);
-			wakeUp(-1);
-		};
-		image.src = URL.createObjectURL(imageBlob);
 	});
-})
+#else
+	return 0;
+#endif
+}
 
 // 基本イメージ管理情報の環境依存処理の初期化
 extern int InitializeBaseImageManage_PF( void )

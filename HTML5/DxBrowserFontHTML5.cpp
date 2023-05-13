@@ -74,19 +74,21 @@ static int TerminateFontHandle_HTML5( FONTMANAGE *ManageData )
 	return 0 ;
 }
 
-EM_JS(int, InitializeFontRenderingOnBrowser, (), {
-    if (!Module["DxLib"]) {
-		Module["DxLib"] = {};
-	}
-    
-    Module["DxLib"].TextRenderingCanvas = document.createElement('canvas');
-    Module["DxLib"].TextRenderingContext = Module["DxLib"].TextRenderingCanvas.getContext("2d");
+int InitializeFontRenderingOnBrowser() {
+    return MAIN_THREAD_EM_ASM_INT({
+        if (!Module["DxLib"]) {
+            Module["DxLib"] = {};
+        }
+        
+        Module["DxLib"].TextRenderingCanvas = document.createElement('canvas');
+        Module["DxLib"].TextRenderingContext = Module["DxLib"].TextRenderingCanvas.getContext("2d");
 
-    Module["DxLib"].NextFontDataId = 1;
-    Module["DxLib"].FontData = [];
-    
-    return 0;
-})
+        Module["DxLib"].NextFontDataId = 1;
+        Module["DxLib"].FontData = [];
+        
+        return 0;
+    });
+}
 
 // InitFontManage の環境依存処理を行う関数
 extern int InitFontManage_PF( void )

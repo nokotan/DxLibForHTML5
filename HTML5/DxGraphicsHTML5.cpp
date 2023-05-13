@@ -3529,14 +3529,14 @@ extern	int		Graphics_HTML5_Device_Create( void )
 		attrib.preserveDrawingBuffer = EM_FALSE;
 		attrib.preserveDrawingBuffer = EM_WEBGL_POWER_PREFERENCE_DEFAULT;
 		attrib.failIfMajorPerformanceCaveat = EM_FALSE;
-		attrib.renderViaOffscreenBackBuffer = EM_FALSE;
+		attrib.renderViaOffscreenBackBuffer = EM_TRUE;
 		attrib.proxyContextToMainThread = EM_FALSE;
 
-		attrib.majorVersion = 3;
+		attrib.majorVersion = 2;
 		attrib.minorVersion = 0;
 		attrib.explicitSwapControl = EM_FALSE;
 
-		ctxHandle = emscripten_webgl_create_context("canvas", &attrib);
+		ctxHandle = emscripten_webgl_create_context("#canvas", &attrib);
 
 		if (ctxHandle <= 0) {
 			return -1;
@@ -17848,6 +17848,7 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		// }
 	}
 
+	emscripten_webgl_commit_frame();
 	return 0 ;
 }
 
