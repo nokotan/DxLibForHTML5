@@ -43,8 +43,8 @@ async function Main()
             const fileData = await readFileAsync(`../Android/${baseName}`);
             const fileText = decode(fileData, "Shift_JIS");
 
-            let replacedText = fileText.replace(/ANDR/g, "HTML5");
-            replacedText = replacedText.replace(/ANDROID/g, "HTML5");
+            let replacedText = fileText.replace(/ANDROID/g, "HTML5");
+            replacedText = replacedText.replace(/ANDR/g, "HTML5");
             replacedText = replacedText.replace(/Android/g, "HTML5");
 
             await writeFileAsync(`../HTML5/${fileName}`, replacedText);
