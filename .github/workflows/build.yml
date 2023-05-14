@@ -27,7 +27,7 @@ jobs:
           cp DxCompileConfig.h dest/include/
           cp DxDataType.h dest/include/
           cp DxDataTypeHTML5.h dest/include/
-          cp DxFunctionWin.h dest/include/
+          cp DxFunctionHTML5.h dest/include/
           cp DxLib.h dest/include/
           zip -r DxLibForHTML5.zip dest
           tar -cvzf DxLibForHTML5.tgz dest/*
