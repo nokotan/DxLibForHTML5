@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用システムプログラムヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -81,6 +81,9 @@ struct DXLIB_ANDROID_SYSTEMINFO
 
 	volatile AInputQueue		*InputQueue ;						// 入力イベントを受け取るためのキュー
 	volatile AInputQueue		*NewInputQueue ;					// 新しい入力イベントを受け取るためのキュー
+
+	int32_t ( *UserInputEventCallbackFunction )( AInputEvent *, void * ) ;	// 入力イベント発生時に呼ばれるコールバック関数
+	void *						UserInputEventCallbackFunctionData ;// 入力イベント発生時に呼ばれるコールバック関数に渡すアドレス
 
 	volatile ANativeWindow		*NativeWindow ;						// ソフトのウインドウ
 	volatile ANativeWindow		*NewNativeWindow ;					// 新しいソフトのウインドウ

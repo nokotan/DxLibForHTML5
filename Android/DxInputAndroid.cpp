@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用入力情報プログラム
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
@@ -29,8 +29,6 @@ namespace DxLib
 
 // マクロ定義------------------------------------------------------------------
 
-#define DEADZONE_D							(0.35)
-#define DEADZONE							(DWORD)( DEADZONE_D * 65536 )
 #define DEADZONE_XINPUT( ZONE )				(short)( 32767 * (ZONE) / 65536)
 #define DEADZONE_XINPUT_TRIGGER( ZONE )		(short)(   255 * (ZONE) / 65536)
 #define VALIDRANGE_XINPUT( ZONE )			( 32767 - DEADZONE_XINPUT(ZONE))
@@ -202,8 +200,8 @@ extern int InitializeInputSystem_PF_Timing0( void )
 	// 無効ゾーンのセット
 	for( i = 0 ; i < MAX_JOYPAD_NUM ; i ++ )
 	{
-		InputSysData.Pad[ i ].DeadZone = DEADZONE ;
-		InputSysData.Pad[ i ].DeadZoneD = DEADZONE_D ;
+		InputSysData.Pad[ i ].DeadZone = InputSysData.PadDefaultDeadZone ;
+		InputSysData.Pad[ i ].DeadZoneD = InputSysData.PadDefaultDeadZoneD ;
 	}
 
 	// キーボードとジョイパッドの入力のデフォルトの対応表を設定する
@@ -507,10 +505,11 @@ extern int GetJoypadType_PF( int InputType )
 extern int GetMouseInput_PF( void )
 {
 	int res = 0 ;
+	int i ;
 
-	if( InputSysData.PF.SourceNum[ ANDR_INPUT_SOURCE_MOUSE ] > 0 )
+	for( i = 0 ; i < InputSysData.PF.SourceNum[ ANDR_INPUT_SOURCE_MOUSE ] ; i ++ )
 	{
-		INPUT_ANDROID_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ ANDR_INPUT_SOURCE_MOUSE ][ 0 ] ] ;
+		INPUT_ANDROID_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ ANDR_INPUT_SOURCE_MOUSE ][ i ] ] ;
 
 		if( ( Info->ButtonState & 0x01 ) != 0 ) res |= MOUSE_INPUT_1 ;
 		if( ( Info->ButtonState & 0x02 ) != 0 ) res |= MOUSE_INPUT_2 ;
@@ -601,6 +600,9 @@ extern int GetMousePoint_PF( int *XBuf, int *YBuf )
 
 		ScreenX = ( int )Info->AxisX ;
 		ScreenY = ( int )Info->AxisY ;
+
+		ScreenX = ( int )InputSysData.PF.MouseX ;
+		ScreenY = ( int )InputSysData.PF.MouseY ;
 		ConvScreenPositionToDxScreenPosition( ScreenX, ScreenY, XBuf, YBuf ) ;
 	}
 
@@ -846,6 +848,8 @@ extern int32_t ProcessInputEvent( AInputEvent* event )
 
 	if( InputType == AINPUT_EVENT_TYPE_MOTION )
 	{
+		TOUCHINPUTDATA TouchInputData ;
+		int32_t PointerCount ;
 		int32_t Action ;
 		int32_t PIndex ;
 		Action = AMotionEvent_getAction( event ) ;
@@ -853,13 +857,11 @@ extern int32_t ProcessInputEvent( AInputEvent* event )
 		Action &= AMOTION_EVENT_ACTION_MASK ;
 
 		if( ( Source & AINPUT_SOURCE_TOUCHSCREEN ) == AINPUT_SOURCE_TOUCHSCREEN ||
-			( Source & AINPUT_SOURCE_TOUCHPAD    ) == AINPUT_SOURCE_TOUCHPAD    )
+			( Source & AINPUT_SOURCE_TOUCHPAD    ) == AINPUT_SOURCE_TOUCHPAD )
 		{
-			TOUCHINPUTDATA TouchInputData ;
-			int32_t PointerCount ;
-
 			TouchInputData.PointNum = 0 ;
 			TouchInputData.Time = ( LONGLONG )AMotionEvent_getEventTime( event ) ;
+			TouchInputData.Source = Source ;
 
 			if( Action != AMOTION_EVENT_ACTION_UP &&
 				Action != AMOTION_EVENT_ACTION_HOVER_ENTER &&
@@ -888,8 +890,61 @@ extern int32_t ProcessInputEvent( AInputEvent* event )
 						ScreenY = AMotionEvent_getY( event, i ) ;
 						ConvScreenPositionToDxScreenPosition( ScreenX, ScreenY, &TouchPoint->PositionX, &TouchPoint->PositionY ) ;
 
+						TouchPoint->Pressure    = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_PRESSURE,    i ) ;
+						TouchPoint->Orientation = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_ORIENTATION, i ) ;
+						TouchPoint->Tilt        = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_TILT,        i ) ;
+						TouchPoint->ToolType    = AMotionEvent_getToolType( event, i ) ;
+
 						TouchInputData.PointNum ++ ;
 						TouchPoint ++ ;
+					}
+				}
+			}
+
+			AddTouchInputData( &TouchInputData ) ;
+		}
+
+		if( ( Source & AINPUT_SOURCE_STYLUS      ) == AINPUT_SOURCE_STYLUS &&
+			( Source & AINPUT_SOURCE_TOUCHSCREEN ) != AINPUT_SOURCE_TOUCHSCREEN )
+		{
+			TouchInputData.PointNum = 0 ;
+			TouchInputData.Time = ( LONGLONG )AMotionEvent_getEventTime( event ) ;
+			TouchInputData.Source = Source ;
+
+			if( Action != AMOTION_EVENT_ACTION_HOVER_EXIT )
+			{
+				PointerCount = AMotionEvent_getPointerCount( event ) ;
+				if( PointerCount > 0 )
+				{
+					int32_t i ;
+					TOUCHINPUTPOINT *TouchPoint ;
+
+					TouchPoint = TouchInputData.Point ;
+					for( i = 0; i < PointerCount; i++ )
+					{
+						int ScreenX, ScreenY ;
+
+						if( PIndex == i && Action == AMOTION_EVENT_ACTION_POINTER_UP )
+						{
+							continue ;
+						}
+
+						TouchPoint->Device = 0 ;
+						TouchPoint->ID = AMotionEvent_getPointerId( event, i ) ;
+						ScreenX = AMotionEvent_getX( event, i ) ;
+						ScreenY = AMotionEvent_getY( event, i ) ;
+						ConvScreenPositionToDxScreenPosition( ScreenX, ScreenY, &TouchPoint->PositionX, &TouchPoint->PositionY ) ;
+
+						TouchPoint->Pressure    = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_PRESSURE,    i ) ;
+						TouchPoint->Orientation = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_ORIENTATION, i ) ;
+						TouchPoint->Tilt        = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_TILT,        i ) ;
+						TouchPoint->ToolType    = AMotionEvent_getToolType( event, i ) ;
+
+						if( TouchPoint->ToolType != 0 )
+						{
+							TouchInputData.PointNum ++ ;
+							TouchPoint ++ ;
+						}
 					}
 				}
 			}
@@ -925,6 +980,9 @@ extern int32_t ProcessInputEvent( AInputEvent* event )
 				InputSysData.PF.InputInfo[ InputNo ].VScroll		= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_VSCROLL,		0 ) ;
 				InputSysData.PF.InputInfo[ InputNo ].HScroll		= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_HSCROLL,		0 ) ;
 
+				InputSysData.PF.MouseX = InputSysData.PF.InputInfo[ InputNo ].AxisX ;
+				InputSysData.PF.MouseY = InputSysData.PF.InputInfo[ InputNo ].AxisY ;
+
 				InputSysData.MouseMoveZ  += InputSysData.PF.InputInfo[ InputNo ].VScroll ;
 				InputSysData.MouseMoveHZ += InputSysData.PF.InputInfo[ InputNo ].HScroll ;
 
@@ -957,10 +1015,9 @@ extern int32_t ProcessInputEvent( AInputEvent* event )
 				}
 			}
 
-			// マウス入力があった際はタップの入力を無効化する
+			// マウス入力があった際はタップの入力を無効化する( スタイラスペンの場合は無効化しない )
+			if( ( Source & AINPUT_SOURCE_STYLUS ) == 0 )
 			{
-				TOUCHINPUTDATA TouchInputData ;
-
 				TouchInputData.PointNum = 0 ;
 				TouchInputData.Time = ( LONGLONG )AMotionEvent_getEventTime( event ) ;
 

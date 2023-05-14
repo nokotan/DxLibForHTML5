@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		Android—pGraphFilterŒnƒvƒƒOƒ‰ƒ€
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
@@ -220,9 +220,17 @@ static int ANDR_FilterStretchBlt( GRAPHICS_ANDROID_SHADER *UseShader, GRAPHFILTE
 		if( Info->BlendPosEnable )
 		{
 			BlendRect.left   = BlendImage->Hard.Draw[ 0 ].UsePosXF + Info->BlendX             ;
-			BlendRect.right  = BlendImage->Hard.Draw[ 0 ].UsePosXF + Info->BlendX + SrcWidth  ;
 			BlendRect.top    = BlendImage->Hard.Draw[ 0 ].UsePosYF + Info->BlendY             ;
-			BlendRect.bottom = BlendImage->Hard.Draw[ 0 ].UsePosYF + Info->BlendY + SrcHeight ;
+			if( Info->BlendPos2Enable )
+			{
+				BlendRect.right  = BlendImage->Hard.Draw[ 0 ].UsePosXF + Info->BlendX2 ;
+				BlendRect.bottom = BlendImage->Hard.Draw[ 0 ].UsePosYF + Info->BlendY2 ;
+			}
+			else
+			{
+				BlendRect.right  = BlendImage->Hard.Draw[ 0 ].UsePosXF + Info->BlendX + SrcWidth  ;
+				BlendRect.bottom = BlendImage->Hard.Draw[ 0 ].UsePosYF + Info->BlendY + SrcHeight ;
+			}
 		}
 		else
 		{
@@ -1846,7 +1854,7 @@ extern int	GraphBlend_Basic_PF(           GRAPHFILTER_INFO *Info, int IsPMA )
 	UNIFORM_SET_INT1(   Graphics_Android_Shader_GetUniformIndex( UseAndrShader, "uBlendTex"   ), 1            ) ;
 	UNIFORM_SET_FLOAT4( Graphics_Android_Shader_GetUniformIndex( UseAndrShader, "uBlendRatio" ), ParamF4[ 0 ] ) ;
 
-	ANDR_FilterStretchBlt( UseAndrShader, Info ) ;
+	ANDR_FilterStretchBlt( UseAndrShader, Info, Info->BlendGraphScalingFilterIsBilinear ) ;
 
 	// ³íI—¹
 	return 0 ;
@@ -2037,7 +2045,7 @@ USE_BASE_SHADER:
 	UNIFORM_SET_INT1(   Graphics_Android_Shader_GetUniformIndex( UseAndrShader, "uBlendTex"   ), 1            ) ;
 	UNIFORM_SET_FLOAT4( Graphics_Android_Shader_GetUniformIndex( UseAndrShader, "uRGBASelect" ), ParamF4[ 0 ] ) ;
 
-	ANDR_FilterStretchBlt( UseAndrShader, Info, FALSE ) ;
+	ANDR_FilterStretchBlt( UseAndrShader, Info, Info->BlendGraphScalingFilterIsBilinear ) ;
 
 	if( SrcBlendReverse )
 	{

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用サウンドプログラム
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
@@ -665,6 +665,10 @@ static void EnqueueSoundBuffer( SOUNDBUFFER *Buffer )
 // ストリームサウンド処理用スレッド
 static void *StreamSoundThreadFunction( void *argc )
 {
+	SLmillisecond PrevMsec = 0 ;
+	SLmillisecond NowMsec = 0 ;
+	int MsecNoChangeCounter = 0 ;
+
 	while( SoundSysData.PF.ProcessSoundThreadEndRequest == FALSE )
 	{
 		// クリティカルセクションの取得
@@ -681,6 +685,9 @@ static void *StreamSoundThreadFunction( void *argc )
 
 		// ３Ｄサウンドを再生しているサウンドハンドルに対する処理を行う
 		ProcessPlay3DSoundMemAll() ;
+
+		// 再生しているサウンドハンドルに対する処理を行う
+		ProcessPlaySoundMemAll() ;
 
 		// クリティカルセクションの解放
 		CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_SOUND ].CriticalSection ) ;
@@ -703,7 +710,19 @@ static void *StreamSoundThreadFunction( void *argc )
 			SLresult Result ;
 
 			Result = ( *SoundSysData.PF.SelfMixing_PlayerPlayInterface )->GetPlayState( SoundSysData.PF.SelfMixing_PlayerPlayInterface, &State ) ;
-			if( Result != SL_RESULT_SUCCESS || State == SL_PLAYSTATE_STOPPED )
+
+			PrevMsec = NowMsec ;
+			( *SoundSysData.PF.SelfMixing_PlayerPlayInterface )->GetPosition( SoundSysData.PF.SelfMixing_PlayerPlayInterface, &NowMsec );
+			if( PrevMsec == NowMsec )
+			{
+				MsecNoChangeCounter++ ;
+			}
+			else
+			{
+				MsecNoChangeCounter = 0 ;
+			}
+
+			if( Result != SL_RESULT_SUCCESS || State == SL_PLAYSTATE_STOPPED || MsecNoChangeCounter > 10 )
 			{
 				SelfMixingPlayer_Terminate() ;
 				SelfMixingPlayer_Setup() ;

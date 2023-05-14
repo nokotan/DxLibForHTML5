@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		Android—pJavaŠÖŒWƒwƒbƒ_ƒtƒ@ƒCƒ‹
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -36,6 +36,7 @@ struct DXLIB_JAVA_ANDROID_INFO
 	jclass					class_BitmapConfig ;
 	jclass					class_Canvas ;
 	jclass					class_Typeface ;
+	jclass					class_Rect ;
 	jclass					class_Paint ;
 	jclass					class_PaintFontMetrics ;
 	jclass					class_Color ;
@@ -49,10 +50,15 @@ struct DXLIB_JAVA_ANDROID_INFO
 	jclass					class_Process ;
 	jclass					class_TextView ;
 	jclass					class_TextView_BufferType ;
+	jclass					class_View ;
+	jclass					class_DisplayCutout ;
+	jclass					class_Window ;
+	jclass					class_WindowInsets ;
 	jclass					class_EditText ;
 	jclass					class_Integer ;
 	jclass					class_String ;
 	jclass					class_Runtime ;
+	jclass					class_List ;
 	jclass					class_Locale ;
 	jclass					class_Calendar ;
 	jclass					class_URLConnection ;
@@ -108,6 +114,11 @@ struct DXLIB_JAVA_ANDROID_INFO
 	jmethodID				methodID_EditText_newEditText ;
 	jmethodID				methodID_EditText_setText ;
 	jmethodID				methodID_TextView_getText ;
+	jmethodID				methodID_View_getRootWindowInsets ;
+	jmethodID				methodID_DisplayCutout_getBoundingRects ;
+	jmethodID				methodID_Window_getCurrentFocus ;
+	jmethodID				methodID_Window_getDecorView ;
+	jmethodID				methodID_WindowInsets_getDisplayCutout ;
 	jmethodID				methodID_Environment_isExternalStorageRemovable ;
 	jmethodID				methodID_Vibrator_hasVibrator ;
 	jmethodID				methodID_Vibrator_hasAmplitudeControl ;
@@ -131,6 +142,8 @@ struct DXLIB_JAVA_ANDROID_INFO
 	jmethodID				methodID_Runtime_freeMemory ;
 	jmethodID				methodID_Runtime_totalMemory ;
 	jmethodID				methodID_Runtime_maxMemory ;
+	jmethodID				methodID_List_size ;
+	jmethodID				methodID_List_get ;
 	jmethodID				methodID_Locale_getDefault ;
 	jmethodID				methodID_Locale_getLanguage ;
 	jmethodID				methodID_Locale_getCountry ;
@@ -270,6 +283,8 @@ struct DXLIB_JAVA_ANDROID_INFO
 	jmethodID				methodID_Activity_finish ;
 	jmethodID				methodID_Activity_finishAndRemoveTask ;
 	jmethodID				methodID_Activity_releaseInstance ;
+	jmethodID				methodID_Activity_getCurrentFocus ;
+	jmethodID				methodID_Activity_getWindow ;
 	jmethodID				methodID_AudioManager_getProperty ;
 
 	jfieldID				fieldID_Build_VERSION_SDK_INT ;
@@ -295,6 +310,10 @@ struct DXLIB_JAVA_ANDROID_INFO
 	jfieldID				fieldID_Color_TRANSPARENT ;
 	jfieldID				fieldID_Color_WHITE ;
 	jfieldID				fieldID_Color_YELLOW ;
+	jfieldID				fieldID_Rect_bottom ;
+	jfieldID				fieldID_Rect_left ;
+	jfieldID				fieldID_Rect_right ;
+	jfieldID				fieldID_Rect_top ;
 
 	jfieldID				fieldID_BatteryManager_EXTRA_LEVEL ;
 	jfieldID				fieldID_BatteryManager_EXTRA_SCALE ;

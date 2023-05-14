@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用システムプログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -2171,9 +2171,17 @@ extern int NS_ProcessMessage( void )
 					}
 					int32_t handled = 0 ;
 
+					if( g_AndroidSys.UserInputEventCallbackFunction != NULL )
+					{
+						handled = g_AndroidSys.UserInputEventCallbackFunction( event, g_AndroidSys.UserInputEventCallbackFunctionData ) ;
+					}
+
 			#ifndef DX_NON_INPUT
 					// 入力イベントを処理
-					handled = ProcessInputEvent( event ) ;
+					if( handled == 0 )
+					{
+						handled = ProcessInputEvent( event ) ;
+					}
 			#endif // DX_NON_INPUT
 
 					// 入力イベントを完了状態にする
@@ -3048,6 +3056,25 @@ extern const ANativeActivity *GetNativeActivity( void )
 	return g_AndroidSys.NativeActivity ;
 }
 
+// アプリの ANativeWindow を取得する
+extern const ANativeWindow *GetNativeWindow( void )
+{
+	return ( const ANativeWindow * )g_AndroidSys.NativeWindow ;
+}
+
+// アプリの入力イベントをフックするコールバック関数を登録する 
+// CallbackFunction : 入力イベント発生時に呼ばれるコールバック関数、NULL を渡すと設定解除( コールバック関数の戻り値( 1:ＤＸライブラリの入力イベント処理も行う　0:ＤＸライブラリの入力イベントリ処理は行わない ) )
+// InputEvent : 発生した入力イベントの AInputEvent
+// Data : コールバック関数に渡すアドレス、不要な場合は NULL
+extern int SetAndroidInputEventFookFunction( int32_t ( *CallbackFunction )( AInputEvent *InputEvent, void *Data ), void *Data )
+{
+	// 値を保存
+	g_AndroidSys.UserInputEventCallbackFunction = CallbackFunction ;
+	g_AndroidSys.UserInputEventCallbackFunctionData = Data ;
+
+	return 0 ;
+}
+
 // ディスプレイに設定されている解像度を取得する
 extern int GetAndroidDisplayResolution( int *SizeX, int *SizeY )
 {
@@ -3075,6 +3102,250 @@ extern int SetKeepScreenOnFlag( int Flag )
 
 	// 終了
 	return 0 ;
+}
+
+// ディスプレイカットアウト領域の数を取得する
+extern int GetDisplayCutoutRectCount( void )
+{
+	JNIEnv *env ;
+	jobject object_View = NULL ;
+	jobject object_Window = NULL ;
+	jobject object_WindowInsets = NULL ;
+	jobject object_DisplayCutout = NULL ;
+	jobject object_List = NULL ;
+	int Result = -1 ;
+
+	if( JAVAANDR.fieldint_Build_VERSION_SDK_INT < 28 )
+	{
+		return -1 ;
+	}
+
+	pthread_mutex_lock( &g_AndroidSys.NativeActivityMutex ) ;
+	
+	if( g_AndroidSys.NativeActivity == NULL )
+	{
+		pthread_mutex_unlock( &g_AndroidSys.NativeActivityMutex ) ;
+		return -1 ;
+	}
+
+	// JavaVM とソフト実行用スレッドを関連付け
+	if( g_AndroidSys.NativeActivity->vm->AttachCurrentThreadAsDaemon( &env, NULL ) != JNI_OK )
+	{
+		pthread_mutex_unlock( &g_AndroidSys.NativeActivityMutex ) ;
+		return -1 ;
+	}
+
+	// Windowを取得する
+	object_Window = env->CallObjectMethod( g_AndroidSys.NativeActivity->clazz, JAVAANDR.methodID_Activity_getWindow ) ;
+	if( object_Window == NULL )
+	{
+		goto END ;
+	}
+
+	// Viewを取得する
+	object_View = env->CallObjectMethod( object_Window, JAVAANDR.methodID_Window_getDecorView ) ;
+	if( object_View == NULL )
+	{
+		goto END ;
+	}
+
+	// WindowInsets を取得する
+	object_WindowInsets = env->CallObjectMethod( object_View, JAVAANDR.methodID_View_getRootWindowInsets ) ;
+	if( object_WindowInsets == NULL )
+	{
+		goto END ;
+	}
+
+	// DisplayCutout を取得する
+	object_DisplayCutout = env->CallObjectMethod( object_WindowInsets, JAVAANDR.methodID_WindowInsets_getDisplayCutout ) ;
+	if( object_DisplayCutout == NULL )
+	{
+		Result = 0 ;
+		goto END ;
+	}
+
+	// 矩形リストを取得する
+	object_List = env->CallObjectMethod( object_DisplayCutout, JAVAANDR.methodID_DisplayCutout_getBoundingRects ) ;
+	if( object_List == NULL )
+	{
+		goto END ;
+	}
+
+	// 矩形の数を取得する
+	Result = env->CallIntMethod( object_List, JAVAANDR.methodID_List_size ) ;
+
+END :
+
+	if( object_Window != NULL )
+	{
+		env->DeleteLocalRef( object_Window ) ;
+		object_Window = NULL ;
+	}
+
+	if( object_View != NULL )
+	{
+		env->DeleteLocalRef( object_View ) ;
+		object_View = NULL ;
+	}
+
+	if( object_WindowInsets != NULL )
+	{
+		env->DeleteLocalRef( object_WindowInsets ) ;
+		object_WindowInsets = NULL ;
+	}
+
+	if( object_DisplayCutout != NULL )
+	{
+		env->DeleteLocalRef( object_DisplayCutout ) ;
+		object_DisplayCutout = NULL ;
+	}
+
+	if( object_List != NULL )
+	{
+		env->DeleteLocalRef( object_List ) ;
+		object_List = NULL ;
+	}
+
+	// JavaVM とこのスレッドの関連付け終了
+	g_AndroidSys.NativeActivity->vm->DetachCurrentThread() ;
+
+	pthread_mutex_unlock( &g_AndroidSys.NativeActivityMutex ) ;
+
+	return Result ;
+}
+
+// ディスプレイカットアウト領域の矩形を取得する( 引数の No はカットアウト領域の番号 )
+extern RECT GetDisplayCutoutRect( int No )
+{
+	JNIEnv *env ;
+	jobject object_View = NULL ;
+	jobject object_Window = NULL ;
+	jobject object_WindowInsets = NULL ;
+	jobject object_DisplayCutout = NULL ;
+	jobject object_List = NULL ;
+	jobject object_Rect = NULL ;
+	int RectNum ;
+	RECT Result = { -1, -1, -1, -1 } ;
+
+	if( JAVAANDR.fieldint_Build_VERSION_SDK_INT < 28 )
+	{
+		return Result ;
+	}
+
+	pthread_mutex_lock( &g_AndroidSys.NativeActivityMutex ) ;
+	
+	if( g_AndroidSys.NativeActivity == NULL )
+	{
+		pthread_mutex_unlock( &g_AndroidSys.NativeActivityMutex ) ;
+		return Result ;
+	}
+
+	// JavaVM とソフト実行用スレッドを関連付け 
+	if( g_AndroidSys.NativeActivity->vm->AttachCurrentThreadAsDaemon( &env, NULL ) != JNI_OK )
+	{
+		pthread_mutex_unlock( &g_AndroidSys.NativeActivityMutex ) ;
+		return Result ;
+	}
+
+	// Windowを取得する
+	object_Window = env->CallObjectMethod( g_AndroidSys.NativeActivity->clazz, JAVAANDR.methodID_Activity_getWindow ) ;
+	if( object_Window == NULL )
+	{
+		goto END ;
+	}
+
+	// Viewを取得する 
+	object_View = env->CallObjectMethod( object_Window, JAVAANDR.methodID_Window_getDecorView ) ;
+	if( object_View == NULL )
+	{
+		goto END ;
+	}
+
+	// WindowInsets を取得する 
+	object_WindowInsets = env->CallObjectMethod( object_View, JAVAANDR.methodID_View_getRootWindowInsets ) ;
+	if( object_WindowInsets == NULL )
+	{
+		goto END ;
+	}
+
+	// DisplayCutout を取得する 
+	object_DisplayCutout = env->CallObjectMethod( object_WindowInsets, JAVAANDR.methodID_WindowInsets_getDisplayCutout ) ;
+	if( object_DisplayCutout == NULL )
+	{
+		goto END ;
+	}
+
+	// 矩形リストを取得する 
+	object_List = env->CallObjectMethod( object_DisplayCutout, JAVAANDR.methodID_DisplayCutout_getBoundingRects ) ;
+	if( object_List == NULL )
+	{
+		goto END ;
+	}
+
+	// 矩形の数を取得する 
+	RectNum = env->CallIntMethod( object_List, JAVAANDR.methodID_List_size ) ;
+	if( No < 0 || No >= RectNum )
+	{
+		goto END ;
+	}
+
+	// 矩形を取得する 
+	object_Rect = env->CallObjectMethod( object_List, JAVAANDR.methodID_List_get, No ) ;
+	if( object_Rect == NULL )
+	{
+		goto END ;
+	}
+
+	// 矩形の要素を取得する 
+	Result.bottom = env->GetIntField( object_Rect, JAVAANDR.fieldID_Rect_bottom ) ;
+	Result.left   = env->GetIntField( object_Rect, JAVAANDR.fieldID_Rect_left ) ;
+	Result.right  = env->GetIntField( object_Rect, JAVAANDR.fieldID_Rect_right ) ;
+	Result.top    = env->GetIntField( object_Rect, JAVAANDR.fieldID_Rect_top ) ;
+
+END :
+
+	if( object_Window != NULL )
+	{
+		env->DeleteLocalRef( object_Window ) ;
+		object_Window = NULL ;
+	}
+
+	if( object_View != NULL )
+	{
+		env->DeleteLocalRef( object_View ) ;
+		object_View = NULL ;
+	}
+
+	if( object_WindowInsets != NULL )
+	{
+		env->DeleteLocalRef( object_WindowInsets ) ;
+		object_WindowInsets = NULL ;
+	}
+
+	if( object_DisplayCutout != NULL )
+	{
+		env->DeleteLocalRef( object_DisplayCutout ) ;
+		object_DisplayCutout = NULL ;
+	}
+
+	if( object_List != NULL )
+	{
+		env->DeleteLocalRef( object_List ) ;
+		object_List = NULL ;
+	}
+
+	if( object_Rect != NULL )
+	{
+		env->DeleteLocalRef( object_Rect ) ;
+		object_Rect = NULL ;
+	}
+
+	// JavaVM とこのスレッドの関連付け終了
+	g_AndroidSys.NativeActivity->vm->DetachCurrentThread() ;
+
+	pthread_mutex_unlock( &g_AndroidSys.NativeActivityMutex ) ;
+
+	return Result ;
 }
 
 // 加速度センサーのベクトル値を取得する

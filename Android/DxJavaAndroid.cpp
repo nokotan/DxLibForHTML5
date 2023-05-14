@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		Android—pJavaŠÖŒWƒvƒƒOƒ‰ƒ€
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -638,6 +638,7 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	FINDCLASS( JAVAANDR.class_BitmapConfig,         "android/graphics/Bitmap$Config"     ) ;
 	FINDCLASS( JAVAANDR.class_Canvas,               "android/graphics/Canvas"            ) ;
 	FINDCLASS( JAVAANDR.class_Typeface,             "android/graphics/Typeface"          ) ;
+	FINDCLASS( JAVAANDR.class_Rect,                 "android/graphics/Rect"              ) ;
 	FINDCLASS( JAVAANDR.class_Paint,                "android/graphics/Paint"             ) ;
 	FINDCLASS( JAVAANDR.class_PaintFontMetrics,     "android/graphics/Paint$FontMetrics" ) ;
 	FINDCLASS( JAVAANDR.class_Color,                "android/graphics/Color"             ) ;
@@ -656,6 +657,12 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 		FINDCLASS( JAVAANDR.class_VibrationEffect,  "android/os/VibrationEffect"         ) ;
 	}
 	FINDCLASS( JAVAANDR.class_Process,              "android/os/Process"                 ) ;
+	FINDCLASS( JAVAANDR.class_View,                 "android/view/View"                  ) ;
+	if( API_LV >= 28 )
+	{
+		FINDCLASS( JAVAANDR.class_DisplayCutout,    "android/view/DisplayCutout"         ) ;
+	}
+	FINDCLASS( JAVAANDR.class_Window,               "android/view/Window"                ) ;
 	FINDCLASS( JAVAANDR.class_TextView,             "android/widget/TextView"            ) ;
 	FINDCLASS( JAVAANDR.class_TextView_BufferType,  "android/widget/TextView$BufferType" ) ;
 	FINDCLASS( JAVAANDR.class_EditText,             "android/widget/EditText"            ) ;
@@ -665,6 +672,7 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	FINDCLASS( JAVAANDR.class_Integer,              "java/lang/Integer"                  ) ;
 	FINDCLASS( JAVAANDR.class_String,               "java/lang/String"                   ) ;
 	FINDCLASS( JAVAANDR.class_Runtime,              "java/lang/Runtime"                  ) ;
+	FINDCLASS( JAVAANDR.class_List,                 "java/util/List"                     ) ;
 	FINDCLASS( JAVAANDR.class_Locale,               "java/util/Locale"                   ) ;
 	FINDCLASS( JAVAANDR.class_Calendar,             "java/util/Calendar"                 ) ;
 	FINDCLASS( JAVAANDR.class_URLConnection,        "java/net/URLConnection"             ) ;
@@ -696,6 +704,10 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	FINDCLASS( JAVAANDR.class_WifiManager,          "android/net/wifi/WifiManager"       ) ;
 	FINDCLASS( JAVAANDR.class_Activity,             "android/app/Activity"               ) ;
 	FINDCLASS( JAVAANDR.class_AudioManager,         "android/media/AudioManager"         ) ;
+	if( API_LV >= 20 )
+	{
+		FINDCLASS( JAVAANDR.class_WindowInsets,     "android/view/WindowInsets"          ) ;
+	}
 
 
 	GETSTATICMETHOD( JAVAANDR.methodID_Bitmap_createBitmap                        , JAVAANDR.class_Bitmap,               "createBitmap",          "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;" ) ;
@@ -716,6 +728,20 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	GETMETHOD(       JAVAANDR.methodID_EditText_newEditText                       , JAVAANDR.class_EditText,             "<init>",                "(Landroid/content/Context;)V" ) ;
 	GETMETHOD(       JAVAANDR.methodID_EditText_setText                           , JAVAANDR.class_EditText,             "setText",               "(Ljava/lang/CharSequence;Landroid/widget/TextView$BufferType;)V" ) ;
 	GETMETHOD(       JAVAANDR.methodID_TextView_getText                           , JAVAANDR.class_TextView,             "getText",               "()Ljava/lang/CharSequence;" ) ;
+	if( API_LV >= 23 )
+	{
+		GETMETHOD(   JAVAANDR.methodID_View_getRootWindowInsets                   , JAVAANDR.class_View,                 "getRootWindowInsets",   "()Landroid/view/WindowInsets;" ) ;
+	}
+	if( API_LV >= 28 )
+	{
+		GETMETHOD(   JAVAANDR.methodID_DisplayCutout_getBoundingRects             , JAVAANDR.class_DisplayCutout,        "getBoundingRects",      "()Ljava/util/List;" ) ;
+	}
+	GETMETHOD(       JAVAANDR.methodID_Window_getCurrentFocus                     , JAVAANDR.class_Window,               "getCurrentFocus",       "()Landroid/view/View;" ) ;
+	GETMETHOD(       JAVAANDR.methodID_Window_getDecorView                        , JAVAANDR.class_Window,               "getDecorView",          "()Landroid/view/View;" ) ;
+	if( API_LV >= 28 )
+	{
+		GETMETHOD(   JAVAANDR.methodID_WindowInsets_getDisplayCutout              , JAVAANDR.class_WindowInsets,         "getDisplayCutout",      "()Landroid/view/DisplayCutout;" ) ;
+	}
 	if( API_LV >= 21 )
 	{
 		GETSTATICMETHOD( JAVAANDR.methodID_Environment_isExternalStorageRemovable , JAVAANDR.class_Environment,          "isExternalStorageRemovable",   "(Ljava/io/File;)Z" ) ;
@@ -748,6 +774,8 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	GETMETHOD(       JAVAANDR.methodID_Runtime_freeMemory                         , JAVAANDR.class_Runtime,              "freeMemory",            "()J" ) ;
 	GETMETHOD(       JAVAANDR.methodID_Runtime_totalMemory                        , JAVAANDR.class_Runtime,              "totalMemory",           "()J" ) ;
 	GETMETHOD(       JAVAANDR.methodID_Runtime_maxMemory                          , JAVAANDR.class_Runtime,              "maxMemory",             "()J" ) ;
+	GETMETHOD(       JAVAANDR.methodID_List_size                                  , JAVAANDR.class_List,                 "size",                  "()I" ) ;
+	GETMETHOD(       JAVAANDR.methodID_List_get                                   , JAVAANDR.class_List,                 "get",                   "(I)Ljava/lang/Object;" ) ;
 	GETSTATICMETHOD( JAVAANDR.methodID_Locale_getDefault                          , JAVAANDR.class_Locale,               "getDefault",            "()Ljava/util/Locale;" ) ;
 	GETMETHOD(       JAVAANDR.methodID_Locale_getLanguage                         , JAVAANDR.class_Locale,               "getLanguage",           "()Ljava/lang/String;" ) ;
 	GETMETHOD(       JAVAANDR.methodID_Locale_getCountry                          , JAVAANDR.class_Locale,               "getCountry",            "()Ljava/lang/String;" ) ;
@@ -863,6 +891,8 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 		GETMETHOD(   JAVAANDR.methodID_Activity_finishAndRemoveTask               , JAVAANDR.class_Activity,             "finishAndRemoveTask",   "()V" ) ;
 		GETMETHOD(   JAVAANDR.methodID_Activity_releaseInstance                   , JAVAANDR.class_Activity,             "releaseInstance",       "()Z" ) ;
 	}
+	GETMETHOD(       JAVAANDR.methodID_Activity_getCurrentFocus                   , JAVAANDR.class_Activity,             "getCurrentFocus",       "()Landroid/view/View;" ) ;
+	GETMETHOD(       JAVAANDR.methodID_Activity_getWindow                         , JAVAANDR.class_Activity,             "getWindow",             "()Landroid/view/Window;" ) ;
 	if( API_LV >= 17 )
 	{
 		GETMETHOD(   JAVAANDR.methodID_AudioManager_getProperty                   , JAVAANDR.class_AudioManager,         "getProperty",           "(Ljava/lang/String;)Ljava/lang/String;" ) ;
@@ -891,6 +921,10 @@ extern int SetupJavaAndroidInfo( JNIEnv *env )
 	GETSTATICFIELD( JAVAANDR.fieldID_Color_TRANSPARENT                          , JAVAANDR.class_Color,                   "TRANSPARENT",                         "I" ) ;
 	GETSTATICFIELD( JAVAANDR.fieldID_Color_WHITE                                , JAVAANDR.class_Color,                   "WHITE",                               "I" ) ;
 	GETSTATICFIELD( JAVAANDR.fieldID_Color_YELLOW                               , JAVAANDR.class_Color,                   "YELLOW",                              "I" ) ;
+	GETFIELD(       JAVAANDR.fieldID_Rect_bottom                                , JAVAANDR.class_Rect,                    "bottom",                              "I" ) ;
+	GETFIELD(       JAVAANDR.fieldID_Rect_left                                  , JAVAANDR.class_Rect,                    "left",                                "I" ) ;
+	GETFIELD(       JAVAANDR.fieldID_Rect_right                                 , JAVAANDR.class_Rect,                    "right",                               "I" ) ;
+	GETFIELD(       JAVAANDR.fieldID_Rect_top                                   , JAVAANDR.class_Rect,                    "top",                                 "I" ) ;
 
 	GETSTATICFIELD( JAVAANDR.fieldID_BatteryManager_EXTRA_LEVEL                 , JAVAANDR.class_BatteryManager,          "EXTRA_LEVEL",                         "Ljava/lang/String;" ) ;
 	GETSTATICFIELD( JAVAANDR.fieldID_BatteryManager_EXTRA_SCALE                 , JAVAANDR.class_BatteryManager,          "EXTRA_SCALE",                         "Ljava/lang/String;" ) ;

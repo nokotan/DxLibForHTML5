@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画処理プログラム( Android )ヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -848,6 +848,13 @@ struct GRAPHICS_HARDDATA_ANDROID_DEVICE_STATE
 	GLenum							DepthFunc ;										// 深度値の比較モード( GL_LEQUAL など )
 
 	int								BlendMode ;										// 現在デバイスに設定されているブレンドモード、プリセットのブレンドモード以外の場合は -1 が入る
+	int								BlendEnable ;									// ブレンド処理を行うかどうか( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendRGBSrc ;									// RGBのソースブレンド( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendRGBDest ;									// RGBのデストブレンド( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendRGBOp ;									// RGBのブレンド処理( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendASrc ;										// Aのソースブレンド( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendADest ;									// Aのデストブレンド( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendAOp ;										// Aのブレンド処理( DX_BLENDMODE_CUSTOM 用 )
 	int								NotWriteAlphaChannelFlag ;						// アルファチャンネルの内容を書き換えないかどうかのフラグ
 
 	GRAPHICS_ANDROID_TEXTURE		*SetTexture[ USE_TEXTURESTAGE_NUM ] ;			// 描画時に使用するテクスチャ
@@ -927,6 +934,13 @@ struct GRAPHICS_HARDDATA_ANDROID_DRAWSETTING
 	int								AlphaTestMode ;							// アルファテストモード
 	int								AlphaTestParam ;						// アルファテストパラメータ
 	int								BlendMode ;								// ブレンドモード
+	int								BlendEnable ;							// ブレンド処理を行うかどうか( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendRGBSrc ;							// RGBのソースブレンド( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendRGBDest ;							// RGBのデストブレンド( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendRGBOp ;							// RGBのブレンド処理( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendASrc ;								// Aのソースブレンド( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendADest ;							// Aのデストブレンド( DX_BLENDMODE_CUSTOM 用 )
+	int								BlendAOp ;								// Aのブレンド処理( DX_BLENDMODE_CUSTOM 用 )
 	int								ChangeBlendParamFlag ;					// ブレンド設定に関わる部分の変更があったか、フラグ
 	int								ChangeTextureFlag ;						// テクスチャが変更されたか、フラグ
 	int								NotWriteAlphaChannelFlag ;				// アルファチャンネルの内容を書き換えないかどうかのフラグ
@@ -1563,7 +1577,7 @@ extern	int		Graphics_Android_DeviceState_SetMulAlphaColor( int UseMulAlphaColor 
 extern	int		Graphics_Android_DeviceState_SetBackgroundColor( int Red, int Green, int Blue, int Alpha ) ;		// 背景色を設定する
 extern	int		Graphics_Android_DeviceState_SetFactorColor( const DX_ANDR_SHADER_FLOAT4 *FactorColor ) ;			// Factor Color を設定する
 extern	int		Graphics_Android_DeviceState_SetToonOutLineSize( float Size ) ;										// トゥーンレンダリングの輪郭線の太さを設定する
-extern	int		Graphics_Android_DeviceState_SetBlendMode( int BlendMode, int NotWriteAlphaChannelFlag ) ;			// 描画ブレンドモードのセット
+extern	int		Graphics_Android_DeviceState_SetBlendMode( int BlendMode, int BlendEnable, int BlendRGBSrc, int BlendRGBDest, int BlendRGBOp, int BlendASrc, int BlendADest, int BlendAOp, int NotWriteAlphaChannelFlag ) ;			// 描画ブレンドモードのセット
 extern	int		Graphics_Android_DeviceState_SetRenderTarget( GLuint TargetFrameBuffer, GLuint TargetFrameBufferWidth, GLuint TargetFrameBufferHeight ) ;	// 描画対象の変更
 extern	int		Graphics_Android_DeviceState_SetShader( GRAPHICS_ANDROID_SHADER *Shader, int NormalVertexShader = FALSE ) ;			// 使用するシェーダーを変更する
 extern	int		Graphics_Android_DeviceState_ResetShader( int SetNormalShaderCancel = FALSE ) ;						// シェーダーの使用を止める
@@ -1580,7 +1594,7 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void ) ;												//
 
 
 // 描画設定関係関数
-extern	int		Graphics_Android_DrawSetting_SetDrawBlendMode( int BlendMode, int AlphaTestValidFlag, int AlphaChannelValidFlag ) ;	// 描画ブレンドモードの設定
+extern	int		Graphics_Android_DrawSetting_SetDrawBlendMode( int BlendMode, int BlendEnable, int BlendRGBSrc, int BlendRGBDest, int BlendRGBOp, int BlendASrc, int BlendADest, int BlendAOp, int AlphaTestValidFlag, int AlphaChannelValidFlag ) ;	// 描画ブレンドモードの設定
 extern	int		Graphics_Android_DrawSetting_SetIgnoreDrawGraphColor( int EnableFlag ) ;							// 描画時の画像のＲＧＢを無視するかどうかを設定する
 extern	int		Graphics_Android_DrawSetting_SetIgnoreDrawGraphAlpha( int EnableFlag ) ;							// 描画時の画像のＡを無視するかどうかを設定する
 extern	int		Graphics_Android_DrawSetting_SetWriteAlphaChannelFlag( int NotFlag ) ;								// 描画先のアルファチャンネルの内容を書き換えるかを設定する

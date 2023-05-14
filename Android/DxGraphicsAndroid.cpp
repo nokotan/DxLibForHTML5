@@ -1,19 +1,19 @@
 //-----------------------------------------------------------------------------
 // 
-// 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		•`‰æˆ—ƒvƒƒOƒ‰ƒ€( Android )
+// 		ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒª		æç”»å‡¦ç†ãƒ—ãƒ­ã‚°ãƒ©ãƒ ( Android )
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
-// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠì¬—p’è‹`
+// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªä½œæˆæ™‚ç”¨å®šç¾©
 #define DX_MAKE
 
 #include "../DxCompileConfig.h"
 
 #ifndef DX_NON_GRAPHICS
 
-// ƒCƒ“ƒNƒ‹[ƒh ---------------------------------------------------------------
+// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ ---------------------------------------------------------------
 #include "DxGraphicsAndroid.h"
 #include "DxGraphicsFilterAndroid.h"
 #include "DxLive2DCubism4Android.h"
@@ -45,13 +45,13 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-// ƒ}ƒNƒ’è‹` -----------------------------------------------------------------
+// ãƒã‚¯ãƒ­å®šç¾© -----------------------------------------------------------------
 
 #define ANDR_CHECKVALID_HARDWARE									\
 		( ( g_AndroidSys.NativeWindow  != NULL &&							\
 		    GANDR.Device.Screen.Context != EGL_NO_CONTEXT ) ? TRUE : FALSE )
 
-// Graphics_Android_DrawPreparation ‚ğŒÄ‚Ô’èŒ^•¶
+// Graphics_Android_DrawPreparation ã‚’å‘¼ã¶å®šå‹æ–‡
 #define DX_ANDROID_DRAWPREP_NOTEX( FLAG )													\
 	if( GANDR.Device.DrawInfo.BeginSceneFlag == FALSE ) Graphics_Android_RenderBegin() ;	\
 	if( GANDR.Device.DrawSetting.RenderTexture != NULL )									\
@@ -309,60 +309,88 @@ namespace DxLib
 	}
 
 
-// RGB’l‚ğ‹P“xÅ‘å‚ÌRGB’l‚É•ÏŠ·‚·‚é‚½‚ß‚Ìƒ{ƒŠƒ…[ƒ€ƒeƒNƒXƒ`ƒƒ‚ÌƒTƒCƒY
+// RGBå€¤ã‚’è¼åº¦æœ€å¤§ã®RGBå€¤ã«å¤‰æ›ã™ã‚‹ãŸã‚ã®ãƒœãƒªãƒ¥ãƒ¼ãƒ ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã‚µã‚¤ã‚º
 #define RGBTOVMAXRGB_TEX_SIZE		(128)
 
-// \‘¢‘ÌéŒ¾ -----------------------------------------------------------------
+// æ§‹é€ ä½“å®£è¨€ -----------------------------------------------------------------
 
-// •W€•`‰æ—p‚Ì•¡G‚Èˆ—‚ğs‚í‚È‚¢’¸“_ƒVƒF[ƒ_[‚Ìî•ñ
+// æ¨™æº–æç”»ç”¨ã®è¤‡é›‘ãªå‡¦ç†ã‚’è¡Œã‚ãªã„é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®æƒ…å ±
 typedef struct tagGRAPHICS_ANDROID_BASE_SIMPLE_VERTEXSHADER_INFO
 {
-	const char *					ShaderFileName ;			// g—p‚·‚é’¸“_ƒVƒF[ƒ_[ƒtƒ@ƒCƒ‹–¼
-	VERTEXBUFFER_INPUT_INFO_ANDR	InputInfo ;					// “ü—Í’¸“_ƒf[ƒ^î•ñ
+	const char *					ShaderFileName ;			// ä½¿ç”¨ã™ã‚‹é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«å
+	VERTEXBUFFER_INPUT_INFO_ANDR	InputInfo ;					// å…¥åŠ›é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿æƒ…å ±
 } GRAPHICS_ANDROID_BASE_SIMPLE_VERTEXSHADER_INFO ;
 
-// ƒf[ƒ^’è‹` -----------------------------------------------------------------
+// ãƒ‡ãƒ¼ã‚¿å®šç¾© -----------------------------------------------------------------
 
 DX_ANDROID_RENDER_BLEND_INFO g_DefaultBlendDescArray[ DX_BLENDMODE_NUM ] =
 {
-	{ ANDROID_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_NOBLEND			ƒm[ƒuƒŒƒ“ƒh
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA			ƒ¿ƒuƒŒƒ“ƒh
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD				‰ÁZƒuƒŒƒ“ƒh
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB				Œ¸ZƒuƒŒƒ“ƒh
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				æZƒuƒŒƒ“ƒh
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB2			“à•”ˆ——pŒ¸ZƒuƒŒƒ“ƒh‚P
-	{ ANDROID_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_XOR				XORƒuƒŒƒ“ƒh(”ñ‘Î‰)
-	{ ANDROID_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// Œ‡”Ô
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,				GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_DESTCOLOR		ƒJƒ‰[‚ÍXV‚³‚ê‚È‚¢
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,			GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR	•`‰ææ‚ÌF‚Ì”½“]’l‚ğŠ|‚¯‚é
-	{ ANDROID_RENDER_TYPE_INVERSE,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_INVSRC			•`‰æŒ³‚ÌF‚ğ”½“]‚·‚é
-	{ ANDROID_RENDER_TYPE_MUL,			TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_MULA			ƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹l—¶•t‚«æZƒuƒŒƒ“ƒh
-	{ ANDROID_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA_X4		ƒ¿ƒuƒŒƒ“ƒh‚Ì•`‰æ‘¤‚Ì‹P“x‚ğÅ‘å‚S”{‚É‚Å‚«‚éƒ‚[ƒh
-	{ ANDROID_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD_X4			‰ÁZƒuƒŒƒ“ƒh‚Ì•`‰æ‘¤‚Ì‹P“x‚ğÅ‘å‚S”{‚É‚Å‚«‚éƒ‚[ƒh
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SRCCOLOR		•`‰æŒ³‚ÌƒJƒ‰[‚Å‚»‚Ì‚Ü‚Ü•`‰æ‚³‚ê‚é
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_HALF_ADD		”¼‰ÁZƒuƒŒƒ“ƒh
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_SUB1			o—ÍƒuƒŒƒ“ƒh‚ªg—p‰Â”\‚Èê‡‚ÌŒ¸ZƒuƒŒƒ“ƒh
+	{ ANDROID_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_NOBLEND			ãƒãƒ¼ãƒ–ãƒ¬ãƒ³ãƒ‰
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA			Î±ãƒ–ãƒ¬ãƒ³ãƒ‰
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD				åŠ ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB				æ¸›ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				ä¹—ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB2			å†…éƒ¨å‡¦ç†ç”¨æ¸›ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰ï¼‘
+	{ ANDROID_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_XOR				XORãƒ–ãƒ¬ãƒ³ãƒ‰(éå¯¾å¿œ)
+	{ ANDROID_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// æ¬ ç•ª
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,				GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_DESTCOLOR		ã‚«ãƒ©ãƒ¼ã¯æ›´æ–°ã•ã‚Œãªã„
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,			GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR	æç”»å…ˆã®è‰²ã®åè»¢å€¤ã‚’æ›ã‘ã‚‹
+	{ ANDROID_RENDER_TYPE_INVERSE,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_INVSRC			æç”»å…ƒã®è‰²ã‚’åè»¢ã™ã‚‹
+	{ ANDROID_RENDER_TYPE_MUL,			TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_MULA			ã‚¢ãƒ«ãƒ•ã‚¡ãƒãƒ£ãƒ³ãƒãƒ«è€ƒæ…®ä»˜ãä¹—ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰
+	{ ANDROID_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA_X4		Î±ãƒ–ãƒ¬ãƒ³ãƒ‰ã®æç”»å´ã®è¼åº¦ã‚’æœ€å¤§ï¼”å€ã«ã§ãã‚‹ãƒ¢ãƒ¼ãƒ‰
+	{ ANDROID_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD_X4			åŠ ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰ã®æç”»å´ã®è¼åº¦ã‚’æœ€å¤§ï¼”å€ã«ã§ãã‚‹ãƒ¢ãƒ¼ãƒ‰
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SRCCOLOR		æç”»å…ƒã®ã‚«ãƒ©ãƒ¼ã§ãã®ã¾ã¾æç”»ã•ã‚Œã‚‹
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_HALF_ADD		åŠåŠ ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_SUB1			å‡ºåŠ›ãƒ–ãƒ¬ãƒ³ãƒ‰ãŒä½¿ç”¨å¯èƒ½ãªå ´åˆã®æ¸›ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰
 
-	{ ANDROID_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA		æZÏ‚İƒ¿ƒuƒŒƒ“ƒhƒ‚[ƒh‚Ìƒ¿ƒuƒŒƒ“ƒh
-	{ ANDROID_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD			æZÏ‚İƒ¿ƒuƒŒƒ“ƒhƒ‚[ƒh‚Ì‰ÁZƒuƒŒƒ“ƒh
-	{ ANDROID_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_ONE,					GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_PMA_SUB			æZÏ‚İƒ¿ƒuƒŒƒ“ƒhƒ‚[ƒh‚ÌŒ¸ZƒuƒŒƒ“ƒh
-	{ ANDROID_RENDER_TYPE_PMA_INVERSE,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_INVSRC		æZÏ‚İƒ¿ƒuƒŒƒ“ƒhƒ‚[ƒh‚Ì•`‰æŒ³‚ÌF‚ğ”½“]‚·‚é
-	{ ANDROID_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA_X4	æZÏ‚İƒ¿ƒuƒŒƒ“ƒhƒ‚[ƒh‚Ìƒ¿ƒuƒŒƒ“ƒh‚Ì•`‰æ‘¤‚Ì‹P“x‚ğÅ‘å‚S”{‚É‚Å‚«‚éƒ‚[ƒh
-	{ ANDROID_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD_X4		æZÏ‚İƒ¿ƒuƒŒƒ“ƒhƒ‚[ƒh‚Ì‰ÁZƒuƒŒƒ“ƒh‚Ì•`‰æ‘¤‚Ì‹P“x‚ğÅ‘å‚S”{‚É‚Å‚«‚éƒ‚[ƒh
+	{ ANDROID_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA		ä¹—ç®—æ¸ˆã¿Î±ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®Î±ãƒ–ãƒ¬ãƒ³ãƒ‰
+	{ ANDROID_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD			ä¹—ç®—æ¸ˆã¿Î±ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®åŠ ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰
+	{ ANDROID_RENDER_TYPE_PMA_NORMAL,	TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	GL_ONE,					GL_ONE,					GL_FUNC_REVERSE_SUBTRACT,	 TRUE },	// DX_BLENDMODE_PMA_SUB			ä¹—ç®—æ¸ˆã¿Î±ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®æ¸›ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰
+	{ ANDROID_RENDER_TYPE_PMA_INVERSE,	TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_INVSRC		ä¹—ç®—æ¸ˆã¿Î±ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®æç”»å…ƒã®è‰²ã‚’åè»¢ã™ã‚‹
+	{ ANDROID_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ALPHA_X4	ä¹—ç®—æ¸ˆã¿Î±ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®Î±ãƒ–ãƒ¬ãƒ³ãƒ‰ã®æç”»å´ã®è¼åº¦ã‚’æœ€å¤§ï¼”å€ã«ã§ãã‚‹ãƒ¢ãƒ¼ãƒ‰
+	{ ANDROID_RENDER_TYPE_PMA_X4,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_PMA_ADD_X4		ä¹—ç®—æ¸ˆã¿Î±ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®åŠ ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰ã®æç”»å´ã®è¼åº¦ã‚’æœ€å¤§ï¼”å€ã«ã§ãã‚‹ãƒ¢ãƒ¼ãƒ‰
 
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ZERO,				GL_FUNC_ADD,				GL_ZERO,				GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_ZERO		Live2D ‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh Zero —p
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_NORMAL	Live2D ‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh Normal —p
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,				GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_ADD		Live2D ‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh Add —p
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_DST_COLOR,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ZERO,				GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_MULT		Live2D ‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh Mult —p
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ZERO,				GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_MASK		Live2D ‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh Mask —p
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ZERO,				GL_FUNC_ADD,				GL_ZERO,				GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_ZERO		Live2D ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ Zero ç”¨
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_NORMAL	Live2D ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ Normal ç”¨
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,				GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_ADD		Live2D ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ Add ç”¨
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_DST_COLOR,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ZERO,				GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_MULT		Live2D ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ Mult ç”¨
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ZERO,				GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_LIVE2D_MASK		Live2D ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ Mask ç”¨
 
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_NORMAL	Spine ‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh Normal —p
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_ADDITIVE	Spine ‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh Additive 
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_DST_COLOR,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE_MINUS_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_MULTIPLY	Spine ‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh Multiply 
-	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ONE_MINUS_SRC_COLOR,	GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_SCREEN	Spine ‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh Screen —p
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE,					GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_NORMAL	Spine ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ Normal ç”¨
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_ADDITIVE	Spine ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ Additive 
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_DST_COLOR,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE_MINUS_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_MULTIPLY	Spine ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ Multiply 
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ONE_MINUS_SRC_COLOR,	GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_SCREEN	Spine ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ Screen ç”¨
+
+	{ ANDROID_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_CUSTOM			ã‚«ã‚¹ã‚¿ãƒ ãƒ–ãƒ¬ãƒ³ãƒ‰
 } ;
 
-// ’¸“_ƒoƒbƒtƒ@‚ÉŠi”[‚Å‚«‚é’¸“_‚ÌÅ‘å”‚Ìƒe[ƒuƒ‹
+// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ãƒ–ãƒ¬ãƒ³ãƒ‰è¦ç´ ã‚¿ã‚¤ãƒ—ã‚’ OpenGL ES ã®è¦ç´ ã‚¿ã‚¤ãƒ—ã«å¤‰æ›ã™ã‚‹ãŸã‚ã®ãƒ†ãƒ¼ãƒ–ãƒ«
+static const GLenum DxBlendTypeToGLTable[ DX_BLEND_NUM ] =
+{
+	GL_ZERO,					// DX_BLEND_ZERO
+	GL_ONE,						// DX_BLEND_ONE
+	GL_SRC_COLOR,				// DX_BLEND_SRC_COLOR
+	GL_ONE_MINUS_SRC_COLOR,		// DX_BLEND_INV_SRC_COLOR
+	GL_SRC_ALPHA,				// DX_BLEND_SRC_ALPHA
+	GL_ONE_MINUS_SRC_ALPHA,		// DX_BLEND_INV_SRC_ALPHA
+	GL_DST_COLOR,				// DX_BLEND_DEST_COLOR
+	GL_ONE_MINUS_DST_COLOR,		// DX_BLEND_INV_DEST_COLOR
+	GL_DST_ALPHA,				// DX_BLEND_DEST_ALPHA
+	GL_ONE_MINUS_DST_ALPHA,		// DX_BLEND_INV_DEST_ALPHA
+	GL_SRC_ALPHA_SATURATE,		// DX_BLEND_SRC_ALPHA_SAT
+} ;
+
+// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ãƒ–ãƒ¬ãƒ³ãƒ‰å‡¦ç†ã‚¿ã‚¤ãƒ—ã‚’ OpenGL ES ã®å‡¦ç†ã‚¿ã‚¤ãƒ—ã«å¤‰æ›ã™ã‚‹ãŸã‚ã®ãƒ†ãƒ¼ãƒ–ãƒ«
+static const GLenum DxBlendOpToGLTable[ DX_BLENDOP_NUM ] =
+{
+	GL_FUNC_ADD,				// DX_BLENDOP_ADD
+	GL_FUNC_SUBTRACT,			// DX_BLENDOP_SUBTRACT
+	GL_FUNC_REVERSE_SUBTRACT,	// DX_BLENDOP_REV_SUBTRACT
+	GL_FUNC_ADD,				// DX_BLENDOP_MIX
+	GL_FUNC_ADD,				// DX_BLENDOP_MAX
+} ;
+
+// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«æ ¼ç´ã§ãã‚‹é ‚ç‚¹ã®æœ€å¤§æ•°ã®ãƒ†ãƒ¼ãƒ–ãƒ«
 static const int ANDROID_VertexBuffer_MaxVertexNum[ ANDROID_VERTEX_INPUTLAYOUT_NUM ] =
 {
 	DX_GLES2_VERTBUFFERSIZE / sizeof( VERTEX_NOTEX_2D    ),
@@ -374,7 +402,7 @@ static const int ANDROID_VertexBuffer_MaxVertexNum[ ANDROID_VERTEX_INPUTLAYOUT_N
 	DX_GLES2_VERTBUFFERSIZE / sizeof( VERTEX3DSHADER     ),
 } ;
 
-// ‚R‚c’¸“_‚©‚Ç‚¤‚©‚Æ’¸“_ƒ^ƒCƒv‚Ì‘g‚İ‡‚í‚¹‚É‘Î‰‚·‚é’¸“_ƒf[ƒ^ƒ^ƒCƒv[ 0:‚Q‚c’¸“_  1:‚R‚c’¸“_ ][ ’¸“_ƒ^ƒCƒv ]
+// ï¼“ï¼¤é ‚ç‚¹ã‹ã©ã†ã‹ã¨é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã®çµ„ã¿åˆã‚ã›ã«å¯¾å¿œã™ã‚‹é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚¿ã‚¤ãƒ—[ 0:ï¼’ï¼¤é ‚ç‚¹  1:ï¼“ï¼¤é ‚ç‚¹ ][ é ‚ç‚¹ã‚¿ã‚¤ãƒ— ]
 static const int g_VertexTypeToInputLayout[ 2 ][ VERTEXTYPE_NUM ] =
 {
 	{
@@ -390,7 +418,7 @@ static const int g_VertexTypeToInputLayout[ 2 ][ VERTEXTYPE_NUM ] =
 	},
 } ;
 
-// ’PˆÊs—ñ
+// å˜ä½è¡Œåˆ—
 static MATRIX ANDROID_GlobalIdentMatrix =
 {
 	{
@@ -401,7 +429,7 @@ static MATRIX ANDROID_GlobalIdentMatrix =
 	}
 } ;
 
-// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒvƒŠƒ~ƒeƒBƒuƒ^ƒCƒv‚ğ SceGxmPrimitiveType ‚É•ÏŠ·‚·‚é‚½‚ß‚Ìƒe[ƒuƒ‹
+// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚¿ã‚¤ãƒ—ã‚’ SceGxmPrimitiveType ã«å¤‰æ›ã™ã‚‹ãŸã‚ã®ãƒ†ãƒ¼ãƒ–ãƒ«
 GLenum g_DXPrimitiveTypeToGLES2PrimitiveType[] =
 {
 	0,
@@ -413,7 +441,7 @@ GLenum g_DXPrimitiveTypeToGLES2PrimitiveType[] =
 	GL_TRIANGLE_FAN,		// DX_PRIMTYPE_TRIANGLEFAN		(6)
 } ;
 
-// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Ì”äŠrƒ‚[ƒh‚ğ SceGxmDepthFunc ‚É•ÏŠ·‚·‚é‚½‚ß‚Ìƒe[ƒuƒ‹
+// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®æ¯”è¼ƒãƒ¢ãƒ¼ãƒ‰ã‚’ SceGxmDepthFunc ã«å¤‰æ›ã™ã‚‹ãŸã‚ã®ãƒ†ãƒ¼ãƒ–ãƒ«
 GLenum g_DXCmpModeToGLES2CompareFunc[ 9 ] =
 {
 	0,
@@ -431,17 +459,17 @@ GLenum g_DXCmpModeToGLES2CompareFunc[ 9 ] =
 	((GLMode) == GL_REPEAT ? DX_TEXADDRESS_WRAP : ( (GLMode) == GL_MIRRORED_REPEAT ? DX_TEXADDRESS_MIRROR : DX_TEXADDRESS_CLAMP ))
 
 
-// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒeƒNƒXƒ`ƒƒƒAƒhƒŒƒXƒ‚[ƒh‚ğ ANDRWrapMode ‚É•ÏŠ·‚·‚é‚½‚ß‚Ìƒe[ƒuƒ‹
+// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¢ãƒ‰ãƒ¬ã‚¹ãƒ¢ãƒ¼ãƒ‰ã‚’ ANDRWrapMode ã«å¤‰æ›ã™ã‚‹ãŸã‚ã®ãƒ†ãƒ¼ãƒ–ãƒ«
 GLenum g_DXTexAddrModeToGLES2WrapMode[ DX_TEXADDRESS_NUM ] =
 {
-	0,						// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Å‚Í–¢g—p
+	0,						// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã§ã¯æœªä½¿ç”¨
 	GL_REPEAT,				// DX_TEXADDRESS_WRAP	(1)
 	GL_MIRRORED_REPEAT,		// DX_TEXADDRESS_MIRROR	(2)
 	GL_CLAMP_TO_EDGE,		// DX_TEXADDRESS_CLAMP	(3)
 	GL_CLAMP_TO_EDGE,		// DX_TEXADDRESS_BORDER	(4)
 } ;
 
-// ’¸“_ƒf[ƒ^—v‘fŠî–{î•ñ
+// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿è¦ç´ åŸºæœ¬æƒ…å ±
 VERTEXBUFFER_INPUT_ELEMENT_INFO_BASE_ANDR g_VertexElementInfoBase[ ANDROID_VERTEX_ATTR_NUM ] =
 {
 	{ "aPosF2",			2, GL_FLOAT,			GL_FALSE },	// ANDROID_VERTEX_ATTR_POS_F2
@@ -468,7 +496,7 @@ VERTEXBUFFER_INPUT_ELEMENT_INFO_BASE_ANDR g_VertexElementInfoBase[ ANDROID_VERTE
 	{ "aBlendWeight1",	4, GL_FLOAT,			GL_FALSE },	// ANDROID_VERTEX_ATTR_BLENDWEIGHT1
 } ;
 
-// StretchRect—p’¸“_ƒf[ƒ^‚Ìî•ñ
+// StretchRectç”¨é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®æƒ…å ±
 VERTEXBUFFER_INPUT_INFO_ANDR	g_StretchRectVertexInputInfo =
 {
 	sizeof( float ) * 4,
@@ -505,7 +533,7 @@ VERTEXBUFFER_INPUT_INFO_ANDR	g_StretchRectTex8VertexInputInfo =
 	},
 } ;
 
-// ƒ}ƒXƒN—p’¸“_ƒf[ƒ^‚Ìî•ñ
+// ãƒã‚¹ã‚¯ç”¨é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®æƒ…å ±
 VERTEXBUFFER_INPUT_INFO_ANDR	g_MaskVertexInputInfo =
 {
 	sizeof( float ) * 6,
@@ -517,7 +545,7 @@ VERTEXBUFFER_INPUT_INFO_ANDR	g_MaskVertexInputInfo =
 	},
 } ;
 
-// ƒNƒŠƒAˆ——p’¸“_ƒf[ƒ^‚Ìî•ñ
+// ã‚¯ãƒªã‚¢å‡¦ç†ç”¨é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®æƒ…å ±
 VERTEXBUFFER_INPUT_INFO_ANDR	g_ClearRTVertexInputInfo =
 {
 	sizeof( float ) * 2,
@@ -527,7 +555,7 @@ VERTEXBUFFER_INPUT_INFO_ANDR	g_ClearRTVertexInputInfo =
 	},
 } ;
 
-// •W€•`‰æ—p‚Ì•¡G‚Èˆ—‚ğs‚í‚È‚¢’¸“_ƒVƒF[ƒ_[‚Ìî•ñ
+// æ¨™æº–æç”»ç”¨ã®è¤‡é›‘ãªå‡¦ç†ã‚’è¡Œã‚ãªã„é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®æƒ…å ±
 static GRAPHICS_ANDROID_BASE_SIMPLE_VERTEXSHADER_INFO g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_NUM ] =
 {
 	// ANDROID_VERTEX_INPUTLAYOUT_NOTEX_2D( VERTEX_NOTEX_2D )
@@ -637,7 +665,7 @@ static GRAPHICS_ANDROID_BASE_SIMPLE_VERTEXSHADER_INFO g_BaseSimpleVertexShaderIn
 	},
 } ;
 
-// ƒsƒNƒZƒ‹ƒtƒH[ƒ}ƒbƒg
+// ãƒ”ã‚¯ã‚»ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 PIXELFORMAT_INFO_ANDR g_AndroidPixelFormat[ ANDROID_PIXEL_FORMAT_NUM ] =
 {
 	{ FALSE,	 32,	      0,	GL_RGBA,					GL_RGBA,		GL_UNSIGNED_BYTE			},	// ANDROID_PIXEL_FORMAT_R8G8B8A8
@@ -658,7 +686,7 @@ PIXELFORMAT_INFO_ANDR g_AndroidPixelFormat[ ANDROID_PIXEL_FORMAT_NUM ] =
 	{ FALSE,	128,	      0,	GL_RGBA,					GL_RGBA,		GL_FLOAT					},	// ANDROID_PIXEL_FORMAT_R32G32B32A32_FLOAT
 } ;
 
-// Extension ‚Ì–¼‘O
+// Extension ã®åå‰
 const char *g_AndroidGLExtensionName[ ANDROID_GL_EXTENSION_NUM ] =
 {
 	"GL_OES_depth24",						// ANDROID_GL_EXTENSION_DEPTH24						
@@ -676,7 +704,7 @@ const char *g_AndroidGLExtensionName[ ANDROID_GL_EXTENSION_NUM ] =
 	"GL_EXT_texture_format_BGRA8888",		// ANDROID_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888
 } ;
 
-// Uniform ‚Ì–¼‘O
+// Uniform ã®åå‰
 const GLchar *g_UniformName[ ANDROID_SHADER_UNIFORM_NUM ] =
 {
 	"uSrcTex",						// ANDROID_SHADER_UNIFORM_SRC_TEX
@@ -746,23 +774,23 @@ GLenum g_TextureEnum[ USE_TEXTURESTAGE_NUM ] =
 	GL_TEXTURE15,
 } ;
 
-// Android ‚ğg‚Á‚½ƒOƒ‰ƒtƒBƒbƒNƒXˆ—î•ñ‚Ì\‘¢‘Ì
+// Android ã‚’ä½¿ã£ãŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹å‡¦ç†æƒ…å ±ã®æ§‹é€ ä½“
 GRAPHICS_HARDDATA_ANDR GraphicsHardDataAndroid ;
 
-// ƒVƒF[ƒ_[ƒoƒCƒiƒŠ”z—ñ
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒã‚¤ãƒŠãƒªé…åˆ—
 extern BYTE DxShaderCodeBin_Model_ANDR[] ;
 extern BYTE DxShaderCodeBin_Filter_ANDR[] ;
 extern BYTE DxShaderCodeBin_Base_ANDR[] ;
 extern BYTE DxShaderCodeBin_Base3D_ANDR[] ;
 extern BYTE DxShaderCodeBin_RgbaMix_ANDR[] ;
 
-// ŠÖ”éŒ¾ -------------------------------------------------------------------
+// é–¢æ•°å®£è¨€ -------------------------------------------------------------------
 
-static int Graphics_Android_DeviceState_SetNormalTextureAddressTransformMatrix_ConstBuffer( void ) ;	// •W€•`‰æ—p‚ÌƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ‚ğ’è”ƒoƒbƒtƒ@‚ÉƒZƒbƒg‚·‚é
-static int Graphics_Android_DeviceState_UpdateConstantFogParam( void ) ;								// ƒtƒHƒO‚ÌFˆÈŠO‚Ì’è”î•ñ‚ğXV‚·‚é
-static void Graphics_Android_DeviceState_RefreshAmbientAndEmissiveParam( void ) ;						// ƒAƒ“ƒrƒGƒ“ƒgƒ‰ƒCƒg‚ÆƒGƒ~ƒbƒVƒuƒJƒ‰[‚ğŠ|‚¯‡‚í‚¹‚½ƒpƒ‰ƒ[ƒ^‚ğXV‚·‚é
+static int Graphics_Android_DeviceState_SetNormalTextureAddressTransformMatrix_ConstBuffer( void ) ;	// æ¨™æº–æç”»ç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’å®šæ•°ãƒãƒƒãƒ•ã‚¡ã«ã‚»ãƒƒãƒˆã™ã‚‹
+static int Graphics_Android_DeviceState_UpdateConstantFogParam( void ) ;								// ãƒ•ã‚©ã‚°ã®è‰²ä»¥å¤–ã®å®šæ•°æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
+static void Graphics_Android_DeviceState_RefreshAmbientAndEmissiveParam( void ) ;						// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆãƒ©ã‚¤ãƒˆã¨ã‚¨ãƒŸãƒƒã‚·ãƒ–ã‚«ãƒ©ãƒ¼ã‚’æ›ã‘åˆã‚ã›ãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹
 
-// glTexSubImage2D ‚Ì”ñ“¯ŠúÀs—p‚ÌŠÖ”
+// glTexSubImage2D ã®éåŒæœŸå®Ÿè¡Œç”¨ã®é–¢æ•°
 static int glTexSubImage2D_ASync(
 	GLuint texture,
 	GLenum target,
@@ -775,7 +803,7 @@ static int glTexSubImage2D_ASync(
 ) ;
 
 
-// Android ‚Éİ’è‚·‚éË‰es—ñ‚ğXV‚·‚é
+// Android ã«è¨­å®šã™ã‚‹å°„å½±è¡Œåˆ—ã‚’æ›´æ–°ã™ã‚‹
 static void Graphics_Hardware_ANDROID_RefreshProjectionMatrix( void ) ;
 
 static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
@@ -793,7 +821,7 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 	      int				ASyncThread
 ) ;
 
-__inline	static DWORD GetDiffuseColor( void )															// Œ»İ‚ÌƒfƒBƒtƒ…[ƒYƒJƒ‰[‚ğ“¾‚é
+__inline	static DWORD GetDiffuseColor( void )															// ç¾åœ¨ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã‚’å¾—ã‚‹
 			{
 				if( GSYS.HardInfo.UseVertexColorBGRAFormat )
 				{
@@ -812,15 +840,15 @@ __inline	static DWORD GetDiffuseColor( void )															// Œ»İ‚ÌƒfƒBƒtƒ…[ƒ
 			}
 
 
-// ƒvƒƒOƒ‰ƒ€ -----------------------------------------------------------------
+// ãƒ—ãƒ­ã‚°ãƒ©ãƒ  -----------------------------------------------------------------
 
-// Android ‚ğg—p‚µ‚½ƒOƒ‰ƒtƒBƒbƒNƒXˆ—‚Ì‰Šú‰»‚ğs‚¤( 0:¬Œ÷ -1:¸”s )
+// Android ã‚’ä½¿ç”¨ã—ãŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹å‡¦ç†ã®åˆæœŸåŒ–ã‚’è¡Œã†( 0:æˆåŠŸ -1:å¤±æ•— )
 extern	int		Graphics_Android_Initialize( void )
 {
-	// ‰æ–Êƒ‚[ƒh•ÏX‚Å‚ÍƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ìì‚è’¼‚µ‚¾‚¯s‚¤
+	// ç”»é¢ãƒ¢ãƒ¼ãƒ‰å¤‰æ›´ã§ã¯ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®ä½œã‚Šç›´ã—ã ã‘è¡Œã†
 	if( GSYS.Screen.Graphics_Screen_ChangeModeFlag )
 	{
-		// ƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ìì¬
+		// ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ
 		if( Graphics_Android_SetupSubBackBuffer() < 0 )
 		{
 			return -1 ;
@@ -829,13 +857,13 @@ extern	int		Graphics_Android_Initialize( void )
 		return 0 ;
 	}
 
-	// Android ‚ÌƒOƒ‰ƒtƒBƒbƒNƒXˆ—‚Ìå‚È‰Šú‰»‚ğs‚¤
+	// Android ã®ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹å‡¦ç†ã®ä¸»ãªåˆæœŸåŒ–ã‚’è¡Œã†
 	if( Graphics_Android_Device_Create() != 0 )
 	{
 		goto ERR ;
 	}
 
-	// ƒVƒF[ƒ_[‚Ìì¬
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆ
 	if( Graphics_Android_Shader_Initialize() != 0 )
 	{
 		goto ERR ;
@@ -843,22 +871,22 @@ extern	int		Graphics_Android_Initialize( void )
 
 	GSYS.Setting.ValidHardware = GSYS.Setting.NotUseHardware ? FALSE : TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 
-	// ƒGƒ‰[I—¹
+	// ã‚¨ãƒ©ãƒ¼çµ‚äº†
 ERR :
 
-	// Œãn––‚ğs‚¤
+	// å¾Œå§‹æœ«ã‚’è¡Œã†
 	Graphics_Android_Terminate() ;
 
 	return -1 ;
 }
 
-// Android ‚ğg—p‚µ‚½ƒOƒ‰ƒtƒBƒbƒNƒXˆ—‚ÌŒãn––‚ğs‚¤
+// Android ã‚’ä½¿ç”¨ã—ãŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹å‡¦ç†ã®å¾Œå§‹æœ«ã‚’è¡Œã†
 extern int Graphics_Android_Terminate( void )
 {
-	// ‰æ–Êƒ‚[ƒh•ÏX‚Å‚ÍƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ìíœ‚¾‚¯s‚¤
+	// ç”»é¢ãƒ¢ãƒ¼ãƒ‰å¤‰æ›´ã§ã¯ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®å‰Šé™¤ã ã‘è¡Œã†
 	if( GSYS.Screen.Graphics_Screen_ChangeModeFlag )
 	{
 		Graphics_Android_TerminateSubBackBuffer() ;
@@ -866,28 +894,28 @@ extern int Graphics_Android_Terminate( void )
 		return 0 ;
 	}
 
-	// •`‰æˆ—‚ÌI—¹
+	// æç”»å‡¦ç†ã®çµ‚äº†
 	Graphics_Android_RenderEnd() ;
 
 #ifndef DX_NON_MODEL
-	// ƒ‚ƒfƒ‹‚Ì’¸“_ƒoƒbƒtƒ@‚ğ‰ğ•ú
+	// ãƒ¢ãƒ‡ãƒ«ã®é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
 	MV1TerminateVertexBufferAll() ;
 #endif // DX_NON_MODEL
 
-	// ƒeƒNƒXƒ`ƒƒ‚Ö‰æ‘œ‚ğ“]‘—‚·‚é‚½‚ß‚Ìƒƒ‚ƒŠ‚ÌŒãn––‚ğs‚¤
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¸ç”»åƒã‚’è»¢é€ã™ã‚‹ãŸã‚ã®ãƒ¡ãƒ¢ãƒªã®å¾Œå§‹æœ«ã‚’è¡Œã†
 	Graphics_Android_Texture_TerminateCommonBuffer() ;
 
-	// ƒVƒF[ƒ_[‚Ì‰ğ•ú
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®è§£æ”¾
 	Graphics_Android_Shader_Terminate() ;
 
-	// Android ‚ÌƒOƒ‰ƒtƒBƒbƒNˆ—‚ÌŒãn––‚ğs‚¤
+	// Android ã®ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯å‡¦ç†ã®å¾Œå§‹æœ«ã‚’è¡Œã†
 	Graphics_Android_Device_Delete() ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ‚·‚×‚Ä‚Ì OpenGL ES ŒnƒIƒuƒWƒFƒNƒg‚ğ‰ğ•ú‚·‚é
+// ã™ã¹ã¦ã® OpenGL ES ç³»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è§£æ”¾ã™ã‚‹
 extern int Graphics_Android_ReleaseObjectAll( void )
 {
 	int i ;
@@ -987,7 +1015,7 @@ extern int Graphics_Android_ReleaseObjectAll( void )
 		}
 	}
 
-	// ƒfƒoƒCƒXƒZƒbƒgî•ñ‚ğ‰Šú‰»
+	// ãƒ‡ãƒã‚¤ã‚¹ã‚»ãƒƒãƒˆæƒ…å ±ã‚’åˆæœŸåŒ–
 	_MEMSET( GANDR.Device.State.SetTexture, 0, sizeof( GANDR.Device.State.SetTexture ) ) ;
 	GANDR.Device.State.SetShader            = NULL ;
 	GANDR.Device.State.SetShader_Force		= NULL ;
@@ -995,11 +1023,11 @@ extern int Graphics_Android_ReleaseObjectAll( void )
 	GANDR.Device.State.SetVertexBuffer      = 0 ;
 	GANDR.Device.State.TargetFrameBuffer    = 0 ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ‚·‚×‚Ä‚Ì OpenGL ES ŒnƒIƒuƒWƒFƒNƒg‚ğì¬‚·‚é
+// ã™ã¹ã¦ã® OpenGL ES ç³»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½œæˆã™ã‚‹
 extern int Graphics_Android_CreateObjectAll( void )
 {
 	int                                       i ;
@@ -1011,7 +1039,7 @@ extern int Graphics_Android_CreateObjectAll( void )
 
 	if( HandleManageArray[ DX_HANDLETYPE_GRAPH ].InitializeFlag && HandleManageArray[ DX_HANDLETYPE_GRAPH ].Num > 0 )
 	{
-		DXST_LOGFILE_ADDUTF16LE( "\xb0\x30\xe9\x30\xd5\x30\xa3\x30\xc3\x30\xaf\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x6e\x30\x20\x00\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x8d\x51\x5c\x4f\x10\x62\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ì OpenGL ES ƒIƒuƒWƒFƒNƒg‚ÌÄì¬.... " @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\xb0\x30\xe9\x30\xd5\x30\xa3\x30\xc3\x30\xaf\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x6e\x30\x20\x00\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x8d\x51\x5c\x4f\x10\x62\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒãƒ³ãƒ‰ãƒ«ã® OpenGL ES ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å†ä½œæˆ.... " @*/ ) ;
 
 		for( i = HandleManageArray[ DX_HANDLETYPE_GRAPH ].AreaMin ; i <= HandleManageArray[ DX_HANDLETYPE_GRAPH ].AreaMax ; i ++ )
 		{
@@ -1021,16 +1049,16 @@ extern int Graphics_Android_CreateObjectAll( void )
 			if( Image->Orig == NULL ) continue ;
 			if( Graphics_Hardware_CreateOrigTexture_PF( Image->Orig ) < 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\xb0\x30\xe9\x30\xd5\x30\xa3\x30\xc3\x30\xaf\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x20\x00\x25\x00\x30\x00\x38\x00\x78\x00\x20\x00\x67\x30\x31\x59\x57\x65\x00\x30\xb5\x30\xa4\x30\xba\x30\x20\x00\x25\x00\x64\x00\x78\x00\x25\x00\x64\x00\x20\x00\x0a\x00\x00"/*@ L"ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹ %08x ‚Å¸”s@ƒTƒCƒY %dx%d \n" @*/, Image->HandleInfo.Handle, Image->WidthI, Image->HeightI )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\xb0\x30\xe9\x30\xd5\x30\xa3\x30\xc3\x30\xaf\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x20\x00\x25\x00\x30\x00\x38\x00\x78\x00\x20\x00\x67\x30\x31\x59\x57\x65\x00\x30\xb5\x30\xa4\x30\xba\x30\x20\x00\x25\x00\x64\x00\x78\x00\x25\x00\x64\x00\x20\x00\x0a\x00\x00"/*@ L"ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒãƒ³ãƒ‰ãƒ« %08x ã§å¤±æ•—ã€€ã‚µã‚¤ã‚º %dx%d \n" @*/, Image->HandleInfo.Handle, Image->WidthI, Image->HeightI )) ;
 			}
 		}
 
-		DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"¬Œ÷\n" @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"æˆåŠŸ\n" @*/ ) ;
 	}
 
 	if( HandleManageArray[ DX_HANDLETYPE_SHADOWMAP ].InitializeFlag && HandleManageArray[ DX_HANDLETYPE_SHADOWMAP ].Num > 0 )
 	{
-		DXST_LOGFILE_ADDUTF16LE( "\xb7\x30\xe3\x30\xc9\x30\xa6\x30\xde\x30\xc3\x30\xd7\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x6e\x30\x20\x00\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x8d\x51\x5c\x4f\x10\x62\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"ƒVƒƒƒhƒEƒ}ƒbƒvƒnƒ“ƒhƒ‹‚Ì OpenGL ES ƒIƒuƒWƒFƒNƒg‚ÌÄì¬.... " @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\xb7\x30\xe3\x30\xc9\x30\xa6\x30\xde\x30\xc3\x30\xd7\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x6e\x30\x20\x00\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x8d\x51\x5c\x4f\x10\x62\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ãƒãƒ³ãƒ‰ãƒ«ã® OpenGL ES ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å†ä½œæˆ.... " @*/ ) ;
 
 		for( i = HandleManageArray[ DX_HANDLETYPE_SHADOWMAP ].AreaMin ; i <= HandleManageArray[ DX_HANDLETYPE_SHADOWMAP ].AreaMax ; i ++ )
 		{
@@ -1040,12 +1068,12 @@ extern int Graphics_Android_CreateObjectAll( void )
 			Graphics_Hardware_ShadowMap_CreateTexture_PF( ShadowMap ) ;
 		}
 
-		DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"¬Œ÷\n" @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"æˆåŠŸ\n" @*/ ) ;
 	}
 
 	if( HandleManageArray[ DX_HANDLETYPE_VERTEX_BUFFER ].InitializeFlag && HandleManageArray[ DX_HANDLETYPE_VERTEX_BUFFER ].Num > 0 )
 	{
-		DXST_LOGFILE_ADDUTF16LE( "\x02\x98\xb9\x70\xd0\x30\xc3\x30\xd5\x30\xa1\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x6e\x30\x20\x00\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x8d\x51\x5c\x4f\x10\x62\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"’¸“_ƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚Ì OpenGL ES ƒIƒuƒWƒFƒNƒg‚ÌÄì¬.... " @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\x02\x98\xb9\x70\xd0\x30\xc3\x30\xd5\x30\xa1\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x6e\x30\x20\x00\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x8d\x51\x5c\x4f\x10\x62\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒãƒ³ãƒ‰ãƒ«ã® OpenGL ES ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å†ä½œæˆ.... " @*/ ) ;
 
 		for( i = HandleManageArray[ DX_HANDLETYPE_VERTEX_BUFFER ].AreaMin ; i <= HandleManageArray[ DX_HANDLETYPE_VERTEX_BUFFER ].AreaMax ; i ++ )
 		{
@@ -1054,12 +1082,12 @@ extern int Graphics_Android_CreateObjectAll( void )
 			Graphics_Hardware_VertexBuffer_Create_PF( VertexBuffer ) ;
 		}
 
-		DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"¬Œ÷\n" @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"æˆåŠŸ\n" @*/ ) ;
 	}
 
 	if( HandleManageArray[ DX_HANDLETYPE_INDEX_BUFFER ].InitializeFlag && HandleManageArray[ DX_HANDLETYPE_INDEX_BUFFER ].Num > 0 )
 	{
-		DXST_LOGFILE_ADDUTF16LE( "\xa4\x30\xf3\x30\xc7\x30\xc3\x30\xaf\x30\xb9\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x6e\x30\x20\x00\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x8d\x51\x5c\x4f\x10\x62\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚Ì OpenGL ES ƒIƒuƒWƒFƒNƒg‚ÌÄì¬.... " @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\xa4\x30\xf3\x30\xc7\x30\xc3\x30\xaf\x30\xb9\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x6e\x30\x20\x00\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x8d\x51\x5c\x4f\x10\x62\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ãƒãƒ³ãƒ‰ãƒ«ã® OpenGL ES ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å†ä½œæˆ.... " @*/ ) ;
 
 		for( i = HandleManageArray[ DX_HANDLETYPE_INDEX_BUFFER ].AreaMin ; i <= HandleManageArray[ DX_HANDLETYPE_INDEX_BUFFER ].AreaMax ; i ++ )
 		{
@@ -1068,12 +1096,12 @@ extern int Graphics_Android_CreateObjectAll( void )
 			Graphics_Hardware_IndexBuffer_Create_PF( IndexBuffer ) ;
 		}
 
-		DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"¬Œ÷\n" @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"æˆåŠŸ\n" @*/ ) ;
 	}
 
 	if( HandleManageArray[ DX_HANDLETYPE_SHADER ].InitializeFlag && HandleManageArray[ DX_HANDLETYPE_SHADER ].Num > 0 )
 	{
-		DXST_LOGFILE_ADDUTF16LE( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x6e\x30\x20\x00\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x8d\x51\x5c\x4f\x10\x62\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"ƒVƒF[ƒ_[ƒnƒ“ƒhƒ‹‚Ì OpenGL ES ƒIƒuƒWƒFƒNƒg‚ÌÄì¬.... " @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x6e\x30\x20\x00\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x8d\x51\x5c\x4f\x10\x62\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒãƒ³ãƒ‰ãƒ«ã® OpenGL ES ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å†ä½œæˆ.... " @*/ ) ;
 
 		for( i = HandleManageArray[ DX_HANDLETYPE_SHADER ].AreaMin ; i <= HandleManageArray[ DX_HANDLETYPE_SHADER ].AreaMax ; i ++ )
 		{
@@ -1094,10 +1122,10 @@ extern int Graphics_Android_CreateObjectAll( void )
 			}
 		}
 
-		DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"¬Œ÷\n" @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"æˆåŠŸ\n" @*/ ) ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -1135,9 +1163,9 @@ extern int Graphics_Android_CreateObjectAll( void )
 
 
 
-// ƒVƒF[ƒ_[ƒR[ƒhŠÖŒW
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰é–¢ä¿‚
 
-// ƒVƒF[ƒ_[ƒR[ƒhƒpƒbƒP[ƒW‚©‚çƒVƒF[ƒ_[ƒR[ƒhƒoƒCƒiƒŠ‚ÌƒAƒhƒŒƒX‚ÆƒTƒCƒY‚ğæ“¾‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã‹ã‚‰ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ãƒã‚¤ãƒŠãƒªã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹
 static void Graphics_Android_ShaderCodePackage_GetInfo( WORD **pSize, BYTE **pCode, GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO *DestInfo, int Num )
 {
 	WORD *Size ;
@@ -1160,7 +1188,7 @@ static void Graphics_Android_ShaderCodePackage_GetInfo( WORD **pSize, BYTE **pCo
 	*pCode = Code ;
 }
 
-// Android ‚Ì•W€•`‰æ—p‚ÌƒVƒF[ƒ_[ƒR[ƒh‚Ì‰Šú‰»‚ğs‚¤
+// Android ã®æ¨™æº–æç”»ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ã®åˆæœŸåŒ–ã‚’è¡Œã†
 extern int Graphics_Android_ShaderCode_Base_Initialize( void )
 {
 	GRAPHICS_HARDWARE_ANDROID_SHADERCODE_BASE *SCBASE = &GraphicsHardDataAndroid.ShaderCode.Base ;
@@ -1168,13 +1196,13 @@ extern int Graphics_Android_ShaderCode_Base_Initialize( void )
 	BYTE  *ShaderAddr = NULL ;
 	WORD  *SizeBuf    = NULL ;
 
-	// ‚·‚Å‚É‰Šú‰»‚³‚ê‚Ä‚¢‚½‚ç‰½‚à‚µ‚È‚¢
+	// ã™ã§ã«åˆæœŸåŒ–ã•ã‚Œã¦ã„ãŸã‚‰ä½•ã‚‚ã—ãªã„
 	if( SCBASE->BaseShaderInitializeFlag == TRUE )
 	{
 		return TRUE ;
 	}
 
-	// ƒ‰ƒCƒgƒCƒ“ƒfƒbƒNƒXƒŠƒXƒg‚Ì\’z
+	// ãƒ©ã‚¤ãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒªã‚¹ãƒˆã®æ§‹ç¯‰
 	{
 		int l0, l1, l2, l3, l4, l5, ind ;
 
@@ -1234,7 +1262,7 @@ extern int Graphics_Android_ShaderCode_Base_Initialize( void )
 
 	SCBASE->Base2DShaderPackageImage = NULL ;
 
-	// •W€•`‰æ—pƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚c‚w‚`‚ğˆ³k‚µ‚½ƒf[ƒ^‚ğ‰ğ“€‚·‚é
+	// æ¨™æº–æç”»ç”¨ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ï¼¤ï¼¸ï¼¡ã‚’åœ§ç¸®ã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’è§£å‡ã™ã‚‹
 	{
 		Size = DXA_Decode( DxShaderCodeBin_Base_ANDR, NULL ) ;
 		SCBASE->Base2DShaderPackageImage = DXALLOC( ( size_t )Size ) ;
@@ -1246,7 +1274,7 @@ extern int Graphics_Android_ShaderCode_Base_Initialize( void )
 		DXA_Decode( DxShaderCodeBin_Base_ANDR, SCBASE->Base2DShaderPackageImage ) ;
 	}
 
-	// ƒAƒhƒŒƒXƒŠƒXƒg‚ÌƒZƒbƒg
+	// ã‚¢ãƒ‰ãƒ¬ã‚¹ãƒªã‚¹ãƒˆã®ã‚»ãƒƒãƒˆ
 	{
 		DWORD HeadSize ;
 
@@ -1287,7 +1315,7 @@ extern int Graphics_Android_ShaderCode_Base_Initialize( void )
 
 #ifndef DX_NON_FILTER
 
-	// RGBAMixƒVƒF[ƒ_[ƒpƒbƒNˆ³kƒtƒ@ƒCƒ‹‚ğ“WŠJ‚·‚é
+	// RGBAMixã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ‘ãƒƒã‚¯åœ§ç¸®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å±•é–‹ã™ã‚‹
 	{
 		Size = DXA_Decode( DxShaderCodeBin_RgbaMix_ANDR, NULL ) ;
 		SCBASE->RGBAMixS_ShaderPackImage = DXALLOC( ( size_t )Size ) ;
@@ -1298,7 +1326,7 @@ extern int Graphics_Android_ShaderCode_Base_Initialize( void )
 
 		DXA_Decode( DxShaderCodeBin_RgbaMix_ANDR, SCBASE->RGBAMixS_ShaderPackImage ) ;
 
-		// ƒAƒhƒŒƒXƒŠƒXƒg‚ÌƒZƒbƒg
+		// ã‚¢ãƒ‰ãƒ¬ã‚¹ãƒªã‚¹ãƒˆã®ã‚»ãƒƒãƒˆ
 		SizeBuf    = ( WORD  * )SCBASE->RGBAMixS_ShaderPackImage ;
 		ShaderAddr = ( BYTE  * )SCBASE->RGBAMixS_ShaderPackImage +
 			sizeof( WORD ) * (
@@ -1306,7 +1334,7 @@ extern int Graphics_Android_ShaderCode_Base_Initialize( void )
 		Graphics_Android_ShaderCodePackage_GetInfo( &SizeBuf, &ShaderAddr, ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )SCBASE->RGBAMixS_FS_Code,  sizeof( SCBASE->RGBAMixS_FS_Code )  / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 	}
 
-	// ƒtƒBƒ‹ƒ^[ƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒgƒtƒ@ƒCƒ‹‚c‚w‚`‚ğˆ³k‚µ‚½ƒf[ƒ^‚ğ‰ğ“€‚·‚é
+	// ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ï¼¤ï¼¸ï¼¡ã‚’åœ§ç¸®ã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’è§£å‡ã™ã‚‹
 	{
 		Size = DXA_Decode( DxShaderCodeBin_Filter_ANDR, NULL ) ;
 		SCBASE->FilterShaderBinDxaImage = DXALLOC( ( size_t )Size ) ;
@@ -1317,7 +1345,7 @@ extern int Graphics_Android_ShaderCode_Base_Initialize( void )
 
 		DXA_Decode( DxShaderCodeBin_Filter_ANDR, SCBASE->FilterShaderBinDxaImage ) ;
 
-		// ‚c‚w‚`ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“‚·‚é
+		// ï¼¤ï¼¸ï¼¡ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹
 		DXA_Initialize( &SCBASE->FilterShaderBinDxa ) ;
 		if( DXA_OpenArchiveFromMem( &SCBASE->FilterShaderBinDxa, SCBASE->FilterShaderBinDxaImage, Size, FALSE, FALSE ) != 0 )
 		{
@@ -1329,7 +1357,7 @@ extern int Graphics_Android_ShaderCode_Base_Initialize( void )
 
 	SCBASE->BaseShaderInitializeFlag = TRUE ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return TRUE ;
 
 ERR :
@@ -1356,18 +1384,18 @@ ERR :
 	return FALSE ;
 }
 
-// Android ‚Ì•W€•`‰æ—p‚ÌƒVƒF[ƒ_[ƒR[ƒh‚ÌŒãn––‚ğs‚¤
+// Android ã®æ¨™æº–æç”»ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ã®å¾Œå§‹æœ«ã‚’è¡Œã†
 extern int Graphics_Android_ShaderCode_Base_Terminate( void )
 {
 	GRAPHICS_HARDWARE_ANDROID_SHADERCODE_BASE *SCBASE = &GraphicsHardDataAndroid.ShaderCode.Base ;
 
-	// ‚·‚Å‚ÉŒãn––‚³‚ê‚Ä‚¢‚½‚ç‰½‚à‚µ‚È‚¢
+	// ã™ã§ã«å¾Œå§‹æœ«ã•ã‚Œã¦ã„ãŸã‚‰ä½•ã‚‚ã—ãªã„
 	if( SCBASE->BaseShaderInitializeFlag == FALSE )
 	{
 		return TRUE ;
 	}
 
-	// ‰ğ“€‚µ‚½ƒVƒF[ƒ_[‚ğŠi”[‚µ‚Ä‚¢‚½ƒƒ‚ƒŠ‚Ì‰ğ•ú
+	// è§£å‡ã—ãŸã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’æ ¼ç´ã—ã¦ã„ãŸãƒ¡ãƒ¢ãƒªã®è§£æ”¾
 	if( SCBASE->Base2DShaderPackageImage != NULL )
 	{
 		DXFREE( SCBASE->Base2DShaderPackageImage ) ;
@@ -1376,7 +1404,7 @@ extern int Graphics_Android_ShaderCode_Base_Terminate( void )
 
 #ifndef DX_NON_FILTER
 
-	// ƒtƒBƒ‹ƒ^[ƒVƒF[ƒ_[—p‚c‚w‚`‚ÌŒãn––
+	// ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç”¨ï¼¤ï¼¸ï¼¡ã®å¾Œå§‹æœ«
 	DXA_Terminate( &SCBASE->FilterShaderBinDxa ) ;
 
 	if( SCBASE->RGBAMixS_ShaderPackImage )
@@ -1392,14 +1420,14 @@ extern int Graphics_Android_ShaderCode_Base_Terminate( void )
 
 #endif // DX_NON_FILTER
 
-	// ‰Šú‰»ƒtƒ‰ƒO‚ğ“|‚·
+	// åˆæœŸåŒ–ãƒ•ãƒ©ã‚°ã‚’å€’ã™
 	SCBASE->BaseShaderInitializeFlag = FALSE ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return TRUE ;
 }
 
-// Android ‚Ì•W€‚R‚c•`‰æ—p‚ÌƒVƒF[ƒ_[ƒR[ƒh‚Ì‰Šú‰»‚ğs‚¤
+// Android ã®æ¨™æº–ï¼“ï¼¤æç”»ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ã®åˆæœŸåŒ–ã‚’è¡Œã†
 extern int Graphics_Android_ShaderCode_Base3D_Initialize( void )
 {
 	GRAPHICS_HARDWARE_ANDROID_SHADERCODE_BASE3D *SCBASE3D = &GraphicsHardDataAndroid.ShaderCode.Base3D ;
@@ -1408,19 +1436,19 @@ extern int Graphics_Android_ShaderCode_Base3D_Initialize( void )
 	BYTE  *ShaderAddr = NULL ;
 	WORD  *SizeBuf    = NULL ;
 
-	// ‚·‚Å‚É‰Šú‰»‚³‚ê‚Ä‚¢‚½‚ç‰½‚à‚µ‚È‚¢
+	// ã™ã§ã«åˆæœŸåŒ–ã•ã‚Œã¦ã„ãŸã‚‰ä½•ã‚‚ã—ãªã„
 	if( SCBASE3D->Base3DShaderInitializeFlag == TRUE )
 	{
 		return TRUE ;
 	}
 
-	// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚Ìæ“¾
+	// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®å–å¾—
 	CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
 
-	// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğæ“¾‚µ‚½ã‚Å‰ü‚ß‚Ä‰Šú‰»Šm”F
+	// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’å–å¾—ã—ãŸä¸Šã§æ”¹ã‚ã¦åˆæœŸåŒ–ç¢ºèª
 	if( SCBASE3D->Base3DShaderInitializeFlag == TRUE )
 	{
-		// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚Ì‰ğ•ú
+		// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®è§£æ”¾
 		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 
 		return TRUE ;
@@ -1428,7 +1456,7 @@ extern int Graphics_Android_ShaderCode_Base3D_Initialize( void )
 
 	SCBASE3D->Base3DShaderPackageImage = NULL ;
 
-	// ˆ³kƒf[ƒ^‚Ì‰ğ“€
+	// åœ§ç¸®ãƒ‡ãƒ¼ã‚¿ã®è§£å‡
 	{
 		Size = DXA_Decode( DxShaderCodeBin_Base3D_ANDR, NULL ) ;
 		SCBASE3D->Base3DShaderPackageImage = DXCALLOC( ( size_t )Size ) ;
@@ -1440,7 +1468,7 @@ extern int Graphics_Android_ShaderCode_Base3D_Initialize( void )
 		DXA_Decode( DxShaderCodeBin_Base3D_ANDR, SCBASE3D->Base3DShaderPackageImage ) ;
 	}
 
-	// ƒAƒhƒŒƒXƒŠƒXƒg‚ÌƒZƒbƒg
+	// ã‚¢ãƒ‰ãƒ¬ã‚¹ãƒªã‚¹ãƒˆã®ã‚»ãƒƒãƒˆ
 	{
 		DWORD HeadSize ;
 
@@ -1469,10 +1497,10 @@ extern int Graphics_Android_ShaderCode_Base3D_Initialize( void )
 
 	SCBASE3D->Base3DShaderInitializeFlag = TRUE ;
 
-	// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚Ì‰ğ•ú
+	// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®è§£æ”¾
 	CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return TRUE ;
 
 ERR :
@@ -1482,19 +1510,19 @@ ERR :
 		SCBASE3D->Base3DShaderPackageImage = NULL ;
 	}
 
-	// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚Ì‰ğ•ú
+	// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®è§£æ”¾
 	CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 
 	return FALSE ;
 }
 
 
-// Android ‚Ì•W€‚R‚c•`‰æ—p‚ÌƒVƒF[ƒ_[ƒR[ƒh‚ÌŒãn––‚ğs‚¤
+// Android ã®æ¨™æº–ï¼“ï¼¤æç”»ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ã®å¾Œå§‹æœ«ã‚’è¡Œã†
 extern int Graphics_Android_ShaderCode_Base3D_Terminate( void )
 {
 	GRAPHICS_HARDWARE_ANDROID_SHADERCODE_BASE3D *SCBASE3D = &GraphicsHardDataAndroid.ShaderCode.Base3D ;
 
-	// ‚·‚Å‚ÉŒãn––‚³‚ê‚Ä‚¢‚½‚ç‰½‚à‚µ‚È‚¢
+	// ã™ã§ã«å¾Œå§‹æœ«ã•ã‚Œã¦ã„ãŸã‚‰ä½•ã‚‚ã—ãªã„
 	if( SCBASE3D->Base3DShaderInitializeFlag == FALSE )
 	{
 		return TRUE ;
@@ -1506,17 +1534,17 @@ extern int Graphics_Android_ShaderCode_Base3D_Terminate( void )
 		SCBASE3D->Base3DShaderPackageImage = NULL ;
 	}
 
-	// ‰Šú‰»ƒtƒ‰ƒO‚ğ“|‚·
+	// åˆæœŸåŒ–ãƒ•ãƒ©ã‚°ã‚’å€’ã™
 	SCBASE3D->Base3DShaderInitializeFlag = FALSE ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return TRUE ;
 }
 
 
 #ifndef DX_NON_MODEL
 
-// Android ‚Ìƒ‚ƒfƒ‹•`‰æ—p‚ÌƒVƒF[ƒ_[ƒR[ƒh‚Ì‰Šú‰»‚ğs‚¤
+// Android ã®ãƒ¢ãƒ‡ãƒ«æç”»ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ã®åˆæœŸåŒ–ã‚’è¡Œã†
 extern	int		Graphics_Android_ShaderCode_Model_Initialize( void )
 {
 	GRAPHICS_HARDWARE_ANDROID_SHADERCODE_MODEL *SCMODEL = &GraphicsHardDataAndroid.ShaderCode.Model ;
@@ -1525,13 +1553,13 @@ extern	int		Graphics_Android_ShaderCode_Model_Initialize( void )
 	BYTE  *ShaderAddr = NULL ;
 	WORD  *SizeBuf    = NULL ;
 
-	// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚Ìæ“¾
+	// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®å–å¾—
 	CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
 
-	// ‚·‚Å‚É‰Šú‰»‚³‚ê‚Ä‚¢‚½‚ç‰½‚à‚µ‚È‚¢
+	// ã™ã§ã«åˆæœŸåŒ–ã•ã‚Œã¦ã„ãŸã‚‰ä½•ã‚‚ã—ãªã„
 	if( SCMODEL->ModelShaderInitializeFlag == TRUE )
 	{
-		// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚Ì‰ğ•ú
+		// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®è§£æ”¾
 		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 
 		return TRUE ;
@@ -1539,7 +1567,7 @@ extern	int		Graphics_Android_ShaderCode_Model_Initialize( void )
 
 	SCMODEL->ModelShaderPackImage = NULL ;
 
-	// ˆ³kƒf[ƒ^‚Ì‰ğ“€
+	// åœ§ç¸®ãƒ‡ãƒ¼ã‚¿ã®è§£å‡
 	{
 		Size = DXA_Decode( DxShaderCodeBin_Model_ANDR, NULL ) ;
 		SCMODEL->ModelShaderPackImage = DXCALLOC( ( size_t )Size ) ;
@@ -1551,7 +1579,7 @@ extern	int		Graphics_Android_ShaderCode_Model_Initialize( void )
 		DXA_Decode( DxShaderCodeBin_Model_ANDR, SCMODEL->ModelShaderPackImage ) ;
 	}
 
-	// ƒAƒhƒŒƒXƒŠƒXƒg‚ÌƒZƒbƒg
+	// ã‚¢ãƒ‰ãƒ¬ã‚¹ãƒªã‚¹ãƒˆã®ã‚»ãƒƒãƒˆ
 	{
 		DWORD HeadSize ;
 
@@ -1598,10 +1626,10 @@ extern	int		Graphics_Android_ShaderCode_Model_Initialize( void )
 
 	SCMODEL->ModelShaderInitializeFlag = TRUE ;
 
-	// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚Ì‰ğ•ú
+	// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®è§£æ”¾
 	CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return TRUE ;
 
 ERR :
@@ -1611,18 +1639,18 @@ ERR :
 		SCMODEL->ModelShaderPackImage = NULL ;
 	}
 
-	// ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚Ì‰ğ•ú
+	// ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®è§£æ”¾
 	CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 
 	return FALSE ;
 }
 
-// Android ‚Ìƒ‚ƒfƒ‹•`‰æ—p‚ÌƒVƒF[ƒ_[ƒR[ƒh‚ÌŒãn––‚ğs‚¤
+// Android ã®ãƒ¢ãƒ‡ãƒ«æç”»ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ã®å¾Œå§‹æœ«ã‚’è¡Œã†
 extern	int		Graphics_Android_ShaderCode_Model_Terminate( void )
 {
 	GRAPHICS_HARDWARE_ANDROID_SHADERCODE_MODEL *SCMODEL = &GraphicsHardDataAndroid.ShaderCode.Model ;
 
-	// ‚·‚Å‚ÉŒãn––‚³‚ê‚Ä‚¢‚½‚ç‰½‚à‚µ‚È‚¢
+	// ã™ã§ã«å¾Œå§‹æœ«ã•ã‚Œã¦ã„ãŸã‚‰ä½•ã‚‚ã—ãªã„
 	if( SCMODEL->ModelShaderInitializeFlag == FALSE )
 	{
 		return TRUE ;
@@ -1634,10 +1662,10 @@ extern	int		Graphics_Android_ShaderCode_Model_Terminate( void )
 		SCMODEL->ModelShaderPackImage = NULL ;
 	}
 
-	// ‰Šú‰»ƒtƒ‰ƒO‚ğ“|‚·
+	// åˆæœŸåŒ–ãƒ•ãƒ©ã‚°ã‚’å€’ã™
 	SCMODEL->ModelShaderInitializeFlag = FALSE ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return TRUE ;
 }
 
@@ -1645,7 +1673,7 @@ extern	int		Graphics_Android_ShaderCode_Model_Terminate( void )
 
 
 
-// V‚µ‚¢ƒVƒF[ƒ_[\‘¢‘Ì‚ğæ“¾‚·‚é
+// æ–°ã—ã„ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼æ§‹é€ ä½“ã‚’å–å¾—ã™ã‚‹
 extern GRAPHICS_ANDROID_SHADER *Graphics_Android_GetShaderStruct( void )
 {
 	GRAPHICS_ANDROID_SHADER_LIST *UseList ;
@@ -1656,7 +1684,7 @@ extern GRAPHICS_ANDROID_SHADER *Graphics_Android_GetShaderStruct( void )
 		GraphicsHardDataAndroid.Device.Shader.ShadersListFirst = ( GRAPHICS_ANDROID_SHADER_LIST * )DXALLOC( sizeof( GRAPHICS_ANDROID_SHADER_LIST ) ) ;
 		if( GraphicsHardDataAndroid.Device.Shader.ShadersListFirst == NULL )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xc5\x60\x31\x58\xea\x30\xb9\x30\xc8\x30\x3c\x68\x0d\x7d\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒVƒF[ƒ_[î•ñƒŠƒXƒgŠi”[—p‚Ìƒƒ‚ƒŠ‚ÌŠm•Û‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xc5\x60\x31\x58\xea\x30\xb9\x30\xc8\x30\x3c\x68\x0d\x7d\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼æƒ…å ±ãƒªã‚¹ãƒˆæ ¼ç´ç”¨ã®ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 			return NULL ;
 		}
 		_MEMSET( GraphicsHardDataAndroid.Device.Shader.ShadersListFirst, 0, sizeof( GRAPHICS_ANDROID_SHADER_LIST ) ) ;
@@ -1676,7 +1704,7 @@ extern GRAPHICS_ANDROID_SHADER *Graphics_Android_GetShaderStruct( void )
 		NewList = ( GRAPHICS_ANDROID_SHADER_LIST * )DXALLOC( sizeof( GRAPHICS_ANDROID_SHADER_LIST ) ) ;
 		if( NewList == NULL )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xfd\x8f\xa0\x52\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xc5\x60\x31\x58\xea\x30\xb9\x30\xc8\x30\x3c\x68\x0d\x7d\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"’Ç‰Á‚ÌƒVƒF[ƒ_[î•ñƒŠƒXƒgŠi”[—p‚Ìƒƒ‚ƒŠ‚ÌŠm•Û‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xfd\x8f\xa0\x52\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xc5\x60\x31\x58\xea\x30\xb9\x30\xc8\x30\x3c\x68\x0d\x7d\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"è¿½åŠ ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼æƒ…å ±ãƒªã‚¹ãƒˆæ ¼ç´ç”¨ã®ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 			return NULL ;
 		}
 		_MEMSET( NewList, 0, sizeof( GRAPHICS_ANDROID_SHADER_LIST ) ) ;
@@ -1690,7 +1718,7 @@ extern GRAPHICS_ANDROID_SHADER *Graphics_Android_GetShaderStruct( void )
 	return &UseList->Shaders[ UseList->UseNum - 1 ] ;
 }
 
-// ƒVƒF[ƒ_[î•ñƒŠƒXƒg‚ÌŒãn––‚ğs‚¤
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼æƒ…å ±ãƒªã‚¹ãƒˆã®å¾Œå§‹æœ«ã‚’è¡Œã†
 extern int Graphics_Android_ShaderList_Terminate( void )
 {
 	GRAPHICS_ANDROID_SHADER_LIST *UseList ;
@@ -1720,7 +1748,7 @@ extern int Graphics_Android_ShaderList_Terminate( void )
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[ƒR[ƒh‚©‚ç’¸“_ƒVƒF[ƒ_[‚ğì¬‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ã‹ã‚‰é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½œæˆã™ã‚‹
 extern int Graphics_Android_VertexShader_Create( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO *Code, GLuint *pDestShader, int Num )
 {
 	int i ;
@@ -1738,11 +1766,11 @@ extern int Graphics_Android_VertexShader_Create( GRAPHICS_HARDWARE_ANDROID_SHADE
 
 		if( !compiled )
 		{
-			// ƒRƒ“ƒpƒCƒ‹ƒGƒ‰[‚Ì•¶š—ñ‚Ì’·‚³‚ğæ“¾
+			// ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚¨ãƒ©ãƒ¼ã®æ–‡å­—åˆ—ã®é•·ã•ã‚’å–å¾—
 			GLint logLen;
 			glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &logLen );
 
-			// ƒRƒ“ƒpƒCƒ‹ƒGƒ‰[•¶š—ñ‚ğæ“¾
+			// ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚¨ãƒ©ãƒ¼æ–‡å­—åˆ—ã‚’å–å¾—
 			GLchar *log = ( GLchar * )DXALLOC( sizeof( GLchar ) * ( logLen + 1 ) );
 			if( log != NULL )
 			{
@@ -1761,7 +1789,7 @@ extern int Graphics_Android_VertexShader_Create( GRAPHICS_HARDWARE_ANDROID_SHADE
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[ƒR[ƒh‚©‚çƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚ğì¬‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ã‹ã‚‰ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½œæˆã™ã‚‹
 extern int Graphics_Android_FragmentShader_Create( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO *Code, GLuint *pDestShader, int Num )
 {
 	int i ;
@@ -1779,11 +1807,11 @@ extern int Graphics_Android_FragmentShader_Create( GRAPHICS_HARDWARE_ANDROID_SHA
 
 		if( !compiled )
 		{
-			// ƒRƒ“ƒpƒCƒ‹ƒGƒ‰[‚Ì•¶š—ñ‚Ì’·‚³‚ğæ“¾
+			// ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚¨ãƒ©ãƒ¼ã®æ–‡å­—åˆ—ã®é•·ã•ã‚’å–å¾—
 			GLint logLen;
 			glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &logLen );
 
-			// ƒRƒ“ƒpƒCƒ‹ƒGƒ‰[•¶š—ñ‚ğæ“¾
+			// ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚¨ãƒ©ãƒ¼æ–‡å­—åˆ—ã‚’å–å¾—
 			GLchar *log = ( GLchar * )DXALLOC( sizeof( GLchar ) * ( logLen + 1 ) );
 			if( log != NULL )
 			{
@@ -1802,7 +1830,7 @@ extern int Graphics_Android_FragmentShader_Create( GRAPHICS_HARDWARE_ANDROID_SHA
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[‚Ì Uniform ”Ô†‚ğæ“¾‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã® Uniform ç•ªå·ã‚’å–å¾—ã™ã‚‹
 extern GLuint Graphics_Android_Shader_GetUniformIndex( GRAPHICS_ANDROID_SHADER *ShaderInfo, const GLchar *UniformName )
 {
 	GLuint lResult ;
@@ -1820,7 +1848,7 @@ extern GLuint Graphics_Android_Shader_GetUniformIndex( GRAPHICS_ANDROID_SHADER *
 	return lResult ;
 }
 
-// ’¸“_ƒVƒF[ƒ_[‚Æƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚©‚çƒVƒF[ƒ_[î•ñ‚ğƒZƒbƒgƒAƒbƒv‚·‚é
+// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã¨ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‹ã‚‰ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼æƒ…å ±ã‚’ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã™ã‚‹
 extern int Graphics_Android_Shader_Create( GRAPHICS_ANDROID_SHADER *ShaderInfo, GLuint VertexShader, GLuint FragmentShader )
 {
 	int i ;
@@ -1845,7 +1873,7 @@ extern int Graphics_Android_Shader_Create( GRAPHICS_ANDROID_SHADER *ShaderInfo, 
 	return 0 ;
 }
 
-// ’¸“_ƒVƒF[ƒ_[”z—ñ‚ğ‰ğ•ú‚·‚é
+// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼é…åˆ—ã‚’è§£æ”¾ã™ã‚‹
 extern void Graphics_Android_VertexShaderArray_Release( GLuint *pObject, int Num )
 {
 	int i ;
@@ -1860,7 +1888,7 @@ extern void Graphics_Android_VertexShaderArray_Release( GLuint *pObject, int Num
 	}
 }
 
-// ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[”z—ñ‚ğ‰ğ•ú‚·‚é
+// ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼é…åˆ—ã‚’è§£æ”¾ã™ã‚‹
 extern void Graphics_Android_FragmentShaderArray_Release( GLuint *pObject, int Num )
 {
 	int i ;
@@ -1875,7 +1903,7 @@ extern void Graphics_Android_FragmentShaderArray_Release( GLuint *pObject, int N
 	}
 }
 
-// ƒVƒF[ƒ_[”z—ñ‚ğ‰ğ•ú‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼é…åˆ—ã‚’è§£æ”¾ã™ã‚‹
 extern void Graphics_Android_ShaderArray_Release( GRAPHICS_ANDROID_SHADER *pShaderInfo, int Num )
 {
 	int i ;
@@ -1890,7 +1918,7 @@ extern void Graphics_Android_ShaderArray_Release( GRAPHICS_ANDROID_SHADER *pShad
 	}
 }
 
-// Android ‚ÌƒVƒF[ƒ_[‚Ì‰Šú‰»‚ğs‚¤
+// Android ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®åˆæœŸåŒ–ã‚’è¡Œã†
 extern int Graphics_Android_Shader_Initialize( void )
 {
 	GRAPHICS_HARDWARE_ANDROID_SHADERCODE      *ShaderCode = &GraphicsHardDataAndroid.ShaderCode ;
@@ -1912,47 +1940,47 @@ extern int Graphics_Android_Shader_Initialize( void )
 //	int n ;
 	int FunctionResult = -1 ;
 
-	// Šù‚Éì¬‚³‚ê‚Ä‚¢‚½‚Æ‚«‚Ì‚½‚ß‚Éíœˆ—‚ğs‚¤
+	// æ—¢ã«ä½œæˆã•ã‚Œã¦ã„ãŸã¨ãã®ãŸã‚ã«å‰Šé™¤å‡¦ç†ã‚’è¡Œã†
 	//TerminateAndroidShader() ;
 	Graphics_Android_Shader_Terminate() ;
 
 //	return 0 ;
 
-	DXST_LOGFILE_ADDUTF16LE( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xb3\x30\xfc\x30\xc9\x30\xa2\x95\xc2\x4f\x6e\x30\x1d\x52\x1f\x67\x16\x53\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"ƒVƒF[ƒ_[ƒR[ƒhŠÖŒW‚Ì‰Šú‰».... " @*/ ) ;
+	DXST_LOGFILE_ADDUTF16LE( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xb3\x30\xfc\x30\xc9\x30\xa2\x95\xc2\x4f\x6e\x30\x1d\x52\x1f\x67\x16\x53\x2e\x00\x2e\x00\x2e\x00\x2e\x00\x20\x00\x00"/*@ L"ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰é–¢ä¿‚ã®åˆæœŸåŒ–.... " @*/ ) ;
 
-	// Android ‚Ìê‡‚ÍƒVƒF[ƒ_[‚Í•K‚¸g—p‚Å‚«‚é
+	// Android ã®å ´åˆã¯ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã¯å¿…ãšä½¿ç”¨ã§ãã‚‹
 	GSYS.HardInfo.UseShader = TRUE ;
 
-	// •W€•`‰æ—pƒVƒF[ƒ_[ƒR[ƒh‚ª“WŠJ‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í“WŠJ
+	// æ¨™æº–æç”»ç”¨ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ãŒå±•é–‹ã•ã‚Œã¦ã„ãªã„å ´åˆã¯å±•é–‹
 	if( Graphics_Android_ShaderCode_Base_Initialize() == FALSE )
 	{
-		DXST_LOGFILEFMT_ADDUTF16LE(( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xb3\x30\xfc\x30\xc9\x30\x92\x30\x55\x5c\x8b\x95\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒVƒF[ƒ_[ƒR[ƒh‚ğ“WŠJ‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xb3\x30\xfc\x30\xc9\x30\x92\x30\x55\x5c\x8b\x95\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ã‚’å±•é–‹ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 		GSYS.HardInfo.UseShader = FALSE ;
 		goto END ;
 	}
 
-	// Šî–{“I‚È•`‰æˆ—‚Ég—p‚·‚éƒVƒF[ƒ_[‚ğì¬‚·‚é
+	// åŸºæœ¬çš„ãªæç”»å‡¦ç†ã«ä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½œæˆã™ã‚‹
 	{
-//		// •W€•`‰æ—p‚Ì•¡G‚Èˆ—‚ğs‚í‚È‚¢’¸“_ƒVƒF[ƒ_[‚Ìì¬
+//		// æ¨™æº–æç”»ç”¨ã®è¤‡é›‘ãªå‡¦ç†ã‚’è¡Œã‚ãªã„é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆ
 //		Result = Graphics_Android_VertexShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )ShaderCode->Base.BaseSimple_VS_Code, Shader->Base.BaseSimple_VS, sizeof( ShaderCode->Base.BaseSimple_VS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 //		if( Result < 0 )
 //		{
-//			DXST_LOGFILEFMT_ADDUTF16LE(( "\x19\x6a\x96\x6e\xcf\x63\x3b\x75\x28\x75\x6e\x30\x07\x89\xd1\x96\x6a\x30\xe6\x51\x06\x74\x92\x30\x4c\x88\x8f\x30\x6a\x30\x44\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"•W€•`‰æ—p‚Ì•¡G‚Èˆ—‚ğs‚í‚È‚¢’¸“_ƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+//			DXST_LOGFILEFMT_ADDUTF16LE(( "\x19\x6a\x96\x6e\xcf\x63\x3b\x75\x28\x75\x6e\x30\x07\x89\xd1\x96\x6a\x30\xe6\x51\x06\x74\x92\x30\x4c\x88\x8f\x30\x6a\x30\x44\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"æ¨™æº–æç”»ç”¨ã®è¤‡é›‘ãªå‡¦ç†ã‚’è¡Œã‚ãªã„é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 //			GSYS.HardInfo.UseShader = FALSE ;
 //			goto END ;
 //		}
 //
-//		// ŒÅ’è‹@”\ƒpƒCƒvƒ‰ƒCƒ“ŒİŠ·‚Ìƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[( ƒeƒNƒXƒ`ƒƒ‚È‚µ )‚Ìì¬
+//		// å›ºå®šæ©Ÿèƒ½ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³äº’æ›ã®ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼( ãƒ†ã‚¯ã‚¹ãƒãƒ£ãªã— )ã®ä½œæˆ
 //		Result = Graphics_Android_FragmentShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )ShaderCode->Base.BaseNoneTex_FS_Code, &Shader->Base.BaseNoneTex_FS[ 0 ][ 0 ], sizeof( ShaderCode->Base.BaseNoneTex_FS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 //		if( Result < 0 )
 //		{
-//			DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6a\x30\x57\x30\x20\x00\x29\x00\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ŒÅ’è‹@”\ƒpƒCƒvƒ‰ƒCƒ“ŒİŠ·‚Ìƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg( ƒeƒNƒXƒ`ƒƒ‚È‚µ ) No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+//			DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6a\x30\x57\x30\x20\x00\x29\x00\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"å›ºå®šæ©Ÿèƒ½ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³äº’æ›ã®ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ( ãƒ†ã‚¯ã‚¹ãƒãƒ£ãªã— ) No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 //			GSYS.HardInfo.UseShader = FALSE ;
 //			goto END ;
 //		}
 //
-//		// ŒÅ’è‹@”\ƒpƒCƒvƒ‰ƒCƒ“ŒİŠ·‚ÌƒVƒF[ƒ_[( ƒeƒNƒXƒ`ƒƒ‚È‚µ )‚Ìì¬
-//		// ( ‚±‚±‚Å‚Íg—p•p“x‚Ì‚‚¢ƒVƒF[ƒ_[‚Ì‚İì¬ )
+//		// å›ºå®šæ©Ÿèƒ½ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³äº’æ›ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼( ãƒ†ã‚¯ã‚¹ãƒãƒ£ãªã— )ã®ä½œæˆ
+//		// ( ã“ã“ã§ã¯ä½¿ç”¨é »åº¦ã®é«˜ã„ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã¿ä½œæˆ )
 //		for( i = 0 ; i < ANDROID_VERTEX_INPUTLAYOUT_NUM ; i ++ )
 //		{
 //			if( i != ANDROID_VERTEX_INPUTLAYOUT_NOTEX_2D &&
@@ -1980,7 +2008,7 @@ extern int Graphics_Android_Shader_Initialize( void )
 //					Result = Graphics_Android_Shader_Create( Shader->Base.BaseNoneTex_Shader[ i ][ j ][ k ], Shader->Base.BaseSimple_VS[ i ], Shader->Base.BaseNoneTex_FS[ j ][ k ] ) ;
 //					if( Result < 0 )
 //					{
-//						DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6a\x30\x57\x30\x20\x00\x29\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ŒÅ’è‹@”\ƒpƒCƒvƒ‰ƒCƒ“ŒİŠ·‚ÌƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg( ƒeƒNƒXƒ`ƒƒ‚È‚µ )‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ) ;
+//						DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6a\x30\x57\x30\x20\x00\x29\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"å›ºå®šæ©Ÿèƒ½ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³äº’æ›ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ( ãƒ†ã‚¯ã‚¹ãƒãƒ£ãªã— )ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ) ;
 //						GSYS.HardInfo.UseShader = FALSE ;
 //						goto END ;
 //					}
@@ -1988,8 +2016,8 @@ extern int Graphics_Android_Shader_Initialize( void )
 //			}
 //		}
 
-		// ŒÅ’è‹@”\ƒpƒCƒvƒ‰ƒCƒ“ŒİŠ·‚ÌƒVƒF[ƒ_[( ƒeƒNƒXƒ`ƒƒ‚ ‚è )‚Ìì¬
-		// ( ‚±‚±‚Å‚Íg—p•p“x‚Ì‚‚¢ƒVƒF[ƒ_[‚Ì‚İì¬ )
+		// å›ºå®šæ©Ÿèƒ½ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³äº’æ›ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼( ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ã‚Š )ã®ä½œæˆ
+		// ( ã“ã“ã§ã¯ä½¿ç”¨é »åº¦ã®é«˜ã„ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã¿ä½œæˆ )
 //		for( i = 0 ; i < ANDROID_VERTEX_INPUTLAYOUT_NUM ; i ++ )
 //		{
 //			if( i != ANDROID_VERTEX_INPUTLAYOUT_2D &&
@@ -2028,7 +2056,7 @@ extern int Graphics_Android_Shader_Initialize( void )
 //								Result = Graphics_Android_FragmentShader_Create( &ShaderCode->Base.BaseUseTex_FS_Code[ j ][ k ][ l ][ m ][ n ], &Shader->Base.BaseUseTex_FS[ j ][ k ][ l ][ m ][ n ], 1 ) ;
 //								if( Result < 0 )
 //								{
-//									DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x42\x30\x8a\x30\x20\x00\x29\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ŒÅ’è‹@”\ƒpƒCƒvƒ‰ƒCƒ“ŒİŠ·‚Ìƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg( ƒeƒNƒXƒ`ƒƒ‚ ‚è ) ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+//									DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x42\x30\x8a\x30\x20\x00\x29\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"å›ºå®šæ©Ÿèƒ½ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³äº’æ›ã®ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ( ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ã‚Š ) ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 //									GSYS.HardInfo.UseShader = FALSE ;
 //									goto END ;
 //								}
@@ -2042,7 +2070,7 @@ extern int Graphics_Android_Shader_Initialize( void )
 //								Result = Graphics_Android_Shader_Create( Shader->Base.BaseUseTex_Shader[ i ][ j ][ k ][ l ][ m ][ n ], Shader->Base.BaseSimple_VS[ i ], Shader->Base.BaseUseTex_FS[ j ][ k ][ l ][ m ][ n ] ) ;
 //								if( Result < 0 )
 //								{
-//									DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x42\x30\x8a\x30\x20\x00\x29\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ŒÅ’è‹@”\ƒpƒCƒvƒ‰ƒCƒ“ŒİŠ·‚ÌƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg( ƒeƒNƒXƒ`ƒƒ‚ ‚è )‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ) ;
+//									DXST_LOGFILEFMT_ADDUTF16LE(( "\xfa\x56\x9a\x5b\x5f\x6a\xfd\x80\xd1\x30\xa4\x30\xd7\x30\xe9\x30\xa4\x30\xf3\x30\x92\x4e\xdb\x63\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x28\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x42\x30\x8a\x30\x20\x00\x29\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"å›ºå®šæ©Ÿèƒ½ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³äº’æ›ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ( ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ã‚Š )ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ) ;
 //									GSYS.HardInfo.UseShader = FALSE ;
 //									goto END ;
 //								}
@@ -2053,57 +2081,57 @@ extern int Graphics_Android_Shader_Initialize( void )
 //			}
 //		}
 
-		// ƒ}ƒXƒNˆ——p’¸“_ƒVƒF[ƒ_[‚Ìì¬
+		// ãƒã‚¹ã‚¯å‡¦ç†ç”¨é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆ
 		Result = Graphics_Android_VertexShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )&ShaderCode->Base.MaskEffect_VS_Code, &MaskEffect_VS, sizeof( ShaderCode->Base.MaskEffect_VS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒ}ƒXƒNˆ——p‚Ì’¸“_ƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ãƒã‚¹ã‚¯å‡¦ç†ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 
-		// ƒ}ƒXƒNˆ——pƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚Ìì¬
+		// ãƒã‚¹ã‚¯å‡¦ç†ç”¨ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆ
 		Result = Graphics_Android_FragmentShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )&ShaderCode->Base.MaskEffect_FS_Code, &MaskEffect_FS, sizeof( ShaderCode->Base.MaskEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒ}ƒXƒNˆ——p‚Ìƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ãƒã‚¹ã‚¯å‡¦ç†ç”¨ã®ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 		Result = Graphics_Android_FragmentShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )&ShaderCode->Base.MaskEffect_ReverseEffect_FS_Code, &MaskEffect_ReverseEffect_FS, sizeof( ShaderCode->Base.MaskEffect_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"”½“]Œø‰Êƒ}ƒXƒNˆ——p‚Ìƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"åè»¢åŠ¹æœãƒã‚¹ã‚¯å‡¦ç†ç”¨ã®ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 		Result = Graphics_Android_FragmentShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )ShaderCode->Base.MaskEffect_UseGraphHandle_FS_Code, MaskEffect_UseGraphHandle_FS, sizeof( ShaderCode->Base.MaskEffect_UseGraphHandle_FS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒ}ƒXƒNˆ——p‚Ìƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ãƒã‚¹ã‚¯å‡¦ç†ç”¨ã®ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 		Result = Graphics_Android_FragmentShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )ShaderCode->Base.MaskEffect_UseGraphHandle_ReverseEffect_FS_Code, MaskEffect_UseGraphHandle_ReverseEffect_FS, sizeof( ShaderCode->Base.MaskEffect_UseGraphHandle_ReverseEffect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"”½“]Œø‰Êƒ}ƒXƒNˆ——p‚Ìƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"åè»¢åŠ¹æœãƒã‚¹ã‚¯å‡¦ç†ç”¨ã®ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 
-		// ƒ}ƒXƒN—pƒVƒF[ƒ_[‚Ìì¬
+		// ãƒã‚¹ã‚¯ç”¨ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆ
 		Result = Graphics_Android_Shader_Create( &Shader->Base.MaskEffect_Shader, MaskEffect_VS, MaskEffect_FS ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒ}ƒXƒNˆ——p‚ÌƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ãƒã‚¹ã‚¯å‡¦ç†ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 		Result = Graphics_Android_Shader_Create( &Shader->Base.MaskEffect_ReverseEffect_Shader, MaskEffect_VS, MaskEffect_ReverseEffect_FS ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"”½“]Œø‰Êƒ}ƒXƒNˆ——p‚ÌƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"åè»¢åŠ¹æœãƒã‚¹ã‚¯å‡¦ç†ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
@@ -2112,7 +2140,7 @@ extern int Graphics_Android_Shader_Initialize( void )
 			Result = Graphics_Android_Shader_Create( &Shader->Base.MaskEffect_UseGraphHandle_Shader[ i ], MaskEffect_VS, MaskEffect_UseGraphHandle_FS[ i ] ) ;
 			if( Result < 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒ}ƒXƒNˆ——p‚ÌƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ãƒã‚¹ã‚¯å‡¦ç†ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ) ;
 				GSYS.HardInfo.UseShader = FALSE ;
 				goto END ;
 			}
@@ -2122,84 +2150,84 @@ extern int Graphics_Android_Shader_Initialize( void )
 			Result = Graphics_Android_Shader_Create( &Shader->Base.MaskEffect_UseGraphHandle_ReverseEffect_Shader[ i ], MaskEffect_VS, MaskEffect_UseGraphHandle_ReverseEffect_FS[ i ] ) ;
 			if( Result < 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"”½“]Œø‰Êƒ}ƒXƒNˆ——p‚ÌƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\xcd\x53\xe2\x8e\xb9\x52\x9c\x67\xde\x30\xb9\x30\xaf\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"åè»¢åŠ¹æœãƒã‚¹ã‚¯å‡¦ç†ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ) ;
 				GSYS.HardInfo.UseShader = FALSE ;
 				goto END ;
 			}
 		}
 
-		// ’Pƒ“]‘——p’¸“_ƒVƒF[ƒ_[Eƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚Ìì¬
+		// å˜ç´”è»¢é€ç”¨é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ»ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆ
 		Result = Graphics_Android_VertexShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )&ShaderCode->Base.StretchRect_VS_Code, &Shader->Base.StretchRect_VS, sizeof( ShaderCode->Base.StretchRect_VS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"’Pƒ“]‘——p‚Ì’¸“_ƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"å˜ç´”è»¢é€ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 		Result = Graphics_Android_VertexShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )&ShaderCode->Base.StretchRectTex2_VS_Code, &Shader->Base.StretchRectTex2_VS, sizeof( ShaderCode->Base.StretchRectTex2_VS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xa7\x5e\x19\x6a\x32\x00\x0b\x50\x6e\x30\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒeƒNƒXƒ`ƒƒÀ•W2ŒÂ‚Ì’Pƒ“]‘——p‚Ì’¸“_ƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xa7\x5e\x19\x6a\x32\x00\x0b\x50\x6e\x30\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™2å€‹ã®å˜ç´”è»¢é€ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 		Result = Graphics_Android_VertexShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )&ShaderCode->Base.StretchRectTex8_VS_Code, &Shader->Base.StretchRectTex8_VS, sizeof( ShaderCode->Base.StretchRectTex8_VS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xa7\x5e\x19\x6a\x38\x00\x0b\x50\x6e\x30\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒeƒNƒXƒ`ƒƒÀ•W8ŒÂ‚Ì’Pƒ“]‘——p‚Ì’¸“_ƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xa7\x5e\x19\x6a\x38\x00\x0b\x50\x6e\x30\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™8å€‹ã®å˜ç´”è»¢é€ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 		Result = Graphics_Android_FragmentShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )&ShaderCode->Base.StretchRect_FS_Code, &StretchRect_FS, sizeof( ShaderCode->Base.StretchRect_FS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"’Pƒ“]‘——p‚Ìƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"å˜ç´”è»¢é€ç”¨ã®ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 
-		// ’Pƒ“]‘——pƒVƒF[ƒ_[‚Ìì¬
+		// å˜ç´”è»¢é€ç”¨ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆ
 		Result = Graphics_Android_Shader_Create( &Shader->Base.StretchRect_Shader, Shader->Base.StretchRect_VS, StretchRect_FS ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"’Pƒ“]‘——p‚ÌƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x58\x53\x14\x7d\xe2\x8e\x01\x90\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"å˜ç´”è»¢é€ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 
-		// ƒNƒŠƒAˆ——p’¸“_ƒVƒF[ƒ_[Eƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚Ìì¬
+		// ã‚¯ãƒªã‚¢å‡¦ç†ç”¨é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ»ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆ
 		Result = Graphics_Android_VertexShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )&ShaderCode->Base.ClearRT_VS_Code, &ClearRT_VS, sizeof( ShaderCode->Base.ClearRT_VS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xaf\x30\xea\x30\xa2\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒNƒŠƒAˆ——p‚Ì’¸“_ƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xaf\x30\xea\x30\xa2\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ã‚¯ãƒªã‚¢å‡¦ç†ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 		Result = Graphics_Android_FragmentShader_Create( ( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO * )&ShaderCode->Base.ClearRT_FS_Code, &ClearRT_FS, sizeof( ShaderCode->Base.ClearRT_FS_Code ) / sizeof( GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ) ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xaf\x30\xea\x30\xa2\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒNƒŠƒAˆ——p‚Ìƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg No.%d ‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/, -( Result + 1 ) ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xaf\x30\xea\x30\xa2\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x20\x00\x4e\x00\x6f\x00\x2e\x00\x25\x00\x64\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ã‚¯ãƒªã‚¢å‡¦ç†ç”¨ã®ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ No.%d ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/, -( Result + 1 ) ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 
-		// ƒNƒŠƒAˆ——pƒVƒF[ƒ_[‚Ìì¬
+		// ã‚¯ãƒªã‚¢å‡¦ç†ç”¨ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆ
 		Result = Graphics_Android_Shader_Create( &Shader->Base.ClearRT_Shader, ClearRT_VS, ClearRT_FS ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xaf\x30\xea\x30\xa2\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒNƒŠƒAˆ——p‚ÌƒVƒF[ƒ_[ƒIƒuƒWƒFƒNƒg‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xaf\x30\xea\x30\xa2\x30\xe6\x51\x06\x74\x28\x75\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ã‚¯ãƒªã‚¢å‡¦ç†ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ) ;
 			GSYS.HardInfo.UseShader = FALSE ;
 			goto END ;
 		}
 	}
 
-	DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"¬Œ÷\n" @*/ ) ;
+	DXST_LOGFILE_ADDUTF16LE( "\x10\x62\x9f\x52\x0a\x00\x00"/*@ L"æˆåŠŸ\n" @*/ ) ;
 
 	FunctionResult = 0 ;
 
 END :
 
-	// ƒVƒF[ƒ_[‚ÌŒãn––
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®å¾Œå§‹æœ«
 	Graphics_Android_VertexShaderArray_Release(   ( GLuint * )&MaskEffect_VS,								sizeof( MaskEffect_VS )									/ sizeof( GLuint ) ) ;
 	Graphics_Android_FragmentShaderArray_Release( ( GLuint * )&MaskEffect_FS,								sizeof( MaskEffect_FS )									/ sizeof( GLuint ) ) ;
 	Graphics_Android_FragmentShaderArray_Release( ( GLuint * )&MaskEffect_ReverseEffect_FS,					sizeof( MaskEffect_ReverseEffect_FS )					/ sizeof( GLuint ) ) ;
@@ -2209,12 +2237,12 @@ END :
 	Graphics_Android_VertexShaderArray_Release(   ( GLuint * )&ClearRT_VS,									sizeof( ClearRT_VS )									/ sizeof( GLuint ) ) ;
 	Graphics_Android_FragmentShaderArray_Release( ( GLuint * )&ClearRT_FS,									sizeof( ClearRT_FS )									/ sizeof( GLuint ) ) ;
 
-	// I—¹
+	// çµ‚äº†
 	return FunctionResult ;
 }
 
 
-// Android ‚ÌƒVƒF[ƒ_[‚ÌŒãn––‚ğ‚·‚é
+// Android ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®å¾Œå§‹æœ«ã‚’ã™ã‚‹
 extern int Graphics_Android_Shader_Terminate( void )
 {
 	GRAPHICS_HARDDATA_ANDROID_DEVICE *Device = &GraphicsHardDataAndroid.Device ;
@@ -2295,11 +2323,11 @@ extern int Graphics_Android_Shader_Terminate( void )
 	Live2D_Cubism4_Android_ReleaseShaderAll() ;
 #endif // DX_NON_LIVE2D_CUBISM4
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ‚R‚c•W€•`‰æ‚Ìw’è‚Ì’¸“_—p‚Ì•`‰æ—pƒVƒF[ƒ_[‚ğƒZƒbƒgƒAƒbƒv‚·‚é
+// ï¼“ï¼¤æ¨™æº–æç”»ã®æŒ‡å®šã®é ‚ç‚¹ç”¨ã®æç”»ç”¨ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã™ã‚‹
 extern int Graphics_Android_Shader_Normal3DDraw_Setup( void )
 {
 	GRAPHICS_HARDWARE_ANDROID_SHADER_BASE3D		*SB3D  = &GANDR.Device.Shader.Base3D ;
@@ -2332,7 +2360,7 @@ extern int Graphics_Android_Shader_Normal3DDraw_Setup( void )
 		return FALSE ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒƒAƒ‹ƒtƒ@‚ğ–³‹‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¢ãƒ«ãƒ•ã‚¡ã‚’ç„¡è¦–ã™ã‚‹ã‹ã©ã†ã‹ã‚’ã‚»ãƒƒãƒˆ
 	IgnoreTextureAlpha = 1 ;
 	if( GANDR.Device.DrawSetting.AlphaChannelValidFlag ||
 		GANDR.Device.DrawSetting.AlphaTestValidFlag ||
@@ -2345,24 +2373,24 @@ extern int Graphics_Android_Shader_Normal3DDraw_Setup( void )
 		Graphics_Android_DrawSetting_SetIgnoreDrawGraphAlpha( IgnoreTextureAlpha ) ;
 	}
 
-	// ƒuƒŒƒ“ƒhƒ‚[ƒh‚ÌŒˆ’è
+	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®æ±ºå®š
 	{
 		NextBlendMode = GANDR.Device.DrawSetting.BlendMode ;
 		switch( GANDR.Device.DrawSetting.BlendMode )
 		{
 		case DX_BLENDMODE_SUB :
-			// Œ¸ZƒuƒŒƒ“ƒh‚Ìê‡‚Í14”Ô–Ú‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh‚ğg—p‚·‚é
+			// æ¸›ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰ã®å ´åˆã¯14ç•ªç›®ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’ä½¿ç”¨ã™ã‚‹
 			NextBlendMode = DX_BLENDMODE_SUB1 ;
 			break ;
 
 		case DX_BLENDMODE_NOBLEND :
-			// •`‰ææ‚Éƒ¿’l‚ª‚ ‚éê‡‚Í DX_BLENDMODE_NOBLEND ‚Å‚àƒuƒŒƒ“ƒhƒ‚[ƒh‚Í DX_BLENDMODE_SRCCOLOR ‚É‚·‚é
+			// æç”»å…ˆã«Î±å€¤ãŒã‚ã‚‹å ´åˆã¯ DX_BLENDMODE_NOBLEND ã§ã‚‚ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã¯ DX_BLENDMODE_SRCCOLOR ã«ã™ã‚‹
 			if( GSYS.DrawSetting.AlphaChDrawMode )
 			{
 				NextBlendMode = DX_BLENDMODE_SRCCOLOR ;
 			}
 
-			// •`‰æŒ³‰æ‘œ‚Éƒ¿ƒ`ƒƒƒ“ƒlƒ‹‚ª‚ ‚éê‡‚âƒuƒŒƒ“ƒh‰æ‘œ‚Ì—L–³‚È‚ÇğŒŸ‘æ‚Å DX_BLENDMODE_ALPHA ‚ğg—p‚·‚é
+			// æç”»å…ƒç”»åƒã«Î±ãƒãƒ£ãƒ³ãƒãƒ«ãŒã‚ã‚‹å ´åˆã‚„ãƒ–ãƒ¬ãƒ³ãƒ‰ç”»åƒã®æœ‰ç„¡ãªã©æ¡ä»¶æ¬¡ç¬¬ã§ DX_BLENDMODE_ALPHA ã‚’ä½¿ç”¨ã™ã‚‹
 			if( GANDR.Device.DrawSetting.RenderTexture != NULL )
 			{
 				if( GANDR.Device.DrawSetting.AlphaChannelValidFlag == TRUE )
@@ -2382,7 +2410,7 @@ extern int Graphics_Android_Shader_Normal3DDraw_Setup( void )
 
 	if( GSYS.DrawSetting.ShadowMapDraw )
 	{
-		// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æ
+		// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã¸ã®æç”»
 
 		VS           =  &SB3D->Base3D_ShadowMap_VS     [ BumpMap ] ;
 		VSAddress    = &SCB3D->Base3D_ShadowMap_VS_Code[ BumpMap ] ;
@@ -2395,7 +2423,7 @@ extern int Graphics_Android_Shader_Normal3DDraw_Setup( void )
 	else
 	if( GANDR.Device.State.Lighting )
 	{
-		// ƒ‰ƒCƒeƒBƒ“ƒO‚ ‚è•`‰æ
+		// ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã‚ã‚Šæç”»
 
 		int LightMode[ DX_PIXELLIGHTING_LIGHT_NUM ] ;
 		int i ;
@@ -2430,7 +2458,7 @@ extern int Graphics_Android_Shader_Normal3DDraw_Setup( void )
 	}
 	else
 	{
-		// ƒ‰ƒCƒeƒBƒ“ƒO‚È‚µ•`‰æ
+		// ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ãªã—æç”»
 
 		VS           =  &SB3D->Base3D_NoLighting_VS     [ FogType ] ;
 		VSAddress    = &SCB3D->Base3D_NoLighting_VS_Code[ FogType ] ;
@@ -2447,29 +2475,29 @@ extern int Graphics_Android_Shader_Normal3DDraw_Setup( void )
 
 	if( ( GSYS.Light.EnableNum > DX_VERTEXLIGHTING_LIGHT_NUM || GANDR.UsePixelLightingShader ) && ValidPL )
 	{
-		// ’¸“_ƒVƒF[ƒ_[‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğ’²‚×‚é
+		// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’èª¿ã¹ã‚‹
 		if( *VS_PL == 0 )
 		{
-			// ’¸“_ƒVƒF[ƒ_[‚Ìì¬‚ğ‚İ‚é
+			// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã‚’è©¦ã¿ã‚‹
 			if( Graphics_Android_VertexShader_Create( VSAddress_PL, VS_PL, 1 ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ‚ÅƒsƒNƒZƒ‹ƒ‰ƒCƒeƒBƒ“ƒO—p’¸“_ƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ã§ãƒ”ã‚¯ã‚»ãƒ«ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ç”¨é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
 
-		// ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğ’²‚×‚é
+		// ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’èª¿ã¹ã‚‹
 		if( *FS_PL == 0 )
 		{
-			// ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚Ìì¬‚ğ‚İ‚é
+			// ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã‚’è©¦ã¿ã‚‹
 			if( Graphics_Android_FragmentShader_Create( FSAddress_PL, FS_PL, 1 ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ‚ÅƒsƒNƒZƒ‹ƒ‰ƒCƒeƒBƒ“ƒO—pƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ã§ãƒ”ã‚¯ã‚»ãƒ«ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ç”¨ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
 
-		// ƒVƒF[ƒ_[‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğ’²‚×‚é
+		// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’èª¿ã¹ã‚‹
 		if( *Shader_PL == NULL )
 		{
 			*Shader_PL = Graphics_Android_GetShaderStruct() ;
@@ -2480,43 +2508,43 @@ extern int Graphics_Android_Shader_Normal3DDraw_Setup( void )
 		}
 		if( ( *Shader_PL )->Shader == 0 )
 		{
-			// ƒVƒF[ƒ_[‚Ìì¬‚ğ‚İ‚é
+			// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã‚’è©¦ã¿ã‚‹
 			if( Graphics_Android_Shader_Create( *Shader_PL, *VS_PL, *FS_PL ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ‚ÅƒsƒNƒZƒ‹ƒ‰ƒCƒeƒBƒ“ƒO—pƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ã§ãƒ”ã‚¯ã‚»ãƒ«ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ç”¨ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
 
-		// ƒVƒF[ƒ_[‚ÌƒZƒbƒgƒAƒbƒv
+		// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 		Graphics_Android_DeviceState_SetShader( *Shader_PL, FALSE ) ;
 	}
 	else
 	{
-		// ƒVƒF[ƒ_[‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğ’²‚×‚é
+		// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’èª¿ã¹ã‚‹
 		if( *VS == 0 )
 		{
-			// ƒVƒF[ƒ_[‚Ìì¬‚ğ‚İ‚é
+			// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã‚’è©¦ã¿ã‚‹
 			if( Graphics_Android_VertexShader_Create( VSAddress, VS, 1 ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ‚Å’¸“_ƒ‰ƒCƒeƒBƒ“ƒO—p’¸“_ƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ã§é ‚ç‚¹ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ç”¨é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
 
 
-		// ƒVƒF[ƒ_[‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğ’²‚×‚é
+		// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’èª¿ã¹ã‚‹
 		if( *FS == 0 )
 		{
-			// ƒVƒF[ƒ_[‚Ìì¬‚ğ‚İ‚é
+			// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã‚’è©¦ã¿ã‚‹
 			if( Graphics_Android_FragmentShader_Create( FSAddress, FS, 1 ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ‚Å’¸“_ƒ‰ƒCƒeƒBƒ“ƒO—pƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ã§é ‚ç‚¹ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ç”¨ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
 
-		// ƒVƒF[ƒ_[‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğ’²‚×‚é
+		// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’èª¿ã¹ã‚‹
 		if( *Shader == NULL )
 		{
 			*Shader = Graphics_Android_GetShaderStruct() ;
@@ -2527,24 +2555,24 @@ extern int Graphics_Android_Shader_Normal3DDraw_Setup( void )
 		}
 		if( ( *Shader )->Shader == 0 )
 		{
-			// ƒVƒF[ƒ_[‚Ìì¬‚ğ‚İ‚é
+			// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã‚’è©¦ã¿ã‚‹
 			if( Graphics_Android_Shader_Create( *Shader, *VS, *FS ) != 0 )
 			{
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ‚Å’¸“_ƒ‰ƒCƒeƒBƒ“ƒO—pƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x53\x00\x68\x00\x61\x00\x64\x00\x65\x00\x72\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x33\x00\x44\x00\x44\x00\x72\x00\x61\x00\x77\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xe9\x30\xa4\x30\xc6\x30\xa3\x30\xf3\x30\xb0\x30\x28\x75\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_Shader_Normal3DDraw_Setup ã§é ‚ç‚¹ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ç”¨ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 				return FALSE ;
 			}
 		}
 
-		// ƒVƒF[ƒ_[‚ÌƒZƒbƒgƒAƒbƒv
+		// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 		Graphics_Android_DeviceState_SetShader( *Shader, FALSE ) ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return TRUE ;
 }
 
-// ƒAƒ‹ƒtƒ@ƒeƒXƒg‚Ì”äŠrƒ‚[ƒh‚©‚çƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚ÌƒAƒ‹ƒtƒ@ƒeƒXƒgƒ‚[ƒh( ANDROID_FS_ALPHATEST_CMP_GREATER “™ )‚ğæ“¾‚·‚é
-extern int Graphics_Android_Shader_GetAlphaTestModeIndex( int AlphaTestEnable, int AlphaTestMode /* DX_CMP_NEVER “™ */ )
+// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆã®æ¯”è¼ƒãƒ¢ãƒ¼ãƒ‰ã‹ã‚‰ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆãƒ¢ãƒ¼ãƒ‰( ANDROID_FS_ALPHATEST_CMP_GREATER ç­‰ )ã‚’å–å¾—ã™ã‚‹
+extern int Graphics_Android_Shader_GetAlphaTestModeIndex( int AlphaTestEnable, int AlphaTestMode /* DX_CMP_NEVER ç­‰ */ )
 {
 	if( AlphaTestEnable == FALSE )
 	{
@@ -2592,15 +2620,15 @@ extern int Graphics_Android_Shader_GetAlphaTestModeIndex( int AlphaTestEnable, i
 
 
 
-// Android ‚Ì‰æ–ÊŠÖŒW
+// Android ã®ç”»é¢é–¢ä¿‚
 
-// ScreenCopy ‚â GetDrawScreen ‚ğÀŒ»‚·‚é‚½‚ß‚Ég—p‚·‚éƒeƒ“ƒ|ƒ‰ƒŠƒoƒbƒtƒ@‚Ìì¬( 0:¬Œ÷  -1:¸”s )
+// ScreenCopy ã‚„ GetDrawScreen ã‚’å®Ÿç¾ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã™ã‚‹ãƒ†ãƒ³ãƒãƒ©ãƒªãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ( 0:æˆåŠŸ  -1:å¤±æ•— )
 extern	int		Graphics_Android_SetupSubBackBuffer( void )
 {
 	GANDR.Device.Screen.SubBackBufferTextureSizeX = GSYS.Screen.MainScreenSizeX ;
 	GANDR.Device.Screen.SubBackBufferTextureSizeY = GSYS.Screen.MainScreenSizeY ;
 
-	// ƒsƒNƒZƒ‹ƒ^ƒCƒv‚ÌŒˆ’è
+	// ãƒ”ã‚¯ã‚»ãƒ«ã‚¿ã‚¤ãƒ—ã®æ±ºå®š
 	if( GSYS.Screen.UserScreenImage != NULL )
 	{
 		DWORD i ;
@@ -2629,11 +2657,11 @@ extern	int		Graphics_Android_SetupSubBackBuffer( void )
 			GANDR.Device.Screen.SubBackBufferTextureTempBuffer = DXALLOC( GANDR.Device.Screen.SubBackBufferTextureSizeX * GANDR.Device.Screen.SubBackBufferTextureSizeY * 2 ) ;
 			if( GANDR.Device.Screen.SubBackBufferTextureTempBuffer == NULL )
 			{
-				DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xd6\x30\xd0\x30\xc3\x30\xaf\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x78\x30\x6e\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xe2\x8e\x01\x90\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ö‚ÌƒeƒNƒXƒ`ƒƒ“]‘——p‚Ìƒƒ‚ƒŠŠm•Û‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ;
+				DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xd6\x30\xd0\x30\xc3\x30\xaf\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x78\x30\x6e\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xe2\x8e\x01\x90\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã¸ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£è»¢é€ç”¨ã®ãƒ¡ãƒ¢ãƒªç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ;
 				return -1 ;
 			}
 
-			// “]‘——pƒoƒbƒtƒ@‚Ì“à—e‚ğ‰Šú‰»
+			// è»¢é€ç”¨ãƒãƒƒãƒ•ã‚¡ã®å†…å®¹ã‚’åˆæœŸåŒ–
 			p = ( BYTE * )GANDR.Device.Screen.SubBackBufferTextureTempBuffer ;
 			for( i = 0 ; i < PixelNum ; i ++ )
 			{
@@ -2660,11 +2688,11 @@ extern	int		Graphics_Android_SetupSubBackBuffer( void )
 				GANDR.Device.Screen.SubBackBufferTextureTempBuffer = DXALLOC( GANDR.Device.Screen.SubBackBufferTextureSizeX * GANDR.Device.Screen.SubBackBufferTextureSizeY * 4 ) ;
 				if( GANDR.Device.Screen.SubBackBufferTextureTempBuffer == NULL )
 				{
-					DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xd6\x30\xd0\x30\xc3\x30\xaf\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x78\x30\x6e\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xe2\x8e\x01\x90\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ö‚ÌƒeƒNƒXƒ`ƒƒ“]‘——p‚Ìƒƒ‚ƒŠŠm•Û‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ;
+					DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xd6\x30\xd0\x30\xc3\x30\xaf\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x78\x30\x6e\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xe2\x8e\x01\x90\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã¸ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£è»¢é€ç”¨ã®ãƒ¡ãƒ¢ãƒªç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ;
 					return -1 ;
 				}
 
-				// “]‘——pƒoƒbƒtƒ@‚Ì“à—e‚ğ‰Šú‰»
+				// è»¢é€ç”¨ãƒãƒƒãƒ•ã‚¡ã®å†…å®¹ã‚’åˆæœŸåŒ–
 				p = ( BYTE * )GANDR.Device.Screen.SubBackBufferTextureTempBuffer ;
 				for( i = 0 ; i < PixelNum ; i ++ )
 				{
@@ -2702,11 +2730,11 @@ extern	int		Graphics_Android_SetupSubBackBuffer( void )
 				GANDR.Device.Screen.SubBackBufferTextureTempBuffer = DXALLOC( GANDR.Device.Screen.SubBackBufferTextureSizeX * GANDR.Device.Screen.SubBackBufferTextureSizeY * 4 ) ;
 				if( GANDR.Device.Screen.SubBackBufferTextureTempBuffer == NULL )
 				{
-					DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xd6\x30\xd0\x30\xc3\x30\xaf\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x78\x30\x6e\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xe2\x8e\x01\x90\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ö‚ÌƒeƒNƒXƒ`ƒƒ“]‘——p‚Ìƒƒ‚ƒŠŠm•Û‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ;
+					DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xd6\x30\xd0\x30\xc3\x30\xaf\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x78\x30\x6e\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xe2\x8e\x01\x90\x28\x75\x6e\x30\xe1\x30\xe2\x30\xea\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã¸ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£è»¢é€ç”¨ã®ãƒ¡ãƒ¢ãƒªç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ;
 					return -1 ;
 				}
 
-				// “]‘——pƒoƒbƒtƒ@‚Ì“à—e‚ğ‰Šú‰»
+				// è»¢é€ç”¨ãƒãƒƒãƒ•ã‚¡ã®å†…å®¹ã‚’åˆæœŸåŒ–
 				PixelNum = GANDR.Device.Screen.SubBackBufferTextureSizeX * GANDR.Device.Screen.SubBackBufferTextureSizeY ;
 				p = ( DWORD * )GANDR.Device.Screen.SubBackBufferTextureTempBuffer ;
 				for( i = 0 ; i < PixelNum ; i ++ )
@@ -2733,42 +2761,42 @@ extern	int		Graphics_Android_SetupSubBackBuffer( void )
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR ) ;
 	glTexImage2D( GL_TEXTURE_2D, 0, GANDR.Device.Screen.SubBackBufferTextureInternalFormat, GANDR.Device.Screen.SubBackBufferTextureSizeX, GANDR.Device.Screen.SubBackBufferTextureSizeY, 0, GANDR.Device.Screen.SubBackBufferTexturePixelFormat, GANDR.Device.Screen.SubBackBufferTexturePixelType, 0 ) ;
 
-	// ƒ\ƒtƒgƒEƒFƒAƒŒƒ“ƒ_ƒŠƒ“ƒOƒ‚[ƒh‚Å‚Í‚È‚¢ê‡‚Ì‚İƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ğì¬‚·‚é
+	// ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã§ã¯ãªã„å ´åˆã®ã¿ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆã™ã‚‹
 	if( GSYS.Setting.NotUseHardware == FALSE )
 	{
 		glGenFramebuffers( 1, &GANDR.Device.Screen.SubBackBufferFrameBuffer ) ;
 		glBindFramebuffer( GL_FRAMEBUFFER, GANDR.Device.Screen.SubBackBufferFrameBuffer ) ;
 
-		// ƒŒƒ“ƒ_[ƒoƒbƒtƒ@¯•Êq‚ğ¶¬‚µ‚Ü‚·B
+		// ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒãƒƒãƒ•ã‚¡è­˜åˆ¥å­ã‚’ç”Ÿæˆã—ã¾ã™ã€‚
 		glGenRenderbuffers( 1, &GANDR.Device.Screen.SubBackBufferDepthBuffer ) ;
 
-		// ƒŒƒ“ƒ_[ƒoƒbƒtƒ@¯•Êq‚É‘Î‰‚µ‚½ƒŒƒ“ƒ_[ƒoƒbƒtƒ@ƒIƒuƒWƒFƒNƒg‚ğ¶¬‚µ‚Ü‚·B
+		// ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒãƒƒãƒ•ã‚¡è­˜åˆ¥å­ã«å¯¾å¿œã—ãŸãƒ¬ãƒ³ãƒ€ãƒ¼ãƒãƒƒãƒ•ã‚¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆã—ã¾ã™ã€‚
 		glBindRenderbuffer( GL_RENDERBUFFER, GANDR.Device.Screen.SubBackBufferDepthBuffer ) ;
 
-		// ƒŒƒ“ƒ_[ƒoƒbƒtƒ@‚Ì•‚Æ‚‚³‚ğw’è‚µ‚Ü‚·B
+		// ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒãƒƒãƒ•ã‚¡ã®å¹…ã¨é«˜ã•ã‚’æŒ‡å®šã—ã¾ã™ã€‚
 		glRenderbufferStorage( GL_RENDERBUFFER, GANDR.Device.Caps.DepthBufferFormat[ ZBUFFER_FORMAT_24BIT ], GANDR.Device.Screen.SubBackBufferTextureSizeX, GANDR.Device.Screen.SubBackBufferTextureSizeY ) ;
 
-		// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÌƒAƒ^ƒbƒ`ƒƒ“ƒg‚Æ‚µ‚ÄƒŒƒ“ƒ_[ƒoƒbƒtƒ@‚ğƒAƒ^ƒbƒ`‚µ‚Ü‚·B
+		// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®ã‚¢ã‚¿ãƒƒãƒãƒ¡ãƒ³ãƒˆã¨ã—ã¦ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¢ã‚¿ãƒƒãƒã—ã¾ã™ã€‚
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, GANDR.Device.Screen.SubBackBufferDepthBuffer ) ;
 
-		// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÌƒAƒ^ƒbƒ`ƒƒ“ƒg‚Æ‚µ‚Ä 2D ƒeƒNƒXƒ`ƒƒ‚ğƒAƒ^ƒbƒ`‚µ‚Ü‚·B
+		// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®ã‚¢ã‚¿ãƒƒãƒãƒ¡ãƒ³ãƒˆã¨ã—ã¦ 2D ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚¢ã‚¿ãƒƒãƒã—ã¾ã™ã€‚
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, GANDR.Device.Screen.SubBackBufferTexture, 0 ) ;
 
-		// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ªŠ®‘S‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN‚µ‚Ü‚·B
+		// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ãŒå®Œå…¨ã‹ã©ã†ã‹ãƒã‚§ãƒƒã‚¯ã—ã¾ã™ã€‚
 		GLint status = glCheckFramebufferStatus( GL_FRAMEBUFFER ) ;
 		if( status != GL_FRAMEBUFFER_COMPLETE )
 		{
-			DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xd6\x30\xd0\x30\xc3\x30\xaf\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ;
+			DXST_LOGFILE_ADDUTF16LE( "\xb5\x30\xd6\x30\xd0\x30\xc3\x30\xaf\x30\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ;
 			return -1 ;
 		}
 		glBindFramebuffer( GL_FRAMEBUFFER, 0 ) ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚ÌŒãn––‚ğs‚¤( 0:¬Œ÷  -1:¸”s )
+// ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®å¾Œå§‹æœ«ã‚’è¡Œã†( 0:æˆåŠŸ  -1:å¤±æ•— )
 extern int Graphics_Android_TerminateSubBackBuffer( void )
 {
 	if( GANDR.Device.Screen.SubBackBufferTextureTempBuffer != NULL )
@@ -2795,22 +2823,22 @@ extern int Graphics_Android_TerminateSubBackBuffer( void )
 		GANDR.Device.Screen.SubBackBufferDepthBuffer = 0 ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// •\‰æ–Ê‚ª•`‰ææ‚ÌÛ‚Ì’èŠúˆ—
+// è¡¨ç”»é¢ãŒæç”»å…ˆã®éš›ã®å®šæœŸå‡¦ç†
 extern int Graphics_Android_FrontScreenProcess( void )
 {
 	int NowTime ;
 
-	// •`‰ææ‚ª•\‰æ–Ê‚Å‚Í‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+	// æç”»å…ˆãŒè¡¨ç”»é¢ã§ã¯ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if( ( DWORD )GSYS.DrawSetting.TargetScreen[ 0 ] != DX_SCREEN_FRONT )
 	{
 		return 0 ;
 	}
 
-	// ‘O‰ñ ScreenCopy ‚ğ‚µ‚Ä‚©‚ç 16ms ˆÈãŒo‰ß‚µ‚Ä‚¢‚½‚ç ScreenCopy ‚ğs‚¤
+	// å‰å› ScreenCopy ã‚’ã—ã¦ã‹ã‚‰ 16ms ä»¥ä¸ŠçµŒéã—ã¦ã„ãŸã‚‰ ScreenCopy ã‚’è¡Œã†
 	NowTime = NS_GetNowCount( FALSE ) ;
 	if( NowTime - GANDR.Device.Screen.FrontScreenCopyTime > 16 )
 	{
@@ -2819,7 +2847,7 @@ extern int Graphics_Android_FrontScreenProcess( void )
 		GANDR.Device.Screen.FrontScreenCopyTime = NowTime ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -2846,9 +2874,9 @@ extern int Graphics_Android_FrontScreenProcess( void )
 
 
 
-// Android ‚Ì‰æ‘œŠÖŒW
+// Android ã®ç”»åƒé–¢ä¿‚
 
-// ANDROID_PIXEL_FORMAT_R8G8B8A8 ‚È‚Ç‚ÌƒtƒH[ƒ}ƒbƒg‚É‡‚í‚¹‚½ƒJƒ‰[ƒtƒH[ƒ}ƒbƒgî•ñ‚ğæ“¾‚·‚é
+// ANDROID_PIXEL_FORMAT_R8G8B8A8 ãªã©ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã«åˆã‚ã›ãŸã‚«ãƒ©ãƒ¼ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆæƒ…å ±ã‚’å–å¾—ã™ã‚‹
 extern COLORDATA *Graphics_Android_GetDataFormatColorData( int PixelFormat )
 {
 	static int InitializeFlag = FALSE ;
@@ -2894,8 +2922,8 @@ extern COLORDATA *Graphics_Android_GetDataFormatColorData( int PixelFormat )
 
 
 
-// Šî–{ƒCƒ[ƒW‚ÌƒtƒH[ƒ}ƒbƒg‚ğ DX_BASEIMAGE_FORMAT_NORMAL ‚É•ÏŠ·‚·‚é•K—v‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğƒ`ƒFƒbƒN‚·‚é
-// ( RequiredRgbBaseImageConvFlag ‚Æ RequiredAlphaBaseImageConvFlag ‚É“ü‚é’l  TRUE:•ÏŠ·‚·‚é•K—v‚ª‚ ‚é  FALSE:•ÏŠ·‚·‚é•K—v‚Í–³‚¢ )
+// åŸºæœ¬ã‚¤ãƒ¡ãƒ¼ã‚¸ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’ DX_BASEIMAGE_FORMAT_NORMAL ã«å¤‰æ›ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
+// ( RequiredRgbBaseImageConvFlag ã¨ RequiredAlphaBaseImageConvFlag ã«å…¥ã‚‹å€¤  TRUE:å¤‰æ›ã™ã‚‹å¿…è¦ãŒã‚ã‚‹  FALSE:å¤‰æ›ã™ã‚‹å¿…è¦ã¯ç„¡ã„ )
 extern	int		Graphics_CheckRequiredNormalImageConv_BaseImageFormat_PF(
 	IMAGEDATA_ORIG *Orig,
 	int             RgbBaseImageFormat,
@@ -2960,46 +2988,46 @@ extern	int		Graphics_CheckRequiredNormalImageConv_BaseImageFormat_PF(
 		*RequiredAlphaBaseImageConvFlag = AlphaConvFlag ;
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒ‰æ‘œ“]‘——p‚Ì‹¤—Lƒƒ‚ƒŠ‚ÌƒZƒbƒgƒAƒbƒv‚ğs‚¤
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒè»¢é€ç”¨ã®å…±æœ‰ãƒ¡ãƒ¢ãƒªã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã‚’è¡Œã†
 extern int Graphics_Android_Texture_SetupCommonBuffer( unsigned int Size )
 {
-	// Šù‚Éw’è‚ÌƒTƒCƒY‚ğŠm•Û‚µ‚Ä‚ ‚Á‚½‚ç‰½‚à‚¹‚¸‚ÉI—¹
+	// æ—¢ã«æŒ‡å®šã®ã‚µã‚¤ã‚ºã‚’ç¢ºä¿ã—ã¦ã‚ã£ãŸã‚‰ä½•ã‚‚ã›ãšã«çµ‚äº†
 	if( GANDR.Texture.CommonBufferSize >= Size )
 	{
 		return 0 ;
 	}
 
-	// Šù‘¶‚Ìƒƒ‚ƒŠ‚ğ‰ğ•ú
+	// æ—¢å­˜ã®ãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾
 	DXFREE( GANDR.Texture.CommonBuffer ) ;
 	GANDR.Texture.CommonBuffer     = NULL ;
 	GANDR.Texture.CommonBufferSize = 0 ;
 
-	// —e—Ê‚ğ’Ç‰Á‚·‚é
+	// å®¹é‡ã‚’è¿½åŠ ã™ã‚‹
 	Size += 512 * 1024 ;
 
-	// ƒƒ‚ƒŠ‚ÌŠm•Û
+	// ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿
 	GANDR.Texture.CommonBuffer = DXALLOC( Size ) ;
 	if( GANDR.Texture.CommonBuffer == NULL )
 	{
-		DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6b\x30\x3b\x75\xcf\x50\x92\x30\xe2\x8e\x01\x90\x59\x30\x8b\x30\x5f\x30\x81\x30\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x5b\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x44\x00\x33\x00\x44\x00\x31\x00\x31\x00\x5f\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x43\x00\x6f\x00\x6d\x00\x6d\x00\x6f\x00\x6e\x00\x42\x00\x75\x00\x66\x00\x66\x00\x65\x00\x72\x00\x5d\x00\x0a\x00\x00"/*@ L"ƒeƒNƒXƒ`ƒƒ‚É‰æ‘œ‚ğ“]‘—‚·‚é‚½‚ß‚Ìƒƒ‚ƒŠ‚ÌŠm•Û‚É¸”s‚µ‚Ü‚µ‚½[Graphics_Android_Texture_SetupCommonBuffer]\n" @*/ )) ;
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6b\x30\x3b\x75\xcf\x50\x92\x30\xe2\x8e\x01\x90\x59\x30\x8b\x30\x5f\x30\x81\x30\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x5b\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x44\x00\x33\x00\x44\x00\x31\x00\x31\x00\x5f\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x5f\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x43\x00\x6f\x00\x6d\x00\x6d\x00\x6f\x00\x6e\x00\x42\x00\x75\x00\x66\x00\x66\x00\x65\x00\x72\x00\x5d\x00\x0a\x00\x00"/*@ L"ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«ç”»åƒã‚’è»¢é€ã™ã‚‹ãŸã‚ã®ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ[Graphics_Android_Texture_SetupCommonBuffer]\n" @*/ )) ;
 		return -1 ;
 	}
 
-	// Šm•Û‚µ‚½ƒƒ‚ƒŠ‚ÌƒTƒCƒY‚ğ•Û‘¶
+	// ç¢ºä¿ã—ãŸãƒ¡ãƒ¢ãƒªã®ã‚µã‚¤ã‚ºã‚’ä¿å­˜
 	GANDR.Texture.CommonBufferSize = Size ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒ‰æ‘œ“]‘——p‚Ì‹¤—Lƒƒ‚ƒŠ‚ÌŒãn––‚ğs‚¤
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ç”»åƒè»¢é€ç”¨ã®å…±æœ‰ãƒ¡ãƒ¢ãƒªã®å¾Œå§‹æœ«ã‚’è¡Œã†
 extern int Graphics_Android_Texture_TerminateCommonBuffer( void )
 {
-	// ƒƒ‚ƒŠ‚ğŠm•Û‚µ‚Ä‚¢‚½‚ç‰ğ•ú
+	// ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã—ã¦ã„ãŸã‚‰è§£æ”¾
 	if( GANDR.Texture.CommonBuffer != NULL )
 	{
 		DXFREE( GANDR.Texture.CommonBuffer ) ;
@@ -3007,18 +3035,18 @@ extern int Graphics_Android_Texture_TerminateCommonBuffer( void )
 	}
 	GANDR.Texture.CommonBufferSize = 0 ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgƒeƒNƒXƒ`ƒƒ‚ÉƒeƒNƒXƒ`ƒƒ‚Ì’Pƒ“]‘—‚ğs‚¤
+// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãƒ†ã‚¯ã‚¹ãƒãƒ£ã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å˜ç´”è»¢é€ã‚’è¡Œã†
 extern int		Graphics_Android_StretchRect(
-	GLuint					SrcTexture,			uint32_t SrcTextureWidth,   uint32_t SrcTextureHeight,   const RECT *SrcRect,	// NULL ‚Å‘S‘Ì
-	GLuint					FrameBuffer,		uint32_t FrameBufferWidth,  uint32_t FrameBufferHeight,  const RECT *DestRect,	// NULL ‚Å‘S‘Ì
+	GLuint					SrcTexture,			uint32_t SrcTextureWidth,   uint32_t SrcTextureHeight,   const RECT *SrcRect,	// NULL ã§å…¨ä½“
+	GLuint					FrameBuffer,		uint32_t FrameBufferWidth,  uint32_t FrameBufferHeight,  const RECT *DestRect,	// NULL ã§å…¨ä½“
 	GLenum					FilterType,
 	int						AlphaBlend,
 	GRAPHICS_ANDROID_SHADER	*Shader,
-	GLuint					BlendTexture,		uint32_t BlendTextureWidth, uint32_t BlendTextureHeight, const RECT *BlendRect,	// NULL ‚Å‘S‘Ì
+	GLuint					BlendTexture,		uint32_t BlendTextureWidth, uint32_t BlendTextureHeight, const RECT *BlendRect,	// NULL ã§å…¨ä½“
 	VERTEX_TEX8_2D *		Texcoord8Vertex
 )
 {
@@ -3035,6 +3063,13 @@ extern int		Graphics_Android_StretchRect(
 	RECT		DestRectTemp ;
 	RECT		BlendRectTemp ;
 	int			BlendMode ;
+	int			BlendEnable ;
+	int			BlendRGBSrc ;
+	int			BlendRGBDest ;
+	int			BlendRGBOp ;
+	int			BlendASrc ;
+	int			BlendADest ;
+	int			BlendAOp ;
 	int			NotWriteAlphaChannelFlag ;
 
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -3042,7 +3077,7 @@ extern int		Graphics_Android_StretchRect(
 		return -1 ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒî•ñ‚ğæ“¾
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£æƒ…å ±ã‚’å–å¾—
 	SrcTexWidth  = SrcTextureWidth ;
 	SrcTexHeight = SrcTextureHeight ;
 	DestTexWidth  = FrameBufferWidth ;
@@ -3068,13 +3103,13 @@ extern int		Graphics_Android_StretchRect(
 		DestRect = &DestRectTemp ;
 	}
 
-	// ’¸“_‘‚«o‚µ
+	// é ‚ç‚¹æ›¸ãå‡ºã—
 	DRAWSTOCKINFO
 
-	// •`‰æI—¹
+	// æç”»çµ‚äº†
 	Graphics_Android_RenderEnd() ;
 
-	// ’¸“_ƒf[ƒ^‚ğ€”õ
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’æº–å‚™
 	if( Texcoord8Vertex == NULL )
 	{
 		DestRectF.left   = ( float )DestRect->left   / DestTexWidth  * 2.0f - 1.0f ;
@@ -3105,7 +3140,7 @@ extern int		Graphics_Android_StretchRect(
 			BlendRectF.bottom  = ( float )BlendRect->bottom  / BlendTextureHeight ;
 		}
 
-		// ’¸“_ƒf[ƒ^‚ğƒZƒbƒg
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆ
 		VertexDataP = VertexData ;
 
 		VertexDataP[ 0 ] = DestRectF.left ;
@@ -3160,7 +3195,7 @@ extern int		Graphics_Android_StretchRect(
 	{
 		int i ;
 
-		// ’¸“_ƒf[ƒ^‚ğƒZƒbƒg
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆ
 		VertexDataP = VertexData ;
 
 		for( i = 0 ; i < 4 ; i ++ )
@@ -3189,57 +3224,64 @@ extern int		Graphics_Android_StretchRect(
 		}
 	}
 
-	// •`‰æ‚ÌŠJn‚ğs‚¤
+	// æç”»ã®é–‹å§‹ã‚’è¡Œã†
 	Graphics_Android_RenderBegin() ;
 
-	// StretchRect—p‚Ìİ’è‚ğs‚¤
+	// StretchRectç”¨ã®è¨­å®šã‚’è¡Œã†
 	{
-		// •`‰ææ‚ÌƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ğ•ÏX( İ’è‚Í Graphics_Android_DeviceState_RefreshRenderState ‚Å–ß‚· )
+		// æç”»å…ˆã®ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã‚’å¤‰æ›´( è¨­å®šã¯ Graphics_Android_DeviceState_RefreshRenderState ã§æˆ»ã™ )
 		glBindFramebuffer( GL_FRAMEBUFFER, FrameBuffer ) ;
 
-		// ƒrƒ…[ƒ|[ƒg‚ğƒZƒbƒg( İ’è‚Í Graphics_Android_DeviceState_RefreshRenderState ‚Å–ß‚· )
+		// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã‚’ã‚»ãƒƒãƒˆ( è¨­å®šã¯ Graphics_Android_DeviceState_RefreshRenderState ã§æˆ»ã™ )
 		glViewport( 0, 0, FrameBufferWidth, FrameBufferHeight ) ;
 
-		// Zƒoƒbƒtƒ@‚ğ–³Œø‰»
+		// Zãƒãƒƒãƒ•ã‚¡ã‚’ç„¡åŠ¹åŒ–
 		Graphics_Android_DeviceState_SetDepthEnable( FALSE ) ;
 		Graphics_Android_DeviceState_SetDepthWriteEnable( FALSE ) ;
 
-		// ƒVƒF[ƒ_[‚ğƒZƒbƒg
+		// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 		if( Shader == NULL )
 		{
 			Shader = &GANDR.Device.Shader.Base.StretchRect_Shader ;
 		}
 		Graphics_Android_DeviceState_SetShader( Shader, FALSE ) ;
 
-		// Uniform ‚ÌXV
+		// Uniform ã®æ›´æ–°
 		Graphics_Android_DeviceState_UpdateShaderUniform( Shader, 0 ) ;
 
-		// ƒeƒNƒXƒ`ƒƒ‚ğƒZƒbƒg( İ’è‚Í Graphics_Android_DeviceState_RefreshRenderState ‚Å–ß‚· )
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚»ãƒƒãƒˆ( è¨­å®šã¯ Graphics_Android_DeviceState_RefreshRenderState ã§æˆ»ã™ )
 		glActiveTexture( GL_TEXTURE0 ) ;
 		glBindTexture( GL_TEXTURE_2D, SrcTexture ) ;
 
-		// ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^ƒŠƒ“ƒOİ’è‚ğs‚¤
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°è¨­å®šã‚’è¡Œã†
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, FilterType ) ;
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilterType ) ;
 
-		// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğƒZƒbƒg
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚»ãƒƒãƒˆ
 		if( BlendTexture != 0 )
 		{
-			// ƒeƒNƒXƒ`ƒƒ‚ğƒZƒbƒg( İ’è‚Í Graphics_Android_DeviceState_RefreshRenderState ‚Å–ß‚· )
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚»ãƒƒãƒˆ( è¨­å®šã¯ Graphics_Android_DeviceState_RefreshRenderState ã§æˆ»ã™ )
 			glActiveTexture( GL_TEXTURE1 ) ;
 			glBindTexture( GL_TEXTURE_2D, BlendTexture ) ;
 
-			// ƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^ƒŠƒ“ƒOİ’è‚ğs‚¤
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°è¨­å®šã‚’è¡Œã†
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, FilterType ) ;
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilterType ) ;
 		}
 
-		// ƒuƒŒƒ“ƒhƒ‚[ƒh‚ğ•ÏX
-		BlendMode = GANDR.Device.State.BlendMode ;
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’å¤‰æ›´
+		BlendMode		= GANDR.Device.State.BlendMode ;
+		BlendEnable		= GANDR.Device.State.BlendEnable ;
+		BlendRGBSrc		= GANDR.Device.State.BlendRGBSrc ;
+		BlendRGBDest	= GANDR.Device.State.BlendRGBDest ;
+		BlendRGBOp		= GANDR.Device.State.BlendRGBOp ;
+		BlendASrc		= GANDR.Device.State.BlendASrc ;
+		BlendADest		= GANDR.Device.State.BlendADest ;
+		BlendAOp		= GANDR.Device.State.BlendAOp ;
 		NotWriteAlphaChannelFlag = GANDR.Device.State.NotWriteAlphaChannelFlag ;
-		Graphics_Android_DeviceState_SetBlendMode( AlphaBlend ? DX_BLENDMODE_ALPHA : DX_BLENDMODE_NOBLEND, FALSE ) ;
+		Graphics_Android_DeviceState_SetBlendMode( AlphaBlend ? DX_BLENDMODE_ALPHA : DX_BLENDMODE_NOBLEND, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, FALSE ) ;
 
-		// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 		Graphics_Android_DeviceState_SetupShaderVertexData(
 			Shader,
 			Texcoord8Vertex != NULL ? &g_StretchRectTex8VertexInputInfo : ( BlendTexture != 0 ? &g_StretchRectTex2VertexInputInfo : &g_StretchRectVertexInputInfo ),
@@ -3247,33 +3289,43 @@ extern int		Graphics_Android_StretchRect(
 		) ;
 	}
 
-	// •`‰æ
+	// æç”»
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ) ;
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
-	// İ’è‚ğŒ³‚É–ß‚·
+	// è¨­å®šã‚’å…ƒã«æˆ»ã™
 	{
-		// ƒuƒŒƒ“ƒhƒ‚[ƒh‚ğ•ÏX
-		Graphics_Android_DeviceState_SetBlendMode( BlendMode, NotWriteAlphaChannelFlag ) ;
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’å¤‰æ›´
+		Graphics_Android_DeviceState_SetBlendMode(
+			BlendMode,
+			BlendEnable,
+			BlendRGBSrc,
+			BlendRGBDest,
+			BlendRGBOp,
+			BlendASrc,
+			BlendADest,
+			BlendAOp,
+			NotWriteAlphaChannelFlag
+		) ;
 
-		// ¡‚Ü‚Å‚Ìİ’è‚ğ•œ‹A‚·‚é
+		// ä»Šã¾ã§ã®è¨­å®šã‚’å¾©å¸°ã™ã‚‹
 		Graphics_Android_DeviceState_RefreshRenderState() ;
 	}
 
-	// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// w’è‚ÌƒeƒNƒXƒ`ƒƒ‚Ì“à—e‚É“Ç‚İ‚İƒAƒNƒZƒX‚Å‚«‚é‚æ‚¤‚É‚·‚é
+// æŒ‡å®šã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å†…å®¹ã«èª­ã¿è¾¼ã¿ã‚¢ã‚¯ã‚»ã‚¹ã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
 extern	int		Graphics_Android_Texture_Map(
 	GLuint				TargetTexture,
 	GLuint				TargetFrameBuffer,
 	GLuint				TargetWidth,
 	GLuint				TargetHeight,
-	const RECT *		MapRect /* NULL ‚Å‘S‘Ì */,
+	const RECT *		MapRect /* NULL ã§å…¨ä½“ */,
 	BASEIMAGE *			MapBaseImage,
 	void **				MapTempImage
 )
@@ -3296,7 +3348,7 @@ extern	int		Graphics_Android_Texture_Map(
 		MapRect         = &TempRect ;
 	}
 
-	// ƒGƒ‰[ƒ`ƒFƒbƒN
+	// ã‚¨ãƒ©ãƒ¼ãƒã‚§ãƒƒã‚¯
 	if( MapRect->left >= MapRect->right ||
 		MapRect->top  >= MapRect->bottom ||
 		MapRect->left   < 0 ||
@@ -3310,20 +3362,20 @@ extern	int		Graphics_Android_Texture_Map(
 	Width  = ( GLuint )( MapRect->right  - MapRect->left ) ;
 	Height = ( GLuint )( MapRect->bottom - MapRect->top ) ;
 
-	// ƒCƒ[ƒWƒf[ƒ^‚ğ•Û‘¶‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+	// ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿ã‚’ä¿å­˜ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 	*MapTempImage = DXALLOC( Width * Height * 4 * 2 ) ;
 	if( *MapTempImage == NULL )
 	{
 		return -1 ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚Ìê‡‚ÍƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚É‘‚«o‚·
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å ´åˆã¯ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«æ›¸ãå‡ºã™
 	if( TargetFrameBuffer == 0 )
 	{
 		GLuint TempFrameBuffer = 0 ;
 		GLuint TempTexture = 0 ;
 
-		// ì‹Æ—pƒeƒNƒXƒ`ƒƒ‚Ìì¬
+		// ä½œæ¥­ç”¨ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ä½œæˆ
 		glGenTextures( 1, &TempTexture ) ;
 		glBindTexture( GL_TEXTURE_2D, TempTexture ) ;
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ) ;
@@ -3332,7 +3384,7 @@ extern	int		Graphics_Android_Texture_Map(
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST ) ;
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, Width, Height, 0, GL_RGB, GL_UNSIGNED_BYTE, 0 ) ;
 
-		// ì‹Æ—pƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ìì¬
+		// ä½œæ¥­ç”¨ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ
 		glGenFramebuffers( 1, &TempFrameBuffer );
 		glBindFramebuffer( GL_FRAMEBUFFER, TempFrameBuffer );
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TempTexture, 0 ) ;
@@ -3343,15 +3395,15 @@ extern	int		Graphics_Android_Texture_Map(
 			return -1 ;
 		}
 
-		// ì‹Æ—pƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÉƒeƒNƒXƒ`ƒƒ‚Ì“à—e‚ğ“]‘—
+		// ä½œæ¥­ç”¨ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å†…å®¹ã‚’è»¢é€
 		Graphics_Android_StretchRect( TargetTexture, TargetWidth, TargetHeight, MapRect, TempFrameBuffer, Width, Height, NULL ) ;
 
-		// ƒsƒNƒZƒ‹ƒf[ƒ^‚Ì“Ç‚İæ‚è
+		// ãƒ”ã‚¯ã‚»ãƒ«ãƒ‡ãƒ¼ã‚¿ã®èª­ã¿å–ã‚Š
 		glBindFramebuffer( GL_FRAMEBUFFER, TempFrameBuffer ) ;
 		glReadPixels( 0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, *MapTempImage ) ;
 		glBindFramebuffer( GL_FRAMEBUFFER, GANDR.Device.State.TargetFrameBuffer ) ;
 
-		// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÆƒeƒNƒXƒ`ƒƒ‚Ìíœ
+		// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã¨ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å‰Šé™¤
 		glBindTexture( GL_TEXTURE_2D, 0 ) ;
 		glDeleteTextures( 1, &TempTexture ) ;
 		glDeleteFramebuffers( 1, &TempFrameBuffer ) ;
@@ -3362,12 +3414,12 @@ extern	int		Graphics_Android_Texture_Map(
 //		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT, &ext_format);
 //		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &ext_type);
 
-// ƒeƒXƒgƒR[ƒh
+// ãƒ†ã‚¹ãƒˆã‚³ãƒ¼ãƒ‰
 //#ifdef _DEBUG
 //		_MEMSET( *MapTempImage, 0xff, Width * Height * 2 * 4 ) ;
 //#endif
 
-		// ƒsƒNƒZƒ‹ƒf[ƒ^‚Ì“Ç‚İæ‚è
+		// ãƒ”ã‚¯ã‚»ãƒ«ãƒ‡ãƒ¼ã‚¿ã®èª­ã¿å–ã‚Š
 		glBindFramebuffer( GL_FRAMEBUFFER, TargetFrameBuffer ) ;
 
 		GLint pack_backup, unpack_backup ;
@@ -3381,7 +3433,7 @@ extern	int		Graphics_Android_Texture_Map(
 
 		glBindFramebuffer( GL_FRAMEBUFFER, GANDR.Device.State.TargetFrameBuffer ) ;
 
-// ƒeƒXƒgƒR[ƒh
+// ãƒ†ã‚¹ãƒˆã‚³ãƒ¼ãƒ‰
 //#ifdef _DEBUG
 //		int kk ;
 //		for( kk = Width * Height * 2 * 4 - 1 ; kk >= 0; kk -- )
@@ -3398,7 +3450,7 @@ extern	int		Graphics_Android_Texture_Map(
 //#endif
 	}
 
-	// Šî–{ƒCƒ[ƒW\‘¢‘Ì‚Ìƒf[ƒ^‚ÉƒZƒbƒg
+	// åŸºæœ¬ã‚¤ãƒ¡ãƒ¼ã‚¸æ§‹é€ ä½“ã®ãƒ‡ãƒ¼ã‚¿ã«ã‚»ãƒƒãƒˆ
 	MapBaseImage->ColorData      = *Graphics_Android_GetDataFormatColorData( ANDROID_PIXEL_FORMAT_R8G8B8A8 ) ;
 	MapBaseImage->Width          = ( int )Width ;
 	MapBaseImage->Height         = ( int )Height ;
@@ -3407,21 +3459,21 @@ extern	int		Graphics_Android_Texture_Map(
 	MapBaseImage->MipMapCount    = 0 ;
 	MapBaseImage->GraphDataCount = 0 ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// w’è‚ÌƒeƒNƒXƒ`ƒƒ‚Ì“à—e‚Ö‚Ì“Ç‚İ‚İƒAƒNƒZƒX‚ğI—¹‚·‚é
+// æŒ‡å®šã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å†…å®¹ã¸ã®èª­ã¿è¾¼ã¿ã‚¢ã‚¯ã‚»ã‚¹ã‚’çµ‚äº†ã™ã‚‹
 extern	int		Graphics_Android_Texture_Unmap( void * MapTempImage )
 {
-	// ƒƒ‚ƒŠ‚Ì‰ğ•ú
+	// ãƒ¡ãƒ¢ãƒªã®è§£æ”¾
 	if( MapTempImage != NULL )
 	{
 		DXFREE( MapTempImage ) ;
 		MapTempImage = NULL ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -3468,16 +3520,16 @@ extern	int		Graphics_Android_Texture_Unmap( void * MapTempImage )
 
 
 
-// AndroidDevice ‚Ì‰Šú‰»ŠÖŒW
+// AndroidDevice ã®åˆæœŸåŒ–é–¢ä¿‚
 
-// ƒfƒoƒCƒX‚Ìì¬‚É‘Š“–‚·‚éˆ—‚ğs‚¤( 0:¬Œ÷  -1:¸”s )
+// ãƒ‡ãƒã‚¤ã‚¹ã®ä½œæˆã«ç›¸å½“ã™ã‚‹å‡¦ç†ã‚’è¡Œã†( 0:æˆåŠŸ  -1:å¤±æ•— )
 extern	int		Graphics_Android_Device_Create( void )
 {
-	// OpenGL ES ‚Æ EGL ‚Ì‰Šú‰»
+	// OpenGL ES ã¨ EGL ã®åˆæœŸåŒ–
 
-	// –Ú“I‚Ì\¬‚Ì‘®«‚ğ‚±‚±‚Åw’è‚µ‚Ü‚·B
-	// ˆÈ‰º‚ÅAƒIƒ“ƒXƒNƒŠ[ƒ“ ƒEƒBƒ“ƒhƒE‚Æ
-	// ŒİŠ·«‚Ì‚ ‚éAŠeFÅ’á 8 ƒrƒbƒg‚ÌƒRƒ“ƒ|[ƒlƒ“ƒg‚Ì EGLConfig ‚ğ‘I‘ğ‚µ‚Ü‚·
+	// ç›®çš„ã®æ§‹æˆã®å±æ€§ã‚’ã“ã“ã§æŒ‡å®šã—ã¾ã™ã€‚
+	// ä»¥ä¸‹ã§ã€ã‚ªãƒ³ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¨
+	// äº’æ›æ€§ã®ã‚ã‚‹ã€å„è‰²æœ€ä½ 8 ãƒ“ãƒƒãƒˆã®ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã® EGLConfig ã‚’é¸æŠã—ã¾ã™
 	EGLint format ;
 	EGLint numConfigs ;
 	EGLConfig config ;
@@ -3500,7 +3552,7 @@ extern	int		Graphics_Android_Device_Create( void )
 
 	GANDR.Device.Screen.Display = eglGetDisplay( EGL_DEFAULT_DISPLAY ) ;
 
-	// ƒ\ƒtƒgƒEƒFƒAŒn‚Ì 16bit‰æ–Êƒ‚[ƒh‚Ìê‡‚Í R5G6B5 ‚É‚·‚é
+	// ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ç³»ã® 16bitç”»é¢ãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã¯ R5G6B5 ã«ã™ã‚‹
 	if( ( GSYS.Screen.UserScreenImage != NULL &&
 		  ( GSYS.Screen.UserScreenImagePixelFormat == DX_USER_SCREEN_PIXEL_FORMAT_R5G6B5 ||
 		    GSYS.Screen.UserScreenImagePixelFormat == DX_USER_SCREEN_PIXEL_FORMAT_R5G5B5X1 ||
@@ -3512,7 +3564,7 @@ extern	int		Graphics_Android_Device_Create( void )
 		attribs[ 2 * 3 + 1 ] = 5 ;
 	}
 
-	// EGL ‚ğ‰Šú‰»
+	// EGL ã‚’åˆæœŸåŒ–
 	Major = 0 ;
 	Minor = 0 ;
 	eglInitialize(      GANDR.Device.Screen.Display, &Major, &Minor ) ;
@@ -3526,11 +3578,11 @@ extern	int		Graphics_Android_Device_Create( void )
 
 	if( eglMakeCurrent( GANDR.Device.Screen.Display, GANDR.Device.Screen.Surface, GANDR.Device.Screen.Surface, GANDR.Device.Screen.Context ) == EGL_FALSE )
 	{
-		DXST_LOGFILE_ADDUTF16LE( "\x65\x00\x67\x00\x6c\x00\x4d\x00\x61\x00\x6b\x00\x65\x00\x43\x00\x75\x00\x72\x00\x72\x00\x65\x00\x6e\x00\x74\x00\x20\x00\x4c\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"eglMakeCurrent ‚ª¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\x65\x00\x67\x00\x6c\x00\x4d\x00\x61\x00\x6b\x00\x65\x00\x43\x00\x75\x00\x72\x00\x72\x00\x65\x00\x6e\x00\x74\x00\x20\x00\x4c\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"eglMakeCurrent ãŒå¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ;
 		return -1 ;
 	}
 
-	// ‰æ–ÊƒTƒCƒYæ“¾
+	// ç”»é¢ã‚µã‚¤ã‚ºå–å¾—
 	if( g_AndroidSys.NativeWindow == NULL )
 	{
 		eglQuerySurface( GANDR.Device.Screen.Display, GANDR.Device.Screen.Surface, EGL_WIDTH,  &GANDR.Device.Screen.Width ) ;
@@ -3541,14 +3593,14 @@ extern	int		Graphics_Android_Device_Create( void )
 		GANDR.Device.Screen.Width = ANativeWindow_getWidth( ( ANativeWindow * )g_AndroidSys.NativeWindow ) ;
 		GANDR.Device.Screen.Height = ANativeWindow_getHeight( ( ANativeWindow * )g_AndroidSys.NativeWindow ) ;
 	}
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\xb9\x30\xaf\x30\xea\x30\xfc\x30\xf3\x30\xb5\x30\xa4\x30\xba\x30\x3a\x00\x25\x00\x64\x00\x20\x00\x78\x00\x20\x00\x25\x00\x64\x00\x00"/*@ L"ƒXƒNƒŠ[ƒ“ƒTƒCƒY:%d x %d" @*/, GANDR.Device.Screen.Width, GANDR.Device.Screen.Height )) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\xb9\x30\xaf\x30\xea\x30\xfc\x30\xf3\x30\xb5\x30\xa4\x30\xba\x30\x3a\x00\x25\x00\x64\x00\x20\x00\x78\x00\x20\x00\x25\x00\x64\x00\x00"/*@ L"ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚µã‚¤ã‚º:%d x %d" @*/, GANDR.Device.Screen.Width, GANDR.Device.Screen.Height )) ;
 
 	if( GSYS.Screen.NotWaitVSyncFlag )
 	{
 		eglSwapInterval( GANDR.Device.Screen.Display, 0 ) ;
 	}
 
-	// ƒo[ƒWƒ‡ƒ“‚âƒxƒ“ƒ_[–¼‚ğæ“¾
+	// ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚„ãƒ™ãƒ³ãƒ€ãƒ¼åã‚’å–å¾—
 	{
 		const GLubyte *Version					= glGetString( GL_VERSION ) ;
 		const GLubyte *Renderer					= glGetString( GL_RENDERER ) ;
@@ -3565,7 +3617,7 @@ extern	int		Graphics_Android_Device_Create( void )
 			if( ( DWORD )( Length * 4 + 2 )  < sizeof( TempStr ) )
 			{
 				ConvString( ( char * )Version, -1, DX_CHARCODEFORMAT_ASCII, TempStr, sizeof( TempStr ), DX_CHARCODEFORMAT_UTF16LE ) ;
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\xd0\x30\xfc\x30\xb8\x30\xe7\x30\xf3\x30\x3a\x00\x25\x00\x73\x00\x00"/*@ L"ƒo[ƒWƒ‡ƒ“:%s" @*/, TempStr )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\xd0\x30\xfc\x30\xb8\x30\xe7\x30\xf3\x30\x3a\x00\x25\x00\x73\x00\x00"/*@ L"ãƒãƒ¼ã‚¸ãƒ§ãƒ³:%s" @*/, TempStr )) ;
 			}
 		}
 
@@ -3577,7 +3629,7 @@ extern	int		Graphics_Android_Device_Create( void )
 			if( ( DWORD )( Length * 4 + 2 ) < sizeof( TempStr ) )
 			{
 				ConvString( ( char * )Renderer, -1, DX_CHARCODEFORMAT_ASCII, TempStr, sizeof( TempStr ), DX_CHARCODEFORMAT_UTF16LE ) ;
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\xec\x30\xf3\x30\xc0\x30\xe9\x30\xfc\x30\x3a\x00\x25\x00\x73\x00\x00"/*@ L"ƒŒƒ“ƒ_ƒ‰[:%s" @*/, TempStr )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\xec\x30\xf3\x30\xc0\x30\xe9\x30\xfc\x30\x3a\x00\x25\x00\x73\x00\x00"/*@ L"ãƒ¬ãƒ³ãƒ€ãƒ©ãƒ¼:%s" @*/, TempStr )) ;
 			}
 		}
 
@@ -3589,7 +3641,7 @@ extern	int		Graphics_Android_Device_Create( void )
 			if( ( DWORD )( Length * 4 + 2 ) < sizeof( TempStr ) )
 			{
 				ConvString( ( char * )Vendor, -1, DX_CHARCODEFORMAT_ASCII, TempStr, sizeof( TempStr ), DX_CHARCODEFORMAT_UTF16LE ) ;
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\xd9\x30\xf3\x30\xc0\x30\xfc\x30\x3a\x00\x25\x00\x73\x00\x00"/*@ L"ƒxƒ“ƒ_[:%s" @*/, TempStr )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\xd9\x30\xf3\x30\xc0\x30\xfc\x30\x3a\x00\x25\x00\x73\x00\x00"/*@ L"ãƒ™ãƒ³ãƒ€ãƒ¼:%s" @*/, TempStr )) ;
 			}
 		}
 
@@ -3601,12 +3653,12 @@ extern	int		Graphics_Android_Device_Create( void )
 			if( ( DWORD )( Length * 4 + 2 ) < sizeof( TempStr ) )
 			{
 				ConvString( ( char * )Shading_Language_Version, -1, DX_CHARCODEFORMAT_ASCII, TempStr, sizeof( TempStr ), DX_CHARCODEFORMAT_UTF16LE ) ;
-				DXST_LOGFILEFMT_ADDUTF16LE(( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x00\x8a\x9e\x8a\xd0\x30\xfc\x30\xb8\x30\xe7\x30\xf3\x30\x3a\x00\x25\x00\x73\x00\x00"/*@ L"ƒVƒF[ƒ_[Œ¾Œêƒo[ƒWƒ‡ƒ“:%s" @*/, TempStr )) ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x00\x8a\x9e\x8a\xd0\x30\xfc\x30\xb8\x30\xe7\x30\xf3\x30\x3a\x00\x25\x00\x73\x00\x00"/*@ L"ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼è¨€èªãƒãƒ¼ã‚¸ãƒ§ãƒ³:%s" @*/, TempStr )) ;
 			}
 		}
 	}
 
-	// Extensions ‰ğÍ
+	// Extensions è§£æ
 	{
 		const GLubyte *lExtensions = glGetString( GL_EXTENSIONS );
 		const GLubyte *lExtensionsTemp ;
@@ -3615,7 +3667,7 @@ extern	int		Graphics_Android_Device_Create( void )
 		int k ;
 		int l ;
 
-		DXST_LOGFILE_ADDUTF16LE(( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\x45\x00\x78\x00\x74\x00\x65\x00\x6e\x00\x73\x00\x69\x00\x6f\x00\x6e\x00\x73\x00\x20\x00\x00\x4e\xa7\x89\x0a\x00\x00"/*@ L"OpenGL ES Extensions ˆê——\n" @*/ )) ;
+		DXST_LOGFILE_ADDUTF16LE(( "\x4f\x00\x70\x00\x65\x00\x6e\x00\x47\x00\x4c\x00\x20\x00\x45\x00\x53\x00\x20\x00\x45\x00\x78\x00\x74\x00\x65\x00\x6e\x00\x73\x00\x69\x00\x6f\x00\x6e\x00\x73\x00\x20\x00\x00\x4e\xa7\x89\x0a\x00\x00"/*@ L"OpenGL ES Extensions ä¸€è¦§\n" @*/ )) ;
 
 		_MEMSET( GANDR.Device.Caps.Extensions, 0, sizeof( GANDR.Device.Caps.Extensions ) ) ;
 
@@ -3629,7 +3681,7 @@ extern	int		Graphics_Android_Device_Create( void )
 				break ;
 			}
 
-			// ƒƒO‚Éo—Í
+			// ãƒ­ã‚°ã«å‡ºåŠ›
 			{
 				char lTempStr[ 256 ] ;
 				for( i = 0 ; i < 230 && lExtensionsTemp[ j + i ] != '\0' && lExtensionsTemp[ j + i ] != ' '; i++ )
@@ -3714,50 +3766,50 @@ extern	int		Graphics_Android_Device_Create( void )
 		GANDR.Device.Caps.ExtensionNames[ l ] = NULL ;
 	}
 
-	// ƒVƒF[ƒ_[ŠÖŒW‚Ì”\—Íæ“¾
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼é–¢ä¿‚ã®èƒ½åŠ›å–å¾—
 	glGetIntegerv( GL_MAX_VERTEX_ATTRIBS,									&GANDR.Device.Caps.Shader_Max_Vertex_Attribs ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x41\x00\x74\x00\x74\x00\x72\x00\x69\x00\x62\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex AttribsF%d" @*/,				 GANDR.Device.Caps.Shader_Max_Vertex_Attribs )) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x41\x00\x74\x00\x74\x00\x72\x00\x69\x00\x62\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex Attribsï¼š%d" @*/,				 GANDR.Device.Caps.Shader_Max_Vertex_Attribs )) ;
 	glGetIntegerv( GL_MAX_VERTEX_UNIFORM_VECTORS,							&GANDR.Device.Caps.Shader_Max_Vertex_Uniform_Vectors ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x66\x00\x6f\x00\x72\x00\x6d\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex Uniform VectorsF%d" @*/,		 GANDR.Device.Caps.Shader_Max_Vertex_Uniform_Vectors )) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x66\x00\x6f\x00\x72\x00\x6d\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex Uniform Vectorsï¼š%d" @*/,		 GANDR.Device.Caps.Shader_Max_Vertex_Uniform_Vectors )) ;
 	glGetIntegerv( GL_MAX_VARYING_VECTORS,									&GANDR.Device.Caps.Shader_Max_Varying_Vectors ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x61\x00\x72\x00\x79\x00\x69\x00\x6e\x00\x67\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Varying VectorsF%d" @*/,				 GANDR.Device.Caps.Shader_Max_Varying_Vectors )) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x61\x00\x72\x00\x79\x00\x69\x00\x6e\x00\x67\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Varying Vectorsï¼š%d" @*/,				 GANDR.Device.Caps.Shader_Max_Varying_Vectors )) ;
 	glGetIntegerv( GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,						&GANDR.Device.Caps.Shader_Max_Combined_Texture_Image_Units ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x43\x00\x6f\x00\x6d\x00\x62\x00\x69\x00\x6e\x00\x65\x00\x64\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Combined Texture Image UnitsF%d" @*/,	 GANDR.Device.Caps.Shader_Max_Combined_Texture_Image_Units )) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x43\x00\x6f\x00\x6d\x00\x62\x00\x69\x00\x6e\x00\x65\x00\x64\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Combined Texture Image Unitsï¼š%d" @*/,	 GANDR.Device.Caps.Shader_Max_Combined_Texture_Image_Units )) ;
 	glGetIntegerv( GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS,						&GANDR.Device.Caps.Shader_Max_Vertex_Texture_Image_Units ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex Texture Image UnitsF%d" @*/,	 GANDR.Device.Caps.Shader_Max_Vertex_Texture_Image_Units )) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x56\x00\x65\x00\x72\x00\x74\x00\x65\x00\x78\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Vertex Texture Image Unitsï¼š%d" @*/,	 GANDR.Device.Caps.Shader_Max_Vertex_Texture_Image_Units )) ;
 	glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS,								&GANDR.Device.Caps.Shader_Max_Texture_Image_Units ) ;
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Texture Image UnitsF%d" @*/,			 GANDR.Device.Caps.Shader_Max_Texture_Image_Units )) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x74\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Texture Image Unitsï¼š%d" @*/,			 GANDR.Device.Caps.Shader_Max_Texture_Image_Units )) ;
 	glGetIntegerv( GL_MAX_FRAGMENT_UNIFORM_VECTORS,							&GANDR.Device.Caps.Shader_Max_Fragment_Uniform_Vectors ) ;	
-	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x46\x00\x72\x00\x61\x00\x67\x00\x6d\x00\x65\x00\x6e\x00\x74\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x66\x00\x6f\x00\x72\x00\x6d\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Fragment Uniform VectorsF%d" @*/,		 GANDR.Device.Caps.Shader_Max_Fragment_Uniform_Vectors )) ;
+	DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x78\x00\x20\x00\x46\x00\x72\x00\x61\x00\x67\x00\x6d\x00\x65\x00\x6e\x00\x74\x00\x20\x00\x55\x00\x6e\x00\x69\x00\x66\x00\x6f\x00\x72\x00\x6d\x00\x20\x00\x56\x00\x65\x00\x63\x00\x74\x00\x6f\x00\x72\x00\x73\x00\x1a\xff\x25\x00\x64\x00\x00"/*@ L"Max Fragment Uniform Vectorsï¼š%d" @*/,		 GANDR.Device.Caps.Shader_Max_Fragment_Uniform_Vectors )) ;
 
-	// RGB‚ÌƒuƒŒƒ“ƒhİ’è‚Æ‚Í•Ê‚ÉƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹‚ÌƒuƒŒƒ“ƒhİ’è‚ªs‚¦‚é
+	// RGBã®ãƒ–ãƒ¬ãƒ³ãƒ‰è¨­å®šã¨ã¯åˆ¥ã«ã‚¢ãƒ«ãƒ•ã‚¡ãƒãƒ£ãƒ³ãƒãƒ«ã®ãƒ–ãƒ¬ãƒ³ãƒ‰è¨­å®šãŒè¡Œãˆã‚‹
 	GSYS.HardInfo.SeparateAlphaBlendEnable = TRUE ;
 
-	// Œ¸ZƒuƒŒƒ“ƒh‚ª‰Â”\‚©‚Ç‚¤‚©‚ğƒZƒbƒg‚·‚é
+	// æ¸›ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰ãŒå¯èƒ½ã‹ã©ã†ã‹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	GSYS.HardInfo.ValidSubBlend = TRUE ;
 
-	// ‰æ–Ê‚Ì‚x²‚ªã‰º”½‘Î
+	// ç”»é¢ã®ï¼¹è»¸ãŒä¸Šä¸‹åå¯¾
 	GSYS.HardInfo.ScreenAxisYReverse = TRUE ;
 
-	// DxLib_Init ŒÄo‚µŒã‚Å‚à SetWaitVSyncFlag ‚ÌŒÄ‚Ño‚µ‚É‘Î‰
+	// DxLib_Init å‘¼å‡ºã—å¾Œã§ã‚‚ SetWaitVSyncFlag ã®å‘¼ã³å‡ºã—ã«å¯¾å¿œ
 	GSYS.HardInfo.UseOfSetWaitVSyncFlagIsSupportedEvenAfterDxLib_Init = TRUE ;
 
-	// ‰æ–Êƒ‚[ƒh‚Ì•ÏX‚Å‚ÍƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ì•ÏX‚Ì‚İs‚¤‚æ‚¤‚É‚·‚é
+	// ç”»é¢ãƒ¢ãƒ¼ãƒ‰ã®å¤‰æ›´ã§ã¯ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®å¤‰æ›´ã®ã¿è¡Œã†ã‚ˆã†ã«ã™ã‚‹
 	GSYS.HardInfo.ChangeGraphModeOnlyChangeSubBackbuffer = TRUE ;
 
-	// ƒeƒNƒXƒ`ƒƒ‚ª³•ûŒ`‚Å‚ ‚é•K—v‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒæ­£æ–¹å½¢ã§ã‚ã‚‹å¿…è¦ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’å–å¾—ã™ã‚‹
 	GSYS.HardInfo.TextureSquareOnly = FALSE ;
 
-	// ˆê“x‚Ég—p‚·‚é‚±‚Æ‚Ìo—ˆ‚éÅ‘å’¸“_”‚ğæ“¾‚·‚é
+	// ä¸€åº¦ã«ä½¿ç”¨ã™ã‚‹ã“ã¨ã®å‡ºæ¥ã‚‹æœ€å¤§é ‚ç‚¹æ•°ã‚’å–å¾—ã™ã‚‹
 	GSYS.HardInfo.MaxVertexIndex = 0xffff ;
 
-	// ’¸“_À•Wƒ^ƒCƒv‚Í DX_DRAWFLOATCOORDTYPE_DIRECT3D10
+	// é ‚ç‚¹åº§æ¨™ã‚¿ã‚¤ãƒ—ã¯ DX_DRAWFLOATCOORDTYPE_DIRECT3D10
 	GSYS.HardInfo.DrawFloatCoordType = DX_DRAWFLOATCOORDTYPE_DIRECT3D10 ;
 
-	// “¯‚ÉƒŒƒ“ƒ_ƒŠƒ“ƒO‚Å‚«‚éƒ^[ƒQƒbƒg‚Ì”‚ğ•Û‘¶
+	// åŒæ™‚ã«ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã§ãã‚‹ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®æ•°ã‚’ä¿å­˜
 	GSYS.HardInfo.RenderTargetNum = 8 ;
 
-	// ƒeƒNƒXƒ`ƒƒ‚ÌÅ‘å•‚ÆÅ‘å‚‚³‚ğ•Û‘¶‚·‚é
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æœ€å¤§å¹…ã¨æœ€å¤§é«˜ã•ã‚’ä¿å­˜ã™ã‚‹
 	{
 		GLint MaxTextureSize ;
 
@@ -3767,26 +3819,26 @@ extern	int		Graphics_Android_Device_Create( void )
 		GSYS.HardInfo.MaxTextureSize = MaxTextureSize ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚ÌƒTƒCƒY‚ª‚Q‚Ì‚æ‚Å‚ ‚é•K—v‚Í–³‚¢
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã‚µã‚¤ã‚ºãŒï¼’ã®ï½ä¹—ã§ã‚ã‚‹å¿…è¦ã¯ç„¡ã„
 	GSYS.HardInfo.TextureSizePow2 = FALSE ;
 
-	// ğŒ•t‚ÅƒeƒNƒXƒ`ƒƒ‚ÌƒTƒCƒY‚ª‚Q‚Ì‚æ‚Å‚Í‚È‚­‚Ä‚à‘åä•v
+	// æ¡ä»¶ä»˜ã§ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã‚µã‚¤ã‚ºãŒï¼’ã®ï½ä¹—ã§ã¯ãªãã¦ã‚‚å¤§ä¸ˆå¤«
 	GSYS.HardInfo.TextureSizeNonPow2Conditional = TRUE ;
 
-	// ’¸“_ƒJƒ‰[‚ÍRGBAƒJƒ‰[ƒ^ƒCƒv‚ğg—p‚·‚é
+	// é ‚ç‚¹ã‚«ãƒ©ãƒ¼ã¯RGBAã‚«ãƒ©ãƒ¼ã‚¿ã‚¤ãƒ—ã‚’ä½¿ç”¨ã™ã‚‹
 	GSYS.HardInfo.UseVertexColorBGRAFormat = FALSE ;
 
-	// ˆê“x‚É•`‰æ‚Å‚«‚éÅ‘åƒvƒŠƒ~ƒeƒBƒu”‚ğæ“¾‚·‚é
+	// ä¸€åº¦ã«æç”»ã§ãã‚‹æœ€å¤§ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æ•°ã‚’å–å¾—ã™ã‚‹
 	GSYS.HardInfo.MaxPrimitiveCount = 65536 ;
 
-	// Graphics_Android_DrawPreparation ‚ğs‚¤‚×‚«ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// Graphics_Android_DrawPreparation ã‚’è¡Œã†ã¹ããƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// ŠeíƒtƒH[ƒ}ƒbƒg‚ğƒZƒbƒg
+	// å„ç¨®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’ã‚»ãƒƒãƒˆ
 	{
 		GANDR.Device.Caps.ScreenFormat = ANDROID_PIXEL_FORMAT_R8G8B8A8 ;
 
-		// ƒpƒŒƒbƒgƒeƒNƒXƒ`ƒƒ‚Í–¢‘Î‰
+		// ãƒ‘ãƒ¬ãƒƒãƒˆãƒ†ã‚¯ã‚¹ãƒãƒ£ã¯æœªå¯¾å¿œ
 		if( FALSE )
 //		if( GANDR.Device.Caps.Extensions[ ANDROID_GL_EXTENSION_COMPRESSED_PALETTED_TEXTURE ] )
 		{
@@ -3892,23 +3944,23 @@ extern	int		Graphics_Android_Device_Create( void )
 		GANDR.Device.Caps.DepthBufferFormat[ ZBUFFER_FORMAT_32BIT ] = GANDR.Device.Caps.Extensions[ ANDROID_GL_EXTENSION_DEPTH32 ] ? GL_DEPTH_COMPONENT32_OES : ( GANDR.Device.Caps.Extensions[ ANDROID_GL_EXTENSION_DEPTH24 ] ? GL_DEPTH_COMPONENT24_OES : GL_DEPTH_COMPONENT16 ) ;
 	}
 
-	// ƒJƒ‰[ƒtƒH[ƒ}ƒbƒgî•ñ‚Ì‰Šú‰»‚ğs‚¤
+	// ã‚«ãƒ©ãƒ¼ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆæƒ…å ±ã®åˆæœŸåŒ–ã‚’è¡Œã†
 	Graphics_Android_GetDataFormatColorData( ANDROID_PIXEL_FORMAT_R8G8B8A8 ) ;
 
-	// ƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ìì¬
+	// ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ
 	if( Graphics_Android_SetupSubBackBuffer() < 0 )
 	{
 		return -1 ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒfƒoƒCƒX‚Ì”jŠü‚É‘Š“–‚·‚éˆ—‚ğs‚¤
+// ãƒ‡ãƒã‚¤ã‚¹ã®ç ´æ£„ã«ç›¸å½“ã™ã‚‹å‡¦ç†ã‚’è¡Œã†
 extern	int		Graphics_Android_Device_Delete( void )
 {
-	// ƒTƒuƒoƒbƒNƒoƒbƒtƒ@ŠÖŒW‚ÌŒãn––
+	// ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡é–¢ä¿‚ã®å¾Œå§‹æœ«
 	Graphics_Android_TerminateSubBackBuffer() ;
 
 	if( GANDR.Device.Screen.Display != EGL_NO_DISPLAY ) 
@@ -3933,7 +3985,7 @@ extern	int		Graphics_Android_Device_Delete( void )
 	GANDR.Device.Screen.Context = EGL_NO_CONTEXT ;
 	GANDR.Device.Screen.Surface = EGL_NO_SURFACE ;
 
-	// ƒƒ‚ƒŠ‚Ì‰ğ•ú
+	// ãƒ¡ãƒ¢ãƒªã®è§£æ”¾
 	if( GANDR.Device.Caps.ExtensionNames != NULL )
 	{
 		int i ;
@@ -3970,7 +4022,7 @@ extern	int		Graphics_Android_Device_Delete( void )
 		GANDR.Device.Caps.Shading_Language_Version = NULL ;
 	}
 
-	// ƒfƒoƒCƒXƒZƒbƒgî•ñ‚ğ‰Šú‰»
+	// ãƒ‡ãƒã‚¤ã‚¹ã‚»ãƒƒãƒˆæƒ…å ±ã‚’åˆæœŸåŒ–
 	_MEMSET( GANDR.Device.State.SetTexture, 0, sizeof( GANDR.Device.State.SetTexture ) ) ;
 	GANDR.Device.State.SetNormalShader = FALSE ;
 	GANDR.Device.State.SetShader = NULL ;
@@ -3983,7 +4035,7 @@ extern	int		Graphics_Android_Device_Delete( void )
 	return 0 ;
 }
 
-// Direct3DDevice11 ŠÖŒW‚Ì‰Šú‰»
+// Direct3DDevice11 é–¢ä¿‚ã®åˆæœŸåŒ–
 extern	int		Graphics_Android_Device_Initialize( void )
 {
 	int i ;
@@ -3992,11 +4044,11 @@ extern	int		Graphics_Android_Device_Initialize( void )
 	GraphFilter_Initialize() ;
 #endif // DX_NON_FILTER
 
-	// •`‰æƒXƒe[ƒ^ƒX‚ÌƒZƒbƒg
+	// æç”»ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ã‚»ãƒƒãƒˆ
 	{
 		GANDR.Device.DrawSetting.CancelSettingEqualCheck = TRUE ;
 
-		// •`‰æî•ñ‚Ì‰Šú’l‚ğƒZƒbƒg
+		// æç”»æƒ…å ±ã®åˆæœŸå€¤ã‚’ã‚»ãƒƒãƒˆ
 		{
 			GANDR.Device.State.CullEnable		= FALSE ;
 			GANDR.Device.State.CullFace			= GL_BACK ;
@@ -4019,21 +4071,21 @@ extern	int		Graphics_Android_Device_Initialize( void )
 			}
 		}
 
-		// •`‰æƒ‚[ƒh‚ğƒZƒbƒg
+		// æç”»ãƒ¢ãƒ¼ãƒ‰ã‚’ã‚»ãƒƒãƒˆ
 		Graphics_Android_DeviceState_SetDrawMode( DX_DRAWMODE_NEAREST ) ;
 
-		// Å‘åˆÙ•û«‚ğƒZƒbƒg
+		// æœ€å¤§ç•°æ–¹æ€§ã‚’ã‚»ãƒƒãƒˆ
 		Graphics_Android_DeviceState_SetMaxAnisotropy( 16 ) ;
 
-		// ƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚Ìİ’è‚ğƒZƒbƒg
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã®è¨­å®šã‚’ã‚»ãƒƒãƒˆ
 		Graphics_Android_DeviceState_SetTextureAddressTransformMatrix(
 			FALSE,
 			&ANDROID_GlobalIdentMatrix ) ;
 
-		// ƒ‰ƒCƒeƒBƒ“ƒO‚n‚m
+		// ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ï¼¯ï¼®
 		Graphics_Android_DeviceState_SetLighting( TRUE ) ;
 
-		// ƒ}ƒeƒŠƒAƒ‹‚Ìƒpƒ‰ƒ[ƒ^‚ğİ’è
+		// ãƒãƒ†ãƒªã‚¢ãƒ«ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’è¨­å®š
 		{
 			MATERIALPARAM Material ;
 			Material.Diffuse.r  = 0.8f ;
@@ -4056,28 +4108,28 @@ extern	int		Graphics_Android_Device_Initialize( void )
 			Graphics_Android_DeviceState_SetMaterial( &Material ) ;
 		}
 
-		// ’¸“_‚ÌƒJƒ‰[’l‚ğƒ}ƒeƒŠƒAƒ‹‚ÌƒfƒBƒtƒ…[ƒYƒJƒ‰[‚âƒXƒyƒLƒ…ƒ‰ƒJƒ‰[‚Æ‚µ‚Äg—p‚·‚é‚©‚Ç‚¤‚©‚Ìİ’è‚ğ‰Šú‰»
+		// é ‚ç‚¹ã®ã‚«ãƒ©ãƒ¼å€¤ã‚’ãƒãƒ†ãƒªã‚¢ãƒ«ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã‚„ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚«ãƒ©ãƒ¼ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã®è¨­å®šã‚’åˆæœŸåŒ–
 		Graphics_Android_DeviceState_SetUseVertexDiffuseColor( TRUE ) ;
 		Graphics_Android_DeviceState_SetUseVertexSpecularColor( TRUE ) ;
 
-		// ƒXƒyƒLƒ…ƒ‰ˆ—‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğ‰Šú‰»
+		// ã‚¹ãƒšã‚­ãƒ¥ãƒ©å‡¦ç†ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã‚’åˆæœŸåŒ–
 		Graphics_Android_DeviceState_SetSpecularEnable( TRUE ) ;
 
-		// ƒtƒHƒOŠÖŒW‚Ìİ’è
+		// ãƒ•ã‚©ã‚°é–¢ä¿‚ã®è¨­å®š
 		Graphics_Android_DeviceState_SetFogEnable( FALSE ) ;
 		Graphics_Android_DeviceState_SetFogColor( 0 ) ;
 		Graphics_Android_DeviceState_SetFogVertexMode( DX_FOGMODE_NONE ) ;
 		Graphics_Android_DeviceState_SetFogStartEnd( 0.0f, 1.0f ) ;
 		Graphics_Android_DeviceState_SetFogDensity( 1.0f ) ;
 
-		// ƒOƒ[ƒoƒ‹ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[ƒZƒbƒg
+		// ã‚°ãƒ­ãƒ¼ãƒãƒ«ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã‚»ãƒƒãƒˆ
 		{
 			COLOR_F GAmbColor = { 0.0f } ;
 
 			Graphics_Android_DeviceState_SetAmbient( &GAmbColor ) ;
 		}
 
-		// ƒrƒ…[ƒ|[ƒg‚ğİ’è
+		// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã‚’è¨­å®š
 		{
 			RECT Viewport ;
 
@@ -4088,32 +4140,32 @@ extern	int		Graphics_Android_Device_Initialize( void )
 			Graphics_Android_DeviceState_SetViewport( &Viewport ) ;
 		}
 
-		// •`‰æ‰æ‘œ‚Ì‚q‚f‚a‚ğ–³‹‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg
+		// æç”»ç”»åƒã®ï¼²ï¼§ï¼¢ã‚’ç„¡è¦–ã™ã‚‹ã‹ã©ã†ã‹ã‚’ã‚»ãƒƒãƒˆ
 		Graphics_Android_DrawSetting_SetIgnoreDrawGraphColor( FALSE ) ;
 
-		// •`‰æ‰æ‘œ‚Ì‚`‚ğ–³‹‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg
+		// æç”»ç”»åƒã®ï¼¡ã‚’ç„¡è¦–ã™ã‚‹ã‹ã©ã†ã‹ã‚’ã‚»ãƒƒãƒˆ
 		Graphics_Android_DrawSetting_SetIgnoreDrawGraphAlpha( FALSE ) ;
 
-		// •`‰ææ‚ÌƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹‚Ì“à—e‚ğ‘‚«Š·‚¦‚é‚©‚ğİ’è‚·‚é
+		// æç”»å…ˆã®ã‚¢ãƒ«ãƒ•ã‚¡ãƒãƒ£ãƒ³ãƒãƒ«ã®å†…å®¹ã‚’æ›¸ãæ›ãˆã‚‹ã‹ã‚’è¨­å®šã™ã‚‹
 		Graphics_Android_DrawSetting_SetWriteAlphaChannelFlag( FALSE ) ;
 
-		// •`‰ææİ’è
+		// æç”»å…ˆè¨­å®š
 //		Graphics_Android_DeviceState_SetRenderTarget(
 //			&GANDR.Device.Screen.DispBuffer[ GANDR.Device.Screen.BackBufferIndex ].RenderTarget
 //		) ;
 
-		// ƒuƒŒƒ“ƒhƒ‚[ƒhİ’è
-		Graphics_Android_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE ) ;
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰è¨­å®š
+		Graphics_Android_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE, DX_BLEND_ZERO, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ZERO, DX_BLEND_ZERO, DX_BLENDOP_ADD, FALSE ) ;
 
-		// ƒAƒ‹ƒtƒ@ƒeƒXƒgİ’è‚ğ‰Šú‰»
+		// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆè¨­å®šã‚’åˆæœŸåŒ–
 		Graphics_Android_DrawSetting_SetDrawAlphaTest( -1, 0 ) ;
 
-		// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒŠÖŒW‚ğ‰Šú‰»
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£é–¢ä¿‚ã‚’åˆæœŸåŒ–
 		Graphics_Android_DrawSetting_SetBlendTexture( NULL ) ;
 		GANDR.Device.DrawSetting.BlendGraphBorderParam	= -1 ;
 		GANDR.Device.DrawSetting.BlendGraphType			= 0 ;
 
-		// •`‰æƒeƒNƒXƒ`ƒƒŠÖŒW‚ğ‰Šú‰»
+		// æç”»ãƒ†ã‚¯ã‚¹ãƒãƒ£é–¢ä¿‚ã‚’åˆæœŸåŒ–
 		Graphics_Android_DrawSetting_SetTexture( NULL ) ;
 		GANDR.Device.DrawSetting.AlphaChannelValidFlag	= FALSE ;
 		GANDR.Device.DrawSetting.AlphaTestValidFlag		= FALSE ;
@@ -4121,10 +4173,10 @@ extern	int		Graphics_Android_Device_Initialize( void )
 		GANDR.Device.DrawSetting.CancelSettingEqualCheck = FALSE ;
 	}
 
-	// ƒfƒoƒCƒXİ’è‚ğƒŠƒtƒŒƒbƒVƒ…
+	// ãƒ‡ãƒã‚¤ã‚¹è¨­å®šã‚’ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥
 	Graphics_Android_DeviceState_RefreshRenderState() ;
 
-	// ƒtƒ‰ƒO‚ğ‰Šú‰»
+	// ãƒ•ãƒ©ã‚°ã‚’åˆæœŸåŒ–
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag		= TRUE ;
 	GANDR.Device.DrawSetting.AlphaChannelValidFlag	= FALSE ;
 	GANDR.Device.DrawSetting.AlphaTestValidFlag		= FALSE ;
@@ -4139,7 +4191,7 @@ extern	int		Graphics_Android_Device_Initialize( void )
 	GANDR.Device.DrawSetting.RenderTexture			= NULL ;
 	GANDR.Device.DrawSetting.BlendTexture			= NULL ;
 
-	// •`‰æî•ñ‚ğ‰Šú‰»
+	// æç”»æƒ…å ±ã‚’åˆæœŸåŒ–
 	GANDR.Device.DrawInfo.DiffuseColor				= 0xffffffff ;
 	GANDR.Device.DrawInfo.BlendMaxNotDrawFlag		= FALSE ;
 	GANDR.Device.DrawInfo.BeginSceneFlag			= FALSE ;
@@ -4148,50 +4200,61 @@ extern	int		Graphics_Android_Device_Initialize( void )
 	GANDR.Device.DrawInfo.VertexType				= VERTEXTYPE_TEX ;
 	GANDR.Device.DrawInfo.PrimitiveType				= GL_TRIANGLES ;
 
-	// ’¸“_ƒoƒbƒtƒ@‚ÌƒAƒhƒŒƒX‚ğƒZƒbƒg
+	// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 	GANDR.Device.DrawInfo.VertexBufferNextAddr = GANDR.Device.DrawInfo.VertexBuffer ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ˆê“I‚É Direct3DDevice11 ‚ğ”jŠü‚µ‚½Û‚ÉA”jŠü‘O‚Ìó‘Ô‚ğì‚èo‚·‚½‚ß‚ÌŠÖ”
+// ä¸€æ™‚çš„ã« Direct3DDevice11 ã‚’ç ´æ£„ã—ãŸéš›ã«ã€ç ´æ£„å‰ã®çŠ¶æ…‹ã‚’ä½œã‚Šå‡ºã™ãŸã‚ã®é–¢æ•°
 extern	int		Graphics_Android_Device_ReInitialize( void )
 {
 	int i ;
 
-	// ‰Šú‰»ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// åˆæœŸåŒ–ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.CancelSettingEqualCheck = TRUE ;
 
-	// •K‚¸ Graphics_D3D9_DrawPreparation ‚ğÀs‚·‚éƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// å¿…ãš Graphics_D3D9_DrawPreparation ã‚’å®Ÿè¡Œã™ã‚‹ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// íœ‘O‚Æ“¯‚¶ŠÂ‹«‚ğì‚èo‚·
+	// å‰Šé™¤å‰ã¨åŒã˜ç’°å¢ƒã‚’ä½œã‚Šå‡ºã™
 	{
-		// •`‰æƒeƒNƒXƒ`ƒƒŠÖŒW‚ğ‰Šú‰»
+		// æç”»ãƒ†ã‚¯ã‚¹ãƒãƒ£é–¢ä¿‚ã‚’åˆæœŸåŒ–
 		Graphics_Android_DrawSetting_SetTexture( NULL ) ;
 		GANDR.Device.DrawSetting.AlphaChannelValidFlag	= FALSE ;
 		GANDR.Device.DrawSetting.AlphaTestValidFlag	= FALSE ;
 
-		// •`‰æ’¸“_î•ñ‚àƒŠƒZƒbƒg
+		// æç”»é ‚ç‚¹æƒ…å ±ã‚‚ãƒªã‚»ãƒƒãƒˆ
 		GANDR.Device.DrawInfo.VertexNum = 0 ;
 
-		// •`‰æƒuƒŒƒ“ƒhƒ‚[ƒh‚Ìİ’è
-		Graphics_Android_DrawSetting_SetDrawBlendMode( GANDR.Device.DrawSetting.BlendMode, GANDR.Device.DrawSetting.AlphaTestValidFlag, GANDR.Device.DrawSetting.AlphaChannelValidFlag ) ;
+		// æç”»ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®è¨­å®š
+		Graphics_Android_DrawSetting_SetDrawBlendMode(
+			GANDR.Device.DrawSetting.BlendMode,
+			GANDR.Device.DrawSetting.BlendEnable,
+			GANDR.Device.DrawSetting.BlendRGBSrc,
+			GANDR.Device.DrawSetting.BlendRGBDest,
+			GANDR.Device.DrawSetting.BlendRGBOp,
+			GANDR.Device.DrawSetting.BlendASrc,
+			GANDR.Device.DrawSetting.BlendADest,
+			GANDR.Device.DrawSetting.BlendAOp,
+			GANDR.Device.DrawSetting.AlphaTestValidFlag,
+			GANDR.Device.DrawSetting.AlphaChannelValidFlag
+		) ;
 
-		// •`‰æ‰æ‘œ‚Ì‚q‚f‚a‚ğ–³‹‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg‚·‚é
+		// æç”»ç”»åƒã®ï¼²ï¼§ï¼¢ã‚’ç„¡è¦–ã™ã‚‹ã‹ã©ã†ã‹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 		Graphics_Android_DrawSetting_SetIgnoreDrawGraphColor( GANDR.Device.DrawSetting.IgnoreGraphColorFlag ) ;
 
-		// •`‰æ‰æ‘œ‚Ì‚`‚ğ–³‹‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg‚·‚é
+		// æç”»ç”»åƒã®ï¼¡ã‚’ç„¡è¦–ã™ã‚‹ã‹ã©ã†ã‹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 		Graphics_Android_DrawSetting_SetIgnoreDrawGraphAlpha( GANDR.Device.DrawSetting.IgnoreGraphAlphaFlag ) ;
 
-		// •`‰ææ‚ÌƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹‚Ì“à—e‚ğ‘‚«Š·‚¦‚é‚©‚ğİ’è‚·‚é
+		// æç”»å…ˆã®ã‚¢ãƒ«ãƒ•ã‚¡ãƒãƒ£ãƒ³ãƒãƒ«ã®å†…å®¹ã‚’æ›¸ãæ›ãˆã‚‹ã‹ã‚’è¨­å®šã™ã‚‹
 		Graphics_Android_DrawSetting_SetWriteAlphaChannelFlag( GANDR.Device.DrawSetting.NotWriteAlphaChannelFlag ) ;
 
-		// ˆÙ•û«ƒtƒBƒ‹ƒ^ƒŠƒ“ƒO‚Ìİ’è‚ğƒZƒbƒg
+		// ç•°æ–¹æ€§ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°ã®è¨­å®šã‚’ã‚»ãƒƒãƒˆ
 		Graphics_Android_DeviceState_SetMaxAnisotropy( GANDR.Device.State.MaxAnisotropy ) ;
 
-		// UVƒAƒhƒŒƒbƒVƒ“ƒOƒ‚[ƒh‚Ìİ’è‚ğƒZƒbƒg
+		// UVã‚¢ãƒ‰ãƒ¬ãƒƒã‚·ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã®è¨­å®šã‚’ã‚»ãƒƒãƒˆ
 		for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 		{
 			Graphics_Android_DeviceState_SetTextureAddressUVW(
@@ -4201,25 +4264,25 @@ extern	int		Graphics_Android_Device_ReInitialize( void )
 				i ) ;
 		}
 
-		// ƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚Ìİ’è‚ğƒZƒbƒg
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã®è¨­å®šã‚’ã‚»ãƒƒãƒˆ
 		Graphics_Android_DeviceState_SetTextureAddressTransformMatrix(
 			GANDR.Device.State.TextureAddressTransformMatrixUse,
 			&GANDR.Device.State.TextureAddressTransformMatrix ) ;
 
-		// ƒtƒHƒO‚Ìİ’è‚ğƒZƒbƒg
+		// ãƒ•ã‚©ã‚°ã®è¨­å®šã‚’ã‚»ãƒƒãƒˆ
 		Graphics_Android_DeviceState_SetFogEnable(     GANDR.Device.State.FogEnable ) ;
 		Graphics_Android_DeviceState_SetFogVertexMode( GANDR.Device.State.FogMode ) ;
 		Graphics_Android_DeviceState_SetFogColor(      GANDR.Device.State.FogColor ) ;
 		Graphics_Android_DeviceState_SetFogStartEnd(   GANDR.Device.State.FogStart, GANDR.Device.State.FogEnd ) ;
 		Graphics_Android_DeviceState_SetFogDensity(    GANDR.Device.State.FogDensity ) ;
 
-		// s—ñ‚ÌÄİ’è
+		// è¡Œåˆ—ã®å†è¨­å®š
 		NS_SetTransformToWorldD(                              &GSYS.DrawSetting.WorldMatrix ) ;
 		NS_SetTransformToViewD(                               &GSYS.DrawSetting.ViewMatrix ) ;
 		Graphics_DrawSetting_SetTransformToProjection_Direct( &GSYS.DrawSetting.ProjectionMatrix ) ;
 		NS_SetTransformToViewportD(                           &GSYS.DrawSetting.ViewportMatrix ) ;
 
-		// ƒ‰ƒCƒg‚ÌÄİ’è
+		// ãƒ©ã‚¤ãƒˆã®å†è¨­å®š
 		Graphics_Android_DeviceState_SetAmbient( &GANDR.Device.State.GlobalAmbientLightColor ) ;
 		Graphics_Android_DeviceState_SetLighting( GANDR.Device.State.Lighting ) ;
 		for( i = 0 ; i < DX_ANDR_COMMON_CONST_LIGHT_NUM ; i ++ )
@@ -4234,13 +4297,13 @@ extern	int		Graphics_Android_Device_ReInitialize( void )
 		}
 	}
 
-	// ‰Šú‰»ƒtƒ‰ƒO‚ğ“|‚·
+	// åˆæœŸåŒ–ãƒ•ãƒ©ã‚°ã‚’å€’ã™
 	GANDR.Device.DrawSetting.CancelSettingEqualCheck = FALSE ;
 
-	// ã‹LˆÈŠO‚Ìİ’è‚ğƒŠƒtƒŒƒbƒVƒ…
+	// ä¸Šè¨˜ä»¥å¤–ã®è¨­å®šã‚’ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥
 	Graphics_Android_DeviceState_RefreshRenderState() ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -4267,20 +4330,20 @@ extern	int		Graphics_Android_Device_ReInitialize( void )
 
 
 
-// AndroidDevice ƒXƒe[ƒ^ƒXŠÖŒW
+// AndroidDevice ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹é–¢ä¿‚
 
-// •`‰æİ’è‚ğƒŠƒtƒŒƒbƒVƒ…
+// æç”»è¨­å®šã‚’ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥
 extern	void	Graphics_Android_DeviceState_RefreshRenderState( void )
 {
 	RECT Viewport = GANDR.Device.State.ViewportRect ;
 
-	// ‰Šú‰»ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// åˆæœŸåŒ–ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.CancelSettingEqualCheck = TRUE ;
 
-	// Graphics_Android_DrawPreparation ‚ğs‚¤‚×‚«ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// Graphics_Android_DrawPreparation ã‚’è¡Œã†ã¹ããƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// İ’è‚ÌƒŠƒtƒŒƒbƒVƒ…
+	// è¨­å®šã®ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥
 	Graphics_Android_DeviceState_SetFogEnable             ( GANDR.Device.State.FogEnable           ) ;
 //	Graphics_Android_DeviceState_SetScissorRect           ( &GANDR.Device.State.ScissorRect        ) ;
 	Graphics_Android_DrawSetting_SetTexture               ( GANDR.Device.DrawSetting.RenderTexture ) ;
@@ -4304,7 +4367,7 @@ extern	void	Graphics_Android_DeviceState_RefreshRenderState( void )
 	Graphics_Android_DeviceState_SetViewport              ( &Viewport ) ;
 	Graphics_Android_DeviceState_SetBackgroundColor       ( GANDR.Device.State.BackgroundColor.r, GANDR.Device.State.BackgroundColor.g, GANDR.Device.State.BackgroundColor.b, GANDR.Device.State.BackgroundColor.a ) ;
 
-	// ƒeƒNƒXƒ`ƒƒ‚ğƒZƒbƒg
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚»ãƒƒãƒˆ
 	{
 		int i ;
 
@@ -4314,24 +4377,24 @@ extern	void	Graphics_Android_DeviceState_RefreshRenderState( void )
 		}
 	}
 
-	// ’è”ƒoƒbƒtƒ@‚ğƒŠƒtƒŒƒbƒVƒ…
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ã‚’ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// ‰Šú‰»ƒtƒ‰ƒO‚ğ“|‚·
+	// åˆæœŸåŒ–ãƒ•ãƒ©ã‚°ã‚’å€’ã™
 	GANDR.Device.DrawSetting.CancelSettingEqualCheck = FALSE ;
 }
 
-// OpenGL ‚ÌŠî–{İ’è‚ğs‚¤
+// OpenGL ã®åŸºæœ¬è¨­å®šã‚’è¡Œã†
 extern int Graphics_Android_DeviceState_SetBaseState( void )
 {
-	// ‘‚«o‚µ
+	// æ›¸ãå‡ºã—
 	DRAWSTOCKINFO
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒTƒ“ƒvƒ‰[‚ÌƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^ƒŠƒ“ƒOƒ‚[ƒh‚ğİ’è‚·‚é
+// ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®šã™ã‚‹
 extern int Graphics_Android_DeviceState_SetSampleFilterMode( GLenum Filter, int Sampler )
 {
 	int i ;
@@ -4404,19 +4467,19 @@ extern int Graphics_Android_DeviceState_SetSampleFilterMode( GLenum Filter, int 
 			{
 				glActiveTexture( g_TextureEnum[ i ] ) ;
 				glBindTexture( GL_TEXTURE_2D, GANDR.Device.State.SetTexture[ i ]->TextureBuffer ) ;
-				if( GANDR.Device.State.SetTexture[ i ]->MagFilter != GANDR.Device.State.TexMagFilter[ i ] )
+				// if( GANDR.Device.State.SetTexture[ i ]->MagFilter != GANDR.Device.State.TexMagFilter[ i ] )
 				{
 					GANDR.Device.State.SetTexture[ i ]->MagFilter = GANDR.Device.State.TexMagFilter[ i ] ;
 					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GANDR.Device.State.SetTexture[ i ]->MagFilter ) ;
 				}
-				if( GANDR.Device.State.SetTexture[ i ]->MinFilter != GANDR.Device.State.TexMinFilter[ i ] )
+				// if( GANDR.Device.State.SetTexture[ i ]->MinFilter != GANDR.Device.State.TexMinFilter[ i ] )
 				{
 					GLenum MinFilterTmp = MinFilter ;
 					if( GANDR.Device.State.SetTexture[ i ]->MipMapCount <= 1 && MinFilter == GL_LINEAR_MIPMAP_LINEAR )
 					{
 						MinFilterTmp = GL_LINEAR ;
 					}
-					if( GANDR.Device.State.SetTexture[ i ]->MinFilter != MinFilterTmp )
+					// if( GANDR.Device.State.SetTexture[ i ]->MinFilter != MinFilterTmp )
 					{
 						GANDR.Device.State.SetTexture[ i ]->MinFilter = MinFilterTmp ;
 						glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GANDR.Device.State.SetTexture[ i ]->MinFilter ) ;
@@ -4450,19 +4513,19 @@ extern int Graphics_Android_DeviceState_SetSampleFilterMode( GLenum Filter, int 
 		{
 			glActiveTexture( g_TextureEnum[ Sampler ] ) ;
 			glBindTexture( GL_TEXTURE_2D, GANDR.Device.State.SetTexture[ Sampler ]->TextureBuffer ) ;
-			if( GANDR.Device.State.SetTexture[ Sampler ]->MagFilter != GANDR.Device.State.TexMagFilter[ Sampler ] )
+			// if( GANDR.Device.State.SetTexture[ Sampler ]->MagFilter != GANDR.Device.State.TexMagFilter[ Sampler ] )
 			{
 				GANDR.Device.State.SetTexture[ Sampler ]->MagFilter = GANDR.Device.State.TexMagFilter[ Sampler ] ;
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GANDR.Device.State.SetTexture[ Sampler ]->MagFilter ) ;
 			}
-			if( GANDR.Device.State.SetTexture[ Sampler ]->MinFilter != GANDR.Device.State.TexMinFilter[ Sampler ] )
+			// if( GANDR.Device.State.SetTexture[ Sampler ]->MinFilter != GANDR.Device.State.TexMinFilter[ Sampler ] )
 			{
 				GLenum MinFilterTmp = MinFilter ;
 				if( GANDR.Device.State.SetTexture[ Sampler ]->MipMapCount <= 1 && MinFilter == GL_LINEAR_MIPMAP_LINEAR )
 				{
 					MinFilterTmp = GL_LINEAR ;
 				}
-				if( GANDR.Device.State.SetTexture[ Sampler ]->MinFilter != MinFilterTmp )
+				// if( GANDR.Device.State.SetTexture[ Sampler ]->MinFilter != MinFilterTmp )
 				{
 					GANDR.Device.State.SetTexture[ Sampler ]->MinFilter = MinFilterTmp ;
 					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GANDR.Device.State.SetTexture[ Sampler ]->MinFilter ) ;
@@ -4476,7 +4539,7 @@ extern int Graphics_Android_DeviceState_SetSampleFilterMode( GLenum Filter, int 
 	return 0 ;
 }
 
-// [“xƒoƒbƒtƒ@‚Ì—LŒø–³Œø‚ÌƒZƒbƒg
+// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã®æœ‰åŠ¹ç„¡åŠ¹ã®ã‚»ãƒƒãƒˆ
 extern int Graphics_Android_DeviceState_SetDepthEnable( BOOL DepthEnable )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -4484,7 +4547,7 @@ extern int Graphics_Android_DeviceState_SetDepthEnable( BOOL DepthEnable )
 		return -1 ;
 	}
 
-	// ƒ‚[ƒh‚ª“¯‚¶‚¾‚Á‚½‚ç‰½‚à‚¹‚¸I—¹
+	// ãƒ¢ãƒ¼ãƒ‰ãŒåŒã˜ã ã£ãŸã‚‰ä½•ã‚‚ã›ãšçµ‚äº†
 	if( GANDR.Device.State.DepthEnable == DepthEnable &&
 		GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
@@ -4509,7 +4572,7 @@ extern int Graphics_Android_DeviceState_SetDepthEnable( BOOL DepthEnable )
 	return 0 ;
 }
 
-// [“xƒoƒbƒtƒ@‚Ì‘‚«‚İ‚Ì—L–³‚ğƒZƒbƒg
+// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã®æ›¸ãè¾¼ã¿ã®æœ‰ç„¡ã‚’ã‚»ãƒƒãƒˆ
 extern int Graphics_Android_DeviceState_SetDepthWriteEnable( int Flag )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -4517,7 +4580,7 @@ extern int Graphics_Android_DeviceState_SetDepthWriteEnable( int Flag )
 		return -1 ;
 	}
 
-	// ƒ‚[ƒh‚ª“¯‚¶‚¾‚Á‚½‚ç‰½‚à‚¹‚¸I—¹
+	// ãƒ¢ãƒ¼ãƒ‰ãŒåŒã˜ã ã£ãŸã‚‰ä½•ã‚‚ã›ãšçµ‚äº†
 	if( GANDR.Device.State.DepthWriteEnable == Flag &&
 		GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
@@ -4535,7 +4598,7 @@ extern int Graphics_Android_DeviceState_SetDepthWriteEnable( int Flag )
 	return 0 ;
 }
 
-// [“x’l‚Ì”äŠrƒ^ƒCƒv‚ğƒZƒbƒg
+// æ·±åº¦å€¤ã®æ¯”è¼ƒã‚¿ã‚¤ãƒ—ã‚’ã‚»ãƒƒãƒˆ
 extern int Graphics_Android_DeviceState_SetDepthFunc( GLenum DepthFunc )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -4543,7 +4606,7 @@ extern int Graphics_Android_DeviceState_SetDepthFunc( GLenum DepthFunc )
 		return -1 ;
 	}
 
-	// ƒ‚[ƒh‚ª“¯‚¶‚¾‚Á‚½‚ç‰½‚à‚¹‚¸I—¹
+	// ãƒ¢ãƒ¼ãƒ‰ãŒåŒã˜ã ã£ãŸã‚‰ä½•ã‚‚ã›ãšçµ‚äº†
 	if( GANDR.Device.State.DepthFunc == DepthFunc &&
 		GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
@@ -4561,10 +4624,10 @@ extern int Graphics_Android_DeviceState_SetDepthFunc( GLenum DepthFunc )
 	return 0 ;
 }
 
-// [“x’l‚ÌƒoƒCƒAƒX‚ğƒZƒbƒg
+// æ·±åº¦å€¤ã®ãƒã‚¤ã‚¢ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 extern int Graphics_Android_DeviceState_SetDepthBias( int DepthBias )
 {
-	// ƒ‚[ƒh‚ª“¯‚¶‚¾‚Á‚½‚ç‰½‚à‚¹‚¸I—¹
+	// ãƒ¢ãƒ¼ãƒ‰ãŒåŒã˜ã ã£ãŸã‚‰ä½•ã‚‚ã›ãšçµ‚äº†
 	if( GANDR.Device.State.DepthBias == DepthBias &&
 		GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
@@ -4580,10 +4643,10 @@ extern int Graphics_Android_DeviceState_SetDepthBias( int DepthBias )
 	return 0 ;
 }
 
-// ƒ[ƒ‹ƒh•ÏŠ·—ps—ñ‚ğƒZƒbƒg‚·‚é
+// ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ç”¨è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int Graphics_Android_DeviceState_SetWorldMatrix( const MATRIX *Matrix )
 {
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uLWMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
 	GANDR.Device.Shader.Constant.uLWMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
 	GANDR.Device.Shader.Constant.uLWMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
@@ -4599,14 +4662,14 @@ extern int Graphics_Android_DeviceState_SetWorldMatrix( const MATRIX *Matrix )
 
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒrƒ…[•ÏŠ·—ps—ñ‚ğƒZƒbƒg‚·‚é
+// ãƒ“ãƒ¥ãƒ¼å¤‰æ›ç”¨è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int Graphics_Android_DeviceState_SetViewMatrix( const MATRIX *Matrix )
 {
-	// ƒ‰ƒCƒg‚ÌˆÊ’uE•ûŒü‚ÌÄŒvZ
+	// ãƒ©ã‚¤ãƒˆã®ä½ç½®ãƒ»æ–¹å‘ã®å†è¨ˆç®—
 	{
 		int    i ;
 		VECTOR Direction ;
@@ -4625,7 +4688,7 @@ extern int Graphics_Android_DeviceState_SetViewMatrix( const MATRIX *Matrix )
 		}
 	}
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uViewMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
 	GANDR.Device.Shader.Constant.uViewMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
 	GANDR.Device.Shader.Constant.uViewMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
@@ -4641,14 +4704,14 @@ extern int Graphics_Android_DeviceState_SetViewMatrix( const MATRIX *Matrix )
 
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// “Š‰e•ÏŠ·—ps—ñ‚ğƒZƒbƒg‚·‚é
+// æŠ•å½±å¤‰æ›ç”¨è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int Graphics_Android_DeviceState_SetProjectionMatrix( const MATRIX *Matrix )
 {
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uProjMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
 	GANDR.Device.Shader.Constant.uProjMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
 	GANDR.Device.Shader.Constant.uProjMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
@@ -4668,14 +4731,14 @@ extern int Graphics_Android_DeviceState_SetProjectionMatrix( const MATRIX *Matri
 
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒAƒ“ƒ`ƒrƒ…[ƒ|[ƒgs—ñ‚ğƒZƒbƒg‚·‚é
+// ã‚¢ãƒ³ãƒãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆè¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int Graphics_Android_DeviceState_SetAntiViewportMatrix( const MATRIX *Matrix )
 {
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uAntiVPMat[ 0 ][ 0 ] = Matrix->m[ 0 ][ 0 ] ;
 	GANDR.Device.Shader.Constant.uAntiVPMat[ 0 ][ 1 ] = Matrix->m[ 1 ][ 0 ] ;
 	GANDR.Device.Shader.Constant.uAntiVPMat[ 0 ][ 2 ] = Matrix->m[ 2 ][ 0 ] ;
@@ -4695,16 +4758,16 @@ extern int Graphics_Android_DeviceState_SetAntiViewportMatrix( const MATRIX *Mat
 
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒAƒ“ƒrƒGƒ“ƒgƒ‰ƒCƒg‚ÆƒGƒ~ƒbƒVƒuƒJƒ‰[‚ğŠ|‚¯‡‚í‚¹‚½ƒpƒ‰ƒ[ƒ^‚ğXV‚·‚é
+// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆãƒ©ã‚¤ãƒˆã¨ã‚¨ãƒŸãƒƒã‚·ãƒ–ã‚«ãƒ©ãƒ¼ã‚’æ›ã‘åˆã‚ã›ãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’æ›´æ–°ã™ã‚‹
 extern void Graphics_Android_DeviceState_RefreshAmbientAndEmissiveParam( void )
 {
 	int i ;
 
-	// —LŒø‚Èƒ‰ƒCƒg‚ÌƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[‚Æƒ}ƒeƒŠƒAƒ‹‚ÌƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[‚ğæZ‚µ‚½‚à‚Ì‚ğƒVƒF[ƒ_[‚ÉƒZƒbƒg‚·‚é
+	// æœ‰åŠ¹ãªãƒ©ã‚¤ãƒˆã®ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã¨ãƒãƒ†ãƒªã‚¢ãƒ«ã®ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã‚’ä¹—ç®—ã—ãŸã‚‚ã®ã‚’ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«ã‚»ãƒƒãƒˆã™ã‚‹
 	for( i = 0 ; i <= GANDR.Device.State.LightEnableMaxIndex ; i ++ )
 	{
 		if( GANDR.Device.State.LightEnableFlag[ i ] == FALSE )
@@ -4712,14 +4775,14 @@ extern void Graphics_Android_DeviceState_RefreshAmbientAndEmissiveParam( void )
 			continue ;
 		}
 
-		// ’è”ƒoƒbƒtƒ@‚É”½‰f‚·‚é
+		// å®šæ•°ãƒãƒƒãƒ•ã‚¡ã«åæ˜ ã™ã‚‹
 		GANDR.Device.Shader.Constant.uLightAmb[ i ][ 0 ] = GANDR.Device.State.LightParam[ i ].Ambient.r * GANDR.Device.State.Material.Ambient.r ;
 		GANDR.Device.Shader.Constant.uLightAmb[ i ][ 1 ] = GANDR.Device.State.LightParam[ i ].Ambient.g * GANDR.Device.State.Material.Ambient.g ;
 		GANDR.Device.Shader.Constant.uLightAmb[ i ][ 2 ] = GANDR.Device.State.LightParam[ i ].Ambient.b * GANDR.Device.State.Material.Ambient.b ;
 		GANDR.Device.Shader.Constant.uLightAmb[ i ][ 3 ] = GANDR.Device.State.LightParam[ i ].Ambient.a * GANDR.Device.State.Material.Ambient.a ;
 	}
 
-	// ƒOƒ[ƒoƒ‹ƒAƒ“ƒrƒGƒ“ƒgƒ‰ƒCƒgƒJƒ‰[‚Æƒ}ƒeƒŠƒAƒ‹ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[‚ğæZ‚µ‚½‚à‚Ì‚ÆƒGƒ~ƒbƒVƒuƒJƒ‰[‚ğ‰ÁZ‚µ‚½‚à‚Ì‚ğì¬‚·‚é
+	// ã‚°ãƒ­ãƒ¼ãƒãƒ«ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆãƒ©ã‚¤ãƒˆã‚«ãƒ©ãƒ¼ã¨ãƒãƒ†ãƒªã‚¢ãƒ«ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã‚’ä¹—ç®—ã—ãŸã‚‚ã®ã¨ã‚¨ãƒŸãƒƒã‚·ãƒ–ã‚«ãƒ©ãƒ¼ã‚’åŠ ç®—ã—ãŸã‚‚ã®ã‚’ä½œæˆã™ã‚‹
 	GANDR.Device.Shader.Constant.uAmb_Emi[ 0 ] = GANDR.Device.State.GlobalAmbientLightColor.r * GANDR.Device.State.Material.Ambient.r + GANDR.Device.State.Material.Emissive.r ;
 	GANDR.Device.Shader.Constant.uAmb_Emi[ 1 ] = GANDR.Device.State.GlobalAmbientLightColor.g * GANDR.Device.State.Material.Ambient.g + GANDR.Device.State.Material.Emissive.g ;
 	GANDR.Device.Shader.Constant.uAmb_Emi[ 2 ] = GANDR.Device.State.GlobalAmbientLightColor.b * GANDR.Device.State.Material.Ambient.b + GANDR.Device.State.Material.Emissive.b ;
@@ -4730,7 +4793,7 @@ extern void Graphics_Android_DeviceState_RefreshAmbientAndEmissiveParam( void )
 
 
 
-// ƒ‰ƒCƒg‚ÌƒZƒbƒg
+// ãƒ©ã‚¤ãƒˆã®ã‚»ãƒƒãƒˆ
 extern int Graphics_Android_DeviceState_SetLightState( int LightNumber, LIGHTPARAM *Light )
 {
 	VECTOR  Direction ;
@@ -4753,10 +4816,10 @@ extern int Graphics_Android_DeviceState_SetLightState( int LightNumber, LIGHTPAR
 
 	DRAWSTOCKINFO
 
-	// ƒpƒ‰ƒ[ƒ^‚Ì•Û‘¶
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®ä¿å­˜
 	GANDR.Device.State.LightParam[ LightNumber ] = *Light ;
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	_SINCOS( Light->Theta / 2.0f, &ThetaSin, &ThetaCos ) ;
 	_SINCOS( Light->Phi   / 2.0f, &PhiSin,   &PhiCos ) ;
 
@@ -4797,14 +4860,14 @@ extern int Graphics_Android_DeviceState_SetLightState( int LightNumber, LIGHTPAR
 	GANDR.Device.Shader.Constant.uLightAT2_SpotP0_SpotP1[ LightNumber ][ 3 ]		= 0.0f ;
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[‚ÆƒGƒ~ƒbƒVƒuƒJƒ‰[‚ğŠ|‚¯‡‚í‚¹‚½î•ñ‚ğXV‚·‚é
+	// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã¨ã‚¨ãƒŸãƒƒã‚·ãƒ–ã‚«ãƒ©ãƒ¼ã‚’æ›ã‘åˆã‚ã›ãŸæƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 	Graphics_Android_DeviceState_RefreshAmbientAndEmissiveParam() ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒ‰ƒCƒg‚Ì—LŒøA–³Œø‚ğ•ÏX
+// ãƒ©ã‚¤ãƒˆã®æœ‰åŠ¹ã€ç„¡åŠ¹ã‚’å¤‰æ›´
 extern int Graphics_Android_DeviceState_SetLightEnable( int LightNumber, int EnableState )
 {
 	if( LightNumber < 0 || LightNumber >= DX_ANDR_COMMON_CONST_LIGHT_NUM )
@@ -4822,7 +4885,7 @@ extern int Graphics_Android_DeviceState_SetLightEnable( int LightNumber, int Ena
 
 	GANDR.Device.State.LightEnableFlag[ LightNumber ] = EnableState ;
 
-	// —LŒø‚Èƒ‰ƒCƒg‚ÌÅ‘åƒCƒ“ƒfƒbƒNƒX‚ğXV
+	// æœ‰åŠ¹ãªãƒ©ã‚¤ãƒˆã®æœ€å¤§ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’æ›´æ–°
 	if( EnableState == TRUE )
 	{
 		if( GANDR.Device.State.LightEnableMaxIndex < LightNumber )
@@ -4839,16 +4902,16 @@ extern int Graphics_Android_DeviceState_SetLightEnable( int LightNumber, int Ena
 		}
 	}
 
-	// ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[‚ÆƒGƒ~ƒbƒVƒuƒJƒ‰[‚ğŠ|‚¯‡‚í‚¹‚½î•ñ‚ğXV‚·‚é
+	// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã¨ã‚¨ãƒŸãƒƒã‚·ãƒ–ã‚«ãƒ©ãƒ¼ã‚’æ›ã‘åˆã‚ã›ãŸæƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 	Graphics_Android_DeviceState_RefreshAmbientAndEmissiveParam() ;
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒ}ƒeƒŠƒAƒ‹‚ÌƒZƒbƒg
+// ãƒãƒ†ãƒªã‚¢ãƒ«ã®ã‚»ãƒƒãƒˆ
 extern int Graphics_Android_DeviceState_SetMaterial( MATERIALPARAM *Material )
 {
 	if( _MEMCMP( GSYS.Light.MaterialTypeParam, GANDR.Device.State.MaterialTypeParam, sizeof( GSYS.Light.MaterialTypeParam) ) == 0 &&
@@ -4863,7 +4926,7 @@ extern int Graphics_Android_DeviceState_SetMaterial( MATERIALPARAM *Material )
 	GANDR.Device.State.Material = *Material ;
 	_MEMCPY( GANDR.Device.State.MaterialTypeParam, GSYS.Light.MaterialTypeParam, sizeof( GSYS.Light.MaterialTypeParam ) ) ;
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uMatDif[ 0 ]   = Material->Diffuse.r ;
 	GANDR.Device.Shader.Constant.uMatDif[ 1 ]   = Material->Diffuse.g ;
 	GANDR.Device.Shader.Constant.uMatDif[ 2 ]   = Material->Diffuse.b ;
@@ -4878,19 +4941,19 @@ extern int Graphics_Android_DeviceState_SetMaterial( MATERIALPARAM *Material )
 	GANDR.Device.Shader.Constant.uMatTypeParam2 = GANDR.Device.State.MaterialTypeParam[ 2 ] ;
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[‚ÆƒGƒ~ƒbƒVƒuƒJƒ‰[‚ğŠ|‚¯‡‚í‚¹‚½î•ñ‚ğXV‚·‚é
+	// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã¨ã‚¨ãƒŸãƒƒã‚·ãƒ–ã‚«ãƒ©ãƒ¼ã‚’æ›ã‘åˆã‚ã›ãŸæƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 	Graphics_Android_DeviceState_RefreshAmbientAndEmissiveParam() ;
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒXƒyƒLƒ…ƒ‰‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg
+// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã‚’ã‚»ãƒƒãƒˆ
 extern int Graphics_Android_DeviceState_SetSpecularEnable( int UseFlag )
 {
-	// Šù‘¶‚Ìƒpƒ‰ƒ[ƒ^‚Æ“¯‚¶ê‡‚Í‰½‚à‚µ‚È‚¢
+	// æ—¢å­˜ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã¨åŒã˜å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if( GANDR.Device.State.UseSpecular == UseFlag &&
 		GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
@@ -4899,7 +4962,7 @@ extern int Graphics_Android_DeviceState_SetSpecularEnable( int UseFlag )
 
 	DRAWSTOCKINFO
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uDifSrc_SpeSrc_MulSpeCol[ 2 ] = UseFlag ? 1.0f : 0.0f ;
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
@@ -4907,11 +4970,11 @@ extern int Graphics_Android_DeviceState_SetSpecularEnable( int UseFlag )
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ’¸“_‚ÌƒfƒBƒtƒ…[ƒYƒJƒ‰[‚ğƒ}ƒeƒŠƒAƒ‹‚ÌƒfƒBƒtƒ…[ƒYƒJƒ‰[‚Æ‚µ‚Äg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
+// é ‚ç‚¹ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã‚’ãƒãƒ†ãƒªã‚¢ãƒ«ã®ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹
 extern int Graphics_Android_DeviceState_SetUseVertexDiffuseColor( int UseFlag )
 {
 	if( UseFlag == GANDR.Device.State.MaterialUseVertexDiffuseColor &&
@@ -4922,7 +4985,7 @@ extern int Graphics_Android_DeviceState_SetUseVertexDiffuseColor( int UseFlag )
 
 	DRAWSTOCKINFO
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uDifSrc_SpeSrc_MulSpeCol[ 0 ] = UseFlag ? 1.0f : 0.0f ;
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
@@ -4930,11 +4993,11 @@ extern int Graphics_Android_DeviceState_SetUseVertexDiffuseColor( int UseFlag )
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ’¸“_‚ÌƒXƒyƒLƒ…ƒ‰ƒJƒ‰[‚ğƒ}ƒeƒŠƒAƒ‹‚ÌƒXƒyƒLƒ…ƒ‰ƒJƒ‰[‚Æ‚µ‚Äg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
+// é ‚ç‚¹ã®ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚«ãƒ©ãƒ¼ã‚’ãƒãƒ†ãƒªã‚¢ãƒ«ã®ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚«ãƒ©ãƒ¼ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹
 extern int Graphics_Android_DeviceState_SetUseVertexSpecularColor( int UseFlag )
 {
 	if( UseFlag == GANDR.Device.State.MaterialUseVertexSpecularColor &&
@@ -4945,7 +5008,7 @@ extern int Graphics_Android_DeviceState_SetUseVertexSpecularColor( int UseFlag )
 
 	DRAWSTOCKINFO
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uDifSrc_SpeSrc_MulSpeCol[ 1 ] = UseFlag ? 1.0f : 0.0f ;
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
@@ -4953,11 +5016,11 @@ extern int Graphics_Android_DeviceState_SetUseVertexSpecularColor( int UseFlag )
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒJƒŠƒ“ƒO‚Ì—L–³‚ğƒZƒbƒg 
+// ã‚«ãƒªãƒ³ã‚°ã®æœ‰ç„¡ã‚’ã‚»ãƒƒãƒˆ 
 extern int Graphics_Android_DeviceState_SetCullMode( int State )
 {
 	int Enable = FALSE ;
@@ -4987,7 +5050,7 @@ extern int Graphics_Android_DeviceState_SetCullMode( int State )
 		break ;
 	}
 
-	// ƒ‚[ƒh‚ª“¯‚¶‚¾‚Á‚½‚ç‰½‚à‚¹‚¸I—¹
+	// ãƒ¢ãƒ¼ãƒ‰ãŒåŒã˜ã ã£ãŸã‚‰ä½•ã‚‚ã›ãšçµ‚äº†
 	if( GANDR.Device.State.CullEnable == Enable &&
 		GANDR.Device.State.CullFace == CullFace &&
 		GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
@@ -5018,7 +5081,7 @@ extern int Graphics_Android_DeviceState_SetCullMode( int State )
 	return 0 ;
 }
 
-// ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[‚ÌƒZƒbƒg
+// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã®ã‚»ãƒƒãƒˆ
 extern int Graphics_Android_DeviceState_SetAmbient( COLOR_F *Color )
 {
 	if( _MEMCMP( Color, &GANDR.Device.State.GlobalAmbientLightColor, sizeof( COLOR_F ) ) == 0 &&
@@ -5031,16 +5094,16 @@ extern int Graphics_Android_DeviceState_SetAmbient( COLOR_F *Color )
 
 	GANDR.Device.State.GlobalAmbientLightColor = *Color ;
 
-	// ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[‚ÆƒGƒ~ƒbƒVƒuƒJƒ‰[‚ğŠ|‚¯‡‚í‚¹‚½î•ñ‚ğXV‚·‚é
+	// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼ã¨ã‚¨ãƒŸãƒƒã‚·ãƒ–ã‚«ãƒ©ãƒ¼ã‚’æ›ã‘åˆã‚ã›ãŸæƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 	Graphics_Android_DeviceState_RefreshAmbientAndEmissiveParam() ;
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒ[‚ÌƒAƒhƒŒƒbƒVƒ“ƒOƒ‚[ƒh‚ğƒZƒbƒg‚·‚é
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚¢ãƒ‰ãƒ¬ãƒƒã‚·ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int  Graphics_Android_DeviceState_SetTextureAddress( int AddressMode, int Sampler )
 {
 	int i ;
@@ -5153,7 +5216,7 @@ extern int  Graphics_Android_DeviceState_SetTextureAddress( int AddressMode, int
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒ[‚ÌƒAƒhƒŒƒbƒVƒ“ƒOƒ‚[ƒh‚ğƒZƒbƒg‚·‚é
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚¢ãƒ‰ãƒ¬ãƒƒã‚·ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int Graphics_Android_DeviceState_SetTextureAddressU( int AddressMode, int Sampler )
 {
 	int i ;
@@ -5246,7 +5309,7 @@ extern int Graphics_Android_DeviceState_SetTextureAddressU( int AddressMode, int
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒ[‚ÌƒAƒhƒŒƒbƒVƒ“ƒOƒ‚[ƒh‚ğƒZƒbƒg‚·‚é
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚¢ãƒ‰ãƒ¬ãƒƒã‚·ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int Graphics_Android_DeviceState_SetTextureAddressV( int AddressMode, int Sampler )
 {
 	int i ;
@@ -5339,7 +5402,7 @@ extern int Graphics_Android_DeviceState_SetTextureAddressV( int AddressMode, int
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒ[‚ÌƒAƒhƒŒƒbƒVƒ“ƒOƒ‚[ƒh‚ğƒZƒbƒg‚·‚é
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚¢ãƒ‰ãƒ¬ãƒƒã‚·ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int Graphics_Android_DeviceState_SetTextureAddressW( int AddressMode, int Sampler )
 {
 	int i ;
@@ -5405,7 +5468,7 @@ extern int Graphics_Android_DeviceState_SetTextureAddressW( int AddressMode, int
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒ[‚ÌƒAƒhƒŒƒbƒVƒ“ƒOƒ‚[ƒh‚ğƒZƒbƒg‚·‚é
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚¢ãƒ‰ãƒ¬ãƒƒã‚·ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int Graphics_Android_DeviceState_SetTextureAddressUVW( int AddressModeU, int AddressModeV, int AddressModeW, int Sampler )
 {
 	if( Graphics_Android_DeviceState_SetTextureAddressU( AddressModeU, Sampler ) < 0 )
@@ -5426,10 +5489,10 @@ extern int Graphics_Android_DeviceState_SetTextureAddressUVW( int AddressModeU, 
 	return 0 ;
 }
 
-// •W€•`‰æ—p‚ÌƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ‚ğ’è”ƒoƒbƒtƒ@‚ÉƒZƒbƒg‚·‚é
+// æ¨™æº–æç”»ç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’å®šæ•°ãƒãƒƒãƒ•ã‚¡ã«ã‚»ãƒƒãƒˆã™ã‚‹
 static int Graphics_Android_DeviceState_SetNormalTextureAddressTransformMatrix_ConstBuffer( void )
 {
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uTexMat[ 0 ][ 0 ] = GANDR.Device.State.TextureAddressTransformMatrix.m[ 0 ][ 0 ] ;
 	GANDR.Device.Shader.Constant.uTexMat[ 0 ][ 1 ] = GANDR.Device.State.TextureAddressTransformMatrix.m[ 1 ][ 0 ] ;
 	GANDR.Device.Shader.Constant.uTexMat[ 0 ][ 2 ] = GANDR.Device.State.TextureAddressTransformMatrix.m[ 2 ][ 0 ] ;
@@ -5440,14 +5503,14 @@ static int Graphics_Android_DeviceState_SetNormalTextureAddressTransformMatrix_C
 	GANDR.Device.Shader.Constant.uTexMat[ 1 ][ 3 ] = GANDR.Device.State.TextureAddressTransformMatrix.m[ 3 ][ 1 ] ;
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// •W€•`‰æ—p‚ÌƒeƒNƒXƒ`ƒƒƒpƒ‰ƒ[ƒ^‚ªİ’è‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// æ¨™æº–æç”»ç”¨ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.Shader.Constant.SetNormalTextureAddressTransformMatrix = TRUE ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ‚ğƒZƒbƒg‚·‚é
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int  Graphics_Android_DeviceState_SetTextureAddressTransformMatrix( int Use, MATRIX *Matrix )
 {
 	if( GANDR.Device.State.TextureAddressTransformMatrixUse == FALSE &&
@@ -5459,10 +5522,10 @@ extern int  Graphics_Android_DeviceState_SetTextureAddressTransformMatrix( int U
 
 	DRAWSTOCKINFO
 
-	// ƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğ•Û‘¶
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã‚’ä¿å­˜
 	GANDR.Device.State.TextureAddressTransformMatrixUse = Use ;
 
-	// ƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ‚ğƒZƒbƒg
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆ
 	if( Use == TRUE )
 	{
 		GANDR.Device.State.TextureAddressTransformMatrix = *Matrix ;
@@ -5472,13 +5535,13 @@ extern int  Graphics_Android_DeviceState_SetTextureAddressTransformMatrix( int U
 		CreateIdentityMatrix( &GANDR.Device.State.TextureAddressTransformMatrix ) ;
 	}
 
-	// ’è”ƒoƒbƒtƒ@‚É”½‰f‚·‚é
+	// å®šæ•°ãƒãƒƒãƒ•ã‚¡ã«åæ˜ ã™ã‚‹
 	Graphics_Android_DeviceState_SetNormalTextureAddressTransformMatrix_ConstBuffer() ;
 
 	return 0 ;
 }
 
-// ƒtƒHƒO‚ğ—LŒø‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:—LŒø  FALSE:–³Œø )
+// ãƒ•ã‚©ã‚°ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹( TRUE:æœ‰åŠ¹  FALSE:ç„¡åŠ¹ )
 extern int  Graphics_Android_DeviceState_SetFogEnable( int Flag )
 {
 	if( Flag == GANDR.Device.State.FogEnable &&
@@ -5493,12 +5556,12 @@ extern int  Graphics_Android_DeviceState_SetFogEnable( int Flag )
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒtƒHƒOƒ‚[ƒh‚ğİ’è‚·‚é
-extern int  Graphics_Android_DeviceState_SetFogVertexMode( int Mode /* DX_FOGMODE_NONE “™ */ )
+// ãƒ•ã‚©ã‚°ãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®šã™ã‚‹
+extern int  Graphics_Android_DeviceState_SetFogVertexMode( int Mode /* DX_FOGMODE_NONE ç­‰ */ )
 {
 	if( Mode == GANDR.Device.State.FogMode &&
 		GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
@@ -5512,11 +5575,11 @@ extern int  Graphics_Android_DeviceState_SetFogVertexMode( int Mode /* DX_FOGMOD
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒtƒHƒOƒJƒ‰[‚ğ•ÏX‚·‚é
+// ãƒ•ã‚©ã‚°ã‚«ãƒ©ãƒ¼ã‚’å¤‰æ›´ã™ã‚‹
 extern int  Graphics_Android_DeviceState_SetFogColor( unsigned int Color )
 {
 	if( Color == GANDR.Device.State.FogColor &&
@@ -5527,7 +5590,7 @@ extern int  Graphics_Android_DeviceState_SetFogColor( unsigned int Color )
 
 	DRAWSTOCKINFO
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uFogColor[ 0 ] = ( ( Color >> 16 ) & 0xff ) / 255.0f ;
 	GANDR.Device.Shader.Constant.uFogColor[ 1 ] = ( ( Color >>  8 ) & 0xff ) / 255.0f ;
 	GANDR.Device.Shader.Constant.uFogColor[ 2 ] = ( ( Color >>  0 ) & 0xff ) / 255.0f ;
@@ -5538,25 +5601,25 @@ extern int  Graphics_Android_DeviceState_SetFogColor( unsigned int Color )
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒtƒHƒO‚ÌFˆÈŠO‚Ì’è”î•ñ‚ğXV‚·‚é
+// ãƒ•ã‚©ã‚°ã®è‰²ä»¥å¤–ã®å®šæ•°æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 static int Graphics_Android_DeviceState_UpdateConstantFogParam( void )
 {
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uFog[ 0 ] = GANDR.Device.State.FogEnd / ( GANDR.Device.State.FogEnd - GANDR.Device.State.FogStart ) ;
 	GANDR.Device.Shader.Constant.uFog[ 1 ] = -1.0f / ( GANDR.Device.State.FogEnd - GANDR.Device.State.FogStart ) ;
 	GANDR.Device.Shader.Constant.uFog[ 2 ] = GANDR.Device.State.FogDensity ;
 	GANDR.Device.Shader.Constant.uFog[ 3 ] = 2.71828183f ;
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒtƒHƒO‚ªn‚Ü‚é‹——£‚ÆI—¹‚·‚é‹——£‚ğİ’è‚·‚é( 0.0f ` 1.0f )
+// ãƒ•ã‚©ã‚°ãŒå§‹ã¾ã‚‹è·é›¢ã¨çµ‚äº†ã™ã‚‹è·é›¢ã‚’è¨­å®šã™ã‚‹( 0.0f ï½ 1.0f )
 extern int  Graphics_Android_DeviceState_SetFogStartEnd( float Start, float End )
 {
 	int UpdateFlag ;
@@ -5581,17 +5644,17 @@ extern int  Graphics_Android_DeviceState_SetFogStartEnd( float Start, float End 
 
 	if( UpdateFlag )
 	{
-		// ’è”î•ñ‚ğXV
+		// å®šæ•°æƒ…å ±ã‚’æ›´æ–°
 		Graphics_Android_DeviceState_UpdateConstantFogParam() ;
 	}
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒtƒHƒO‚Ì–§“x‚ğİ’è‚·‚é( 0.0f ` 1.0f )
+// ãƒ•ã‚©ã‚°ã®å¯†åº¦ã‚’è¨­å®šã™ã‚‹( 0.0f ï½ 1.0f )
 extern int  Graphics_Android_DeviceState_SetFogDensity( float Density )
 {
 	if( Density == GANDR.Device.State.FogDensity &&
@@ -5604,16 +5667,16 @@ extern int  Graphics_Android_DeviceState_SetFogDensity( float Density )
 
 	GANDR.Device.State.FogDensity = Density ;
 
-	// ’è”î•ñ‚ğXV
+	// å®šæ•°æƒ…å ±ã‚’æ›´æ–°
 	Graphics_Android_DeviceState_UpdateConstantFogParam() ;
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒ‰ƒCƒeƒBƒ“ƒO‚Ì—L–³ƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
+// ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã®æœ‰ç„¡ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int  Graphics_Android_DeviceState_SetLighting( int UseFlag )
 {
 	if( UseFlag == GANDR.Device.State.Lighting &&
@@ -5628,11 +5691,11 @@ extern int  Graphics_Android_DeviceState_SetLighting( int UseFlag )
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// Å‘åˆÙ•û«‚ğƒZƒbƒg‚·‚é
+// æœ€å¤§ç•°æ–¹æ€§ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Android_DeviceState_SetMaxAnisotropy( int MaxAnisotropy, int Sampler )
 {
 	int i ;
@@ -5701,7 +5764,7 @@ extern	int		Graphics_Android_DeviceState_SetMaxAnisotropy( int MaxAnisotropy, in
 	return 0 ;
 }
 
-// ƒrƒ…[ƒ|[ƒg‚ğƒZƒbƒg‚·‚é
+// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Android_DeviceState_SetViewport( RECT *Viewport )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -5718,16 +5781,16 @@ extern	int		Graphics_Android_DeviceState_SetViewport( RECT *Viewport )
 		return 0 ;
 	}
 
-	// ‘‚«o‚·
+	// æ›¸ãå‡ºã™
 	if( GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
 		DRAWSTOCKINFO
 	}
 
-	// •`‰æ‚ğI—¹‚³‚¹‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã•ã›ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
-	// ƒrƒ…[ƒ|[ƒg‚Ìİ’è‚ğ”½‰f
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®è¨­å®šã‚’åæ˜ 
     glViewport(
 		Viewport->left,
 		Viewport->top,
@@ -5735,14 +5798,14 @@ extern	int		Graphics_Android_DeviceState_SetViewport( RECT *Viewport )
 		Viewport->bottom - Viewport->top
 	) ;
 
-	// ƒrƒ…[ƒ|[ƒg‚Ìî•ñ‚Ì•Û‘¶
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®æƒ…å ±ã®ä¿å­˜
 	GANDR.Device.State.ViewportRect = *Viewport ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒrƒ…[ƒ|[ƒg‚ğƒZƒbƒg‚·‚é( ŠÈˆÕ”Å )
+// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã‚’ã‚»ãƒƒãƒˆã™ã‚‹( ç°¡æ˜“ç‰ˆ )
 extern	int		Graphics_Android_DeviceState_SetViewportEasy( int x1, int y1, int x2, int y2 )
 {
 	RECT Viewport ;
@@ -5755,7 +5818,7 @@ extern	int		Graphics_Android_DeviceState_SetViewportEasy( int x1, int y1, int x2
 	return Graphics_Android_DeviceState_SetViewport( &Viewport ) ;
 }
 
-// •`‰æƒ‚[ƒh‚ÌƒZƒbƒg
+// æç”»ãƒ¢ãƒ¼ãƒ‰ã®ã‚»ãƒƒãƒˆ
 extern	int		Graphics_Android_DeviceState_SetDrawMode( int DrawMode )
 {
 	if( GANDR.Device.State.DrawMode == DrawMode &&
@@ -5769,21 +5832,21 @@ extern	int		Graphics_Android_DeviceState_SetDrawMode( int DrawMode )
 		DRAWSTOCKINFO
 	}
 
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒOİ’è‚ğ•ÏX‚·‚é
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°è¨­å®šã‚’å¤‰æ›´ã™ã‚‹
 	switch( DrawMode )
 	{
 	case DX_DRAWMODE_BILINEAR :
-		// ƒoƒCƒŠƒjƒA•`‰æ
+		// ãƒã‚¤ãƒªãƒ‹ã‚¢æç”»
 		Graphics_Android_DeviceState_SetSampleFilterMode( GL_LINEAR_MIPMAP_LINEAR, -1 ) ;
 		break ;
 
 	case DX_DRAWMODE_NEAREST :
-		// “ñƒAƒŒƒXƒgƒlƒCƒo[
+		// äºŒã‚¢ãƒ¬ã‚¹ãƒˆãƒã‚¤ãƒãƒ¼
 		Graphics_Android_DeviceState_SetSampleFilterMode( GL_NEAREST, -1 ) ;
 		break ;
 
 	case DX_DRAWMODE_ANISOTROPIC :
-		// ˆÙ•û«ƒtƒBƒ‹ƒ^ƒŠƒ“ƒO
+		// ç•°æ–¹æ€§ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°
 		Graphics_Android_DeviceState_SetSampleFilterMode( GL_LINEAR_MIPMAP_LINEAR, -1 ) ;
 		break ;
 
@@ -5793,12 +5856,12 @@ extern	int		Graphics_Android_DeviceState_SetDrawMode( int DrawMode )
 	GANDR.Device.State.DrawMode                 = DrawMode ;
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒAƒ‹ƒtƒ@ƒeƒXƒg‚Åg—p‚·‚é”äŠrƒ‚[ƒh‚ğİ’è‚·‚é
-extern	int		Graphics_Android_DeviceState_SetAlphaTestCmpMode( int AlphaTestCmpMode /* DX_CMP_NEVER ‚È‚Ç */ )
+// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆã§ä½¿ç”¨ã™ã‚‹æ¯”è¼ƒãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®šã™ã‚‹
+extern	int		Graphics_Android_DeviceState_SetAlphaTestCmpMode( int AlphaTestCmpMode /* DX_CMP_NEVER ãªã© */ )
 {
 	if( GANDR.Device.State.AlphaTestCmpMode == AlphaTestCmpMode &&
 		GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
@@ -5808,19 +5871,19 @@ extern	int		Graphics_Android_DeviceState_SetAlphaTestCmpMode( int AlphaTestCmpMo
 
 	DRAWSTOCKINFO
 
-	// ’l‚ğ•Û‘¶
+	// å€¤ã‚’ä¿å­˜
 	GANDR.Device.State.AlphaTestCmpMode = AlphaTestCmpMode ;
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uATestCmpMode = AlphaTestCmpMode ;
 
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒAƒ‹ƒtƒ@ƒeƒXƒg‚Åg—p‚·‚éQÆ’l‚ğİ’è‚·‚é
+// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆã§ä½¿ç”¨ã™ã‚‹å‚ç…§å€¤ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Android_DeviceState_SetAlphaTestRef( int AlphaTestRef )
 {
 	if( GANDR.Device.State.AlphaTestRef == AlphaTestRef &&
@@ -5831,33 +5894,33 @@ extern	int		Graphics_Android_DeviceState_SetAlphaTestRef( int AlphaTestRef )
 
 	DRAWSTOCKINFO
 
-	// ’l‚ğ•Û‘¶
+	// å€¤ã‚’ä¿å­˜
 	GANDR.Device.State.AlphaTestRef = AlphaTestRef ;
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uATestRef = AlphaTestRef / 255.0f ;
 
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒJƒ‰[‚ÉƒAƒ‹ƒtƒ@’l‚ğæZ‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
+// ã‚«ãƒ©ãƒ¼ã«ã‚¢ãƒ«ãƒ•ã‚¡å€¤ã‚’ä¹—ç®—ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Android_DeviceState_SetMulAlphaColor( int UseMulAlphaColor )
 {
 	DRAWSTOCKINFO
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uMulAlphaColor = UseMulAlphaColor ? 1.0f : 0.0f ;
 
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ”wŒiF‚ğİ’è‚·‚é
+// èƒŒæ™¯è‰²ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Android_DeviceState_SetBackgroundColor( int Red, int Green, int Blue, int Alpha )
 {
 	float RedF ;
@@ -5893,11 +5956,11 @@ extern	int		Graphics_Android_DeviceState_SetBackgroundColor( int Red, int Green,
 	GANDR.Device.State.BackgroundColor.b = ( BYTE )Blue ;
 	GANDR.Device.State.BackgroundColor.a = ( BYTE )Alpha ;
 	
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// Factor Color ‚ğİ’è‚·‚é
+// Factor Color ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Android_DeviceState_SetFactorColor( const DX_ANDR_SHADER_FLOAT4 *FactorColor )
 {
 	if( GANDR.Device.Shader.Constant.uFactorColor[ 0 ] == (*FactorColor)[ 0 ] &&
@@ -5911,7 +5974,7 @@ extern	int		Graphics_Android_DeviceState_SetFactorColor( const DX_ANDR_SHADER_FL
 
 	DRAWSTOCKINFO
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uFactorColor[ 0 ] = (*FactorColor)[ 0 ] ;
 	GANDR.Device.Shader.Constant.uFactorColor[ 1 ] = (*FactorColor)[ 1 ] ;
 	GANDR.Device.Shader.Constant.uFactorColor[ 2 ] = (*FactorColor)[ 2 ] ;
@@ -5919,11 +5982,11 @@ extern	int		Graphics_Android_DeviceState_SetFactorColor( const DX_ANDR_SHADER_FL
 
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒgƒD[ƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒO‚Ì—ÖŠsü‚Ì‘¾‚³‚ğİ’è‚·‚é
+// ãƒˆã‚¥ãƒ¼ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã®è¼ªéƒ­ç·šã®å¤ªã•ã‚’è¨­å®šã™ã‚‹
 extern int Graphics_Android_DeviceState_SetToonOutLineSize( float Size )
 {
 	if( GANDR.Device.Shader.Constant.uToonOutLineSize[ 0 ] == Size &&
@@ -5934,7 +5997,7 @@ extern int Graphics_Android_DeviceState_SetToonOutLineSize( float Size )
 
 	DRAWSTOCKINFO
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	GANDR.Device.Shader.Constant.uToonOutLineSize[ 0 ] = Size ;
 	GANDR.Device.Shader.Constant.uToonOutLineSize[ 1 ] = Size ;
 	GANDR.Device.Shader.Constant.uToonOutLineSize[ 2 ] = Size ;
@@ -5942,12 +6005,12 @@ extern int Graphics_Android_DeviceState_SetToonOutLineSize( float Size )
 
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// •`‰æƒuƒŒƒ“ƒhƒ‚[ƒh‚ÌƒZƒbƒg
-extern	int		Graphics_Android_DeviceState_SetBlendMode( int BlendMode, int NotWriteAlphaChannelFlag )
+// æç”»ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®ã‚»ãƒƒãƒˆ
+extern	int		Graphics_Android_DeviceState_SetBlendMode( int BlendMode, int BlendEnable, int BlendRGBSrc, int BlendRGBDest, int BlendRGBOp, int BlendASrc, int BlendADest, int BlendAOp, int NotWriteAlphaChannelFlag )
 {
 	DX_ANDROID_RENDER_BLEND_INFO *BlendInfo ;
 
@@ -5956,7 +6019,14 @@ extern	int		Graphics_Android_DeviceState_SetBlendMode( int BlendMode, int NotWri
 		return -1 ;
 	}
 
-	if( GANDR.Device.State.BlendMode == BlendMode &&
+	if( GANDR.Device.State.BlendMode	== BlendMode &&
+		GANDR.Device.State.BlendEnable	== BlendEnable &&
+		GANDR.Device.State.BlendRGBSrc	== BlendRGBSrc &&
+		GANDR.Device.State.BlendRGBDest	== BlendRGBDest &&
+		GANDR.Device.State.BlendRGBOp	== BlendRGBOp &&
+		GANDR.Device.State.BlendASrc	== BlendASrc &&
+		GANDR.Device.State.BlendADest	== BlendADest &&
+		GANDR.Device.State.BlendAOp		== BlendAOp &&
 		GANDR.Device.State.NotWriteAlphaChannelFlag == NotWriteAlphaChannelFlag &&
 		GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
@@ -5965,40 +6035,83 @@ extern	int		Graphics_Android_DeviceState_SetBlendMode( int BlendMode, int NotWri
 
 	DRAWSTOCKINFO
 
-	GANDR.Device.State.BlendMode = BlendMode ;
+	GANDR.Device.State.BlendMode	= BlendMode ;
+	GANDR.Device.State.BlendEnable	= BlendEnable ;
+	GANDR.Device.State.BlendRGBSrc	= BlendRGBSrc ;
+	GANDR.Device.State.BlendRGBDest	= BlendRGBDest ;
+	GANDR.Device.State.BlendRGBOp	= BlendRGBOp ;
+	GANDR.Device.State.BlendASrc	= BlendASrc ;
+	GANDR.Device.State.BlendADest	= BlendADest ;
+	GANDR.Device.State.BlendAOp		= BlendAOp ;
 	GANDR.Device.State.NotWriteAlphaChannelFlag = NotWriteAlphaChannelFlag ;
 
 	BlendInfo = &g_DefaultBlendDescArray[ BlendMode ] ;
 
-	if( BlendInfo->BlendEnable )
+	if( BlendMode == DX_BLENDMODE_CUSTOM )
 	{
-		glEnable( GL_BLEND ) ;
-		if( GANDR.Device.State.NotWriteAlphaChannelFlag )
+		if( BlendEnable )
 		{
-			glBlendEquationSeparate(
-				BlendInfo->ColorBlendFunc,
-				GL_FUNC_ADD
-			) ;
-			glBlendFuncSeparate(
-				BlendInfo->ColorSourceMul, BlendInfo->ColorDestMul,
-				GL_ZERO, GL_ONE
-			) ;
+			glEnable( GL_BLEND ) ;
+			if( NotWriteAlphaChannelFlag )
+			{
+				glBlendEquationSeparate(
+					DxBlendOpToGLTable[ BlendRGBOp ],
+					GL_FUNC_ADD
+				) ;
+				glBlendFuncSeparate(
+					DxBlendTypeToGLTable[ BlendRGBSrc ], DxBlendTypeToGLTable[ BlendRGBDest ],
+					GL_ZERO, GL_ONE
+				) ;
+			}
+			else
+			{
+				glBlendEquationSeparate(
+					DxBlendOpToGLTable[ BlendRGBOp ],
+					DxBlendOpToGLTable[ BlendAOp ]
+				) ;
+				glBlendFuncSeparate(
+					DxBlendTypeToGLTable[ BlendRGBSrc ], DxBlendTypeToGLTable[ BlendRGBDest ],
+					DxBlendTypeToGLTable[ BlendASrc ],   DxBlendTypeToGLTable[ BlendADest ]
+				) ;
+			}
 		}
 		else
 		{
-			glBlendEquationSeparate(
-				BlendInfo->ColorBlendFunc,
-				BlendInfo->AlphaBlendFunc
-			) ;
-			glBlendFuncSeparate(
-				BlendInfo->ColorSourceMul, BlendInfo->ColorDestMul,
-				BlendInfo->AlphaSourceMul, BlendInfo->AlphaDestMul
-			) ;
+			glDisable( GL_BLEND ) ;
 		}
 	}
 	else
 	{
-		glDisable( GL_BLEND ) ;
+		if( BlendInfo->BlendEnable )
+		{
+			glEnable( GL_BLEND ) ;
+			if( GANDR.Device.State.NotWriteAlphaChannelFlag )
+			{
+				glBlendEquationSeparate(
+					BlendInfo->ColorBlendFunc,
+					GL_FUNC_ADD
+				) ;
+				glBlendFuncSeparate(
+					BlendInfo->ColorSourceMul, BlendInfo->ColorDestMul,
+					GL_ZERO, GL_ONE
+				) ;
+			}
+			else
+			{
+				glBlendEquationSeparate(
+					BlendInfo->ColorBlendFunc,
+					BlendInfo->AlphaBlendFunc
+				) ;
+				glBlendFuncSeparate(
+					BlendInfo->ColorSourceMul, BlendInfo->ColorDestMul,
+					BlendInfo->AlphaSourceMul, BlendInfo->AlphaDestMul
+				) ;
+			}
+		}
+		else
+		{
+			glDisable( GL_BLEND ) ;
+		}
 	}
 
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
@@ -6006,7 +6119,7 @@ extern	int		Graphics_Android_DeviceState_SetBlendMode( int BlendMode, int NotWri
 	return 0 ;
 }
 
-// •`‰æ‘ÎÛ‚Ì•ÏX
+// æç”»å¯¾è±¡ã®å¤‰æ›´
 extern	int		Graphics_Android_DeviceState_SetRenderTarget( GLuint TargetFrameBuffer, GLuint TargetFrameBufferWidth, GLuint TargetFrameBufferHeight )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -6020,31 +6133,31 @@ extern	int		Graphics_Android_DeviceState_SetRenderTarget( GLuint TargetFrameBuff
 		return 0 ;
 	}
 
-	// ’¸“_‘‚«o‚µ
+	// é ‚ç‚¹æ›¸ãå‡ºã—
 	DRAWSTOCKINFO
 
-	// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ì•Û‘¶
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ä¿å­˜
 	GANDR.Device.State.TargetFrameBuffer = TargetFrameBuffer ;
 	GANDR.Device.State.TargetFrameBufferWidth = TargetFrameBufferWidth ;
 	GANDR.Device.State.TargetFrameBufferHeight = TargetFrameBufferHeight ;
 
-	// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ì•ÏX
+	// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å¤‰æ›´
 	glBindFramebuffer( GL_FRAMEBUFFER, TargetFrameBuffer ) ;
 
-	// ƒrƒ…[ƒ|[ƒg‚Ìİ’è’l‚ğXV
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®è¨­å®šå€¤ã‚’æ›´æ–°
 	if( TargetFrameBuffer != 0 )
 	{
 		Graphics_Android_DeviceState_SetViewportEasy( 0, 0, TargetFrameBufferWidth, TargetFrameBufferHeight ) ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return  0 ;
 }
 
-// g—p‚·‚éƒVƒF[ƒ_[‚ğ•ÏX‚·‚é
+// ä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’å¤‰æ›´ã™ã‚‹
 extern	int	Graphics_Android_DeviceState_SetShader( GRAPHICS_ANDROID_SHADER *Shader, int NormalShader )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -6070,11 +6183,11 @@ extern	int	Graphics_Android_DeviceState_SetShader( GRAPHICS_ANDROID_SHADER *Shad
 		GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[‚Ìg—p‚ğ~‚ß‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½¿ç”¨ã‚’æ­¢ã‚ã‚‹
 extern	int		Graphics_Android_DeviceState_ResetShader( int SetNormalShaderCancel )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -6095,7 +6208,7 @@ extern	int		Graphics_Android_DeviceState_ResetShader( int SetNormalShaderCancel 
 		return 0 ;
 	}
 
-	// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
     glUseProgram( 0 ) ;
@@ -6105,11 +6218,11 @@ extern	int		Graphics_Android_DeviceState_ResetShader( int SetNormalShaderCancel 
 	GANDR.Device.State.SetNormalShader    = FALSE ;
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[‚Ì Uniform ‚ğXV‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã® Uniform ã‚’æ›´æ–°ã™ã‚‹
 extern int Graphics_Android_DeviceState_UpdateShaderUniform( GRAPHICS_ANDROID_SHADER *Shader, int LightNum, int UseLocalWorldMatrixUniformNum )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -6117,8 +6230,8 @@ extern int Graphics_Android_DeviceState_UpdateShaderUniform( GRAPHICS_ANDROID_SH
 		return -1 ;
 	}
 
-	// Œ»İ‚ÌƒVƒF[ƒ_[‚É“K—p‚³‚ê‚Ä‚¢‚é Uniform XV”Ô†‚ÆA
-	// ƒOƒ[ƒoƒ‹‚Å‚Á‚Ä‚¢‚éƒVƒF[ƒ_[‚ÌXV”Ô†‚ªˆê’v‚µ‚Ä‚¢‚éê‡‚Í‰½‚à‚¹‚¸‚ÉI—¹
+	// ç¾åœ¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«é©ç”¨ã•ã‚Œã¦ã„ã‚‹ Uniform æ›´æ–°ç•ªå·ã¨ã€
+	// ã‚°ãƒ­ãƒ¼ãƒãƒ«ã§æŒã£ã¦ã„ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®æ›´æ–°ç•ªå·ãŒä¸€è‡´ã—ã¦ã„ã‚‹å ´åˆã¯ä½•ã‚‚ã›ãšã«çµ‚äº†
 	if( Shader == NULL ||
 		( Shader->ApplyUniformUpdateCount == GANDR.Device.Shader.Constant.UpdateCount &&
 		  GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE ) )
@@ -6126,10 +6239,10 @@ extern int Graphics_Android_DeviceState_UpdateShaderUniform( GRAPHICS_ANDROID_SH
 		return 0 ;
 	}
 
-	// ƒVƒF[ƒ_[‚ğg—pó‘Ô‚ÉƒZƒbƒg
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ç”¨çŠ¶æ…‹ã«ã‚»ãƒƒãƒˆ
 	glUseProgram( Shader->Shader ) ;
 
-	// ƒVƒF[ƒ_[‚ÉƒOƒ[ƒoƒ‹‚Ì Uniform ‚ğ“K—p‚·‚é
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«ã‚°ãƒ­ãƒ¼ãƒãƒ«ã® Uniform ã‚’é©ç”¨ã™ã‚‹
 
 	if( Shader->UniformIndex[ ANDROID_SHADER_UNIFORM_SRC_TEX ] != 0xffff )
 	{
@@ -6346,14 +6459,14 @@ extern int Graphics_Android_DeviceState_UpdateShaderUniform( GRAPHICS_ANDROID_SH
 		glUniform2fv( Shader->UniformIndex[ ANDROID_SHADER_UNIFORM_SHADOWMAP_DADJ_GRAD ], 3, GANDR.Device.Shader.Constant.uShadowMap_DAdj_Grad[ 0 ] ) ;
 	}
 
-	// “K—p‚µ‚½”Ô†‚ğXV‚·‚é
+	// é©ç”¨ã—ãŸç•ªå·ã‚’æ›´æ–°ã™ã‚‹
 	Shader->ApplyUniformUpdateCount = GANDR.Device.Shader.Constant.UpdateCount ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// w’è‚ÌƒVƒF[ƒ_[‚Ì’¸“_ƒtƒH[ƒ}ƒbƒg‚Ì’¸“_ƒf[ƒ^‚Ì•`‰æ€”õ‚ğs‚¤
+// æŒ‡å®šã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®é ‚ç‚¹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®æç”»æº–å‚™ã‚’è¡Œã†
 extern int Graphics_Android_DeviceState_SetupShaderVertexData( GRAPHICS_ANDROID_SHADER *Shader, VERTEXBUFFER_INPUT_INFO_ANDR *VertexInputInfo, const void *VertexData, GLuint VertexBuffer )
 {
 	int i ;
@@ -6364,15 +6477,15 @@ extern int Graphics_Android_DeviceState_SetupShaderVertexData( GRAPHICS_ANDROID_
 		return -1 ;
 	}
 
-	// ’¸“_ƒf[ƒ^‚ª–³Œø‚Èê‡‚Í’¸“_ƒoƒbƒtƒ@‚ğg—p‚·‚é
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ãŒç„¡åŠ¹ãªå ´åˆã¯é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½¿ç”¨ã™ã‚‹
 	if( VertexData == NULL )
 	{
-		// ’¸“_ƒoƒbƒtƒ@‚ğƒZƒbƒg
+		// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ã‚»ãƒƒãƒˆ
 		glBindBuffer( GL_ARRAY_BUFFER, VertexBuffer ) ;
 	}
 	else
 	{
-		// ’¸“_ƒoƒbƒtƒ@‚ğg—p‚µ‚È‚¢ê‡‚Í’¸“_ƒoƒbƒtƒ@‚ÆƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚Í–³Œø‚É‚·‚é
+		// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½¿ç”¨ã—ãªã„å ´åˆã¯é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã¯ç„¡åŠ¹ã«ã™ã‚‹
 		glBindBuffer( GL_ARRAY_BUFFER, 0 ) ;
 	}
 
@@ -6405,7 +6518,7 @@ extern int Graphics_Android_DeviceState_SetupShaderVertexData( GRAPHICS_ANDROID_
 		) ;
 	}
 
-	// g—p‚³‚ê‚Ä‚¢‚È‚¢—v‘f‚Í–³Œø‰»‚·‚é
+	// ä½¿ç”¨ã•ã‚Œã¦ã„ãªã„è¦ç´ ã¯ç„¡åŠ¹åŒ–ã™ã‚‹
 	for( i = 0 ; i < ANDROID_VERTEX_ATTR_NUM ; i ++ )
 	{
 		if( UseAttr[ i ] == FALSE && GANDR.Device.State.VertexAttrEnable[ i ] == TRUE )
@@ -6415,11 +6528,11 @@ extern int Graphics_Android_DeviceState_SetupShaderVertexData( GRAPHICS_ANDROID_
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// g—p‚·‚é’¸“_ƒoƒbƒtƒ@‚ğ•ÏX‚·‚é
+// ä½¿ç”¨ã™ã‚‹é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’å¤‰æ›´ã™ã‚‹
 extern	int		Graphics_Android_DeviceState_SetVertexBuffer( GLuint VertexBuffer )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -6437,11 +6550,11 @@ extern	int		Graphics_Android_DeviceState_SetVertexBuffer( GLuint VertexBuffer )
 
 	GANDR.Device.State.SetVertexBuffer = VertexBuffer ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[‚Åg—p‚·‚éƒeƒNƒXƒ`ƒƒ‚ğ•ÏX‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã§ä½¿ç”¨ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å¤‰æ›´ã™ã‚‹
 extern int Graphics_Android_DeviceState_SetTexture( int SlotIndex, GRAPHICS_ANDROID_TEXTURE *Texture )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -6502,19 +6615,19 @@ extern int Graphics_Android_DeviceState_SetTexture( int SlotIndex, GRAPHICS_ANDR
 				Texture->WrapT = GANDR.Device.State.TexAddressModeV[ SlotIndex ] ;
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Texture->WrapT ) ;
 			}
-			if( Texture->MagFilter != GANDR.Device.State.TexMagFilter[ SlotIndex ] )
+			// if( Texture->MagFilter != GANDR.Device.State.TexMagFilter[ SlotIndex ] )
 			{
 				Texture->MagFilter = GANDR.Device.State.TexMagFilter[ SlotIndex ] ;
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, Texture->MagFilter ) ;
 			}
-			if( Texture->MinFilter != GANDR.Device.State.TexMinFilter[ SlotIndex ] )
+			// if( Texture->MinFilter != GANDR.Device.State.TexMinFilter[ SlotIndex ] )
 			{
 				GLenum MinFilterTmp = GANDR.Device.State.TexMinFilter[ SlotIndex ] ;
 				if( Texture->MipMapCount <= 1 && MinFilterTmp == GL_LINEAR_MIPMAP_LINEAR )
 				{
 					MinFilterTmp = GL_LINEAR ;
 				}
-				if( Texture->MinFilter != MinFilterTmp )
+				// if( Texture->MinFilter != MinFilterTmp )
 				{
 					Texture->MinFilter = MinFilterTmp ;
 					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Texture->MinFilter ) ;
@@ -6523,15 +6636,22 @@ extern int Graphics_Android_DeviceState_SetTexture( int SlotIndex, GRAPHICS_ANDR
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// •W€•`‰æ‚Ì€”õ‚ğs‚¤
+// æ¨™æº–æç”»ã®æº–å‚™ã‚’è¡Œã†
 extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 {
 	int											IgnoreTextureAlpha ;
 	int											NextBlendMode ;
+	int											NextBlendEnable ;
+	int											NextBlendRGBSrc ;
+	int											NextBlendRGBDest ;
+	int											NextBlendRGBOp ;
+	int											NextBlendASrc ;
+	int											NextBlendADest ;
+	int											NextBlendAOp ;
 	int											UseFloatFactorColor = FALSE ;
 	DX_ANDR_SHADER_FLOAT4						FloatFactorColor ;
 	int											AlphaTestRef = 0 ;
@@ -6546,31 +6666,38 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 	GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO	*FSAddress	= NULL ;
 	GRAPHICS_ANDROID_SHADER						**UseShader	= NULL ;
 
-	// ƒeƒNƒXƒ`ƒƒ‚ª•ÏX‚³‚ê‚½Aƒtƒ‰ƒO‚ğ“|‚·
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒå¤‰æ›´ã•ã‚ŒãŸã€ãƒ•ãƒ©ã‚°ã‚’å€’ã™
 	GANDR.Device.DrawSetting.ChangeTextureFlag = FALSE ;
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// ƒpƒ‰ƒ[ƒ^‚ª•ÏX‚³‚ê‚½Aƒtƒ‰ƒO‚ğ“|‚·
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒå¤‰æ›´ã•ã‚ŒãŸã€ãƒ•ãƒ©ã‚°ã‚’å€’ã™
 	GANDR.Device.DrawSetting.ChangeBlendParamFlag = FALSE ;
 
-	// ƒuƒŒƒ“ƒhƒ‚[ƒh‚ÌŒˆ’è
+	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®æ±ºå®š
 	{
-		NextBlendMode = GANDR.Device.DrawSetting.BlendMode ;
+		NextBlendMode		= GANDR.Device.DrawSetting.BlendMode ;
+		NextBlendEnable		= GANDR.Device.DrawSetting.BlendEnable ;
+		NextBlendRGBSrc		= GANDR.Device.DrawSetting.BlendRGBSrc ;
+		NextBlendRGBDest	= GANDR.Device.DrawSetting.BlendRGBDest ;
+		NextBlendRGBOp		= GANDR.Device.DrawSetting.BlendRGBOp ;
+		NextBlendASrc		= GANDR.Device.DrawSetting.BlendASrc ;
+		NextBlendADest		= GANDR.Device.DrawSetting.BlendADest ;
+		NextBlendAOp		= GANDR.Device.DrawSetting.BlendAOp	;
 		switch( GANDR.Device.DrawSetting.BlendMode )
 		{
 		case DX_BLENDMODE_SUB :
-			// Œ¸ZƒuƒŒƒ“ƒh‚Ìê‡‚Í14”Ô–Ú‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh‚ğg—p‚·‚é
+			// æ¸›ç®—ãƒ–ãƒ¬ãƒ³ãƒ‰ã®å ´åˆã¯14ç•ªç›®ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’ä½¿ç”¨ã™ã‚‹
 			NextBlendMode = DX_BLENDMODE_SUB1 ;
 			break ;
 
 		case DX_BLENDMODE_NOBLEND :
-			// •`‰ææ‚Éƒ¿’l‚ª‚ ‚éê‡‚Í DX_BLENDMODE_NOBLEND ‚Å‚àƒuƒŒƒ“ƒhƒ‚[ƒh‚Í DX_BLENDMODE_SRCCOLOR ‚É‚·‚é
+			// æç”»å…ˆã«Î±å€¤ãŒã‚ã‚‹å ´åˆã¯ DX_BLENDMODE_NOBLEND ã§ã‚‚ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã¯ DX_BLENDMODE_SRCCOLOR ã«ã™ã‚‹
 			if( GSYS.DrawSetting.AlphaChDrawMode )
 			{
 				NextBlendMode = DX_BLENDMODE_SRCCOLOR ;
 			}
 
-			// •`‰æŒ³‰æ‘œ‚Éƒ¿ƒ`ƒƒƒ“ƒlƒ‹‚ª‚ ‚éê‡‚âƒuƒŒƒ“ƒh‰æ‘œ‚Ì—L–³‚È‚ÇğŒŸ‘æ‚Å DX_BLENDMODE_ALPHA ‚ğg—p‚·‚é
+			// æç”»å…ƒç”»åƒã«Î±ãƒãƒ£ãƒ³ãƒãƒ«ãŒã‚ã‚‹å ´åˆã‚„ãƒ–ãƒ¬ãƒ³ãƒ‰ç”»åƒã®æœ‰ç„¡ãªã©æ¡ä»¶æ¬¡ç¬¬ã§ DX_BLENDMODE_ALPHA ã‚’ä½¿ç”¨ã™ã‚‹
 			if( GANDR.Device.DrawSetting.RenderTexture != NULL )
 			{
 				if( GANDR.Device.DrawSetting.BlendTexture != NULL )
@@ -6603,15 +6730,15 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 		}
 	}
 	
-	// ƒJƒŒƒ“ƒgƒeƒNƒXƒ`ƒƒ‚ª–³‚¢ê‡‚Æ‚ ‚éê‡‚Å•ªŠò
+	// ã‚«ãƒ¬ãƒ³ãƒˆãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒç„¡ã„å ´åˆã¨ã‚ã‚‹å ´åˆã§åˆ†å²
 	if( GANDR.Device.DrawSetting.RenderTexture == NULL )
 	{
-		// ƒJƒŒƒ“ƒgƒeƒNƒXƒ`ƒƒ‚ª–³‚¢ê‡‚Íü‚â” ‚Ì•`‰æ‚Æ”»’fAƒeƒNƒXƒ`ƒƒƒXƒe[ƒW‚Í–³Œø‚É‚·‚é
+		// ã‚«ãƒ¬ãƒ³ãƒˆãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒç„¡ã„å ´åˆã¯ç·šã‚„ç®±ã®æç”»ã¨åˆ¤æ–­ã€ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸ã¯ç„¡åŠ¹ã«ã™ã‚‹
 
-		// ‚Æ‚è‚ ‚¦‚¸•`‰æˆ—‚ğs‚¤
+		// ã¨ã‚Šã‚ãˆãšæç”»å‡¦ç†ã‚’è¡Œã†
 		GANDR.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
 
-		// ƒAƒ‹ƒtƒ@ƒeƒXƒgƒpƒ‰ƒ[ƒ^‚ª—LŒø‚Èê‡‚Í‚»‚ê‚ğ—Dæ‚·‚é
+		// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒæœ‰åŠ¹ãªå ´åˆã¯ãã‚Œã‚’å„ªå…ˆã™ã‚‹
 		if( GANDR.Device.DrawSetting.AlphaTestMode != -1 )
 		{
 			GANDR.Device.State.AlphaTestEnable = TRUE ;
@@ -6623,10 +6750,10 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 			GANDR.Device.State.AlphaTestEnable = FALSE ;
 		}
 
-		// ’¸“_ƒ^ƒCƒv‚ÌƒZƒbƒg
+		// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã®ã‚»ãƒƒãƒˆ
 		GANDR.Device.DrawInfo.VertexType = VERTEXTYPE_NOTEX ;
 
-		// g—p‚·‚éƒVƒF[ƒ_[‚Ìæ“¾
+		// ä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®å–å¾—
 		GANDR.Device.State.AlphaTestModeShaderIndex = Graphics_Android_Shader_GetAlphaTestModeIndex( GANDR.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
 
 		VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GANDR.Device.DrawInfo.Use3DVertex ][ GANDR.Device.DrawInfo.VertexType ] ] ;
@@ -6639,9 +6766,9 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 	}
 	else
 	{
-		// ƒJƒŒƒ“ƒgƒeƒNƒXƒ`ƒƒ‚ª‚ ‚éê‡‚ÍƒeƒNƒXƒ`ƒƒƒXƒe[ƒWƒuƒŒƒ“ƒhƒe[ƒuƒ‹‚©‚ç’l‚ğæ“¾‚·‚é
+		// ã‚«ãƒ¬ãƒ³ãƒˆãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒã‚ã‚‹å ´åˆã¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ãƒ¼ãƒ–ãƒ«ã‹ã‚‰å€¤ã‚’å–å¾—ã™ã‚‹
 
-		// g—p‚·‚éƒeƒNƒXƒ`ƒƒƒuƒŒƒ“ƒhƒXƒe[ƒWƒXƒe[ƒ^ƒXƒe[ƒuƒ‹‚ÌƒCƒ“ƒfƒbƒNƒX‚ğƒZƒbƒg
+		// ä½¿ç”¨ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ†ãƒ¼ãƒ–ãƒ«ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 		IgnoreTextureAlpha = 1 ;
 		if( GANDR.Device.DrawSetting.AlphaChannelValidFlag ||
 			GANDR.Device.DrawSetting.AlphaTestValidFlag    ||
@@ -6651,32 +6778,32 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 			IgnoreTextureAlpha = 0 ;
 		}
 
-		// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ[‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚Å•ªŠò
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã§åˆ†å²
 		if( GANDR.Device.DrawSetting.BlendTexture != NULL )
 		{
 			int RenderType ;
 
-			// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ[‚ª‚ ‚éê‡‚Í AlphaTestValidFlag ‚Í–³‹
+			// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ãŒã‚ã‚‹å ´åˆã¯ AlphaTestValidFlag ã¯ç„¡è¦–
 
-			// g—p‚·‚éƒe[ƒuƒ‹‚ÌƒCƒ“ƒfƒbƒNƒX‚ğŠ„‚èo‚·
+			// ä½¿ç”¨ã™ã‚‹ãƒ†ãƒ¼ãƒ–ãƒ«ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å‰²ã‚Šå‡ºã™
 			RenderType = g_DefaultBlendDescArray[ NextBlendMode ].RenderType ;
 
-			// g—p‚·‚éƒeƒNƒXƒ`ƒƒ[ƒAƒhƒŒƒX‚ğƒZƒbƒg
+			// ä½¿ç”¨ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 			UseTexture[ 0 ] = GANDR.Device.DrawSetting.RenderTexture ;
 			UseTexture[ 1 ] = GANDR.Device.DrawSetting.BlendTexture ;
 			UseTextureNum = 2 ;
 
-			// ’¸“_ƒ^ƒCƒv‚ÌƒZƒbƒg
+			// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã®ã‚»ãƒƒãƒˆ
 			GANDR.Device.DrawInfo.VertexType = VERTEXTYPE_BLENDTEX ;
 
-			// ƒuƒŒƒ“ƒhƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+			// ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 			switch( GANDR.Device.DrawSetting.BlendGraphType )
 			{
 			case DX_BLENDGRAPHTYPE_NORMAL :
-				// ‚Æ‚è‚ ‚¦‚¸•`‰æˆ—‚ğs‚¤
+				// ã¨ã‚Šã‚ãˆãšæç”»å‡¦ç†ã‚’è¡Œã†
 				GANDR.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
 
-				// ƒAƒ‹ƒtƒ@ƒeƒXƒgƒpƒ‰ƒ[ƒ^‚ª—LŒø‚Èê‡‚Í‚»‚ê‚ğ—Dæ‚·‚é
+				// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒæœ‰åŠ¹ãªå ´åˆã¯ãã‚Œã‚’å„ªå…ˆã™ã‚‹
 				if( GANDR.Device.DrawSetting.AlphaTestMode != -1 )
 				{
 					GANDR.Device.State.AlphaTestEnable = TRUE ;
@@ -6685,7 +6812,7 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 				}
 				else
 				{
-					// ƒ¿ˆ—‚ª—LŒø‚Èê‡‚Íƒ¿’l‚ª‚O‚Ìê‡‚Ì‚İ•\¦‚³‚ê‚È‚¢‚æ‚¤‚É‚·‚é
+					// Î±å‡¦ç†ãŒæœ‰åŠ¹ãªå ´åˆã¯Î±å€¤ãŒï¼ã®å ´åˆã®ã¿è¡¨ç¤ºã•ã‚Œãªã„ã‚ˆã†ã«ã™ã‚‹
 					if( GANDR.Device.DrawSetting.AlphaTestValidFlag == TRUE ||
 						g_DefaultBlendDescArray[ NextBlendMode ].BlendEnable == TRUE ||
 						GANDR.Device.DrawSetting.AlphaChannelValidFlag == TRUE )
@@ -6700,14 +6827,14 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 					}
 				}
 
-				// ƒNƒƒXƒtƒF[ƒh—¦‚ğİ’è‚·‚é
+				// ã‚¯ãƒ­ã‚¹ãƒ•ã‚§ãƒ¼ãƒ‰ç‡ã‚’è¨­å®šã™ã‚‹
 				UseFloatFactorColor = TRUE ;
 				FloatFactorColor[ 0 ] = 1.0f ;
 				FloatFactorColor[ 1 ] = 1.0f ;
 				FloatFactorColor[ 2 ] = 1.0f ;
 				FloatFactorColor[ 3 ] = GANDR.Device.DrawSetting.BlendGraphFadeRatio / 255.0f ;
 
-				// g—p‚·‚éƒVƒF[ƒ_[‚ğƒZƒbƒg
+				// ä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 				GANDR.Device.State.AlphaTestModeShaderIndex = Graphics_Android_Shader_GetAlphaTestModeIndex( GANDR.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
 
 				VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GANDR.Device.DrawInfo.Use3DVertex ][ GANDR.Device.DrawInfo.VertexType ] ] ;
@@ -6720,34 +6847,34 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 				break ;
 
 			case DX_BLENDGRAPHTYPE_WIPE :
-				// ƒuƒŒƒ“ƒh‹«ŠE’l‚ªÅ‘å‚Ìê‡‚Í‰½‚à•`‰æ‚µ‚È‚¢
+				// ãƒ–ãƒ¬ãƒ³ãƒ‰å¢ƒç•Œå€¤ãŒæœ€å¤§ã®å ´åˆã¯ä½•ã‚‚æç”»ã—ãªã„
 				GANDR.Device.DrawInfo.BlendMaxNotDrawFlag = GANDR.Device.DrawSetting.BlendGraphBorderParam == 255 ? TRUE : FALSE ;
 
-				// floatŒ^‚Ì FactorColor ‚ğg—p‚·‚é
+				// floatå‹ã® FactorColor ã‚’ä½¿ç”¨ã™ã‚‹
 				UseFloatFactorColor = TRUE ;
 				FloatFactorColor[ 0 ] = 0.0f ;
 				FloatFactorColor[ 1 ] = 0.0f ;
 				FloatFactorColor[ 2 ] = 0.0f ;
 				FloatFactorColor[ 3 ] = 0.0f ;
 
-				// ‹«ŠE”ÍˆÍ‚ª‚PˆÈ‰º‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+				// å¢ƒç•Œç¯„å›²ãŒï¼‘ä»¥ä¸‹ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 				if( GANDR.Device.DrawSetting.BlendGraphBorderRange <= 1 )
 				{
-					// ‚±‚±‚Í‚à‚¤–w‚Ç—áŠOˆ— -------------------------------------------
+					// ã“ã“ã¯ã‚‚ã†æ®†ã©ä¾‹å¤–å‡¦ç† -------------------------------------------
 
-					// ƒ¿ƒeƒXƒg‚ğg—p‚·‚é
+					// Î±ãƒ†ã‚¹ãƒˆã‚’ä½¿ç”¨ã™ã‚‹
 					GANDR.Device.State.AlphaTestEnable = TRUE ;
 					AlphaTestRef     = GANDR.Device.DrawSetting.BlendGraphBorderParam ;
 					AlphaTestCmpMode = DX_CMP_GREATEREQUAL ;
 
-					// ƒ¿ƒuƒŒƒ“ƒh‹@”\‚n‚e‚e
+					// Î±ãƒ–ãƒ¬ãƒ³ãƒ‰æ©Ÿèƒ½ï¼¯ï¼¦ï¼¦
 					NextBlendMode = DX_BLENDMODE_NOBLEND ;
 
-					// ‘•ª‚·‚éƒ¿’l‚Í–³‚µ
+					// å¢—åˆ†ã™ã‚‹Î±å€¤ã¯ç„¡ã—
 					FloatFactorColor[ 3 ] = 0.0f ;
 					FloatFactorColor[ 2 ] = 1.0f ;
 
-					// ‚à‚µ‰æ‘œ‚ªƒ¿ƒ`ƒƒƒ“ƒlƒ‹‚ğg—p‚µ‚Ä‚¢‚ÄAŠ‚Â BlendGraphBorderParam ‚ª 0 ‚¾‚Á‚½‚ç AlphaRef ‚ğ‚O‚É‚µ‚È‚¢
+					// ã‚‚ã—ç”»åƒãŒÎ±ãƒãƒ£ãƒ³ãƒãƒ«ã‚’ä½¿ç”¨ã—ã¦ã„ã¦ã€ä¸”ã¤ BlendGraphBorderParam ãŒ 0 ã ã£ãŸã‚‰ AlphaRef ã‚’ï¼ã«ã—ãªã„
 					if( ( GANDR.Device.DrawSetting.AlphaChannelValidFlag ||
 						  GANDR.Device.DrawSetting.AlphaTestValidFlag ) &&
 						GANDR.Device.DrawSetting.BlendGraphBorderParam == 0 )
@@ -6759,19 +6886,19 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 				{
 					int p ;
 				
-					// ƒ¿ƒuƒŒƒ“ƒh‚É‚æ‚éƒeƒNƒXƒ`ƒƒƒuƒŒƒ“ƒh
+					// Î±ãƒ–ãƒ¬ãƒ³ãƒ‰ã«ã‚ˆã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ–ãƒ¬ãƒ³ãƒ‰
 
-					// ƒ¿ƒeƒXƒg‚Ís‚í‚È‚¢
+					// Î±ãƒ†ã‚¹ãƒˆã¯è¡Œã‚ãªã„
 					GANDR.Device.State.AlphaTestEnable = FALSE ;
 
-					// ‹«ŠE”ÍˆÍ‚É‚æ‚Á‚Ä‚S’iŠK
+					// å¢ƒç•Œç¯„å›²ã«ã‚ˆã£ã¦ï¼”æ®µéš
 					if( GANDR.Device.DrawSetting.BlendGraphBorderRange <= 64 )
 					{
-						// ~‚S
+						// Ã—ï¼”
 
 						p = 1280 - GANDR.Device.DrawSetting.BlendGraphBorderParam * 1280 / 255 ; 
 
-						// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ÌƒuƒŒƒ“ƒh’l‚É‚æ‚Á‚Ä‡¬ƒpƒ‰ƒ[ƒ^‚ğ•ÏX
+						// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ–ãƒ¬ãƒ³ãƒ‰å€¤ã«ã‚ˆã£ã¦åˆæˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¤‰æ›´
 						if( p < 1024 )
 						{
 							FloatFactorColor[ 3 ] = - ( float )( 255 - p * 255 / 1024 ) / 255.0f ;
@@ -6786,11 +6913,11 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 					else
 					if( GANDR.Device.DrawSetting.BlendGraphBorderRange <= 128 )
 					{
-						// ~‚Q
+						// Ã—ï¼’
 
 						p = 768 - GANDR.Device.DrawSetting.BlendGraphBorderParam * 768 / 255 ; 
 
-						// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ÌƒuƒŒƒ“ƒh’l‚É‚æ‚Á‚Ä‡¬ƒpƒ‰ƒ[ƒ^‚ğ•ÏX
+						// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ–ãƒ¬ãƒ³ãƒ‰å€¤ã«ã‚ˆã£ã¦åˆæˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¤‰æ›´
 						if( p < 512 )
 						{
 							FloatFactorColor[ 3 ] = - ( float )( 255 - p * 255 / 512 ) / 255.0f ;
@@ -6804,11 +6931,11 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 					}
 					else
 					{
-						// ~‚P
+						// Ã—ï¼‘
 
 						p = 512 - GANDR.Device.DrawSetting.BlendGraphBorderParam * 512 / 255 ; 
 
-						// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ÌƒuƒŒƒ“ƒh’l‚É‚æ‚Á‚Ä‡¬ƒpƒ‰ƒ[ƒ^‚ğ•ÏX
+						// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ–ãƒ¬ãƒ³ãƒ‰å€¤ã«ã‚ˆã£ã¦åˆæˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å¤‰æ›´
 						if( p < 256 )
 						{
 							FloatFactorColor[ 3 ] = - ( float )( 255 - p * 255 / 256 ) / 255.0f ;
@@ -6822,7 +6949,7 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 					}
 				}
 
-				// g—p‚·‚éƒVƒF[ƒ_[‚ğƒZƒbƒg
+				// ä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 				GANDR.Device.State.AlphaTestModeShaderIndex = Graphics_Android_Shader_GetAlphaTestModeIndex( GANDR.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
 
 				VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GANDR.Device.DrawInfo.Use3DVertex ][ GANDR.Device.DrawInfo.VertexType ] ] ;
@@ -6835,10 +6962,10 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 				break ;
 
 			case DX_BLENDGRAPHTYPE_ALPHA :
-				// ‚Æ‚è‚ ‚¦‚¸•`‰æˆ—‚ğs‚¤
+				// ã¨ã‚Šã‚ãˆãšæç”»å‡¦ç†ã‚’è¡Œã†
 				GANDR.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
 
-				// ƒAƒ‹ƒtƒ@ƒeƒXƒgƒpƒ‰ƒ[ƒ^‚ª—LŒø‚Èê‡‚Í‚»‚ê‚ğ—Dæ‚·‚é
+				// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒæœ‰åŠ¹ãªå ´åˆã¯ãã‚Œã‚’å„ªå…ˆã™ã‚‹
 				if( GANDR.Device.DrawSetting.AlphaTestMode != -1 )
 				{
 					GANDR.Device.State.AlphaTestEnable = TRUE ;
@@ -6847,7 +6974,7 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 				}
 				else
 				{
-					// ƒ¿ˆ—‚ª—LŒø‚Èê‡‚Íƒ¿’l‚ª‚O‚Ìê‡‚Ì‚İ•\¦‚³‚ê‚È‚¢‚æ‚¤‚É‚·‚é
+					// Î±å‡¦ç†ãŒæœ‰åŠ¹ãªå ´åˆã¯Î±å€¤ãŒï¼ã®å ´åˆã®ã¿è¡¨ç¤ºã•ã‚Œãªã„ã‚ˆã†ã«ã™ã‚‹
 					if( g_DefaultBlendDescArray[ NextBlendMode ].BlendEnable == TRUE )
 					{
 						GANDR.Device.State.AlphaTestEnable = TRUE ;
@@ -6860,7 +6987,7 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 					}
 				}
 
-				// g—p‚·‚éƒVƒF[ƒ_[‚ğƒZƒbƒg
+				// ä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 				GANDR.Device.State.AlphaTestModeShaderIndex = Graphics_Android_Shader_GetAlphaTestModeIndex( GANDR.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
 
 				VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GANDR.Device.DrawInfo.Use3DVertex ][ GANDR.Device.DrawInfo.VertexType ] ] ;
@@ -6875,15 +7002,15 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 		}
 		else
 		{
-			// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ[‚ª–³‚¢ê‡
+			// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ãŒç„¡ã„å ´åˆ
 
-			// ‚Æ‚è‚ ‚¦‚¸•`‰æˆ—‚ğs‚¤
+			// ã¨ã‚Šã‚ãˆãšæç”»å‡¦ç†ã‚’è¡Œã†
 			GANDR.Device.DrawInfo.BlendMaxNotDrawFlag = FALSE ;
 
-			// ’¸“_ƒ^ƒCƒv‚ÌƒZƒbƒg
+			// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã®ã‚»ãƒƒãƒˆ
 			GANDR.Device.DrawInfo.VertexType = VERTEXTYPE_TEX ;
 
-			// ƒAƒ‹ƒtƒ@ƒeƒXƒgƒpƒ‰ƒ[ƒ^‚ª—LŒø‚Èê‡‚Í‚»‚ê‚ğ—Dæ‚·‚é
+			// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒæœ‰åŠ¹ãªå ´åˆã¯ãã‚Œã‚’å„ªå…ˆã™ã‚‹
 			if( GANDR.Device.DrawSetting.AlphaTestMode != -1 )
 			{
 				GANDR.Device.State.AlphaTestEnable = TRUE ;
@@ -6892,17 +7019,17 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 			}
 			else
 			{
-				// ƒ¿ƒeƒXƒg‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+				// Î±ãƒ†ã‚¹ãƒˆã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 				if( GANDR.Device.DrawSetting.AlphaTestValidFlag == TRUE )
 				{
-					// ƒ¿ƒeƒXƒg‚ğs‚¤(“§‰ßFˆ—ˆÈŠO‚Éƒ¿ƒeƒXƒg‚ÍƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚Å‚àg—p‚µ‚Ä‚¢‚é)
+					// Î±ãƒ†ã‚¹ãƒˆã‚’è¡Œã†(é€éè‰²å‡¦ç†ä»¥å¤–ã«Î±ãƒ†ã‚¹ãƒˆã¯ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã§ã‚‚ä½¿ç”¨ã—ã¦ã„ã‚‹)
 					GANDR.Device.State.AlphaTestEnable = TRUE ;
 					AlphaTestRef     = 16 ;
 					AlphaTestCmpMode = DX_CMP_GREATER ;
 				}
 				else
 				{
-					// ƒ¿ˆ—‚ª—LŒø‚Èê‡‚ÍƒuƒŒƒ“ƒhƒ‚[ƒh‚É‚æ‚Á‚Ä‚Íƒ¿’l‚ª‚O‚Ìê‡‚Ì‚İ•\¦‚³‚ê‚È‚¢‚æ‚¤‚É‚·‚é
+					// Î±å‡¦ç†ãŒæœ‰åŠ¹ãªå ´åˆã¯ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã«ã‚ˆã£ã¦ã¯Î±å€¤ãŒï¼ã®å ´åˆã®ã¿è¡¨ç¤ºã•ã‚Œãªã„ã‚ˆã†ã«ã™ã‚‹
 					if( g_DefaultBlendDescArray[ NextBlendMode ].BlendEnable == TRUE &&
 						g_DefaultBlendDescArray[ NextBlendMode ].AlphaZeroNotDrawFlag == TRUE )
 					{
@@ -6917,7 +7044,7 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 				}
 			}
 
-			// g—p‚·‚éƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚ğƒZƒbƒg
+			// ä½¿ç”¨ã™ã‚‹ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 			GANDR.Device.State.AlphaTestModeShaderIndex = Graphics_Android_Shader_GetAlphaTestModeIndex( GANDR.Device.State.AlphaTestEnable, AlphaTestCmpMode ) ;
 
 			VS        =  &SB->BaseSimple_VS     [ g_VertexTypeToInputLayout[ GANDR.Device.DrawInfo.Use3DVertex ][ GANDR.Device.DrawInfo.VertexType ] ] ;
@@ -6928,37 +7055,37 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 
 			UseShader = &SB->BaseUseTex_Shader[ g_VertexTypeToInputLayout[ GANDR.Device.DrawInfo.Use3DVertex ][ GANDR.Device.DrawInfo.VertexType ] ][ 0 ][ g_DefaultBlendDescArray[ NextBlendMode ].RenderType ][ GANDR.Device.DrawSetting.IgnoreGraphColorFlag ? 1 : 0 ][ IgnoreTextureAlpha ][ GANDR.Device.State.AlphaTestModeShaderIndex ] ;
 
-			// g—p‚·‚éƒeƒNƒXƒ`ƒƒ[ƒAƒhƒŒƒX‚ğƒZƒbƒg
+			// ä½¿ç”¨ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 			UseTexture[ 0 ] = GANDR.Device.DrawSetting.RenderTexture ;
 
-			// g—p‚·‚éƒeƒNƒXƒ`ƒƒ‚Ì”‚Íˆê‚Â
+			// ä½¿ç”¨ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ•°ã¯ä¸€ã¤
 			UseTextureNum = 1 ;
 		}
 	}
 
-	// ’¸“_ƒVƒF[ƒ_[‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğ’²‚×‚é
+	// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’èª¿ã¹ã‚‹
 	if( *VS == 0 )
 	{
-		// ’¸“_ƒVƒF[ƒ_[‚Ìì¬‚ğ‚İ‚é
+		// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã‚’è©¦ã¿ã‚‹
 		if( Graphics_Android_VertexShader_Create( VSAddress, VS, 1 ) != 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_DeviceState_NormalDrawSetup ‚Å’¸“_ƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_DeviceState_NormalDrawSetup ã§é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 			return -1 ;
 		}
 	}
 
-	// ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚ª‚ ‚é‚©‚Ç‚¤‚©‚ğ’²‚×‚é
+	// ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’èª¿ã¹ã‚‹
 	if( *FS == 0 )
 	{
-		// ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚Ìì¬‚ğ‚İ‚é
+		// ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã‚’è©¦ã¿ã‚‹
 		if( Graphics_Android_FragmentShader_Create( FSAddress, FS, 1 ) != 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_DeviceState_NormalDrawSetup ‚Åƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xd5\x30\xe9\x30\xb0\x30\xe1\x30\xf3\x30\xc8\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_DeviceState_NormalDrawSetup ã§ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 			return -1 ;
 		}
 	}
 
-	// ƒVƒF[ƒ_[‚ªì¬‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚çƒVƒF[ƒ_[‚Ìì¬‚ğ‚İ‚é
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãŒä½œæˆã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã‚’è©¦ã¿ã‚‹
 	if( *UseShader == NULL )
 	{
 		*UseShader = Graphics_Android_GetShaderStruct() ;
@@ -6971,7 +7098,7 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 	{
 		if( Graphics_Android_Shader_Create( *UseShader, *VS, *FS ) != 0 )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_DeviceState_NormalDrawSetup ‚ÅƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ )) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x41\x00\x6e\x00\x64\x00\x72\x00\x6f\x00\x69\x00\x64\x00\x5f\x00\x44\x00\x65\x00\x76\x00\x69\x00\x63\x00\x65\x00\x53\x00\x74\x00\x61\x00\x74\x00\x65\x00\x5f\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x44\x00\x72\x00\x61\x00\x77\x00\x53\x00\x65\x00\x74\x00\x75\x00\x70\x00\x20\x00\x67\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Graphics_Android_DeviceState_NormalDrawSetup ã§ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ )) ;
 			return -1 ;
 		}
 	}
@@ -7002,10 +7129,20 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 		Graphics_Android_DeviceState_SetFactorColor( &FloatFactorColor ) ;
 	}
 
-	Graphics_Android_DeviceState_SetBlendMode( NextBlendMode, GANDR.Device.DrawSetting.NotWriteAlphaChannelFlag ) ;
+	Graphics_Android_DeviceState_SetBlendMode(
+		NextBlendMode,
+		NextBlendEnable,
+		NextBlendRGBSrc,
+		NextBlendRGBDest,
+		NextBlendRGBOp,
+		NextBlendASrc,
+		NextBlendADest,
+		NextBlendAOp,
+		GANDR.Device.DrawSetting.NotWriteAlphaChannelFlag
+	) ;
 	Graphics_Android_DeviceState_SetShader( *UseShader, TRUE ) ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -7034,34 +7171,48 @@ extern	int		Graphics_Android_DeviceState_NormalDrawSetup( void )
 
 
 
-// •`‰æİ’èŠÖŒWŠÖ”
+// æç”»è¨­å®šé–¢ä¿‚é–¢æ•°
 
-// •`‰æƒuƒŒƒ“ƒhƒ‚[ƒh‚Ìİ’è
-extern int Graphics_Android_DrawSetting_SetDrawBlendMode( int BlendMode, int AlphaTestValidFlag, int AlphaChannelValidFlag )
+// æç”»ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®è¨­å®š
+extern int Graphics_Android_DrawSetting_SetDrawBlendMode( int BlendMode, int BlendEnable, int BlendRGBSrc, int BlendRGBDest, int BlendRGBOp, int BlendASrc, int BlendADest, int BlendAOp, int AlphaTestValidFlag, int AlphaChannelValidFlag )
 {
-	if( GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
-		GANDR.Device.DrawSetting.BlendMode               == BlendMode &&
-		GANDR.Device.DrawSetting.AlphaTestValidFlag      == AlphaTestValidFlag &&
-		GANDR.Device.DrawSetting.AlphaChannelValidFlag   == AlphaChannelValidFlag )
+	if( GANDR.Device.DrawSetting.CancelSettingEqualCheck	== FALSE &&
+		GANDR.Device.DrawSetting.BlendMode					== BlendMode &&
+		GANDR.Device.DrawSetting.BlendEnable				== BlendEnable  &&
+		GANDR.Device.DrawSetting.BlendRGBSrc				== BlendRGBSrc  &&
+		GANDR.Device.DrawSetting.BlendRGBDest				== BlendRGBDest &&
+		GANDR.Device.DrawSetting.BlendRGBOp					== BlendRGBOp   &&
+		GANDR.Device.DrawSetting.BlendASrc					== BlendASrc    &&
+		GANDR.Device.DrawSetting.BlendADest					== BlendADest   &&
+		GANDR.Device.DrawSetting.BlendAOp					== BlendAOp     &&
+		GANDR.Device.DrawSetting.AlphaTestValidFlag			== AlphaTestValidFlag &&
+		GANDR.Device.DrawSetting.AlphaChannelValidFlag		== AlphaChannelValidFlag )
 	{
 		return 0 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
 	GANDR.Device.DrawSetting.BlendMode             = BlendMode ;
+	GANDR.Device.DrawSetting.BlendEnable		   = BlendEnable ;
+	GANDR.Device.DrawSetting.BlendRGBSrc		   = BlendRGBSrc ;
+	GANDR.Device.DrawSetting.BlendRGBDest		   = BlendRGBDest ;
+	GANDR.Device.DrawSetting.BlendRGBOp			   = BlendRGBOp ;
+	GANDR.Device.DrawSetting.BlendASrc			   = BlendASrc ;
+	GANDR.Device.DrawSetting.BlendADest			   = BlendADest ; 
+	GANDR.Device.DrawSetting.BlendAOp			   = BlendAOp ;
 	GANDR.Device.DrawSetting.AlphaChannelValidFlag = AlphaChannelValidFlag ;
 	GANDR.Device.DrawSetting.AlphaTestValidFlag    = AlphaTestValidFlag ;
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag    = TRUE ;
 
-	// ƒpƒ‰ƒ[ƒ^‚ª•ÏX‚³‚ê‚½Aƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒå¤‰æ›´ã•ã‚ŒãŸã€ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 
 	return 0 ;
 }
 
-// •`‰æ‚Ì‰æ‘œ‚Ì‚q‚f‚a‚ğ–³‹‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
+// æç”»æ™‚ã®ç”»åƒã®ï¼²ï¼§ï¼¢ã‚’ç„¡è¦–ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹
 extern int Graphics_Android_DrawSetting_SetIgnoreDrawGraphColor( int EnableFlag )
 {
 	if( GANDR.Device.DrawSetting.IgnoreGraphColorFlag == EnableFlag &&
@@ -7070,13 +7221,13 @@ extern int Graphics_Android_DrawSetting_SetIgnoreDrawGraphColor( int EnableFlag 
 		return 0 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// ’l‚ğ•Û‘¶
+	// å€¤ã‚’ä¿å­˜
 	GANDR.Device.DrawSetting.IgnoreGraphColorFlag = EnableFlag ;
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	if( GANDR.Device.DrawSetting.IgnoreGraphColorFlag )
 	{
 		GANDR.Device.Shader.Constant.uIgnoreTextureColor[ 0 ] = 1.0f ;
@@ -7094,13 +7245,13 @@ extern int Graphics_Android_DrawSetting_SetIgnoreDrawGraphColor( int EnableFlag 
 
 //	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// ƒpƒ‰ƒ[ƒ^‚ª•ÏX‚³‚ê‚½Aƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒå¤‰æ›´ã•ã‚ŒãŸã€ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 
 	return 0 ;
 }
 
-// •`‰æ‚Ì‰æ‘œ‚Ì‚`‚ğ–³‹‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
+// æç”»æ™‚ã®ç”»åƒã®ï¼¡ã‚’ç„¡è¦–ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹
 extern int Graphics_Android_DrawSetting_SetIgnoreDrawGraphAlpha( int EnableFlag )
 {
 	if( GANDR.Device.DrawSetting.IgnoreGraphAlphaFlag == EnableFlag &&
@@ -7109,13 +7260,13 @@ extern int Graphics_Android_DrawSetting_SetIgnoreDrawGraphAlpha( int EnableFlag 
 		return 0 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// ’l‚ğ•Û‘¶
+	// å€¤ã‚’ä¿å­˜
 	GANDR.Device.DrawSetting.IgnoreGraphAlphaFlag = EnableFlag ;
 
-	// ’è”ƒf[ƒ^‚É”½‰f
+	// å®šæ•°ãƒ‡ãƒ¼ã‚¿ã«åæ˜ 
 	if( GANDR.Device.DrawSetting.IgnoreGraphAlphaFlag )
 	{
 		GANDR.Device.Shader.Constant.uIgnoreTextureColor[ 3 ] = 1.0f ;
@@ -7127,13 +7278,13 @@ extern int Graphics_Android_DrawSetting_SetIgnoreDrawGraphAlpha( int EnableFlag 
 
 	GANDR.Device.Shader.Constant.UpdateCount ++ ;
 
-	// ƒpƒ‰ƒ[ƒ^‚ª•ÏX‚³‚ê‚½Aƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒå¤‰æ›´ã•ã‚ŒãŸã€ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 
 	return 0 ;
 }
 
-// •`‰ææ‚ÌƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹‚Ì“à—e‚ğ‘‚«Š·‚¦‚é‚©‚ğİ’è‚·‚é
+// æç”»å…ˆã®ã‚¢ãƒ«ãƒ•ã‚¡ãƒãƒ£ãƒ³ãƒãƒ«ã®å†…å®¹ã‚’æ›¸ãæ›ãˆã‚‹ã‹ã‚’è¨­å®šã™ã‚‹
 extern int Graphics_Android_DrawSetting_SetWriteAlphaChannelFlag( int NotFlag )
 {
 	if( GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
@@ -7142,19 +7293,19 @@ extern int Graphics_Android_DrawSetting_SetWriteAlphaChannelFlag( int NotFlag )
 		return 0 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
 	GANDR.Device.DrawSetting.NotWriteAlphaChannelFlag = NotFlag ;
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag    = TRUE ;
 
-	// ƒpƒ‰ƒ[ƒ^‚ª•ÏX‚³‚ê‚½Aƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒå¤‰æ›´ã•ã‚ŒãŸã€ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 
 	return 0 ;
 }
 
-// ƒAƒ‹ƒtƒ@ƒeƒXƒg‚Ìİ’è
+// ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆã®è¨­å®š
 extern int Graphics_Android_DrawSetting_SetDrawAlphaTest( int TestMode, int TestParam )
 {
 	if( GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
@@ -7164,23 +7315,23 @@ extern int Graphics_Android_DrawSetting_SetDrawAlphaTest( int TestMode, int Test
 		return 0 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
 	GANDR.Device.DrawSetting.AlphaTestMode      = TestMode ;
 	GANDR.Device.DrawSetting.AlphaTestParam     = TestParam ;
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// ƒpƒ‰ƒ[ƒ^‚ª•ÏX‚³‚ê‚½Aƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒå¤‰æ›´ã•ã‚ŒãŸã€ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 
 	return 0 ;
 }
 
-// ƒuƒŒƒ“ƒh‚·‚éƒeƒNƒXƒ`ƒƒ‚Ìƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg‚·‚é
+// ãƒ–ãƒ¬ãƒ³ãƒ‰ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern int Graphics_Android_DrawSetting_SetBlendTextureParam( int BlendType, int *Param )
 {
-	// ƒpƒ‰ƒ[ƒ^‚ğ•Û‘¶
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ä¿å­˜
 	switch( BlendType )
 	{
 	case DX_BLENDGRAPHTYPE_NORMAL :
@@ -7193,7 +7344,7 @@ extern int Graphics_Android_DrawSetting_SetBlendTextureParam( int BlendType, int
 
 		if( GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
-			// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+			// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 			DRAWSTOCKINFO
 		}
 
@@ -7211,7 +7362,7 @@ extern int Graphics_Android_DrawSetting_SetBlendTextureParam( int BlendType, int
 
 		if( GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
-			// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+			// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 			DRAWSTOCKINFO
 		}
 
@@ -7228,24 +7379,24 @@ extern int Graphics_Android_DrawSetting_SetBlendTextureParam( int BlendType, int
 
 		if( GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 		{
-			// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+			// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 			DRAWSTOCKINFO
 		}
 		break;
 	}
 
-	// ƒuƒŒƒ“ƒhƒ^ƒCƒv‚ğ•Û‘¶‚·‚é
+	// ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚¿ã‚¤ãƒ—ã‚’ä¿å­˜ã™ã‚‹
 	GANDR.Device.DrawSetting.BlendGraphType = BlendType ;
 
-	// ƒpƒ‰ƒ[ƒ^‚ª•ÏX‚³‚ê‚½Aƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒå¤‰æ›´ã•ã‚ŒãŸã€ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒ‚ğƒZƒbƒg‚·‚é 
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ 
 extern int Graphics_Android_DrawSetting_SetTexture( GRAPHICS_ANDROID_TEXTURE *RenderTexture )
 {
 	if( RenderTexture == GANDR.Device.DrawSetting.RenderTexture &&
@@ -7256,29 +7407,29 @@ extern int Graphics_Android_DrawSetting_SetTexture( GRAPHICS_ANDROID_TEXTURE *Re
 
 	if( GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
-		// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+		// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 		DRAWSTOCKINFO
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚ª•ÏX‚³‚ê‚½Aƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒå¤‰æ›´ã•ã‚ŒãŸã€ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.ChangeTextureFlag = TRUE ;
 
-	// ƒeƒNƒXƒ`ƒƒ‚Ì—L‚è–³‚µ‚ª•ÏX‚³‚ê‚½ê‡‚ÍƒuƒŒƒ“ƒhƒpƒ‰ƒ[ƒ^‚Ì•ÏX‚às‚¤ƒtƒ‰ƒO‚àƒZƒbƒg‚·‚é
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æœ‰ã‚Šç„¡ã—ãŒå¤‰æ›´ã•ã‚ŒãŸå ´åˆã¯ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å¤‰æ›´ã‚‚è¡Œã†ãƒ•ãƒ©ã‚°ã‚‚ã‚»ãƒƒãƒˆã™ã‚‹
 	if( ( GANDR.Device.DrawSetting.RenderTexture == NULL && RenderTexture != NULL ) ||
 		( GANDR.Device.DrawSetting.RenderTexture != NULL && RenderTexture == NULL ) )
 	{
 		GANDR.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒƒZƒbƒg
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚»ãƒƒãƒˆ
 	GANDR.Device.DrawSetting.RenderTexture      = RenderTexture ;
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒuƒŒƒ“ƒh‚·‚éƒeƒNƒXƒ`ƒƒ‚ğƒZƒbƒg‚·‚é 
+// ãƒ–ãƒ¬ãƒ³ãƒ‰ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ 
 extern int Graphics_Android_DrawSetting_SetBlendTexture( GRAPHICS_ANDROID_TEXTURE *BlendTexture )
 {
 	if( GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
@@ -7289,25 +7440,25 @@ extern int Graphics_Android_DrawSetting_SetBlendTexture( GRAPHICS_ANDROID_TEXTUR
 
 	if( GANDR.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
-		// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+		// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 		DRAWSTOCKINFO
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚ª•ÏX‚³‚ê‚½Aƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒå¤‰æ›´ã•ã‚ŒãŸã€ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	GANDR.Device.DrawSetting.ChangeTextureFlag = TRUE ;
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 
-	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚Ì—L‚è–³‚µ‚ª•ÏX‚³‚ê‚½ê‡‚ÍƒuƒŒƒ“ƒhƒpƒ‰ƒ[ƒ^‚Ì•ÏX‚às‚¤ƒtƒ‰ƒO‚àƒZƒbƒg‚·‚é
+	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æœ‰ã‚Šç„¡ã—ãŒå¤‰æ›´ã•ã‚ŒãŸå ´åˆã¯ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å¤‰æ›´ã‚‚è¡Œã†ãƒ•ãƒ©ã‚°ã‚‚ã‚»ãƒƒãƒˆã™ã‚‹
 	if( ( GANDR.Device.DrawSetting.BlendTexture == NULL && BlendTexture != NULL ) ||
 		( GANDR.Device.DrawSetting.BlendTexture != NULL && BlendTexture == NULL ) )
 	{
 		GANDR.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒƒZƒbƒg
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚»ãƒƒãƒˆ
 	GANDR.Device.DrawSetting.BlendTexture    = BlendTexture ;
 
-	// ƒeƒNƒXƒ`ƒƒ‚Ì•‚Æ‚‚³‚ğ•Û‘¶
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å¹…ã¨é«˜ã•ã‚’ä¿å­˜
 	if( BlendTexture != NULL )
 	{
 		GANDR.Device.DrawSetting.BlendTextureWidth  = ( float )BlendTexture->Width  ;
@@ -7316,7 +7467,7 @@ extern int Graphics_Android_DrawSetting_SetBlendTexture( GRAPHICS_ANDROID_TEXTUR
 		GANDR.Device.DrawSetting.InvBlendTextureHeight = 1.0F / GANDR.Device.DrawSetting.BlendTextureHeight ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -7351,7 +7502,7 @@ extern int Graphics_Android_DrawSetting_SetBlendTexture( GRAPHICS_ANDROID_TEXTUR
 
 
 
-// Android ‚Ì•`‰æˆ—€”õŠÖŒW
+// Android ã®æç”»å‡¦ç†æº–å‚™é–¢ä¿‚
 
 #ifndef DX_NON_ASYNCLOAD
 static int Graphics_Android_RenderVertexASyncCallback( ASYNCLOAD_MAINTHREAD_REQUESTINFO * Info )
@@ -7362,7 +7513,7 @@ static int Graphics_Android_RenderVertexASyncCallback( ASYNCLOAD_MAINTHREAD_REQU
 }
 #endif // DX_NON_ASYNCLOAD
 
-// ’¸“_ƒoƒbƒtƒ@‚É—­‚Ü‚Á‚½’¸“_ƒf[ƒ^‚ğƒŒƒ“ƒ_ƒŠƒ“ƒO‚·‚é
+// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«æºœã¾ã£ãŸé ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã™ã‚‹
 extern	int		Graphics_Android_RenderVertex( int NextUse3DVertex, int ASyncThread )
 {
 	DWORD InputLayout ;
@@ -7385,13 +7536,13 @@ extern	int		Graphics_Android_RenderVertex( int NextUse3DVertex, int ASyncThread 
 
 	InputLayout = g_VertexTypeToInputLayout[ GANDR.Device.DrawInfo.Use3DVertex ][ GANDR.Device.DrawInfo.VertexType ] ;
 
-	// ’¸“_‚ªˆê‚Â‚à–³‚©‚Á‚½‚ç•`‰æ‚Ís‚í‚È‚¢
+	// é ‚ç‚¹ãŒä¸€ã¤ã‚‚ç„¡ã‹ã£ãŸã‚‰æç”»ã¯è¡Œã‚ãªã„
 	if( GANDR.Device.DrawInfo.VertexNum != 0 && DxLib_GetEndRequest() == FALSE && GANDR.Device.State.SetShader != NULL )
 	{
-		// ”ñ•`‰æƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚È‚¯‚ê‚ÎƒŒƒ“ƒ_ƒŠƒ“ƒO‚·‚é
+		// éæç”»ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ãªã‘ã‚Œã°ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã™ã‚‹
 		if( GANDR.Device.DrawInfo.BlendMaxNotDrawFlag == FALSE )
 		{
-			// ƒVƒF[ƒ_[‚ğƒZƒbƒg
+			// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 			if( InputLayout == ANDROID_VERTEX_INPUTLAYOUT_3D_LIGHT )
 			{
 				if( Graphics_Android_Shader_Normal3DDraw_Setup() == FALSE )
@@ -7404,7 +7555,7 @@ extern	int		Graphics_Android_RenderVertex( int NextUse3DVertex, int ASyncThread 
 //				Graphics_Android_DeviceState_SetVertexShader( &GANDR.Device.Shader.Base.BaseSimple_VS[ InputLayout ], TRUE ) ;
 //			}
 
-			// ƒeƒNƒXƒ`ƒƒ‚ÌƒZƒbƒg
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã‚»ãƒƒãƒˆ
 			for( int i = 0; i < USE_TEXTURESTAGE_NUM; i++ )
 			{
 				if( GANDR.Device.State.SetTexture[ i ] == NULL )
@@ -7416,17 +7567,17 @@ extern	int		Graphics_Android_RenderVertex( int NextUse3DVertex, int ASyncThread 
 				glBindTexture( GL_TEXTURE_2D, GANDR.Device.State.SetTexture[ i ]->TextureBuffer ) ;
 			}
 
-			// Uniform ‚ÌXV
+			// Uniform ã®æ›´æ–°
 			Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-			// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+			// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 			Graphics_Android_DeviceState_SetupShaderVertexData(
 				GANDR.Device.State.SetShader,
 				&g_BaseSimpleVertexShaderInfo[ InputLayout ].InputInfo,
 				GANDR.Device.DrawInfo.VertexBuffer
 			) ;
 
-			// •`‰æ
+			// æç”»
 			glDrawArrays( GANDR.Device.DrawInfo.PrimitiveType, 0, GANDR.Device.DrawInfo.VertexNum );
 			GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 		}
@@ -7447,11 +7598,11 @@ extern	int		Graphics_Android_RenderVertex( int NextUse3DVertex, int ASyncThread 
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// •`‰æ€”õ‚ğs‚¤
+// æç”»æº–å‚™ã‚’è¡Œã†
 extern	void	FASTCALL Graphics_Android_DrawPreparation( int ParamFlag )
 {
 	int AlphaTest ;
@@ -7459,37 +7610,37 @@ extern	void	FASTCALL Graphics_Android_DrawPreparation( int ParamFlag )
 	int Specular ;
 	int i ;
 
-	// •K‚¸ Graphics_Android_DrawPreparation ‚ğs‚¤‚×‚«‚Æ‚¢‚¤ƒtƒ‰ƒO‚ğ“|‚·
+	// å¿…ãš Graphics_Android_DrawPreparation ã‚’è¡Œã†ã¹ãã¨ã„ã†ãƒ•ãƒ©ã‚°ã‚’å€’ã™
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = FALSE ;
 
-	// İ’è‚ª•ÏX‚³‚ê‚½‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğ“|‚·
+	// è¨­å®šãŒå¤‰æ›´ã•ã‚ŒãŸã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°ã‚’å€’ã™
 	GSYS.ChangeSettingFlag = FALSE ;
 
-	// ƒ‰ƒCƒg‚ğg‚¤‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+	// ãƒ©ã‚¤ãƒˆã‚’ä½¿ã†ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 	if( ( ParamFlag & DX_ANDROID_DRAWPREP_LIGHTING ) != 0 && GSYS.Light.ProcessDisable == FALSE )
 	{
-		// ƒ‰ƒCƒg‚Ìİ’è‚ª•ÏX‚³‚ê‚Ä‚¢‚½‚ç•ÏX‚ğ“K‰‚·‚é
+		// ãƒ©ã‚¤ãƒˆã®è¨­å®šãŒå¤‰æ›´ã•ã‚Œã¦ã„ãŸã‚‰å¤‰æ›´ã‚’é©å¿œã™ã‚‹
 		if( GSYS.Light.HardwareChange )
 		{
 			Graphics_Light_RefreshState() ;
 		}
 		else
 		{
-			// ƒ‰ƒCƒg‚ª—LŒø‚È‚Ì‚Éˆê“I‚É–³Œø‚É‚È‚Á‚Ä‚¢‚½‚ç—LŒø‚É‚·‚é
+			// ãƒ©ã‚¤ãƒˆãŒæœ‰åŠ¹ãªã®ã«ä¸€æ™‚çš„ã«ç„¡åŠ¹ã«ãªã£ã¦ã„ãŸã‚‰æœ‰åŠ¹ã«ã™ã‚‹
 			if( GANDR.Device.State.Lighting == 0 )
 			{
 				Graphics_Android_DeviceState_SetLighting( TRUE ) ;
 			}
 		}
 
-		// ƒ}ƒeƒŠƒAƒ‹‚Ìİ’è‚ªŠO•”‚©‚ç•ÏX‚³‚ê‚Ä‚¢‚½‚çŒ³‚É–ß‚·
+		// ãƒãƒ†ãƒªã‚¢ãƒ«ã®è¨­å®šãŒå¤–éƒ¨ã‹ã‚‰å¤‰æ›´ã•ã‚Œã¦ã„ãŸã‚‰å…ƒã«æˆ»ã™
 		if( GSYS.Light.ChangeMaterial )
 		{
 			GSYS.Light.ChangeMaterial = 0 ;
 			Graphics_Android_DeviceState_SetMaterial( &GSYS.Light.Material ) ;
 		}
 
-		// ’¸“_ƒJƒ‰[‚ğƒ}ƒeƒŠƒAƒ‹‚ÌƒJƒ‰[‚Æ‚µ‚Äg—p‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg‚·‚é
+		// é ‚ç‚¹ã‚«ãƒ©ãƒ¼ã‚’ãƒãƒ†ãƒªã‚¢ãƒ«ã®ã‚«ãƒ©ãƒ¼ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 		if( ( GSYS.Light.MaterialNotUseVertexDiffuseColor ? FALSE : TRUE ) != GANDR.Device.State.MaterialUseVertexDiffuseColor )
 		{
 			Graphics_Android_DeviceState_SetUseVertexDiffuseColor( GSYS.Light.MaterialNotUseVertexDiffuseColor ? FALSE : TRUE ) ;
@@ -7502,13 +7653,13 @@ extern	void	FASTCALL Graphics_Android_DrawPreparation( int ParamFlag )
 	}
 	else
 	{
-		// ƒ‰ƒCƒg‚ª—LŒø‚É‚È‚Á‚Ä‚¢‚½‚ç–³Œø‚É‚·‚é
+		// ãƒ©ã‚¤ãƒˆãŒæœ‰åŠ¹ã«ãªã£ã¦ã„ãŸã‚‰ç„¡åŠ¹ã«ã™ã‚‹
 		if( GANDR.Device.State.Lighting == 1 )
 		{
 			Graphics_Android_DeviceState_SetLighting( FALSE ) ;
 		}
 
-		// ’¸“_ƒJƒ‰[‚ğƒ}ƒeƒŠƒAƒ‹‚ÌƒJƒ‰[‚Æ‚µ‚Äg—p‚·‚é
+		// é ‚ç‚¹ã‚«ãƒ©ãƒ¼ã‚’ãƒãƒ†ãƒªã‚¢ãƒ«ã®ã‚«ãƒ©ãƒ¼ã¨ã—ã¦ä½¿ç”¨ã™ã‚‹
 		if( GANDR.Device.State.MaterialUseVertexDiffuseColor == FALSE )
 		{
 			Graphics_Android_DeviceState_SetUseVertexDiffuseColor( TRUE ) ;
@@ -7520,17 +7671,17 @@ extern	void	FASTCALL Graphics_Android_DrawPreparation( int ParamFlag )
 		}
 	}
 
-	// ƒXƒyƒLƒ…ƒ‰‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚Ìİ’è‚ğs‚¤
+	// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã®è¨­å®šã‚’è¡Œã†
 	Specular = ( GSYS.DrawSetting.NotUseSpecular == FALSE && ( ParamFlag & DX_ANDROID_DRAWPREP_SPECULAR ) != 0 ) ? TRUE : FALSE ;
 	if( Specular != GANDR.Device.State.UseSpecular )
 	{
 		Graphics_Android_DeviceState_SetSpecularEnable( Specular ) ;
 	}
 
-	// Ë‰es—ñ‚Ìİ’è‚ğs‚¤
+	// å°„å½±è¡Œåˆ—ã®è¨­å®šã‚’è¡Œã†
 //	Graphics_DrawSetting_SetUse2DProjectionMatrix( ( ParamFlag & DX_ANDROID_DRAWPREP_3D ) == 0 ? TRUE : FALSE ) ;
 
-	// ‚yƒoƒbƒtƒ@‚Ìİ’è‚ğs‚¤
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã®è¨­å®šã‚’è¡Œã†
 	{
 		BOOL			DepthEnable ;
 		int				WriteDepthBuffer ;
@@ -7588,7 +7739,7 @@ extern	void	FASTCALL Graphics_Android_DrawPreparation( int ParamFlag )
 		}
 	}
 
-	// ƒtƒHƒO‚Ìİ’è‚ğs‚¤
+	// ãƒ•ã‚©ã‚°ã®è¨­å®šã‚’è¡Œã†
 	if( ParamFlag & DX_ANDROID_DRAWPREP_FOG )
 	{
 		if( GANDR.Device.State.FogEnable != GSYS.DrawSetting.FogEnable )
@@ -7604,29 +7755,29 @@ extern	void	FASTCALL Graphics_Android_DrawPreparation( int ParamFlag )
 		}
 	}
 
-	// ƒuƒŒƒ“ƒfƒBƒ“ƒOŠÖŒW‚ÌƒZƒbƒeƒBƒ“ƒO‚ğs‚¤ê‡‚Ì‚İÀs‚·‚é
+	// ãƒ–ãƒ¬ãƒ³ãƒ‡ã‚£ãƒ³ã‚°é–¢ä¿‚ã®ã‚»ãƒƒãƒ†ã‚£ãƒ³ã‚°ã‚’è¡Œã†å ´åˆã®ã¿å®Ÿè¡Œã™ã‚‹
 	if( ( ParamFlag & DX_ANDROID_DRAWPREP_NOBLENDSETTING ) == 0 )
 	{
-		// ƒtƒ‰ƒO‚Ì‰Šú‰»
+		// ãƒ•ãƒ©ã‚°ã®åˆæœŸåŒ–
 		AlphaTest    = FALSE ;
 		AlphaChannel = FALSE ;
 
-		// ƒeƒNƒXƒ`ƒƒ[‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
-		// g—p‚µ‚È‚¢ê‡‚Í‰Šú’l‚Ì‚Ü‚Ü
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
+		// ä½¿ç”¨ã—ãªã„å ´åˆã¯åˆæœŸå€¤ã®ã¾ã¾
 		if( ParamFlag & DX_ANDROID_DRAWPREP_TEXTURE )
 		{
-			// “§‰ßFˆ—‚ğs‚í‚È‚¢ê‡‚ÍƒJƒ‰[ƒL[‚àƒ¿ƒeƒXƒg‚àƒ¿ƒ`ƒƒƒ“ƒlƒ‹‚àg—p‚µ‚È‚¢‚Ì‚Å‰Šú’l‚Ì‚Ü‚Ü
-			// “§‰ßFˆ—‚ğs‚¤ê‡‚Ì‚İˆ—‚ğ‚·‚é
+			// é€éè‰²å‡¦ç†ã‚’è¡Œã‚ãªã„å ´åˆã¯ã‚«ãƒ©ãƒ¼ã‚­ãƒ¼ã‚‚Î±ãƒ†ã‚¹ãƒˆã‚‚Î±ãƒãƒ£ãƒ³ãƒãƒ«ã‚‚ä½¿ç”¨ã—ãªã„ã®ã§åˆæœŸå€¤ã®ã¾ã¾
+			// é€éè‰²å‡¦ç†ã‚’è¡Œã†å ´åˆã®ã¿å‡¦ç†ã‚’ã™ã‚‹
 			if( ParamFlag & DX_ANDROID_DRAWPREP_TRANS )
 			{
 				int TexAlphaTestFlag = ( ParamFlag & DX_ANDROID_DRAWPREP_TEXALPHATEST ) != 0 ? 1 : 0 ;
 				int TexAlphaChFlag   = ( ParamFlag & DX_ANDROID_DRAWPREP_TEXALPHACH   ) != 0 ? 1 : 0 ;
 
-				// ƒeƒNƒXƒ`ƒƒ‚Éƒ¿ƒrƒbƒg‚ª‚ ‚é‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«Î±ãƒ“ãƒƒãƒˆãŒã‚ã‚‹ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 				if( TexAlphaTestFlag || TexAlphaChFlag )
 				{
-					// ƒ¿ƒeƒXƒg‚Å‚à’¸“_À•W‚Ìƒf[ƒ^Œ^‚ª•‚“®¬”“_Œ^‚ÅAŠ‚ÂƒeƒNƒXƒ`ƒƒƒtƒBƒ‹ƒ^ƒŠƒ“ƒOƒ‚[ƒh‚ª
-					// üŒ`•âŠÔ‚Å‚ ‚é‚©AƒuƒŒƒ“ƒhƒ‚[ƒh‚ª DX_BLENDMODE_NOBLEND ˆÈŠO‚¾‚Á‚½‚çƒ¿ƒ`ƒƒƒ“ƒlƒ‹‚Æ‚µ‚Äˆµ‚¤
+					// Î±ãƒ†ã‚¹ãƒˆã§ã‚‚é ‚ç‚¹åº§æ¨™ã®ãƒ‡ãƒ¼ã‚¿å‹ãŒæµ®å‹•å°æ•°ç‚¹å‹ã§ã€ä¸”ã¤ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ãŒ
+					// ç·šå½¢è£œé–“ã§ã‚ã‚‹ã‹ã€ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ãŒ DX_BLENDMODE_NOBLEND ä»¥å¤–ã ã£ãŸã‚‰Î±ãƒãƒ£ãƒ³ãƒãƒ«ã¨ã—ã¦æ‰±ã†
 					if( ( GSYS.DrawSetting.BlendMode != DX_BLENDMODE_NOBLEND && GSYS.DrawSetting.BlendMode != DX_BLENDMODE_DESTCOLOR ) ||
 						( ( ParamFlag & DX_ANDROID_DRAWPREP_VECTORINT ) == 0   && GSYS.DrawSetting.DrawMode  == DX_DRAWMODE_BILINEAR   ) )
 					{
@@ -7634,7 +7785,7 @@ extern	void	FASTCALL Graphics_Android_DrawPreparation( int ParamFlag )
 					}
 					else
 					{
-						// ‚»‚êˆÈŠO‚Ìê‡‚ÍƒeƒNƒXƒ`ƒƒ[‚Ìƒtƒ‰ƒO‚ÉˆÏ‚Ë‚é
+						// ãã‚Œä»¥å¤–ã®å ´åˆã¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ãƒ•ãƒ©ã‚°ã«å§”ã­ã‚‹
 						AlphaTest    = TexAlphaTestFlag ;
 						AlphaChannel = TexAlphaChFlag ;
 					}
@@ -7642,7 +7793,7 @@ extern	void	FASTCALL Graphics_Android_DrawPreparation( int ParamFlag )
 			}
 		}
 
-		// ’²®‚³‚ê‚½ƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg‚·‚é
+		// èª¿æ•´ã•ã‚ŒãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 		if( GANDR.Device.DrawSetting.IgnoreGraphColorFlag  != GSYS.DrawSetting.IgnoreGraphColorFlag )
 		{
 			Graphics_Android_DrawSetting_SetIgnoreDrawGraphColor( GSYS.DrawSetting.IgnoreGraphColorFlag ) ;
@@ -7654,10 +7805,28 @@ extern	void	FASTCALL Graphics_Android_DrawPreparation( int ParamFlag )
 		}
 
 		if( GANDR.Device.DrawSetting.BlendMode             != GSYS.DrawSetting.BlendMode ||
+			GANDR.Device.DrawSetting.BlendEnable           != GSYS.DrawSetting.BlendEnable  ||
+			GANDR.Device.DrawSetting.BlendRGBSrc           != GSYS.DrawSetting.BlendRGBSrc  ||
+			GANDR.Device.DrawSetting.BlendRGBDest          != GSYS.DrawSetting.BlendRGBDest ||
+			GANDR.Device.DrawSetting.BlendRGBOp            != GSYS.DrawSetting.BlendRGBOp   ||
+			GANDR.Device.DrawSetting.BlendASrc             != GSYS.DrawSetting.BlendASrc    ||
+			GANDR.Device.DrawSetting.BlendADest            != GSYS.DrawSetting.BlendADest   ||
+			GANDR.Device.DrawSetting.BlendAOp              != GSYS.DrawSetting.BlendAOp     ||
 			GANDR.Device.DrawSetting.AlphaTestValidFlag    != AlphaTest ||
 			GANDR.Device.DrawSetting.AlphaChannelValidFlag != AlphaChannel               )
 		{
-			Graphics_Android_DrawSetting_SetDrawBlendMode( GSYS.DrawSetting.BlendMode, AlphaTest, AlphaChannel ) ;
+			Graphics_Android_DrawSetting_SetDrawBlendMode(
+				GSYS.DrawSetting.BlendMode,
+				GSYS.DrawSetting.BlendEnable,
+				GSYS.DrawSetting.BlendRGBSrc,
+				GSYS.DrawSetting.BlendRGBDest,
+				GSYS.DrawSetting.BlendRGBOp,
+				GSYS.DrawSetting.BlendASrc,
+				GSYS.DrawSetting.BlendADest,
+				GSYS.DrawSetting.BlendAOp,
+				AlphaTest,
+				AlphaChannel
+			) ;
 		}
 
 		if( GANDR.Device.DrawSetting.AlphaTestMode         != GSYS.DrawSetting.AlphaTestMode ||
@@ -7769,18 +7938,18 @@ extern	void	FASTCALL Graphics_Android_DrawPreparation( int ParamFlag )
 		}
 	}
 
-	// RenderBegin ‚ğÀs‚µ‚Ä‚¢‚È‚©‚Á‚½‚çÀs‚·‚é
+	// RenderBegin ã‚’å®Ÿè¡Œã—ã¦ã„ãªã‹ã£ãŸã‚‰å®Ÿè¡Œã™ã‚‹
 	if( GANDR.Device.DrawInfo.BeginSceneFlag == FALSE )
 	{
 		Graphics_Android_RenderBegin() ;
 	}
 
-	// ƒpƒ‰ƒ[ƒ^‚ğ•Û‘¶
+	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ä¿å­˜
 	GANDR.Device.DrawSetting.DrawPrepParamFlag = ParamFlag ;
 }
 
 
-// •`‰æƒRƒ}ƒ“ƒh‚ğŠJn‚·‚é
+// æç”»ã‚³ãƒãƒ³ãƒ‰ã‚’é–‹å§‹ã™ã‚‹
 extern	void	Graphics_Android_RenderBegin( void )
 {
 	if( GANDR.Device.DrawInfo.BeginSceneFlag == TRUE )
@@ -7792,7 +7961,7 @@ extern	void	Graphics_Android_RenderBegin( void )
 	GANDR.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
 }
 
-// •`‰æƒRƒ}ƒ“ƒh‚ğI—¹‚·‚é
+// æç”»ã‚³ãƒãƒ³ãƒ‰ã‚’çµ‚äº†ã™ã‚‹
 extern	void	Graphics_Android_RenderEnd( void )
 {
 	if( GANDR.Device.DrawInfo.BeginSceneFlag == FALSE )
@@ -7829,15 +7998,15 @@ extern	void	Graphics_Android_RenderEnd( void )
 
 
 
-// Android ‚ğg‚Á‚½•`‰æŠÖŒW
+// Android ã‚’ä½¿ã£ãŸæç”»é–¢ä¿‚
 
-// ’¸“_ƒoƒbƒtƒ@‚É—­‚Ü‚Á‚½’¸“_ƒf[ƒ^‚ğƒŒƒ“ƒ_ƒŠƒ“ƒO‚·‚é
+// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«æºœã¾ã£ãŸé ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã™ã‚‹
 extern	int		Graphics_Hardware_RenderVertex( int ASyncThread )
 {
 	return Graphics_Android_RenderVertex( -1, ASyncThread ) ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawBillboard3D
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawBillboard3D
 extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy, float Size, float Angle, IMAGEDATA *Image, IMAGEDATA *BlendImage, int TransFlag, int ReverseXFlag, int ReverseYFlag, int DrawFlag, RECT *DrawArea )
 {
 	VERTEX_2D *DrawVert ;
@@ -7880,7 +8049,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 		return -1 ;
 	}
 
-	// •`‰æ€”õ
+	// æç”»æº–å‚™
 	if( DrawFlag )
 	{
 		Flag = TransFlag | DX_ANDROID_DRAWPREP_3D | DX_ANDROID_DRAWPREP_FOG | DX_ANDROID_DRAWPREP_TEXADDRESS ;
@@ -7894,20 +8063,20 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 		dbottom =  100000000.0f ;
 	}
 
-	// ’¸“_ƒf[ƒ^‚ğæ“¾
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
 	DiffuseColor = GANDR.Device.DrawInfo.DiffuseColor ;
 
-	// •`‰æî•ñ‚Ì”‚ğƒZƒbƒg
+	// æç”»æƒ…å ±ã®æ•°ã‚’ã‚»ãƒƒãƒˆ
 	DrawTexNum = Image->Hard.DrawNum ;
 
-	// •`‰æî•ñ‚Ì”‚ªƒuƒŒƒ“ƒh‰æ‘œ‚ÆˆÙ‚È‚Á‚Ä‚¢‚½‚ç‚O”Ô–Ú‚ÌƒeƒNƒXƒ`ƒƒ‚¾‚¯‚ğg—p‚·‚é
+	// æç”»æƒ…å ±ã®æ•°ãŒãƒ–ãƒ¬ãƒ³ãƒ‰ç”»åƒã¨ç•°ãªã£ã¦ã„ãŸã‚‰ï¼ç•ªç›®ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã ã‘ã‚’ä½¿ç”¨ã™ã‚‹
 	BlendGraphNoIncFlag = FALSE ;
 	if( BlendImage != NULL && BlendImage->Hard.DrawNum != Image->Hard.DrawNum )
 	{
 		BlendGraphNoIncFlag = TRUE ;
 	}
 
-	// •`‰æî•ñ”z—ñ‚ÌƒAƒhƒŒƒX‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// æç”»æƒ…å ±é…åˆ—ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	DrawTex = Image->Hard.Draw ;
 	BlendDrawTex = NULL ;
 	if( BlendImage != NULL )
@@ -7915,7 +8084,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 		BlendDrawTex = BlendImage->Hard.Draw ;
 	}
 
-	// ƒTƒCƒY‚ÆÀ•WŠÖŒW‚Ì–‘OŒvZ
+	// ã‚µã‚¤ã‚ºã¨åº§æ¨™é–¢ä¿‚ã®äº‹å‰è¨ˆç®—
 	SizeX = Size ;
 	SizeY = Size * ( float )Image->HeightF / ( float )Image->WidthF ;
 
@@ -7924,16 +8093,16 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 	cx *= Image->WidthF ;
 	cy *= Image->HeightF ;
 
-	// ‰ñ“]‚·‚éê‡‚Í‰ñ“]’l‚ğ‹‚ß‚Ä‚¨‚­
+	// å›è»¢ã™ã‚‹å ´åˆã¯å›è»¢å€¤ã‚’æ±‚ã‚ã¦ãŠã
 	if( Angle != 0.0 )
 	{
 		_SINCOS( (float)Angle, &Sin, &Cos ) ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 	for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 	{
-		// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+		// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 		if( DrawFlag )
 		{
 			Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
@@ -7955,22 +8124,22 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 			BlendTexVert = BlendDrawTex->Vertex ;
 		}
 
-		// ƒuƒŒƒ“ƒhƒOƒ‰ƒtƒBƒbƒN‚ğg—p‚µ‚Ä‚¢‚È‚­‚ÄAŠ‚Â•`‰æ‚·‚éê‡‚Í‚‘¬‚Èˆ—‚ğg—p‚·‚é
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚’ä½¿ç”¨ã—ã¦ã„ãªãã¦ã€ä¸”ã¤æç”»ã™ã‚‹å ´åˆã¯é«˜é€Ÿãªå‡¦ç†ã‚’ä½¿ç”¨ã™ã‚‹
 		if( GANDR.Device.DrawInfo.VertexType != VERTEXTYPE_BLENDTEX && DrawFlag == TRUE )
 		{
 			GETVERTEX_BILLBOARD( DrawVert3D ) ;
 
-			// ‰ñ“]‚·‚éê‡‚Æ‚µ‚È‚¢ê‡‚Åˆ—‚ğ•ªŠò
+			// å›è»¢ã™ã‚‹å ´åˆã¨ã—ãªã„å ´åˆã§å‡¦ç†ã‚’åˆ†å²
 			if( Angle != 0.0 )
 			{
-				// ƒ[ƒJƒ‹À•W€”õ
+				// ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™æº–å‚™
 				SrcVec[2].x = SrcVec[0].x = ( -cx + TexVert[0].x ) * ScaleX ;
 				SrcVec[3].x = SrcVec[1].x = ( -cx + TexVert[1].x ) * ScaleX ;
 
 				SrcVec[1].y = SrcVec[0].y = ( -cy + Image->HeightF - TexVert[0].y ) * ScaleY ;
 				SrcVec[3].y = SrcVec[2].y = ( -cy + Image->HeightF - TexVert[2].y ) * ScaleY ;
 
-				// ‰ñ“]ŒvZ
+				// å›è»¢è¨ˆç®—
 				f             = SrcVec[ 0 ].x * Cos - SrcVec[ 0 ].y * Sin ;	
 				SrcVec[ 0 ].y = SrcVec[ 0 ].x * Sin + SrcVec[ 0 ].y * Cos ;
 				SrcVec[ 0 ].x = f ;
@@ -7987,7 +8156,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 				SrcVec[ 3 ].y = SrcVec[ 3 ].x * Sin + SrcVec[ 3 ].y * Cos ;
 				SrcVec[ 3 ].x = f ;
 
-				// ƒrƒ‹ƒ{[ƒhÀ•W‚ğƒ[ƒ‹ƒhÀ•W‚Ö•ÏŠ·
+				// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰åº§æ¨™ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã¸å¤‰æ›
 				DrawVert3D[ 0 ].pos.x = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][0] + SrcVec[ 0 ].y * GSYS.DrawSetting.BillboardMatrixF.m[1][0] + Pos.x ;
 				DrawVert3D[ 0 ].pos.y = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][1] + SrcVec[ 0 ].y * GSYS.DrawSetting.BillboardMatrixF.m[1][1] + Pos.y ;
 				DrawVert3D[ 0 ].pos.z = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][2] + SrcVec[ 0 ].y * GSYS.DrawSetting.BillboardMatrixF.m[1][2] + Pos.z ;
@@ -8016,14 +8185,14 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 			{
 				VECTOR TempVecX[ 2 ], TempVecY[ 2 ] ;
 
-				// ƒ[ƒJƒ‹À•W€”õ
+				// ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™æº–å‚™
 				SrcVec[0].x = ( -cx + TexVert[0].x ) * ScaleX ;
 				SrcVec[1].x = ( -cx + TexVert[1].x ) * ScaleX ;
 
 				SrcVec[0].y = ( -cy + Image->HeightF - TexVert[0].y ) * ScaleY ;
 				SrcVec[2].y = ( -cy + Image->HeightF - TexVert[2].y ) * ScaleY ;
 
-				// ƒrƒ‹ƒ{[ƒhÀ•W‚ğƒ[ƒ‹ƒhÀ•W‚Ö•ÏŠ·
+				// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰åº§æ¨™ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã¸å¤‰æ›
 				TempVecX[ 0 ].x = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][0] + Pos.x ;
 				TempVecX[ 0 ].y = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][1] + Pos.y ;
 				TempVecX[ 0 ].z = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][2] + Pos.z ;
@@ -8109,26 +8278,26 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 				DrawVert3D[5].v = TexVert[0].v ;
 			}
 
-			// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 			ADD4VERTEX_BILLBOARD
 		}
 		else
 		{
 			VECTOR DrawPos[ 4 ] ;
 
-			// ƒrƒ‹ƒ{[ƒh‚Ì‚S’¸“_‚ğ“¾‚é
+			// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã®ï¼”é ‚ç‚¹ã‚’å¾—ã‚‹
 			{
-				// ‰ñ“]‚·‚éê‡‚Æ‚µ‚È‚¢ê‡‚Åˆ—‚ğ•ªŠò
+				// å›è»¢ã™ã‚‹å ´åˆã¨ã—ãªã„å ´åˆã§å‡¦ç†ã‚’åˆ†å²
 				if( Angle != 0.0 )
 				{
-					// ƒ[ƒJƒ‹À•W€”õ
+					// ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™æº–å‚™
 					SrcVec[2].x = SrcVec[0].x = ( -cx + TexVert[0].x ) * ScaleX ;
 					SrcVec[3].x = SrcVec[1].x = ( -cx + TexVert[1].x ) * ScaleX ;
 
 					SrcVec[1].y = SrcVec[0].y = ( -cy + Image->HeightF - TexVert[0].y ) * ScaleY ;
 					SrcVec[3].y = SrcVec[2].y = ( -cy + Image->HeightF - TexVert[2].y ) * ScaleY ;
 
-					// ‰ñ“]ŒvZ
+					// å›è»¢è¨ˆç®—
 					f             = SrcVec[ 0 ].x * Cos - SrcVec[ 0 ].y * Sin ;	
 					SrcVec[ 0 ].y = SrcVec[ 0 ].x * Sin + SrcVec[ 0 ].y * Cos ;
 					SrcVec[ 0 ].x = f ;
@@ -8145,7 +8314,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 					SrcVec[ 3 ].y = SrcVec[ 3 ].x * Sin + SrcVec[ 3 ].y * Cos ;
 					SrcVec[ 3 ].x = f ;
 
-					// ƒrƒ‹ƒ{[ƒhÀ•W‚ğƒ[ƒ‹ƒhÀ•W‚Ö•ÏŠ·
+					// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰åº§æ¨™ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã¸å¤‰æ›
 					SrcVec2[ 0 ].x = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][0] + SrcVec[ 0 ].y * GSYS.DrawSetting.BillboardMatrixF.m[1][0] + Pos.x ;
 					SrcVec2[ 0 ].y = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][1] + SrcVec[ 0 ].y * GSYS.DrawSetting.BillboardMatrixF.m[1][1] + Pos.y ;
 					SrcVec2[ 0 ].z = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][2] + SrcVec[ 0 ].y * GSYS.DrawSetting.BillboardMatrixF.m[1][2] + Pos.z ;
@@ -8166,14 +8335,14 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 				{
 					VECTOR TempVecX[ 2 ], TempVecY[ 2 ] ;
 
-					// ƒ[ƒJƒ‹À•W€”õ
+					// ãƒ­ãƒ¼ã‚«ãƒ«åº§æ¨™æº–å‚™
 					SrcVec[0].x = ( -cx + TexVert[0].x ) * ScaleX ;
 					SrcVec[1].x = ( -cx + TexVert[1].x ) * ScaleX ;
 
 					SrcVec[0].y = ( -cy + Image->HeightF - TexVert[0].y ) * ScaleY ;
 					SrcVec[2].y = ( -cy + Image->HeightF - TexVert[2].y ) * ScaleY ;
 
-					// ƒrƒ‹ƒ{[ƒhÀ•W‚ğƒ[ƒ‹ƒhÀ•W‚Ö•ÏŠ·
+					// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰åº§æ¨™ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã¸å¤‰æ›
 					TempVecX[ 0 ].x = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][0] + Pos.x ;
 					TempVecX[ 0 ].y = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][1] + Pos.y ;
 					TempVecX[ 0 ].z = SrcVec[ 0 ].x * GSYS.DrawSetting.BillboardMatrixF.m[0][2] + Pos.z ;
@@ -8208,13 +8377,13 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 				}
 			}
 
-			// ’¸“_ƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+			// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 			switch( GANDR.Device.DrawInfo.VertexType )
 			{
 			case VERTEXTYPE_BLENDTEX :
-				// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é
+				// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹
 
-				// ’¸“_ƒoƒbƒtƒ@‚Ìæ“¾
+				// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®å–å¾—
 				if( DrawFlag )
 				{
 					GETVERTEX_QUAD( DrawVertB )
@@ -8231,7 +8400,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 				DrawVertB[4].color = DiffuseColor ;
 				DrawVertB[5].color = DiffuseColor ;
 
-				// ƒXƒNƒŠ[ƒ“À•W‚É•ÏŠ·
+				// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã«å¤‰æ›
 				rhw = 1.0f / ( SrcVec2[0].x * GSYS.DrawSetting.Blend3DMatrixF.m[0][3] + SrcVec2[0].y * GSYS.DrawSetting.Blend3DMatrixF.m[1][3] + SrcVec2[0].z * GSYS.DrawSetting.Blend3DMatrixF.m[2][3] + GSYS.DrawSetting.Blend3DMatrixF.m[3][3] ) ;
 				z   = rhw  * ( SrcVec2[0].x * GSYS.DrawSetting.Blend3DMatrixF.m[0][2] + SrcVec2[0].y * GSYS.DrawSetting.Blend3DMatrixF.m[1][2] + SrcVec2[0].z * GSYS.DrawSetting.Blend3DMatrixF.m[2][2] + GSYS.DrawSetting.Blend3DMatrixF.m[3][2] ) ;
 
@@ -8346,7 +8515,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 				DrawVertB[4].rhw = rhw ;
 				DrawVertB[5].rhw = rhw ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				if( DrawFlag )
 				{
 					ADD4VERTEX_BLENDTEX
@@ -8381,9 +8550,9 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 				break ;
 
 			case VERTEXTYPE_TEX :
-				// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢
+				// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„
 
-				// ’¸“_ƒoƒbƒtƒ@‚Ìæ“¾
+				// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®å–å¾—
 				if( DrawFlag )
 				{
 					GETVERTEX_QUAD( DrawVert )
@@ -8393,7 +8562,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 					DrawVert = TempVect;
 				}
 
-				// ƒXƒNƒŠ[ƒ“À•W‚É•ÏŠ·
+				// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã«å¤‰æ›
 				rhw = 1.0f / ( SrcVec2[0].x * GSYS.DrawSetting.Blend3DMatrixF.m[0][3] + SrcVec2[0].y * GSYS.DrawSetting.Blend3DMatrixF.m[1][3] + SrcVec2[0].z * GSYS.DrawSetting.Blend3DMatrixF.m[2][3] + GSYS.DrawSetting.Blend3DMatrixF.m[3][3] ) ;
 				z   = rhw  * ( SrcVec2[0].x * GSYS.DrawSetting.Blend3DMatrixF.m[0][2] + SrcVec2[0].y * GSYS.DrawSetting.Blend3DMatrixF.m[1][2] + SrcVec2[0].z * GSYS.DrawSetting.Blend3DMatrixF.m[2][2] + GSYS.DrawSetting.Blend3DMatrixF.m[3][2] ) ;
 
@@ -8468,7 +8637,7 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 					DrawVert[5].v = TexVert[0].v ;
 				}
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				if( DrawFlag )
 				{
 					ADD4VERTEX_TEX
@@ -8508,11 +8677,11 @@ extern	int		Graphics_Hardware_DrawBillboard3D_PF( VECTOR Pos, float cx, float cy
 		DrawArea->bottom = _FTOL( dbottom ) + 1 ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawModiBillboard3D
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawModiBillboard3D
 extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, IMAGEDATA *Image, IMAGEDATA *BlendImage, int TransFlag, int DrawFlag, RECT *DrawArea )
 {
 	VERTEX_2D *DrawVert ;
@@ -8541,7 +8710,7 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 		return -1 ;
 	}
 
-	// •`‰æ€”õ
+	// æç”»æº–å‚™
 	if( DrawFlag )
 	{
 		Flag = TransFlag | DX_ANDROID_DRAWPREP_3D | DX_ANDROID_DRAWPREP_FOG | DX_ANDROID_DRAWPREP_TEXADDRESS ;
@@ -8555,20 +8724,20 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 		dbottom =  100000000.0f ;
 	}
 
-	// ’¸“_ƒf[ƒ^‚ğæ“¾
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
 	DiffuseColor = GANDR.Device.DrawInfo.DiffuseColor ;
 
-	// •`‰æî•ñ‚Ì”‚ğƒZƒbƒg
+	// æç”»æƒ…å ±ã®æ•°ã‚’ã‚»ãƒƒãƒˆ
 	DrawTexNum = Image->Hard.DrawNum ;
 
-	// •`‰æî•ñ‚Ì”‚ªƒuƒŒƒ“ƒh‰æ‘œ‚ÆˆÙ‚È‚Á‚Ä‚¢‚½‚ç‚O”Ô–Ú‚ÌƒeƒNƒXƒ`ƒƒ‚¾‚¯‚ğg—p‚·‚é
+	// æç”»æƒ…å ±ã®æ•°ãŒãƒ–ãƒ¬ãƒ³ãƒ‰ç”»åƒã¨ç•°ãªã£ã¦ã„ãŸã‚‰ï¼ç•ªç›®ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã ã‘ã‚’ä½¿ç”¨ã™ã‚‹
 	BlendGraphNoIncFlag = FALSE ;
 	if( BlendImage != NULL && BlendImage->Hard.DrawNum != Image->Hard.DrawNum )
 	{
 		BlendGraphNoIncFlag = TRUE ;
 	}
 
-	// •`‰æî•ñ”z—ñ‚ÌƒAƒhƒŒƒX‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// æç”»æƒ…å ±é…åˆ—ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	DrawTex = Image->Hard.Draw ;
 	BlendDrawTex = NULL ;
 	if( BlendImage != NULL )
@@ -8576,10 +8745,10 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 		BlendDrawTex = BlendImage->Hard.Draw ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 	for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 	{
-		// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+		// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 		if( DrawFlag )
 		{
 			Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
@@ -8601,12 +8770,12 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 			BlendTexVert = BlendDrawTex->Vertex ;
 		}
 
-		// ƒuƒŒƒ“ƒhƒOƒ‰ƒtƒBƒbƒN‚ğg—p‚µ‚Ä‚¢‚È‚­‚ÄAŠ‚Â•`‰æ‚·‚éê‡‚Í‚‘¬‚Èˆ—‚ğg—p‚·‚é
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚’ä½¿ç”¨ã—ã¦ã„ãªãã¦ã€ä¸”ã¤æç”»ã™ã‚‹å ´åˆã¯é«˜é€Ÿãªå‡¦ç†ã‚’ä½¿ç”¨ã™ã‚‹
 		if( GANDR.Device.DrawInfo.VertexType != VERTEXTYPE_BLENDTEX && DrawFlag == TRUE )
 		{
 			GETVERTEX_BILLBOARD( DrawVert3D ) ;
 
-			// ƒrƒ‹ƒ{[ƒhÀ•W‚ğƒ[ƒ‹ƒhÀ•W‚Ö•ÏŠ·
+			// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰åº§æ¨™ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã¸å¤‰æ›
 			DrawVert3D[ 0 ].pos.x = x1 * GSYS.DrawSetting.BillboardMatrixF.m[0][0] + y1 * GSYS.DrawSetting.BillboardMatrixF.m[1][0] + Pos.x ;
 			DrawVert3D[ 0 ].pos.y = x1 * GSYS.DrawSetting.BillboardMatrixF.m[0][1] + y1 * GSYS.DrawSetting.BillboardMatrixF.m[1][1] + Pos.y ;
 			DrawVert3D[ 0 ].pos.z = x1 * GSYS.DrawSetting.BillboardMatrixF.m[0][2] + y1 * GSYS.DrawSetting.BillboardMatrixF.m[1][2] + Pos.z ;
@@ -8651,16 +8820,16 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 			DrawVert3D[5].u = TexVert[1].u ;
 			DrawVert3D[5].v = TexVert[0].v ;
 
-			// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 			ADD4VERTEX_BILLBOARD
 		}
 		else
 		{
 			VECTOR DrawPos[ 4 ] ;
 
-			// ƒrƒ‹ƒ{[ƒh‚Ì‚S’¸“_‚ğ“¾‚é
+			// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã®ï¼”é ‚ç‚¹ã‚’å¾—ã‚‹
 			{
-				// ƒrƒ‹ƒ{[ƒhÀ•W‚ğƒ[ƒ‹ƒhÀ•W‚Ö•ÏŠ·
+				// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰åº§æ¨™ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã¸å¤‰æ›
 				SrcVec2[ 0 ].x = x1 * GSYS.DrawSetting.BillboardMatrixF.m[0][0] + y1 * GSYS.DrawSetting.BillboardMatrixF.m[1][0] + Pos.x ;
 				SrcVec2[ 0 ].y = x1 * GSYS.DrawSetting.BillboardMatrixF.m[0][1] + y1 * GSYS.DrawSetting.BillboardMatrixF.m[1][1] + Pos.y ;
 				SrcVec2[ 0 ].z = x1 * GSYS.DrawSetting.BillboardMatrixF.m[0][2] + y1 * GSYS.DrawSetting.BillboardMatrixF.m[1][2] + Pos.z ;
@@ -8678,13 +8847,13 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 				SrcVec2[ 3 ].z = x3 * GSYS.DrawSetting.BillboardMatrixF.m[0][2] + y3 * GSYS.DrawSetting.BillboardMatrixF.m[1][2] + Pos.z ;
 			}
 
-			// ’¸“_ƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+			// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 			switch( GANDR.Device.DrawInfo.VertexType )
 			{
 			case VERTEXTYPE_BLENDTEX :
-				// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é
+				// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹
 
-				// ’¸“_ƒoƒbƒtƒ@‚Ìæ“¾
+				// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®å–å¾—
 				GETVERTEX_QUAD( DrawVertB )
 
 				DrawVertB[0].color = DiffuseColor ;
@@ -8694,7 +8863,7 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 				DrawVertB[4].color = DiffuseColor ;
 				DrawVertB[5].color = DiffuseColor ;
 
-				// ƒXƒNƒŠ[ƒ“À•W‚É•ÏŠ·
+				// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã«å¤‰æ›
 				rhw = 1.0f / ( SrcVec2[0].x * GSYS.DrawSetting.Blend3DMatrixF.m[0][3] + SrcVec2[0].y * GSYS.DrawSetting.Blend3DMatrixF.m[1][3] + SrcVec2[0].z * GSYS.DrawSetting.Blend3DMatrixF.m[2][3] + GSYS.DrawSetting.Blend3DMatrixF.m[3][3] ) ;
 				z   = rhw  * ( SrcVec2[0].x * GSYS.DrawSetting.Blend3DMatrixF.m[0][2] + SrcVec2[0].y * GSYS.DrawSetting.Blend3DMatrixF.m[1][2] + SrcVec2[0].z * GSYS.DrawSetting.Blend3DMatrixF.m[2][2] + GSYS.DrawSetting.Blend3DMatrixF.m[3][2] ) ;
 
@@ -8785,7 +8954,7 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 				DrawVertB[4].rhw = rhw ;
 				DrawVertB[5].rhw = rhw ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				if( DrawFlag )
 				{
 					ADD4VERTEX_BLENDTEX
@@ -8820,12 +8989,12 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 				break ;
 
 			case VERTEXTYPE_TEX :
-				// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢
+				// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„
 
-				// ’¸“_ƒoƒbƒtƒ@‚Ìæ“¾
+				// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®å–å¾—
 				GETVERTEX_QUAD( DrawVert )
 
-				// ƒXƒNƒŠ[ƒ“À•W‚É•ÏŠ·
+				// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã«å¤‰æ›
 				rhw = 1.0f / ( SrcVec2[0].x * GSYS.DrawSetting.Blend3DMatrixF.m[0][3] + SrcVec2[0].y * GSYS.DrawSetting.Blend3DMatrixF.m[1][3] + SrcVec2[0].z * GSYS.DrawSetting.Blend3DMatrixF.m[2][3] + GSYS.DrawSetting.Blend3DMatrixF.m[3][3] ) ;
 				z   = rhw  * ( SrcVec2[0].x * GSYS.DrawSetting.Blend3DMatrixF.m[0][2] + SrcVec2[0].y * GSYS.DrawSetting.Blend3DMatrixF.m[1][2] + SrcVec2[0].z * GSYS.DrawSetting.Blend3DMatrixF.m[2][2] + GSYS.DrawSetting.Blend3DMatrixF.m[3][2] ) ;
 
@@ -8877,7 +9046,7 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 				DrawVert[4].v = TexVert[2].v ;
 				DrawVert[5].v = TexVert[0].v ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				if( DrawFlag )
 				{
 					ADD4VERTEX_TEX
@@ -8917,11 +9086,11 @@ extern	int		Graphics_Hardware_DrawModiBillboard3D_PF( VECTOR Pos, float x1, floa
 		DrawArea->bottom = _FTOL( dbottom ) + 1 ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawGraph
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawGraph
 extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IMAGEDATA *Image, IMAGEDATA *BlendImage, int TransFlag, int IntFlag )
 {
 	VERTEX_2D			*DrawVert ;
@@ -8956,53 +9125,53 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 		return -1 ;
 	}
 
-	// floatÀ•W•â³
+	// floatåº§æ¨™è£œæ­£
 //	xf -= 0.5F ;
 //	yf -= 0.5F ;
 
-	// •`‰æ€”õ
+	// æç”»æº–å‚™
 	Flag = TransFlag | ( IntFlag << 1 ) ;
 	DX_ANDROID_DRAWPREP_TEX( Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
-	// ’¸“_ƒf[ƒ^‚ğæ“¾
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—
 	DiffuseColor = GANDR.Device.DrawInfo.DiffuseColor ;
 
-	// •`‰æî•ñ‚Ì”‚ğƒZƒbƒg
+	// æç”»æƒ…å ±ã®æ•°ã‚’ã‚»ãƒƒãƒˆ
 	DrawTexNum = Image->Hard.DrawNum ;
 
-	// •`‰æî•ñ‚Ì”‚ªƒuƒŒƒ“ƒh‰æ‘œ‚ÆˆÙ‚È‚Á‚Ä‚¢‚½‚ç‚O”Ô–Ú‚ÌƒeƒNƒXƒ`ƒƒ‚¾‚¯‚ğg—p‚·‚é
+	// æç”»æƒ…å ±ã®æ•°ãŒãƒ–ãƒ¬ãƒ³ãƒ‰ç”»åƒã¨ç•°ãªã£ã¦ã„ãŸã‚‰ï¼ç•ªç›®ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã ã‘ã‚’ä½¿ç”¨ã™ã‚‹
 	BlendGraphNoIncFlag = FALSE ;
 	if( BlendImage != NULL && BlendImage->Hard.DrawNum != Image->Hard.DrawNum )
 	{
 		BlendGraphNoIncFlag = TRUE ;
 	}
 
-	// •`‰æî•ñ”z—ñ‚ÌƒAƒhƒŒƒX‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// æç”»æƒ…å ±é…åˆ—ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	DrawTex = Image->Hard.Draw ;
 	if( BlendImage != NULL )
 	{
 		BlendDrawTex = BlendImage->Hard.Draw ;
 	}
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *( ( DWORD * )&GSYS.DrawSetting.DrawZ ) ;
 
-	// •`‰æ”ÍˆÍ‚©‚ç‚Í‚İo‚Ä‚¢‚é‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+	// æç”»ç¯„å›²ã‹ã‚‰ã¯ã¿å‡ºã¦ã„ã‚‹ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 	if( GSYS.DrawSetting.Valid2DMatrix || IN_DRAWAREA_CHECK( x, y, x + Image->WidthI, y + Image->HeightI ) )
 //	if( x + Image->Width  < GSYS.DrawSetting.DrawArea.right  && x > GSYS.DrawSetting.DrawArea.left &&
 //		y + Image->Height < GSYS.DrawSetting.DrawArea.bottom && y > GSYS.DrawSetting.DrawArea.right )
 	{
-		// ‚Í‚İo‚Ä‚¢‚È‚¢ê‡
+		// ã¯ã¿å‡ºã¦ã„ãªã„å ´åˆ
 
-		// ’¸“_ƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+		// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 		if( GANDR.Device.DrawInfo.VertexType == VERTEXTYPE_BLENDTEX )
 		{
-			// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é
+			// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹
 
-			// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 			for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 			{
-				// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+				// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 				Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 				Graphics_Android_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
@@ -9011,7 +9180,7 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 					Graphics_Android_DeviceState_NormalDrawSetup() ;
 				}
 
-				// ’¸“_ƒoƒbƒtƒ@‚Ìæ“¾
+				// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®å–å¾—
 				GETVERTEX_QUAD( DrawVertB )
 				
 				TexVert = DrawTex->Vertex ;
@@ -9100,7 +9269,7 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 				DrawVertB[4].rhw = 1.0f ;
 				DrawVertB[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_BLENDTEX
 
 				if( BlendGraphNoIncFlag == FALSE )
@@ -9111,16 +9280,16 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 		}
 		else
 		{
-			// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢
+			// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„
 
-			// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 			i = 0 ;
 			for(;;)
 			{
-				// ’¸“_ƒoƒbƒtƒ@‚Ìæ“¾
+				// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®å–å¾—
 				GETVERTEX_QUAD( DrawVert )
 
-				// ’¸“_ƒf[ƒ^€”õ
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿æº–å‚™
 				TexVert = DrawTex->Vertex ;
 				DrawVert[0].color	= DiffuseColor ;
 				DrawVert[1].color	= DiffuseColor ;
@@ -9169,13 +9338,13 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 				DrawVert[4].rhw = 1.0f ;
 				DrawVert[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_TEX
 
 				i ++ ;
 				if( i >= DrawTexNum ) break ;
 
-				// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+				// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 				DrawTex ++ ;
 				Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 				Graphics_Android_DeviceState_NormalDrawSetup() ;
@@ -9184,26 +9353,26 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 	}
 	else
 	{
-		// ‚Í‚İo‚Ä‚¢‚éê‡
+		// ã¯ã¿å‡ºã¦ã„ã‚‹å ´åˆ
 
-		// Š®‘S‚É‚Í‚İo‚Ä‚¢‚½‚ç‰½‚à‚¹‚¸I—¹
+		// å®Œå…¨ã«ã¯ã¿å‡ºã¦ã„ãŸã‚‰ä½•ã‚‚ã›ãšçµ‚äº†
 		if( OUT_DRAWAREA_CHECK( x, y, x + Image->WidthI, y + Image->HeightI ) ) return 0 ;
 //		if( x > GSYS.DrawSetting.DrawArea.right || x + Image->Width < GSYS.DrawSetting.DrawArea.left ||
 //			y > GSYS.DrawSetting.DrawArea.bottom || y + Image->Height < GSYS.DrawSetting.DrawArea.top ) return 0 ;
 
-		// •`‰æ‹éŒ`‚Ì•Û‘¶
+		// æç”»çŸ©å½¢ã®ä¿å­˜
 		left	= GSYS.DrawSetting.DrawAreaF.left   ;
 		top		= GSYS.DrawSetting.DrawAreaF.top    ;
 		right	= GSYS.DrawSetting.DrawAreaF.right  ;
 		bottom	= GSYS.DrawSetting.DrawAreaF.bottom ;
 
-		// ’¸“_ƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+		// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 		switch( GANDR.Device.DrawInfo.VertexType )
 		{
 		case VERTEXTYPE_BLENDTEX :
-			// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é
+			// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹
 
-			// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 			for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 			{
 				VECTOR DrawPos[ 4 ] ;
@@ -9212,7 +9381,7 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 				float u2[ 4 ] ;
 				float v2[ 4 ] ;
 
-				// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+				// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 				Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 				Graphics_Android_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
@@ -9221,7 +9390,7 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 					Graphics_Android_DeviceState_NormalDrawSetup() ;
 				}
 
-				// ’¸“_ƒoƒbƒtƒ@‚Ìæ“¾
+				// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®å–å¾—
 				GETVERTEX_QUAD( DrawVertB )
 				
 				TexVert = DrawTex->Vertex ;
@@ -9273,7 +9442,7 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 
 				for( j = 0 ; j < 4 ; j ++ )
 				{
-					// •`‰æ‹éŒ`‚©‚ço‚Ä‚¢‚½ê‡‚Ì•â³ˆ—
+					// æç”»çŸ©å½¢ã‹ã‚‰å‡ºã¦ã„ãŸå ´åˆã®è£œæ­£å‡¦ç†
 					if( DrawPos[ j ].x < left )
 					{
 						u2[ j ] += ( left - DrawPos[ j ].x ) * Vx ;
@@ -9356,7 +9525,7 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 				DrawVertB[4].rhw = 1.0f ;
 				DrawVertB[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_BLENDTEX
 
 				if( BlendGraphNoIncFlag == FALSE )
@@ -9367,9 +9536,9 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 			break ;
 		
 		case VERTEXTYPE_TEX :
-			// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢
+			// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„
 
-			// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 			i = 0 ;
 			for(;;)
 			{
@@ -9377,10 +9546,10 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 				float u[ 4 ] ;
 				float v[ 4 ] ;
 
-				// ’¸“_ƒoƒbƒtƒ@‚Ìæ“¾
+				// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®å–å¾—
 				GETVERTEX_QUAD( DrawVert )
 				
-				// ’¸“_ƒf[ƒ^€”õ
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿æº–å‚™
 				TexVert = DrawTex->Vertex ;
 				DrawVert[0].color	= DiffuseColor ;
 				DrawVert[1].color	= DiffuseColor ;
@@ -9403,12 +9572,12 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 				v[1] = v[0] = TexVert[0].v ;
 				v[3] = v[2] = TexVert[2].v ;
 				
-				// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 				Vx	= 1.0F / ( float )DrawTex->Tex->TexWidth ;
 				Vy	= 1.0F / ( float )DrawTex->Tex->TexHeight ;
 				for( j = 0 ; j < 4 ; j ++ )
 				{
-					// •`‰æ‹éŒ`‚©‚ço‚Ä‚¢‚½ê‡‚Ì•â³ˆ—
+					// æç”»çŸ©å½¢ã‹ã‚‰å‡ºã¦ã„ãŸå ´åˆã®è£œæ­£å‡¦ç†
 					if( DrawPos[ j ].x < left )
 					{
 						u[ j ] += ( left - DrawPos[ j ].x ) * Vx ;
@@ -9474,13 +9643,13 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 				DrawVert[4].rhw = 1.0f ;
 				DrawVert[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_TEX
 
 				i ++ ;
 				if( i >= DrawTexNum ) break ;
 
-				// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+				// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 				DrawTex ++ ;
 				Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 				Graphics_Android_DeviceState_NormalDrawSetup() ;
@@ -9489,11 +9658,11 @@ extern	int		Graphics_Hardware_DrawGraph_PF( int x, int y, float xf, float yf, IM
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawExtendGraph
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawExtendGraph
 extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2, float x1f, float y1f, float x2f, float y2f, IMAGEDATA *Image, IMAGEDATA *BlendImage, int TransFlag, int IntFlag )
 {
 	VERTEX_2D *DrawVert ;
@@ -9528,40 +9697,40 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 		return -1 ;
 	}
 
-	// •`‰æ”»’è
+	// æç”»åˆ¤å®š
 //	if( x2 - x1 == Image->Width && y2 - y1 == Image->Height ) return G_D3D_DrawGraph( x1, y1, GraphData, TransFlag ) ; 	
 
-	// •‚ª‚È‚©‚Á‚½ê‡‚ÍƒGƒ‰[
+	// å¹…ãŒãªã‹ã£ãŸå ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if( x1 == x2 || y1 == y2 ) return -1 ;
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = TransFlag | ( IntFlag ? ( GSYS.DrawSetting.DrawMode == DX_DRAWMODE_BILINEAR ? 0 : DX_ANDROID_DRAWPREP_VECTORINT ) : 0 ) ;
 	DX_ANDROID_DRAWPREP_TEX( Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
-	// ƒfƒBƒtƒ…[ƒYƒJƒ‰[‚Ìæ“¾
+	// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã®å–å¾—
 	DiffuseColor = GANDR.Device.DrawInfo.DiffuseColor ;
 
-	// •`‰æî•ñ‚Ì”‚ğƒZƒbƒg
+	// æç”»æƒ…å ±ã®æ•°ã‚’ã‚»ãƒƒãƒˆ
 	DrawTexNum = Image->Hard.DrawNum ;
 
-	// •`‰æî•ñ‚Ì”‚ªƒuƒŒƒ“ƒh‰æ‘œ‚ÆˆÙ‚È‚Á‚Ä‚¢‚½‚ç‚O”Ô–Ú‚ÌƒeƒNƒXƒ`ƒƒ‚¾‚¯‚ğg—p‚·‚é
+	// æç”»æƒ…å ±ã®æ•°ãŒãƒ–ãƒ¬ãƒ³ãƒ‰ç”»åƒã¨ç•°ãªã£ã¦ã„ãŸã‚‰ï¼ç•ªç›®ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã ã‘ã‚’ä½¿ç”¨ã™ã‚‹
 	BlendGraphNoIncFlag = FALSE ;
 	if( BlendImage != NULL && BlendImage->Hard.DrawNum != Image->Hard.DrawNum )
 	{
 		BlendGraphNoIncFlag = TRUE ;
 	}
 
-	// •`‰æî•ñ”z—ñ‚ÌƒAƒhƒŒƒX‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// æç”»æƒ…å ±é…åˆ—ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	DrawTex = Image->Hard.Draw ;
 	if( BlendImage != NULL )
 	{
 		BlendDrawTex = BlendImage->Hard.Draw ;
 	}
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// Šg‘å—¦‚ğæ“¾‚µ‚Ä‚¨‚­
+	// æ‹¡å¤§ç‡ã‚’å–å¾—ã—ã¦ãŠã
 	GraphExRateX = ( x2f - x1f ) / Image->WidthF ;
 	GraphExRateY = ( y2f - y1f ) / Image->HeightF ;
 //	Reverse = ( GraphExRateX < 0 ) != ( GraphExRateY < 0 ) ;
@@ -9572,17 +9741,17 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 	if( x1 > x2 ){ i = x2; x2 = x1; x1 = i; }
 	if( y1 > y2 ){ i = y2; y2 = y1; y1 = i; }
 
-	// •`‰æ”ÍˆÍ‚©‚ç‚Í‚İo‚Ä‚¢‚é‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+	// æç”»ç¯„å›²ã‹ã‚‰ã¯ã¿å‡ºã¦ã„ã‚‹ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 	if( GSYS.DrawSetting.Valid2DMatrix || IN_DRAWAREA_CHECK( x1, y1, x2, y2 ) )
 	{
-		// ’¸“_ƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+		// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 		switch( GANDR.Device.DrawInfo.VertexType )
 		{
-		case VERTEXTYPE_BLENDTEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é
-			// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+		case VERTEXTYPE_BLENDTEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 			for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 			{
-				// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+				// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 				Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 				Graphics_Android_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
@@ -9591,7 +9760,7 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 					Graphics_Android_DeviceState_NormalDrawSetup() ;
 				}
 
-				// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 				GETVERTEX_QUAD( DrawVertB )
 				
 				TexVert = DrawTex->Vertex ;
@@ -9684,7 +9853,7 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 				DrawVertB[4].rhw = 1.0f ;
 				DrawVertB[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_BLENDTEX
 
 				if( BlendGraphNoIncFlag == FALSE )
@@ -9694,12 +9863,12 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 			}
 			break ;
 
-		case VERTEXTYPE_TEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢
-			// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+		case VERTEXTYPE_TEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 			i = 0 ;
 			for(;;)
 			{
-				// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 				GETVERTEX_QUAD( DrawVert )
 				
 				TexVert = DrawTex->Vertex ;
@@ -9755,13 +9924,13 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 				DrawVert[4].rhw = 1.0f ;
 				DrawVert[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_TEX
 
 				i ++ ;
 				if( i >= DrawTexNum ) break ;
 
-				// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+				// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 				DrawTex ++ ;
 				Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 				Graphics_Android_DeviceState_NormalDrawSetup() ;
@@ -9771,20 +9940,20 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 	}
 	else
 	{
-		// Š®‘S‚É‚Í‚İo‚Ä‚¢‚½‚ç‰½‚à‚¹‚¸I—¹
+		// å®Œå…¨ã«ã¯ã¿å‡ºã¦ã„ãŸã‚‰ä½•ã‚‚ã›ãšçµ‚äº†
 		if( OUT_DRAWAREA_CHECK( x1, y1, x2, y2 ) ) return 0 ;
 
-		// •`‰æ‹éŒ`‚Ì•Û‘¶
+		// æç”»çŸ©å½¢ã®ä¿å­˜
 		left	= GSYS.DrawSetting.DrawAreaF.left   ;
 		top		= GSYS.DrawSetting.DrawAreaF.top    ;
 		right	= GSYS.DrawSetting.DrawAreaF.right  ;
 		bottom	= GSYS.DrawSetting.DrawAreaF.bottom ;
 
-		// ’¸“_ƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+		// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 		switch( GANDR.Device.DrawInfo.VertexType )
 		{
-		case VERTEXTYPE_BLENDTEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é
-			// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+		case VERTEXTYPE_BLENDTEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 			for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 			{
 				VECTOR DrawPos[ 4 ] ;
@@ -9793,7 +9962,7 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 				float u2[ 4 ] ;
 				float v2[ 4 ] ;
 
-				// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+				// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 				Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 				Graphics_Android_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
@@ -9809,7 +9978,7 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 				VBx = GANDR.Device.DrawSetting.InvBlendTextureWidth ;
 				VBy = GANDR.Device.DrawSetting.InvBlendTextureHeight ;
 
-				// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 				TexVert = DrawTex->Vertex ;
 				BlendTexVert = BlendDrawTex->Vertex ;
 
@@ -9858,7 +10027,7 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 
 				for( j = 0 ; j < 4 ; j ++ )
 				{
-					// •`‰æ‹éŒ`‚©‚ço‚Ä‚¢‚½ê‡‚Ì•â³ˆ—
+					// æç”»çŸ©å½¢ã‹ã‚‰å‡ºã¦ã„ãŸå ´åˆã®è£œæ­£å‡¦ç†
 					if( DrawPos[ j ].x < left )
 					{
 						u2[ j ] += ( left - DrawPos[ j ].x ) * Vx ;
@@ -9941,7 +10110,7 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 				DrawVertB[4].rhw = 1.0f ;
 				DrawVertB[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_BLENDTEX
 
 				if( BlendGraphNoIncFlag == FALSE )
@@ -9951,8 +10120,8 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 			}
 			break ;
 
-		case VERTEXTYPE_TEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢
-			// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+		case VERTEXTYPE_TEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 			i = 0 ;
 			for(;;)
 			{
@@ -9960,7 +10129,7 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 				float u[ 4 ] ;
 				float v[ 4 ] ;
 
-				// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 				GETVERTEX_QUAD( DrawVert )
 				
 				TexVert = DrawTex->Vertex ;
@@ -9994,7 +10163,7 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 				Vy = 1.0F / ( DrawTex->Tex->TexHeight * GraphExRateY ) ;
 				for( j = 0 ; j < 4 ; j ++ )
 				{
-					// •`‰æ‹éŒ`‚©‚ço‚Ä‚¢‚½ê‡‚Ì•â³ˆ—
+					// æç”»çŸ©å½¢ã‹ã‚‰å‡ºã¦ã„ãŸå ´åˆã®è£œæ­£å‡¦ç†
 					if( DrawPos[ j ].x < left )
 					{
 						u[ j ] += ( left - DrawPos[ j ].x ) * Vx ;
@@ -10060,13 +10229,13 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 				DrawVert[4].rhw = 1.0f ;
 				DrawVert[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_TEX
 
 				i ++ ;
 				if( i >= DrawTexNum ) break ;
 
-				// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+				// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 				DrawTex ++ ;
 				Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 				Graphics_Android_DeviceState_NormalDrawSetup() ;
@@ -10075,11 +10244,11 @@ extern	int		Graphics_Hardware_DrawExtendGraph_PF( int x1, int y1, int x2, int y2
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawRotaGraph
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawRotaGraph
 extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf, double ExRate, double Angle, IMAGEDATA *Image, IMAGEDATA *BlendImage, int TransFlag, int ReverseXFlag, int ReverseYFlag, int IntFlag )
 {
 	VERTEX_2D *DrawVert ;
@@ -10112,14 +10281,14 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 		return -1 ;
 	}
 
-	// •‚ª‚È‚©‚Á‚½ê‡‚ÍƒGƒ‰[
+	// å¹…ãŒãªã‹ã£ãŸå ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if( ExRate == 0.0 ) return -1 ;
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = TransFlag ;
 	DX_ANDROID_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
-	// ‰ñ“]—v‘f‚ª–³‚¢‚©’²‚×‚é
+	// å›è»¢è¦ç´ ãŒç„¡ã„ã‹èª¿ã¹ã‚‹
 	if( Angle == 0.0 )
 	{
 		SinCosNone = 1;
@@ -10131,7 +10300,7 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 	}
 //	if( _FABS( (float)Angle ) < 0.0001 && ExRate < 1.001 && ExRate > 0.999 ) Adj = TRUE ;
 
-	// À•W‚Ì•â³
+	// åº§æ¨™ã®è£œæ­£
 	if( IntFlag || GSYS.DrawSetting.DrawMode == DX_DRAWMODE_NEAREST )
 	{
 		AlwaysCheck = 0 ;
@@ -10204,7 +10373,7 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 		FastCode = 1 ;
 	}
 
-	// ”÷–­‚È‰ñ“]’l‚Ìƒ`ƒFƒbƒN‚ğs‚¤‚©‚Ç‚¤‚©‚ğ’²‚×‚é
+	// å¾®å¦™ãªå›è»¢å€¤ã®ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã†ã‹ã©ã†ã‹ã‚’èª¿ã¹ã‚‹
 	if( IntFlag == TRUE && AlwaysCheck == 0 && SinCosNone == 0 && ( hx == 1 || hy == 1 ) &&
 		( ( Angle < DX_PI / 180.0 *         - 4.0   ) ||
 		  ( Angle > DX_PI / 180.0 * ( 360.0 + 4.0 ) ) ||
@@ -10221,41 +10390,41 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 		AngleCheck = 0 ;
 	}
 
-	// ’¸“_ƒf[ƒ^‚ğæ“¾i¡‚Ì‚Æ‚±‚ëFî•ñ‚ÌƒZƒbƒg‚Ì‚İj
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ï¼ˆä»Šã®ã¨ã“ã‚è‰²æƒ…å ±ã®ã‚»ãƒƒãƒˆã®ã¿ï¼‰
 	DiffuseColor = GANDR.Device.DrawInfo.DiffuseColor ;
 
-	// •`‰æî•ñ‚Ì”‚ğƒZƒbƒg
+	// æç”»æƒ…å ±ã®æ•°ã‚’ã‚»ãƒƒãƒˆ
 	DrawTexNum = Image->Hard.DrawNum ;
 
-	// •`‰æî•ñ‚Ì”‚ªƒuƒŒƒ“ƒh‰æ‘œ‚ÆˆÙ‚È‚Á‚Ä‚¢‚½‚ç‚O”Ô–Ú‚ÌƒeƒNƒXƒ`ƒƒ‚¾‚¯‚ğg—p‚·‚é
+	// æç”»æƒ…å ±ã®æ•°ãŒãƒ–ãƒ¬ãƒ³ãƒ‰ç”»åƒã¨ç•°ãªã£ã¦ã„ãŸã‚‰ï¼ç•ªç›®ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã ã‘ã‚’ä½¿ç”¨ã™ã‚‹
 	BlendGraphNoIncFlag = FALSE ;
 	if( BlendImage != NULL && BlendImage->Hard.DrawNum != Image->Hard.DrawNum )
 	{
 		BlendGraphNoIncFlag = TRUE ;
 	}
 
-	// •`‰æî•ñ”z—ñ‚ÌƒAƒhƒŒƒX‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// æç”»æƒ…å ±é…åˆ—ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	DrawTex = Image->Hard.Draw ;
 	if( BlendImage != NULL )
 	{
 		BlendDrawTex = BlendImage->Hard.Draw ;
 	}
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// ”½“]‚ğl—¶‚µ‚½Šg‘å—¦‚ğƒZƒbƒg
+	// åè»¢ã‚’è€ƒæ…®ã—ãŸæ‹¡å¤§ç‡ã‚’ã‚»ãƒƒãƒˆ
 	ExtendRateX = ( ( ReverseXFlag == TRUE ) ? -1.0f : 1.0f ) * ExtendRate ;
 	ExtendRateY = ( ( ReverseYFlag == TRUE ) ? -1.0f : 1.0f ) * ExtendRate ;
 
-	// ’¸“_ƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+	// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 	switch( GANDR.Device.DrawInfo.VertexType )
 	{
-	case VERTEXTYPE_BLENDTEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é
-		// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+	case VERTEXTYPE_BLENDTEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 		if( DrawTexNum == 1 && FastCode == 1 )
 		{
-			// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+			// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 			Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 			Graphics_Android_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
@@ -10264,7 +10433,7 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 				Graphics_Android_DeviceState_NormalDrawSetup() ;
 			}
 
-			// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+			// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 			GETVERTEX_QUAD( DrawVertB )
 
 			TexVert = DrawTex->Vertex ;
@@ -10365,7 +10534,7 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 			DrawVertB[4].rhw = 1.0f ;
 			DrawVertB[5].rhw = 1.0f ;
 
-			// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 			ADD4VERTEX_BLENDTEX
 
 			if( BlendGraphNoIncFlag == FALSE )
@@ -10375,10 +10544,10 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 		}
 		else
 		{
-			// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 			for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 			{
-				// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+				// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 				Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 				Graphics_Android_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
@@ -10387,7 +10556,7 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 					Graphics_Android_DeviceState_NormalDrawSetup() ;
 				}
 
-				// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 				GETVERTEX_QUAD( DrawVertB )
 
 				TexVert = DrawTex->Vertex ;
@@ -10504,7 +10673,7 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 				DrawVertB[4].rhw = 1.0f ;
 				DrawVertB[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_BLENDTEX
 
 				if( BlendGraphNoIncFlag == FALSE )
@@ -10515,13 +10684,13 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 		}
 		break ;
 
-	case VERTEXTYPE_TEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢
-		// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+	case VERTEXTYPE_TEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 		if( DrawTexNum == 1 && FastCode == 1 )
 		{
 			if( SinCosNone == 0 )
 			{
-				// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 				GETVERTEX_QUAD( DrawVert )
 				
 				TexVert = DrawTex->Vertex ;
@@ -10694,12 +10863,12 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 				DrawVert[4].rhw = 1.0f ;
 				DrawVert[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_TEX
 			}
 			else
 			{
-				// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 				GETVERTEX_QUAD( DrawVert )
 				
 				TexVert = DrawTex->Vertex ;
@@ -10757,7 +10926,7 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 				DrawVert[4].rhw = 1.0f ;
 				DrawVert[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_TEX
 			}
 		}
@@ -10765,11 +10934,11 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 		{
 			if( SinCosNone == 0 )
 			{
-				// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 				i = 0 ;
 				for(;;)
 				{
-					// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+					// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 					GETVERTEX_QUAD( DrawVert )
 					
 					TexVert = DrawTex->Vertex ;
@@ -10967,13 +11136,13 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 					DrawVert[4].rhw = 1.0f ;
 					DrawVert[5].rhw = 1.0f ;
 
-					// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+					// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 					ADD4VERTEX_TEX
 
 					i ++ ;
 					if( i >= DrawTexNum ) break ;
 
-					// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+					// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 					DrawTex ++ ;
 					Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 					Graphics_Android_DeviceState_NormalDrawSetup() ;
@@ -10981,11 +11150,11 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 			}
 			else
 			{
-				// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 				i = 0 ;
 				for(;;)
 				{
-					// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+					// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 					GETVERTEX_QUAD( DrawVert )
 					
 					TexVert = DrawTex->Vertex ;
@@ -11046,13 +11215,13 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 					DrawVert[4].rhw = 1.0f ;
 					DrawVert[5].rhw = 1.0f ;
 
-					// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+					// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 					ADD4VERTEX_TEX
 
 					i ++ ;
 					if( i >= DrawTexNum ) break ;
 
-					// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+					// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 					DrawTex ++ ;
 					Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 					Graphics_Android_DeviceState_NormalDrawSetup() ;
@@ -11062,11 +11231,11 @@ extern	int		Graphics_Hardware_DrawRotaGraph_PF( int x, int y, float xf, float yf
 		break ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawRotaGraphFast
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawRotaGraphFast
 extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, float yf, float ExtendRate, float Angle, IMAGEDATA *Image, IMAGEDATA *BlendImage, int TransFlag, int ReverseXFlag, int ReverseYFlag, int IntFlag )
 {
 	VERTEX_2D *DrawVert ;
@@ -11097,14 +11266,14 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 		return -1 ;
 	}
 
-	// •‚ª‚È‚©‚Á‚½ê‡‚ÍƒGƒ‰[
+	// å¹…ãŒãªã‹ã£ãŸå ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if( ExtendRate == 0.0f ) return -1 ;
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = TransFlag ;
 	DX_ANDROID_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
-	// ‰ñ“]—v‘f‚ª–³‚¢‚©’²‚×‚é
+	// å›è»¢è¦ç´ ãŒç„¡ã„ã‹èª¿ã¹ã‚‹
 	if( Angle == 0.0f )
 	{
 		SinCosNone = 1;
@@ -11115,45 +11284,45 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 		_TABLE_SINCOS( (float)Angle, &Sin, &Cos ) ;
 	}
 
-	// ’†SÀ•W‚ÌZo
+	// ä¸­å¿ƒåº§æ¨™ã®ç®—å‡º
 	CenX = ( float )Image->WidthF * 0.5F ;
 	CenY = ( float )Image->HeightF * 0.5F ;
 
-	// ’¸“_ƒf[ƒ^‚ğæ“¾i¡‚Ì‚Æ‚±‚ëFî•ñ‚ÌƒZƒbƒg‚Ì‚İj
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ï¼ˆä»Šã®ã¨ã“ã‚è‰²æƒ…å ±ã®ã‚»ãƒƒãƒˆã®ã¿ï¼‰
 	DiffuseColor = GANDR.Device.DrawInfo.DiffuseColor ;
 
-	// •`‰æî•ñ‚Ì”‚ğƒZƒbƒg
+	// æç”»æƒ…å ±ã®æ•°ã‚’ã‚»ãƒƒãƒˆ
 	DrawTexNum = Image->Hard.DrawNum ;
 
-	// •`‰æî•ñ‚Ì”‚ªƒuƒŒƒ“ƒh‰æ‘œ‚ÆˆÙ‚È‚Á‚Ä‚¢‚½‚ç‚O”Ô–Ú‚ÌƒeƒNƒXƒ`ƒƒ‚¾‚¯‚ğg—p‚·‚é
+	// æç”»æƒ…å ±ã®æ•°ãŒãƒ–ãƒ¬ãƒ³ãƒ‰ç”»åƒã¨ç•°ãªã£ã¦ã„ãŸã‚‰ï¼ç•ªç›®ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã ã‘ã‚’ä½¿ç”¨ã™ã‚‹
 	BlendGraphNoIncFlag = FALSE ;
 	if( BlendImage != NULL && BlendImage->Hard.DrawNum != Image->Hard.DrawNum )
 	{
 		BlendGraphNoIncFlag = TRUE ;
 	}
 
-	// •`‰æî•ñ”z—ñ‚ÌƒAƒhƒŒƒX‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// æç”»æƒ…å ±é…åˆ—ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	DrawTex = Image->Hard.Draw ;
 	if( BlendImage != NULL )
 	{
 		BlendDrawTex = BlendImage->Hard.Draw ;
 	}
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// ”½“]‚ğl—¶‚µ‚½Šg‘å—¦‚ğƒZƒbƒg
+	// åè»¢ã‚’è€ƒæ…®ã—ãŸæ‹¡å¤§ç‡ã‚’ã‚»ãƒƒãƒˆ
 	ExtendRateX = ( ( ReverseXFlag == TRUE ) ? -1.0f : 1.0f ) * ExtendRate ;
 	ExtendRateY = ( ( ReverseYFlag == TRUE ) ? -1.0f : 1.0f ) * ExtendRate ;
 
-	// ’¸“_ƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+	// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 	switch( GANDR.Device.DrawInfo.VertexType )
 	{
-	case VERTEXTYPE_BLENDTEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é
-		// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+	case VERTEXTYPE_BLENDTEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 		if( DrawTexNum == 1 )
 		{
-			// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+			// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 			Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 			Graphics_Android_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
@@ -11162,7 +11331,7 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 				Graphics_Android_DeviceState_NormalDrawSetup() ;
 			}
 
-			// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+			// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 			GETVERTEX_QUAD( DrawVertB )
 
 			TexVert = DrawTex->Vertex ;
@@ -11263,7 +11432,7 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 			DrawVertB[4].rhw = 1.0f ;
 			DrawVertB[5].rhw = 1.0f ;
 
-			// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 			ADD4VERTEX_BLENDTEX
 
 			if( BlendGraphNoIncFlag == FALSE )
@@ -11273,10 +11442,10 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 		}
 		else
 		{
-			// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 			for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 			{
-				// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+				// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 				Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 				Graphics_Android_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
@@ -11285,7 +11454,7 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 					Graphics_Android_DeviceState_NormalDrawSetup() ;
 				}
 
-				// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 				GETVERTEX_QUAD( DrawVertB )
 
 				TexVert = DrawTex->Vertex ;
@@ -11402,7 +11571,7 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 				DrawVertB[4].rhw = 1.0f ;
 				DrawVertB[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_BLENDTEX
 
 				if( BlendGraphNoIncFlag == FALSE )
@@ -11413,13 +11582,13 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 		}
 		break ;
 
-	case VERTEXTYPE_TEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢
-		// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+	case VERTEXTYPE_TEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 		if( DrawTexNum == 1 )
 		{
 			if( SinCosNone == 0 )
 			{
-				// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 				GETVERTEX_QUAD( DrawVert )
 				
 				TexVert = DrawTex->Vertex ;
@@ -11481,12 +11650,12 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 				DrawVert[4].rhw = 1.0f ;
 				DrawVert[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_TEX
 			}
 			else
 			{
-				// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 				GETVERTEX_QUAD( DrawVert )
 				
 				TexVert = DrawTex->Vertex ;
@@ -11544,7 +11713,7 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 				DrawVert[4].rhw = 1.0f ;
 				DrawVert[5].rhw = 1.0f ;
 
-				// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 				ADD4VERTEX_TEX
 			}
 		}
@@ -11552,11 +11721,11 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 		{
 			if( SinCosNone == 0 )
 			{
-				// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 				i = 0 ;
 				for(;;)
 				{
-					// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+					// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 					GETVERTEX_QUAD( DrawVert )
 					
 					TexVert = DrawTex->Vertex ;
@@ -11628,13 +11797,13 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 					DrawVert[4].rhw = 1.0f ;
 					DrawVert[5].rhw = 1.0f ;
 
-					// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+					// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 					ADD4VERTEX_TEX
 
 					i ++ ;
 					if( i >= DrawTexNum ) break ;
 
-					// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+					// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 					DrawTex ++ ;
 					Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 					Graphics_Android_DeviceState_NormalDrawSetup() ;
@@ -11642,11 +11811,11 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 			}
 			else
 			{
-				// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 				i = 0 ;
 				for(;;)
 				{
-					// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+					// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 					GETVERTEX_QUAD( DrawVert )
 					
 					TexVert = DrawTex->Vertex ;
@@ -11707,13 +11876,13 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 					DrawVert[4].rhw = 1.0f ;
 					DrawVert[5].rhw = 1.0f ;
 
-					// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+					// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 					ADD4VERTEX_TEX
 
 					i ++ ;
 					if( i >= DrawTexNum ) break ;
 
-					// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+					// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 					DrawTex ++ ;
 					Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 					Graphics_Android_DeviceState_NormalDrawSetup() ;
@@ -11723,17 +11892,17 @@ extern	int		Graphics_Hardware_DrawRotaGraphFast_PF( int x, int y, float xf, floa
 		break ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawModiGraph
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawModiGraph
 extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, IMAGEDATA *Image, IMAGEDATA *BlendImage, int TransFlag, bool SimpleDrawFlag )
 {
 	if( x1 == x3 && x2 == x4 && y1 == y2 && y3 == y4 ) return Graphics_Hardware_DrawExtendGraph_PF( x1, y1, x4, y4, ( float )x1, ( float )y1, ( float )x4, ( float )y4, Image, BlendImage, TransFlag, TRUE ) ; 
 
-	// ‚à‚µƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚¹‚¸A‹ŒŒ^ŠÖ”‚ğg—p‚·‚éƒtƒ‰ƒO‚à—§‚Á‚Ä‚¢‚È‚¯‚ê‚Î
-	// “à•”•ªŠ„‚ğs‚¤•`‰æŠÖ”‚ğg—p‚·‚é
+	// ã‚‚ã—ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã›ãšã€æ—§å‹é–¢æ•°ã‚’ä½¿ç”¨ã™ã‚‹ãƒ•ãƒ©ã‚°ã‚‚ç«‹ã£ã¦ã„ãªã‘ã‚Œã°
+	// å†…éƒ¨åˆ†å‰²ã‚’è¡Œã†æç”»é–¢æ•°ã‚’ä½¿ç”¨ã™ã‚‹
 	if( GANDR.Setting.UseOldDrawModiGraphCodeFlag == FALSE && GSYS.DrawSetting.BlendGraph <= 0 )
 		return Graphics_Hardware_DrawModiGraphF_PF( (float)x1, (float)y1, (float)x2, (float)y2, (float)x3, (float)y3, (float)x4, (float)y4, Image, BlendImage, TransFlag, SimpleDrawFlag ) ;
 
@@ -11765,10 +11934,10 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = TransFlag | DX_ANDROID_DRAWPREP_VECTORINT ;
 	DX_ANDROID_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
@@ -11782,43 +11951,43 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 	xf1 = (float)x1 ; yf1 = (float)y1 ;
 	xf4 = (float)x4 ; yf4 = (float)y4 ; 
 
-	// ’¸“_ƒf[ƒ^‚ğæ“¾i¡‚Ì‚Æ‚±‚ëFî•ñ‚ÌƒZƒbƒg‚Ì‚İj
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ï¼ˆä»Šã®ã¨ã“ã‚è‰²æƒ…å ±ã®ã‚»ãƒƒãƒˆã®ã¿ï¼‰
 	DiffuseColor = GANDR.Device.DrawInfo.DiffuseColor ;
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// •`‰æî•ñ‚Ì”‚ğƒZƒbƒg
+	// æç”»æƒ…å ±ã®æ•°ã‚’ã‚»ãƒƒãƒˆ
 	DrawTexNum = Image->Hard.DrawNum ;
 
-	// •`‰æî•ñ‚Ì”‚ªƒuƒŒƒ“ƒh‰æ‘œ‚ÆˆÙ‚È‚Á‚Ä‚¢‚½‚ç‚O”Ô–Ú‚ÌƒeƒNƒXƒ`ƒƒ‚¾‚¯‚ğg—p‚·‚é
+	// æç”»æƒ…å ±ã®æ•°ãŒãƒ–ãƒ¬ãƒ³ãƒ‰ç”»åƒã¨ç•°ãªã£ã¦ã„ãŸã‚‰ï¼ç•ªç›®ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã ã‘ã‚’ä½¿ç”¨ã™ã‚‹
 	BlendGraphNoIncFlag = FALSE ;
 	if( BlendImage != NULL && BlendImage->Hard.DrawNum != Image->Hard.DrawNum )
 	{
 		BlendGraphNoIncFlag = TRUE ;
 	}
 
-	// •`‰æî•ñ”z—ñ‚ÌƒAƒhƒŒƒX‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// æç”»æƒ…å ±é…åˆ—ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	DrawTex = Image->Hard.Draw ;
 	if( BlendImage != NULL )
 	{
 		BlendDrawTex = BlendImage->Hard.Draw ;
 	}
 
-	// ’¸“_ƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+	// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 	switch( GANDR.Device.DrawInfo.VertexType )
 	{
-	case VERTEXTYPE_BLENDTEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é
-		// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+	case VERTEXTYPE_BLENDTEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 		for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 		{
-			// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+			// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 			Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 			Graphics_Android_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
 			Graphics_Android_DeviceState_NormalDrawSetup() ;
 
-			// ’¸“_ƒoƒbƒtƒ@‚Ìæ“¾
+			// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®å–å¾—
 			GETVERTEX_QUAD( DrawVertB )
 
 			DrawVertB[0].color = ( DWORD )DiffuseColor ;
@@ -11834,16 +12003,16 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 
 			for( j = 0 ; j < 4 ; j ++, TexVert ++ )
 			{
-				// ’¸“_À•W‚ÌZo
+				// é ‚ç‚¹åº§æ¨™ã®ç®—å‡º
 				if( *VertType ++ )
 				{
-					// OŠp‚Ìã‘¤
+					// ä¸‰è§’ã®ä¸Šå´
 					DrawPos[ j ].x = ( TexVert->x * ExRate1X1 ) + ( TexVert->y * ExRate1X2 ) + xf1 ;
 					DrawPos[ j ].y = ( TexVert->y * ExRate1Y1 ) + ( TexVert->x * ExRate1Y2 ) + yf1 ;
 				} 
 				else
 				{
-					// OŠp‚Ì‰º‘¤
+					// ä¸‰è§’ã®ä¸‹å´
 					XBuf = TexVert->x - GraphSizeX ;
 					YBuf = TexVert->y - GraphSizeY ;
 					DrawPos[ j ].x = ( XBuf * ExRate2X1 ) + ( YBuf * ExRate2X2 ) + xf4 ;
@@ -11854,7 +12023,7 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 				v[ j ] = ( TexVert->y - BlendTexVert->y + GSYS.DrawSetting.BlendGraphY ) * GANDR.Device.DrawSetting.InvBlendTextureHeight ;
 			}
 
-			// ”½“]”»’èˆ—
+			// åè»¢åˆ¤å®šå‡¦ç†
 			Reverse0 =  ( DrawPos[ 1 ].x - DrawPos[ 0 ].x ) * ( DrawPos[ 2 ].y - DrawPos[ 0 ].y ) -
 						( DrawPos[ 2 ].x - DrawPos[ 0 ].x ) * ( DrawPos[ 1 ].y - DrawPos[ 0 ].y ) ;
 //			Reverse1 = -( DrawPos[ 1 ].x - DrawPos[ 3 ].x ) * ( DrawPos[ 2 ].y - DrawPos[ 3 ].y ) +
@@ -11999,7 +12168,7 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 			DrawVertB[4].rhw = 1.0f ;
 			DrawVertB[5].rhw = 1.0f ;
 
-			// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 			ADD4VERTEX_BLENDTEX
 
 			if( BlendGraphNoIncFlag == FALSE )
@@ -12009,15 +12178,15 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 		}
 		break ;
 
-	case VERTEXTYPE_TEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢
-		// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+	case VERTEXTYPE_TEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 		i = 0 ;
 		for(;;)
 		{
-			// ’¸“_ƒoƒbƒtƒ@‚Ìæ“¾
+			// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®å–å¾—
 			GETVERTEX_QUAD( DrawVert )
 
-			// ’¸“_ƒf[ƒ^‚ğƒZƒbƒg‚·‚é
+			// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 			DrawVert[0].color = ( DWORD )DiffuseColor ;
 			DrawVert[1].color = ( DWORD )DiffuseColor ;
 			DrawVert[2].color = ( DWORD )DiffuseColor ;
@@ -12030,16 +12199,16 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 
 			for( j = 0 ; j < 4 ; j ++, TexVert ++ )
 			{
-				// ’¸“_À•W‚ÌZo
+				// é ‚ç‚¹åº§æ¨™ã®ç®—å‡º
 				if( *VertType ++ )
 				{
-					// OŠp‚Ìã‘¤
+					// ä¸‰è§’ã®ä¸Šå´
 					DrawPos[ j ].x = ( TexVert->x * ExRate1X1 ) + ( TexVert->y * ExRate1X2 ) + xf1 ;
 					DrawPos[ j ].y = ( TexVert->y * ExRate1Y1 ) + ( TexVert->x * ExRate1Y2 ) + yf1 ;
 				} 
 				else
 				{
-					// OŠp‚Ì‰º‘¤
+					// ä¸‰è§’ã®ä¸‹å´
 					XBuf = TexVert->x - GraphSizeX ;
 					YBuf = TexVert->y - GraphSizeY ;
 					DrawPos[ j ].x = ( XBuf * ExRate2X1 ) + ( YBuf * ExRate2X2 ) + xf4 ;
@@ -12047,7 +12216,7 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 				}
 			}
 
-			// ”½“]”»’èˆ—
+			// åè»¢åˆ¤å®šå‡¦ç†
 			Reverse0 =  ( DrawPos[ 1 ].x - DrawPos[ 0 ].x ) * ( DrawPos[ 2 ].y - DrawPos[ 0 ].y ) -
 						( DrawPos[ 2 ].x - DrawPos[ 0 ].x ) * ( DrawPos[ 1 ].y - DrawPos[ 0 ].y ) ;
 			TexVert = DrawTex->Vertex ;
@@ -12127,7 +12296,7 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 			i ++ ;
 			if( i >= DrawTexNum ) break ;
 
-			// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+			// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 			DrawTex ++ ;
 			Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 			Graphics_Android_DeviceState_NormalDrawSetup() ;
@@ -12135,11 +12304,11 @@ extern	int		Graphics_Hardware_DrawModiGraph_PF( int x1, int y1, int x2, int y2, 
 		break ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ‚QŸŒ³”z—ñ“I‚É”z’u‚³‚ê‚½’¸“_ƒf[ƒ^‚ğ’¸“_ƒoƒbƒtƒ@‚É’Ç‰Á‚·‚é
+// ï¼’æ¬¡å…ƒé…åˆ—çš„ã«é…ç½®ã•ã‚ŒãŸé ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«è¿½åŠ ã™ã‚‹
 static int ANDROID_Graphics_SetPlaneVertexHardware( VERTEX_2D *GraphVert, int xnum, int ynum )
 {
 	int i, j, k, l ;
@@ -12151,40 +12320,40 @@ static int ANDROID_Graphics_SetPlaneVertexHardware( VERTEX_2D *GraphVert, int xn
 
 	if( xnum < 2 || ynum < 2 ) return -1 ;
 
-	// ƒgƒ‰ƒCƒAƒ“ƒOƒ‹ƒŠƒXƒgƒ‚[ƒh‚Ìê‡‚Íƒoƒbƒtƒ@‚Íg—p‚µ‚È‚¢
+	// ãƒˆãƒ©ã‚¤ã‚¢ãƒ³ã‚°ãƒ«ãƒªã‚¹ãƒˆãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã¯ãƒãƒƒãƒ•ã‚¡ã¯ä½¿ç”¨ã—ãªã„
 	DRAWSTOCKINFO
 
-	// ƒoƒbƒtƒ@‚ğg—p‚µ‚È‚¢İ’è‚É‚È‚Á‚Ä‚¢‚½‚ç‚±‚Ìê‚Å•`‰æ
+	// ãƒãƒƒãƒ•ã‚¡ã‚’ä½¿ç”¨ã—ãªã„è¨­å®šã«ãªã£ã¦ã„ãŸã‚‰ã“ã®å ´ã§æç”»
 	{
 #define MAX_POSNUM		1000
 		WORD list[MAX_POSNUM] ;
 
-		// ’¸“_ƒCƒ“ƒfƒbƒNƒXƒŠƒXƒg‚ğì¬‚·‚é
+		// é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒªã‚¹ãƒˆã‚’ä½œæˆã™ã‚‹
 		k = 0 ;
 		l = 0 ;
 		for( i = 0 ; i < ynum - 1 ; i ++ )
 		{
-			// ’¸“_”‚ª’´‚¦‚»‚¤‚¾‚Á‚½‚ç•`‰æ
+			// é ‚ç‚¹æ•°ãŒè¶…ãˆãã†ã ã£ãŸã‚‰æç”»
 			if( k + xnum * 2 + 2 > MAX_POSNUM )
 			{
-				// Uniform ‚ÌXV
+				// Uniform ã®æ›´æ–°
 				Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-				// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 				Graphics_Android_DeviceState_SetupShaderVertexData(
 					GANDR.Device.State.SetShader,
 					&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_2D ].InputInfo,
 					GraphVert
 				) ;
 
-				// •`‰æ
+				// æç”»
 				glDrawElements( GL_TRIANGLE_STRIP, k, GL_UNSIGNED_SHORT, list );
 				GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 					
 				k = 0 ;
 			}
 
-			// ‘O‚Ìs‚©‚ç‚Ì‘±‚«‚¾‚Á‚½ê‡‚ÍƒXƒgƒŠƒbƒv‚Ì˜A‘±—p‚Ì’¸“_‚ğo—Í		
+			// å‰ã®è¡Œã‹ã‚‰ã®ç¶šãã ã£ãŸå ´åˆã¯ã‚¹ãƒˆãƒªãƒƒãƒ—ã®é€£ç¶šç”¨ã®é ‚ç‚¹ã‚’å‡ºåŠ›		
 			if( k != 0 )
 			{
 				list[k] = ( WORD )( l + xnum ) ;
@@ -12205,28 +12374,28 @@ static int ANDROID_Graphics_SetPlaneVertexHardware( VERTEX_2D *GraphVert, int xn
 		}
 		if( k != 0 )
 		{
-			// Uniform ‚ÌXV
+			// Uniform ã®æ›´æ–°
 			Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-			// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+			// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 			Graphics_Android_DeviceState_SetupShaderVertexData(
 				GANDR.Device.State.SetShader,
 				&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_2D ].InputInfo,
 				GraphVert
 			) ;
 
-			// •`‰æ
+			// æç”»
 			glDrawElements( GL_TRIANGLE_STRIP, k, GL_UNSIGNED_SHORT, list );
 			GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 		}
 #undef	MAX_POSNUM
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒ‚ğ•ÏŒ`‚µ‚Ä•`‰æ‚·‚é
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å¤‰å½¢ã—ã¦æç”»ã™ã‚‹
 extern	void	Graphics_Android_DrawModiTex( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, IMAGEDATA_HARD_DRAW *DrawTex, bool SimpleDrawFlag )
 {
 	IMAGEDATA_HARD_VERT *TexVert ;
@@ -12245,28 +12414,28 @@ extern	void	Graphics_Android_DrawModiTex( float x1, float y1, float x2, float y2
 		return ;
 	}
 
-	// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+	// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 	Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 	if( GANDR.Device.DrawSetting.ChangeTextureFlag )
 	{
 		Graphics_Android_DeviceState_NormalDrawSetup() ;
 	}
 
-	// ’¸“_ƒf[ƒ^‚ğæ“¾i¡‚Ì‚Æ‚±‚ëFî•ñ‚ÌƒZƒbƒg‚Ì‚İj
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ï¼ˆä»Šã®ã¨ã“ã‚è‰²æƒ…å ±ã®ã‚»ãƒƒãƒˆã®ã¿ï¼‰
 	DiffuseColor = GANDR.Device.DrawInfo.DiffuseColor ;
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
 	TexVert = DrawTex->Vertex ;
 
-	// ”½“]”»’è—pˆ—
+	// åè»¢åˆ¤å®šç”¨å‡¦ç†
 	Reverse0 =  ( x2 - x1 ) * ( y3 - y1 ) - ( x3 - x1 ) * ( y2 - y1 ) ;
 	Reverse1 = -( x2 - x4 ) * ( y3 - y4 ) + ( y2 - y4 ) * ( x3 - x4 ) ;
 
 	if( SimpleDrawFlag ) goto R1 ;
 
-	// •½sl•ÓŒ`ˆÈã‚Ì•ÏŒ`‚ª‹N‚«‚Ä‚¢‚È‚©‚Á‚½‚ç•’Ê‚Ìˆ—‚ğÀs
+	// å¹³è¡Œå››è¾ºå½¢ä»¥ä¸Šã®å¤‰å½¢ãŒèµ·ãã¦ã„ãªã‹ã£ãŸã‚‰æ™®é€šã®å‡¦ç†ã‚’å®Ÿè¡Œ
 //	f1 = f2 = 0 ;
 	c = 0 ;
 	xx1 = x2 - x1 ; xx2 = x4 - x3 ;
@@ -12280,7 +12449,7 @@ extern	void	Graphics_Android_DrawModiTex( float x1, float y1, float x2, float y2
 	if( c == 2 ) goto R1 ;
 
 /*
-	// ‘äŒ`‚©Š®‘S‚È©—RlŠpŒ`‚©‚ğ”»’è
+	// å°å½¢ã‹å®Œå…¨ãªè‡ªç”±å››è§’å½¢ã‹ã‚’åˆ¤å®š
 	f1 = f2 = c = 0 ;
 	r1 = _SQRT( xx1 * xx1 + yy1 * yy1 ) ;	xtmp1 = xx1 / r1 ;	ytmp1 = yy1 / r1 ;
 	r2 = _SQRT( xx2 * xx2 + yy2 * yy2 ) ;	xtmp2 = xx2 / r2 ;	ytmp2 = yy2 / r2 ;
@@ -12303,7 +12472,7 @@ extern	void	Graphics_Android_DrawModiTex( float x1, float y1, float x2, float y2
 		int i, j ;
 		float adjust_u_l, adjust_u_r, adjust_v_t, adjust_v_b ;
 
-		// •ªŠ„‰æ‘œ‚Ìê‡—×‚Ì‰æ‘œ‚ÌƒsƒNƒZƒ‹‚ª“ü‚ç‚È‚¢‚½‚ß‚Ì•â³‚t‚u’l‚ğì¬‚·‚é
+		// åˆ†å‰²ç”»åƒã®å ´åˆéš£ã®ç”»åƒã®ãƒ”ã‚¯ã‚»ãƒ«ãŒå…¥ã‚‰ãªã„ãŸã‚ã®è£œæ­£ï¼µï¼¶å€¤ã‚’ä½œæˆã™ã‚‹
 		{
 			if( TexVert[ 0 ].u < 0.000001f )
 			{
@@ -12342,7 +12511,7 @@ extern	void	Graphics_Android_DrawModiTex( float x1, float y1, float x2, float y2
 			}
 		}
 
-		// •ªŠ„”‚ÌZo
+		// åˆ†å‰²æ•°ã®ç®—å‡º
 		{
 			float v1x, v1y, v2x, v2y ;
 			float rate ;
@@ -12360,7 +12529,7 @@ extern	void	Graphics_Android_DrawModiTex( float x1, float y1, float x2, float y2
 			for( DivNum = TDIVNUM ; DivNum > 0 && rate < Table[TDIVNUM - DivNum] ; DivNum -- ){}
 		}
 
-		// ©—RlŠpŒ`ˆ—
+		// è‡ªç”±å››è§’å½¢å‡¦ç†
 		adx1 = xx3 / ( tdn - 1 ) ;	ady1 = yy3 / ( tdn - 1 ) ;
 		adx2 = xx4 / ( tdn - 1 ) ;	ady2 = yy4 / ( tdn - 1 ) ;
 		xxx1 = x1 ;		yyy1 = y1 ;
@@ -12393,7 +12562,7 @@ extern	void	Graphics_Android_DrawModiTex( float x1, float y1, float x2, float y2
 			}
 		}
 
-		// ’¸“_’Ç‰Áˆ—
+		// é ‚ç‚¹è¿½åŠ å‡¦ç†
 		ANDROID_Graphics_SetPlaneVertexHardware( VectData2, tdn, tdn ) ;
 
 #undef TDIVNUM
@@ -12403,7 +12572,7 @@ extern	void	Graphics_Android_DrawModiTex( float x1, float y1, float x2, float y2
 	return ;
 		
 R1 :
-	// •’Ê‚É•`‰æ
+	// æ™®é€šã«æç”»
 	GETVERTEX_QUAD( vec )
 
 	vec[0].color = ( DWORD )DiffuseColor ;
@@ -12492,12 +12661,12 @@ R1 :
 	ADD4VERTEX_TEX
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawModiGraphF
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawModiGraphF
 extern	int		Graphics_Hardware_DrawModiGraphF_PF( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, IMAGEDATA *Image, IMAGEDATA *BlendImage, int TransFlag, bool SimpleDrawFlag )
 {
 	int Flag ;
 
-	// ‚à‚µƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ•t‚Ìê‡‚Í“à•”•ªŠ„‚ğs‚í‚È‚¢•`‰æŠÖ”‚ğg—p‚·‚é
+	// ã‚‚ã—ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ä»˜ã®å ´åˆã¯å†…éƒ¨åˆ†å‰²ã‚’è¡Œã‚ãªã„æç”»é–¢æ•°ã‚’ä½¿ç”¨ã™ã‚‹
 	if( GSYS.DrawSetting.BlendGraph > 0 ) return Graphics_Hardware_DrawModiGraph_PF( _FTOL( x1 ), _FTOL( y1 ), _FTOL( x2 ), _FTOL( y2 ), _FTOL( x3 ), _FTOL( y3 ), _FTOL( x4 ), _FTOL( y4 ), Image, BlendImage, TransFlag, SimpleDrawFlag ) ;
 
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -12505,14 +12674,14 @@ extern	int		Graphics_Hardware_DrawModiGraphF_PF( float x1, float y1, float x2, f
 		return -1 ;
 	}
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = TransFlag ;
 	DX_ANDROID_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
-	// ƒeƒNƒXƒ`ƒƒ[‚ª‚P–‡‚Ì‚İ‚Ìê‡‚Íˆ—‚ğ•ªŠò
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ãŒï¼‘æšã®ã¿ã®å ´åˆã¯å‡¦ç†ã‚’åˆ†å²
 	if( Image->Hard.DrawNum == 1 )
 	{
-		// ‚»‚Ì‚Ü‚Ü•`‰æ
+		// ãã®ã¾ã¾æç”»
 		Graphics_Android_DrawModiTex( x1, y1, x2, y2, x3, y3, x4, y4, &Image->Hard.Draw[ 0 ], false ) ;
 	}
 	else
@@ -12536,19 +12705,19 @@ extern	int		Graphics_Hardware_DrawModiGraphF_PF( float x1, float y1, float x2, f
 		w = 1.0F / (double)Image->WidthF ;
 		h = 1.0F / (double)Image->HeightF ;
 
-		// •`‰æî•ñ‚Ì”‚ğƒZƒbƒg
+		// æç”»æƒ…å ±ã®æ•°ã‚’ã‚»ãƒƒãƒˆ
 		DrawTexNum = Image->Hard.DrawNum ;
 
-		// •`‰æî•ñ”z—ñ‚ÌƒAƒhƒŒƒX‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+		// æç”»æƒ…å ±é…åˆ—ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 		DrawTex = Image->Hard.Draw ;
 
-		// ƒeƒNƒXƒ`ƒƒ[‚Ì”‚¾‚¯ŒJ‚è•Ô‚·
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã™
 		for( i = 0 ; i < DrawTexNum ; i ++, DrawTex ++ )
 		{
-			// ƒeƒNƒXƒ`ƒƒ[‚Ìƒf[ƒ^ƒAƒhƒŒƒX‚ğæ“¾
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ãƒ‡ãƒ¼ã‚¿ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—
 			TexVert = DrawTex->Vertex ;
 
-			// À•W‚ğZo
+			// åº§æ¨™ã‚’ç®—å‡º
 			xp = x ;
 			yp = y ;
 			for( j = 0 ; j < 4 ; j ++, TexVert ++ )
@@ -12562,16 +12731,16 @@ extern	int		Graphics_Hardware_DrawModiGraphF_PF( float x1, float y1, float x2, f
 				*yp++ = (float)( ( yt2 - yt1 ) * r + yt1 ) ;
 			}
 
-			// •`‰æ
+			// æç”»
 			Graphics_Android_DrawModiTex( x[0], y[0], x[1], y[1], x[2], y[2], x[3], y[3], DrawTex, false ) ;
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawSimpleQuadrangleGraphF
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawSimpleQuadrangleGraphF
 extern	int		Graphics_Hardware_DrawSimpleQuadrangleGraphF_PF( const GRAPHICS_DRAW_DRAWSIMPLEQUADRANGLEGRAPHF_PARAM *Param, IMAGEDATA *Image, IMAGEDATA *BlendImage )
 {
 	VERTEX_2D *DrawVert ;
@@ -12593,34 +12762,34 @@ extern	int		Graphics_Hardware_DrawSimpleQuadrangleGraphF_PF( const GRAPHICS_DRAW
 		return -1 ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚Ì”‚ª‚PˆÈŠO‚Ìê‡‚ÍƒGƒ‰[
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ•°ãŒï¼‘ä»¥å¤–ã®å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if( Image->Hard.DrawNum != 1 )
 	{
 		return -1 ;
 	}
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = Param->TransFlag ;
 	DX_ANDROID_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
-	// ’¸“_ƒf[ƒ^‚ğæ“¾i¡‚Ì‚Æ‚±‚ëFî•ñ‚ÌƒZƒbƒg‚Ì‚İj
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ï¼ˆä»Šã®ã¨ã“ã‚è‰²æƒ…å ±ã®ã‚»ãƒƒãƒˆã®ã¿ï¼‰
 	DiffuseColor = GANDR.Device.DrawInfo.DiffuseColor ;
 
-	// •`‰æî•ñ”z—ñ‚ÌƒAƒhƒŒƒX‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// æç”»æƒ…å ±é…åˆ—ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	DrawTex = Image->Hard.Draw ;
 	if( BlendImage != NULL )
 	{
 		BlendDrawTex = BlendImage->Hard.Draw ;
 	}
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// ’¸“_ƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+	// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 	switch( GANDR.Device.DrawInfo.VertexType )
 	{
-	case VERTEXTYPE_BLENDTEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é
-		// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+	case VERTEXTYPE_BLENDTEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹
+		// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 		Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 		Graphics_Android_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
@@ -12632,7 +12801,7 @@ extern	int		Graphics_Hardware_DrawSimpleQuadrangleGraphF_PF( const GRAPHICS_DRAW
 		TexVert = DrawTex->Vertex ;
 		BlendTexVert = BlendDrawTex->Vertex ;
 
-		// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 		ParamV = Param->Vertex ;
 		for( i = 0 ; i < Param->QuadrangleNum ; i ++, ParamV += 4 )
 		{
@@ -12724,15 +12893,15 @@ extern	int		Graphics_Hardware_DrawSimpleQuadrangleGraphF_PF( const GRAPHICS_DRAW
 			DrawVertB[4].rhw = 1.0f ;
 			DrawVertB[5].rhw = 1.0f ;
 
-			// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 			ADD4VERTEX_BLENDTEX
 		}
 		break ;
 
-	case VERTEXTYPE_TEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢
+	case VERTEXTYPE_TEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„
 		TexVert = DrawTex->Vertex ;
 
-		// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 		ParamV = Param->Vertex ;
 		for( i = 0 ; i < Param->QuadrangleNum ; i ++, ParamV += 4 )
 		{
@@ -12785,17 +12954,17 @@ extern	int		Graphics_Hardware_DrawSimpleQuadrangleGraphF_PF( const GRAPHICS_DRAW
 			DrawVert[4].rhw = 1.0f ;
 			DrawVert[5].rhw = 1.0f ;
 
-			// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 			ADD4VERTEX_TEX
 		}
 		break ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawSimpleTriangleGraphF
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawSimpleTriangleGraphF
 extern	int		Graphics_Hardware_DrawSimpleTriangleGraphF_PF( const GRAPHICS_DRAW_DRAWSIMPLETRIANGLEGRAPHF_PARAM *Param, IMAGEDATA *Image, IMAGEDATA *BlendImage )
 {
 	VERTEX_2D *DrawVert ;
@@ -12817,34 +12986,34 @@ extern	int		Graphics_Hardware_DrawSimpleTriangleGraphF_PF( const GRAPHICS_DRAW_D
 		return -1 ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚Ì”‚ª‚PˆÈŠO‚Ìê‡‚ÍƒGƒ‰[
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ•°ãŒï¼‘ä»¥å¤–ã®å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if( Image->Hard.DrawNum != 1 )
 	{
 		return -1 ;
 	}
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = Param->TransFlag ;
 	DX_ANDROID_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
 
-	// ’¸“_ƒf[ƒ^‚ğæ“¾i¡‚Ì‚Æ‚±‚ëFî•ñ‚ÌƒZƒbƒg‚Ì‚İj
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ï¼ˆä»Šã®ã¨ã“ã‚è‰²æƒ…å ±ã®ã‚»ãƒƒãƒˆã®ã¿ï¼‰
 	DiffuseColor = GANDR.Device.DrawInfo.DiffuseColor ;
 
-	// •`‰æî•ñ”z—ñ‚ÌƒAƒhƒŒƒX‚ğƒZƒbƒg‚µ‚Ä‚¨‚­
+	// æç”»æƒ…å ±é…åˆ—ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆã—ã¦ãŠã
 	DrawTex = Image->Hard.Draw ;
 	if( BlendImage != NULL )
 	{
 		BlendDrawTex = BlendImage->Hard.Draw ;
 	}
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// ’¸“_ƒ^ƒCƒv‚É‚æ‚Á‚Äˆ—‚ğ•ªŠò
+	// é ‚ç‚¹ã‚¿ã‚¤ãƒ—ã«ã‚ˆã£ã¦å‡¦ç†ã‚’åˆ†å²
 	switch( GANDR.Device.DrawInfo.VertexType )
 	{
-	case VERTEXTYPE_BLENDTEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚·‚é
-		// •`‰æ‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌƒZƒbƒg
+	case VERTEXTYPE_BLENDTEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã™ã‚‹
+		// æç”»ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã®ã‚»ãƒƒãƒˆ
 		Graphics_Android_DrawSetting_SetTexture( &DrawTex->Tex->PF->Texture ) ;
 		Graphics_Android_DrawSetting_SetBlendTexture( &BlendDrawTex->Tex->PF->Texture ) ;
 
@@ -12856,7 +13025,7 @@ extern	int		Graphics_Hardware_DrawSimpleTriangleGraphF_PF( const GRAPHICS_DRAW_D
 		TexVert = DrawTex->Vertex ;
 		BlendTexVert = BlendDrawTex->Vertex ;
 
-		// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 		ParamV = Param->Vertex ;
 		for( i = 0 ; i < Param->TriangleNum ; i ++, ParamV += 3 )
 		{
@@ -12917,15 +13086,15 @@ extern	int		Graphics_Hardware_DrawSimpleTriangleGraphF_PF( const GRAPHICS_DRAW_D
 			DrawVertB[1].rhw = 1.0f ;
 			DrawVertB[2].rhw = 1.0f ;
 
-			// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 			ADD3VERTEX_BLENDTEX
 		}
 		break ;
 
-	case VERTEXTYPE_TEX :	// ƒuƒŒƒ“ƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢
+	case VERTEXTYPE_TEX :	// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ç”¨ã—ãªã„
 		TexVert = DrawTex->Vertex ;
 
-		// ’¸“_ƒf[ƒ^‚ğ‰Šú‰»‚·‚é
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–ã™ã‚‹
 		ParamV = Param->Vertex ;
 		for( i = 0 ; i < Param->TriangleNum ; i ++, ParamV += 3 )
 		{
@@ -12957,17 +13126,17 @@ extern	int		Graphics_Hardware_DrawSimpleTriangleGraphF_PF( const GRAPHICS_DRAW_D
 			DrawVert[1].rhw = 1.0f ;
 			DrawVert[2].rhw = 1.0f ;
 
-			// ƒeƒNƒXƒ`ƒƒ[‚ğ•`‰æ‚·‚é
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’æç”»ã™ã‚‹
 			ADD3VERTEX_TEX
 		}
 		break ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawFillBox
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawFillBox
 extern	int		Graphics_Hardware_DrawFillBox_PF( int x1, int y1, int x2, int y2, unsigned int Color )
 {
 	VERTEX_NOTEX_2D *vec ;
@@ -12980,7 +13149,7 @@ extern	int		Graphics_Hardware_DrawFillBox_PF( int x1, int y1, int x2, int y2, un
 		return -1 ;
 	}
 
-	// ”½“]ˆ—
+	// åè»¢å‡¦ç†
 	{
 		int b ;
 
@@ -12988,7 +13157,7 @@ extern	int		Graphics_Hardware_DrawFillBox_PF( int x1, int y1, int x2, int y2, un
 		if( y1 > y2 ){ b = y1 ; y1 = y2 ; y2 = b ; }
 	}
 	
-	// ƒNƒŠƒbƒsƒ“ƒOˆ—
+	// ã‚¯ãƒªãƒƒãƒ”ãƒ³ã‚°å‡¦ç†
 	if( GSYS.DrawSetting.Valid2DMatrix == FALSE )
 	{
 		drect.left   = x1 ;
@@ -12999,18 +13168,18 @@ extern	int		Graphics_Hardware_DrawFillBox_PF( int x1, int y1, int x2, int y2, un
 		if( drect.left == drect.right || drect.top == drect.bottom ) return 0 ;
 	}
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag ) ;
 
-	// F‚»‚Ì‘¼ƒXƒe[ƒ^ƒX‚ÌƒZƒbƒg
+	// è‰²ãã®ä»–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ã‚»ãƒƒãƒˆ
 	NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 	SETUPCOLOR( Color )
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒg
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆ
 	GETVERTEX_QUAD( vec )
 	
 	vec[0].color = Color ;
@@ -13047,14 +13216,14 @@ extern	int		Graphics_Hardware_DrawFillBox_PF( int x1, int y1, int x2, int y2, un
 	vec[4].rhw = 1.0f ;
 	vec[5].rhw = 1.0f ;
 
-	// ’¸“_ƒf[ƒ^‚Ìo—Í
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®å‡ºåŠ›
 	ADD4VERTEX_NOTEX
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawLineBox
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawLineBox
 extern	int		Graphics_Hardware_DrawLineBox_PF( int x1, int y1, int x2, int y2, unsigned int Color )
 {
 	VERTEX_NOTEX_2D *VertData ;
@@ -13068,18 +13237,18 @@ extern	int		Graphics_Hardware_DrawLineBox_PF( int x1, int y1, int x2, int y2, un
 		return -1 ;
 	}
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag ) ;
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// F‚»‚Ì‘¼ƒXƒe[ƒ^ƒX‚ÌƒZƒbƒg
+	// è‰²ãã®ä»–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ã‚»ãƒƒãƒˆ
 	NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 	SETUPCOLOR( Color )
 
-	// ”½“]ˆ—
+	// åè»¢å‡¦ç†
 	{
 		int bx, by ;
 
@@ -13216,14 +13385,14 @@ extern	int		Graphics_Hardware_DrawLineBox_PF( int x1, int y1, int x2, int y2, un
 
 	VertData += 6 ;
 
-	// ’¸“_‚Ì’Ç‰Á
+	// é ‚ç‚¹ã®è¿½åŠ 
 	ADD4VERTEX_LINEBOX
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawLine
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawLine
 extern	int		Graphics_Hardware_DrawLine_PF( int x1, int y1, int x2, int y2, unsigned int Color )
 {
 	VERTEX_NOTEX_2D *VectData ;
@@ -13237,14 +13406,14 @@ extern	int		Graphics_Hardware_DrawLine_PF( int x1, int y1, int x2, int y2, unsig
 
 	if( x2 - x1 == 0 && y2 - y1 == 0 ) return 0 ; 
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// F‚ğƒZƒbƒg
+	// è‰²ã‚’ã‚»ãƒƒãƒˆ
 	GETVERTEX_LINE( VectData ) ;
 	NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 	SETUPCOLOR( Color )
@@ -13255,14 +13424,14 @@ extern	int		Graphics_Hardware_DrawLine_PF( int x1, int y1, int x2, int y2, unsig
 	VectData[ 0 ].rhw =
 	VectData[ 1 ].rhw = 1.0f ;
 
-	// À•W‚ğƒZƒbƒg
+	// åº§æ¨™ã‚’ã‚»ãƒƒãƒˆ
 	VectData[ 0 ].pos.x = ( float )( x1 + 0.5f ) ;
 	VectData[ 0 ].pos.y = ( float )( y1 + 0.5f ) ;
 
 	VectData[ 1 ].pos.x = ( float )( x2 + 0.5f ) ;
 	VectData[ 1 ].pos.y = ( float )( y2 + 0.5f ) ;
 
-	// À•W‚Ì•â³
+	// åº§æ¨™ã®è£œæ­£
 	if( x1 == x2 )
 	{
 		if( y1 < y2 )
@@ -13291,14 +13460,14 @@ extern	int		Graphics_Hardware_DrawLine_PF( int x1, int y1, int x2, int y2, unsig
 		}
 	}
 
-	// ’¸“_‚Ì’Ç‰Á
+	// é ‚ç‚¹ã®è¿½åŠ 
 	ADD4VERTEX_LINE
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawLine3D
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawLine3D
 extern	int		Graphics_Hardware_DrawLine3D_PF( VECTOR Pos1, VECTOR Pos2, unsigned int Color, int DrawFlag, RECT *DrawArea )
 {
 	VERTEX_NOTEX_3D *VectData ;
@@ -13311,23 +13480,23 @@ extern	int		Graphics_Hardware_DrawLine3D_PF( VECTOR Pos1, VECTOR Pos2, unsigned 
 
 	if( DrawFlag )
 	{
-		// •`‰æ‚Ì€”õ
+		// æç”»ã®æº–å‚™
 		Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB | DX_ANDROID_DRAWPREP_3D | DX_ANDROID_DRAWPREP_FOG ;
 		DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
 		GETVERTEX_LINE3D( VectData ) ;
 
-		// F‚ğƒZƒbƒg
+		// è‰²ã‚’ã‚»ãƒƒãƒˆ
 		NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 		SETUPCOLOR( Color )
 		*( ( DWORD * )&VectData[ 0 ].b ) = Color ;
 		*( ( DWORD * )&VectData[ 1 ].b ) = Color ;
 
-		// À•W‚ğƒZƒbƒg
+		// åº§æ¨™ã‚’ã‚»ãƒƒãƒˆ
 		VectData[ 0 ].pos = Pos1 ;
 		VectData[ 1 ].pos = Pos2 ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_LINE3D
 	}
 	else
@@ -13340,7 +13509,7 @@ extern	int		Graphics_Hardware_DrawLine3D_PF( VECTOR Pos1, VECTOR Pos2, unsigned 
 		dtop    = -100000000.0f ;
 		dbottom =  100000000.0f ;
 
-		// ƒXƒNƒŠ[ƒ“À•W‚É•ÏŠ·
+		// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã«å¤‰æ›
 		TempVect[0].pos.x = Pos1.x * GSYS.DrawSetting.Blend3DMatrixF.m[0][0] + Pos1.y * GSYS.DrawSetting.Blend3DMatrixF.m[1][0] + Pos1.z * GSYS.DrawSetting.Blend3DMatrixF.m[2][0] + GSYS.DrawSetting.Blend3DMatrixF.m[3][0]  ;
 		TempVect[0].pos.y = Pos1.x * GSYS.DrawSetting.Blend3DMatrixF.m[0][1] + Pos1.y * GSYS.DrawSetting.Blend3DMatrixF.m[1][1] + Pos1.z * GSYS.DrawSetting.Blend3DMatrixF.m[2][1] + GSYS.DrawSetting.Blend3DMatrixF.m[3][1]  ;
 		TempVect[0].pos.z = Pos1.x * GSYS.DrawSetting.Blend3DMatrixF.m[0][2] + Pos1.y * GSYS.DrawSetting.Blend3DMatrixF.m[1][2] + Pos1.z * GSYS.DrawSetting.Blend3DMatrixF.m[2][2] + GSYS.DrawSetting.Blend3DMatrixF.m[3][2]  ;
@@ -13379,7 +13548,7 @@ extern	int		Graphics_Hardware_DrawLine3D_PF( VECTOR Pos1, VECTOR Pos2, unsigned 
 		DrawArea->bottom = _FTOL( dbottom ) + 1 ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -13407,24 +13576,24 @@ extern	int		Graphics_Hardware_DrawLine3D_PF( VECTOR Pos1, VECTOR Pos2, unsigned 
 																			\
 	if( VectNum >= ANDROID_CIRCLE_VERTEX_NUM )								\
 	{																		\
-		/* Uniform ‚ÌXV */												\
+		/* Uniform ã®æ›´æ–° */												\
 		Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;\
 																			\
-		/* ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv */										\
+		/* é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ— */										\
 		Graphics_Android_DeviceState_SetupShaderVertexData(					\
 			GANDR.Device.State.SetShader,									\
 			&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,\
 			VertBuf															\
 		) ;																	\
 																			\
-		/* •`‰æ */															\
+		/* æç”» */															\
 		glDrawArrays( GL_LINES, 0, VectNum );								\
 		GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;						\
 																			\
 		VectNum = 0 ;														\
 	}																		
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawCircle( ‘¾‚³w’è‚ ‚è )
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawCircle( å¤ªã•æŒ‡å®šã‚ã‚Š )
 extern	int		Graphics_Hardware_DrawCircle_Thickness_PF( int x, int y, int r, unsigned int Color, int Thickness )
 {
 	VERTEX_NOTEX_2D *VertBuf ;
@@ -13443,36 +13612,36 @@ extern	int		Graphics_Hardware_DrawCircle_Thickness_PF( int x, int y, int r, unsi
 		return -1 ;
 	}
 
-	// ‘¾‚³‚ª‚QˆÈ‰º‚¾‚Á‚½‚ç‰½‚à‚¹‚¸I—¹
+	// å¤ªã•ãŒï¼’ä»¥ä¸‹ã ã£ãŸã‚‰ä½•ã‚‚ã›ãšçµ‚äº†
 	if( Thickness < 2 )
 	{
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ—pƒƒ‚ƒŠ‚ÌŠm•Û
+	// æç”»ç”¨ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿
 	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * ANDROID_CIRCLE_VERTEX_NUM ) < 0 )
 	{
 		return -1 ;
 	}
 	VertBuf = ( VERTEX_NOTEX_2D * )GSYS.Resource.CommonBuffer[ 0 ] ;
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// •â³
+	// è£œæ­£
 	DrawRect = GSYS.DrawSetting.DrawArea ;
 
 	NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 	SETUPCOLOR( Color )
 
-	// ‰~‚ÌÀ•W‚ğ‘ã“ü‚·‚éƒoƒbƒtƒ@‚ğæ“¾
+	// å††ã®åº§æ¨™ã‚’ä»£å…¥ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ã‚’å–å¾—
 	if( Graphics_Other_AllocCommonBuffer( 1, sizeof( short ) * 5 * DrawRect.bottom ) < 0 )
 	{
 		return -1 ;
@@ -13480,10 +13649,10 @@ extern	int		Graphics_Hardware_DrawCircle_Thickness_PF( int x, int y, int r, unsi
 	CirclePos = ( short (*)[ 5 ] )GSYS.Resource.CommonBuffer[ 1 ] ;
 	_MEMSET( CirclePos, 0, sizeof( short ) * 5 * DrawRect.bottom ) ;
 
-	// ‰~‚ÌÀ•WƒŠƒXƒgì¬
+	// å††ã®åº§æ¨™ãƒªã‚¹ãƒˆä½œæˆ
 	Graphics_Draw_GetCircle_ThicknessDrawPosition( x, y, r, Thickness, CirclePos ) ;
 
-	// •`‰æˆ—
+	// æç”»å‡¦ç†
 	VectNum = 0 ;
 	for( i = DrawRect.top ; i < DrawRect.bottom ; i ++ )
 	{
@@ -13513,26 +13682,26 @@ extern	int		Graphics_Hardware_DrawCircle_Thickness_PF( int x, int y, int r, unsi
 	}
 	if( VectNum )
 	{
-		// Uniform ‚ÌXV
+		// Uniform ã®æ›´æ–°
 		Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-		// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 		Graphics_Android_DeviceState_SetupShaderVertexData(
 			GANDR.Device.State.SetShader,
 			&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 			VertBuf
 		) ;	
 
-		// •`‰æ
+		// æç”»
 		glDrawArrays( GL_LINES, 0, VectNum ) ;
 		GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawOval( ‘¾‚³w’è‚ ‚è )
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawOval( å¤ªã•æŒ‡å®šã‚ã‚Š )
 extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int ry, unsigned int Color, int Thickness )
 {
 	VERTEX_NOTEX_2D *VertBuf ;
@@ -13551,36 +13720,36 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 		return -1 ;
 	}
 
-	// ‘¾‚³‚ª‚QˆÈ‰º‚¾‚Á‚½‚ç‰½‚à‚¹‚¸I—¹
+	// å¤ªã•ãŒï¼’ä»¥ä¸‹ã ã£ãŸã‚‰ä½•ã‚‚ã›ãšçµ‚äº†
 	if( Thickness < 2 )
 	{
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ—pƒƒ‚ƒŠ‚ÌŠm•Û
+	// æç”»ç”¨ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿
 	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * ANDROID_CIRCLE_VERTEX_NUM ) < 0 )
 	{
 		return -1 ;
 	}
 	VertBuf = ( VERTEX_NOTEX_2D * )GSYS.Resource.CommonBuffer[ 0 ] ;
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// •â³
+	// è£œæ­£
 	DrawRect = GSYS.DrawSetting.DrawArea ;
 
 	NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 	SETUPCOLOR( Color )
 
-	// ‰~‚ÌÀ•W‚ğ‘ã“ü‚·‚éƒoƒbƒtƒ@‚ğæ“¾
+	// å††ã®åº§æ¨™ã‚’ä»£å…¥ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ã‚’å–å¾—
 	if( Graphics_Other_AllocCommonBuffer( 1, sizeof( short ) * 5 * DrawRect.bottom ) < 0 )
 	{
 		return -1 ;
@@ -13588,13 +13757,13 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 	CirclePos = ( short (*)[ 5 ] )GSYS.Resource.CommonBuffer[ 1 ] ;
 	_MEMSET( CirclePos, 0, sizeof( short ) * 5 * DrawRect.bottom ) ;
 
-	// ‘È‰~‚ÌÀ•WƒŠƒXƒgì¬
+	// æ¥•å††ã®åº§æ¨™ãƒªã‚¹ãƒˆä½œæˆ
 	if( Graphics_Draw_GetOval_ThicknessDrawPosition( x, y, rx, ry, Thickness, CirclePos ) < 0 )
 	{
 		return -1 ;
 	}
 
-	// •`‰æˆ—
+	// æç”»å‡¦ç†
 	VectNum = 0 ;
 	for( i = DrawRect.top ; i < DrawRect.bottom ; i ++ )
 	{
@@ -13624,22 +13793,22 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 	}
 	if( VectNum )
 	{
-		// Uniform ‚ÌXV
+		// Uniform ã®æ›´æ–°
 		Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-		// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 		Graphics_Android_DeviceState_SetupShaderVertexData(
 			GANDR.Device.State.SetShader,
 			&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 			VertBuf
 		) ;	
 
-		// •`‰æ
+		// æç”»
 		glDrawArrays( GL_LINES, 0, VectNum ) ;
 		GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -13670,17 +13839,17 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 																						\
 				if( VectNum >= ANDROID_CIRCLE_VERTEX_NUM )								\
 				{																		\
-					/* Uniform ‚ÌXV */												\
+					/* Uniform ã®æ›´æ–° */												\
 					Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;\
 																						\
-					/* ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv */										\
+					/* é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ— */										\
 					Graphics_Android_DeviceState_SetupShaderVertexData(					\
 						GANDR.Device.State.SetShader,									\
 						&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,\
 						VertBuf															\
 					) ;																	\
 																						\
-					/* •`‰æ */															\
+					/* æç”» */															\
 					glDrawArrays( GL_LINES, 0, VectNum );								\
 					GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;						\
 					VectNum = 0 ;														\
@@ -13700,24 +13869,24 @@ extern	int		Graphics_Hardware_DrawOval_Thickness_PF( int x, int y, int rx, int r
 																						\
 				if( VectNum >= ANDROID_CIRCLE_VERTEX_NUM )								\
 				{																		\
-					/* Uniform ‚ÌXV */												\
+					/* Uniform ã®æ›´æ–° */												\
 					Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;\
 																						\
-					/* ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv */										\
+					/* é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ— */										\
 					Graphics_Android_DeviceState_SetupShaderVertexData(					\
 						GANDR.Device.State.SetShader,									\
 						&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,\
 						VertBuf															\
 					) ;																	\
 																						\
-					/* •`‰æ */															\
+					/* æç”» */															\
 					glDrawArrays( GL_POINTS, 0, VectNum );								\
 					GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;						\
 					VectNum = 0 ;														\
 				}																		\
 			}
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawCircle
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawCircle
 extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int Color, int FillFlag, int Rx_One_Minus, int Ry_One_Minus )
 {
 	VERTEX_NOTEX_2D *VertBuf ;
@@ -13738,50 +13907,50 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 	Rx_One_Minus = Rx_One_Minus ? 1 : 0 ;
 	Ry_One_Minus = Ry_One_Minus ? 1 : 0 ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ—pƒƒ‚ƒŠ‚ÌŠm•Û
+	// æç”»ç”¨ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿
 	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * ANDROID_CIRCLE_VERTEX_NUM ) < 0 )
 	{
 		return -1 ;
 	}
 	VertBuf = ( VERTEX_NOTEX_2D * )GSYS.Resource.CommonBuffer[ 0 ] ;
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// •â³
+	// è£œæ­£
 	DrawRect = GSYS.DrawSetting.DrawArea ;
 
 	NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 	SETUPCOLOR( Color )
 
-	// •`‰æˆ—
+	// æç”»å‡¦ç†
 	{
 		int Dx, Dy, F/*, i, j*/ ;
 		int x1, x2, y1 ;
 
-		// ‰Šú’lƒZƒbƒg
+		// åˆæœŸå€¤ã‚»ãƒƒãƒˆ
 		Dx = r ; Dy = 0 ; F = -2 * r + 3 ;
 		VectNum = 0 ;
 
 //		j = 0 ;
-		// •`‰æŠJn
+		// æç”»é–‹å§‹
 		if( FillFlag )
 		{
 			if( Graphics_Other_AllocCommonBuffer( 1, ( DWORD )DrawRect.bottom ) < 0 )
 			{
-				return DXST_LOGFILE_ADDUTF16LE( "\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x20\x00\x69\x00\x6e\x00\x20\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x48\x00\x61\x00\x72\x00\x64\x00\x77\x00\x61\x00\x72\x00\x65\x00\x5f\x00\x44\x00\x72\x00\x61\x00\x77\x00\x43\x00\x69\x00\x72\x00\x63\x00\x6c\x00\x65\x00\x5f\x00\x50\x00\x46\x00\x00"/*@ L"ƒƒ‚ƒŠ‚ÌŠm•Û‚É¸”s‚µ‚Ü‚µ‚½ in Graphics_Hardware_DrawCircle_PF" @*/ ) ;
+				return DXST_LOGFILE_ADDUTF16LE( "\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x20\x00\x69\x00\x6e\x00\x20\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x48\x00\x61\x00\x72\x00\x64\x00\x77\x00\x61\x00\x72\x00\x65\x00\x5f\x00\x44\x00\x72\x00\x61\x00\x77\x00\x43\x00\x69\x00\x72\x00\x63\x00\x6c\x00\x65\x00\x5f\x00\x50\x00\x46\x00\x00"/*@ L"ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ in Graphics_Hardware_DrawCircle_PF" @*/ ) ;
 			}
 			LineDrawBuf = ( BYTE * )GSYS.Resource.CommonBuffer[ 1 ] ;
 			_MEMSET( LineDrawBuf, 0, ( size_t )DrawRect.bottom ) ;
 
-			// Å‰‚Ìƒ‰ƒCƒ“‚ğ•`‚­
+			// æœ€åˆã®ãƒ©ã‚¤ãƒ³ã‚’æã
 			{
 				if( Ry_One_Minus == FALSE )
 				{
@@ -13789,7 +13958,7 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 					DX_ANDROID_CIRCLE ;
 				}
 
-				// À•Wƒf[ƒ^‚ği‚ß‚é
+				// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 				if( F >= 0 )
 				{
 					x2 = Dy + x - Rx_One_Minus ; x1 = -Dy + x ; y1 = Dx + y - Ry_One_Minus ;
@@ -13812,7 +13981,7 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 				x2 = Dx + x - Rx_One_Minus ; x1 = -Dx + x ; y1 = -Dy + y ;
 				DX_ANDROID_CIRCLE ;
 
-				// À•Wƒf[ƒ^‚ği‚ß‚é
+				// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 				if( F >= 0 )
 				{
 					x2 = Dy + x - Rx_One_Minus ; x1 = -Dy + x ; y1 = Dx + y - Ry_One_Minus ;
@@ -13829,24 +13998,24 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 			}
 			if( VectNum )
 			{
-				// Uniform ‚ÌXV
+				// Uniform ã®æ›´æ–°
 				Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-				// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 				Graphics_Android_DeviceState_SetupShaderVertexData(
 					GANDR.Device.State.SetShader,
 					&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 					VertBuf
 				) ;	
 
-				// •`‰æ
+				// æç”»
 				glDrawArrays( GL_LINES, 0, VectNum ) ;
 				GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 			}
 		}
 		else
 		{
-			// Å‰‚Ì“_‚ğ•`‚­
+			// æœ€åˆã®ç‚¹ã‚’æã
 			{
 				if( Ry_One_Minus == FALSE )
 				{
@@ -13865,7 +14034,7 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 					DX_ANDROID_CIRCLE_PSET ;
 				}
 
-				// À•Wƒf[ƒ^‚ği‚ß‚é
+				// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 				if( F >= 0 )
 				{
 					Dx -- ;
@@ -13898,7 +14067,7 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 				x1 = -Dy + x ; 
 				DX_ANDROID_CIRCLE_PSET ;
 
-				// À•Wƒf[ƒ^‚ği‚ß‚é
+				// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 				if( F >= 0 )
 				{
 					Dx -- ;
@@ -13910,28 +14079,28 @@ extern	int		Graphics_Hardware_DrawCircle_PF( int x, int y, int r, unsigned int C
 			}
 			if( VectNum )
 			{
-				// Uniform ‚ÌXV
+				// Uniform ã®æ›´æ–°
 				Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-				// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 				Graphics_Android_DeviceState_SetupShaderVertexData(
 					GANDR.Device.State.SetShader,
 					&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 					VertBuf
 				) ;	
 
-				// •`‰æ
+				// æç”»
 				glDrawArrays( GL_POINTS, 0, VectNum ) ;
 				GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 			}
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawOval
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawOval
 extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigned int Color, int FillFlag, int Rx_One_Minus, int Ry_One_Minus )
 {
 	VERTEX_NOTEX_2D *VertBuf ;
@@ -13953,23 +14122,23 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 	Rx_One_Minus = Rx_One_Minus ? 1 : 0 ;
 	Ry_One_Minus = Ry_One_Minus ? 1 : 0 ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
 	if( !rx || !ry ) return -1 ;
 
-	// •`‰æ—pƒƒ‚ƒŠ‚ÌŠm•Û
+	// æç”»ç”¨ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿
 	if( Graphics_Other_AllocCommonBuffer( 0, sizeof( VERTEX_NOTEX_2D ) * ANDROID_CIRCLE_VERTEX_NUM ) < 0 )
 	{
 		return -1 ;
 	}
 	VertBuf = ( VERTEX_NOTEX_2D * )GSYS.Resource.CommonBuffer[ 0 ] ;
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	// •â³
+	// è£œæ­£
 	if( rx < 0 ) rx *= -1 ;
 	if( ry < 0 ) ry *= -1 ;
 	DrawRect = GSYS.DrawSetting.DrawArea ;
@@ -13977,31 +14146,31 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 	NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 	SETUPCOLOR( Color )
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
 	VectNum = 0 ;
 
-	// •`‰æˆ—
+	// æç”»å‡¦ç†
 	{
 		int Dx, Dy, F, H/*, j, i */ ;
 		int x1, x2, y1, Df ;
 		int yc, xc, rc, r ;
 
 //		j = 0 ;
-		// •`‰æŠJn
+		// æç”»é–‹å§‹
 		if( FillFlag )
 		{
 			if( Graphics_Other_AllocCommonBuffer( 1, ( DWORD )DrawRect.bottom ) < 0 )
 			{
-				return DXST_LOGFILE_ADDUTF16LE( "\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x20\x00\x69\x00\x6e\x00\x20\x00\x47\x00\x5f\x00\x44\x00\x33\x00\x44\x00\x5f\x00\x44\x00\x72\x00\x61\x00\x77\x00\x43\x00\x69\x00\x72\x00\x63\x00\x6c\x00\x65\x00\x00"/*@ L"ƒƒ‚ƒŠ‚ÌŠm•Û‚É¸”s‚µ‚Ü‚µ‚½ in G_D3D_DrawCircle" @*/ ) ;
+				return DXST_LOGFILE_ADDUTF16LE( "\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x20\x00\x69\x00\x6e\x00\x20\x00\x47\x00\x5f\x00\x44\x00\x33\x00\x44\x00\x5f\x00\x44\x00\x72\x00\x61\x00\x77\x00\x43\x00\x69\x00\x72\x00\x63\x00\x6c\x00\x65\x00\x00"/*@ L"ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ in G_D3D_DrawCircle" @*/ ) ;
 			}
 			LineDrawBuf = ( BYTE * )GSYS.Resource.CommonBuffer[ 1 ] ;
 			_MEMSET( LineDrawBuf, 0, ( size_t )DrawRect.bottom ) ;
 
 			if( rx >= ry )
 			{
-				// ‰Šú’l‚ğƒZƒbƒg
+				// åˆæœŸå€¤ã‚’ã‚»ãƒƒãƒˆ
 				rc = ( rx * rx ) / ry ;
 
 				xc = 0 ; yc = 0 ;
@@ -14013,7 +14182,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 				F = -2 * r + 1 + 2 * 1;
 				H = -4 * r + 2 + 1;
 
-				// Å‰‚Ìü‚ğ•`‚­
+				// æœ€åˆã®ç·šã‚’æã
 				{
 					if( Ry_One_Minus == FALSE )
 					{
@@ -14023,7 +14192,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 
 					Df = 0 ;
 
-					// À•Wƒf[ƒ^‚ği‚ß‚é
+					// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 					if( F < 0 )
 					{
 						yc += ry ;
@@ -14075,7 +14244,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 
 					Df = 0 ;
 
-					// À•Wƒf[ƒ^‚ği‚ß‚é
+					// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 					if( F < 0 )
 					{
 						yc += ry ;
@@ -14112,13 +14281,13 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 					}
 				}
 
-				// ÅŒã‚Ìü‚ğ•`‚­
+				// æœ€å¾Œã®ç·šã‚’æã
 				x1 = -Dx + x ; x2 = Dx + x - Rx_One_Minus ; y1 = -Dy + y;
 				DX_ANDROID_CIRCLE ;
 			}
 			else
 			{
-				// ‰Šú’l‚ğƒZƒbƒg
+				// åˆæœŸå€¤ã‚’ã‚»ãƒƒãƒˆ
 				rc = ( ry * ry ) / rx ;
 
 				yc = 0 ; xc = 0 ;
@@ -14129,9 +14298,9 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 				F = -2 * r + 1 + 2 * 1;
 				H = -4 * r + 2 + 1;
 
-				// Å‰‚Ìü‚ğ•`‚­
+				// æœ€åˆã®ç·šã‚’æã
 				{
-					// À•Wƒf[ƒ^‚ği‚ß‚é
+					// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 					if( F < 0 )
 					{
 						xc += rx ;
@@ -14168,7 +14337,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 
 				while( Dy >= 0 )
 				{
-					// À•Wƒf[ƒ^‚ği‚ß‚é
+					// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 					if( F < 0 )
 					{
 						xc += rx ;
@@ -14211,17 +14380,17 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 			}
 			if( VectNum )
 			{
-				// Uniform ‚ÌXV
+				// Uniform ã®æ›´æ–°
 				Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-				// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 				Graphics_Android_DeviceState_SetupShaderVertexData(
 					GANDR.Device.State.SetShader,
 					&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 					VertBuf
 				) ;	
 
-				// •`‰æ
+				// æç”»
 				glDrawArrays( GL_LINES, 0, VectNum ) ;
 				GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 			}
@@ -14230,7 +14399,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 		{
 			if( rx >= ry )
 			{
-				// ‰Šú’l‚ğƒZƒbƒg
+				// åˆæœŸå€¤ã‚’ã‚»ãƒƒãƒˆ
 				rc = ( rx * rx ) / ry ;
 
 				xc = 0 ; yc = 0 ;
@@ -14242,7 +14411,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 				F = -2 * r + 1 + 2 * 1;
 				H = -4 * r + 2 + 1;
 
-				// Å‰‚Ì“_‚ğ•`‚­
+				// æœ€åˆã®ç‚¹ã‚’æã
 				{
 					if( Ry_One_Minus == FALSE )
 					{
@@ -14254,7 +14423,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 
 					Df = 0 ;
 
-					// À•Wƒf[ƒ^‚ği‚ß‚é
+					// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 					if( F < 0 )
 					{
 						yc += ry ;
@@ -14310,7 +14479,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 
 					Df = 0 ;
 
-					// À•Wƒf[ƒ^‚ği‚ß‚é
+					// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 					if( F < 0 )
 					{
 						yc += ry ;
@@ -14349,7 +14518,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 					}
 				}
 
-				// ÅŒã‚Ì“_‚ğ•`‚­
+				// æœ€å¾Œã®ç‚¹ã‚’æã
 				if( Rx_One_Minus == FALSE )
 				{
 					x1 = Dx + x ; y1 = -Dy + y ;
@@ -14361,7 +14530,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 			}
 			else
 			{
-				// ‰Šú’l‚ğƒZƒbƒg
+				// åˆæœŸå€¤ã‚’ã‚»ãƒƒãƒˆ
 				rc = ( ry * ry ) / rx ;
 
 				xc = 0 ; yc = 0 ;
@@ -14373,7 +14542,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 				F = -2 * r + 1 + 2 * 1;
 				H = -4 * r + 2 + 1;
 
-				// Å‰‚Ì“_‚ğ•`‚­
+				// æœ€åˆã®ç‚¹ã‚’æã
 				{
 					if( Ry_One_Minus == FALSE )
 					{
@@ -14385,7 +14554,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 
 					Df = 0 ;
 
-					// À•Wƒf[ƒ^‚ği‚ß‚é
+					// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 					if( F < 0 )
 					{
 						xc += rx ;
@@ -14441,7 +14610,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 
 					Df = 0 ;
 
-					// À•Wƒf[ƒ^‚ği‚ß‚é
+					// åº§æ¨™ãƒ‡ãƒ¼ã‚¿ã‚’é€²ã‚ã‚‹
 					if( F < 0 )
 					{
 						xc += rx ;
@@ -14480,7 +14649,7 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 					}
 				}
 
-				// ÅŒã‚Ì“_‚ğ•`‚­
+				// æœ€å¾Œã®ç‚¹ã‚’æã
 				if( Rx_One_Minus == FALSE )
 				{
 					y1 = Dy + y ; x1 = -Dx + x ;
@@ -14492,28 +14661,28 @@ extern	int		Graphics_Hardware_DrawOval_PF( int x, int y, int rx, int ry, unsigne
 			}
 			if( VectNum )
 			{
-				// Uniform ‚ÌXV
+				// Uniform ã®æ›´æ–°
 				Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-				// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+				// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 				Graphics_Android_DeviceState_SetupShaderVertexData(
 					GANDR.Device.State.SetShader,
 					&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_NOTEX_2D ].InputInfo,
 					VertBuf
 				) ;	
 
-				// •`‰æ
+				// æç”»
 				glDrawArrays( GL_POINTS, 0, VectNum ) ;
 				GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 			}
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawTriangle
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawTriangle
 extern	int		Graphics_Hardware_DrawTriangle_PF( int x1, int y1, int x2, int y2, int x3, int y3, unsigned int Color, int FillFlag )
 {
 	VERTEX_NOTEX_2D *vec ; 
@@ -14530,14 +14699,14 @@ extern	int		Graphics_Hardware_DrawTriangle_PF( int x1, int y1, int x2, int y2, i
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// F‚»‚Ì‘¼ƒXƒe[ƒ^ƒX‚ÌƒZƒbƒg
+	// è‰²ãã®ä»–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ã‚»ãƒƒãƒˆ
 	NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 	SETUPCOLOR( Color )
 
-	// ƒ‰ƒCƒ“‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+	// ãƒ©ã‚¤ãƒ³ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 	if( FillFlag )
 	{
 		GETVERTEX_TRIANGLE( vec ) ;
@@ -14548,15 +14717,15 @@ extern	int		Graphics_Hardware_DrawTriangle_PF( int x1, int y1, int x2, int y2, i
 
 		vec[ 0 ].pos.x = ( float )x1 ; vec[ 0 ].pos.y = ( float )y1 ;
 
-		// ƒJƒŠƒ“ƒO‚ª—LŒø‚É‚È‚Á‚Ä‚¢‚éê‡‚ÍƒJƒŠƒ“ƒO‚³‚ê‚È‚¢‚æ‚¤‚É‚·‚é
+		// ã‚«ãƒªãƒ³ã‚°ãŒæœ‰åŠ¹ã«ãªã£ã¦ã„ã‚‹å ´åˆã¯ã‚«ãƒªãƒ³ã‚°ã•ã‚Œãªã„ã‚ˆã†ã«ã™ã‚‹
 		switch( GSYS.DrawSetting.CullMode )
 		{
-		case 0 :	// ƒJƒŠƒ“ƒO‚È‚µ
+		case 0 :	// ã‚«ãƒªãƒ³ã‚°ãªã—
 			vec[ 1 ].pos.x = ( float )x2 ; vec[ 1 ].pos.y = ( float )y2 ;
 			vec[ 2 ].pos.x = ( float )x3 ; vec[ 2 ].pos.y = ( float )y3 ;
 			break ;
 
-		case 1 :	// ¶‰ñ‚èƒJƒŠƒ“ƒO
+		case 1 :	// å·¦å›ã‚Šã‚«ãƒªãƒ³ã‚°
 			sx1 = x2 - x1 ;		sy1 = y2 - y1 ;
 			sx2 = x3 - x1 ;		sy2 = y3 - y1 ;
 			if( sx1 * sy2 - sy1 * sx2 > 0 )
@@ -14571,7 +14740,7 @@ extern	int		Graphics_Hardware_DrawTriangle_PF( int x1, int y1, int x2, int y2, i
 			}
 			break ;
 
-		case 2 :	// ‰E‰ñ‚èƒJƒŠƒ“ƒO
+		case 2 :	// å³å›ã‚Šã‚«ãƒªãƒ³ã‚°
 			sx1 = x2 - x1 ;		sy1 = y2 - y1 ;
 			sx2 = x3 - x1 ;		sy2 = y3 - y1 ;
 			if( sx1 * sy2 - sy1 * sx2 < 0 )
@@ -14619,11 +14788,11 @@ extern	int		Graphics_Hardware_DrawTriangle_PF( int x1, int y1, int x2, int y2, i
 		ADD4VERTEX_LINETRIANGLE
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawTriangle3D
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawTriangle3D
 extern	int		Graphics_Hardware_DrawTriangle3D_PF( VECTOR Pos1, VECTOR Pos2, VECTOR Pos3, unsigned int Color, int FillFlag, int DrawFlag, RECT *DrawArea )
 {
 	VERTEX_NOTEX_3D *vec ; 
@@ -14637,15 +14806,15 @@ extern	int		Graphics_Hardware_DrawTriangle3D_PF( VECTOR Pos1, VECTOR Pos2, VECTO
 			return -1 ;
 		}
 
-		// •`‰æ‚Ì€”õ
+		// æç”»ã®æº–å‚™
 		Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB | DX_ANDROID_DRAWPREP_3D | DX_ANDROID_DRAWPREP_FOG | DX_ANDROID_DRAWPREP_CULLING ;
 		DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-		// F‚»‚Ì‘¼ƒXƒe[ƒ^ƒX‚ÌƒZƒbƒg
+		// è‰²ãã®ä»–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ã‚»ãƒƒãƒˆ
 		NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 		SETUPCOLOR( Color )
 
-		// ƒ‰ƒCƒ“‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+		// ãƒ©ã‚¤ãƒ³ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 		if( FillFlag )
 		{
 			GETVERTEX_TRIANGLE3D( vec ) ;
@@ -14690,7 +14859,7 @@ extern	int		Graphics_Hardware_DrawTriangle3D_PF( VECTOR Pos1, VECTOR Pos2, VECTO
 		dtop    =  100000000.0f ;
 		dbottom = -100000000.0f ;
 
-		// ƒXƒNƒŠ[ƒ“À•W‚É•ÏŠ·
+		// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã«å¤‰æ›
 		TempVect[0].pos.x = Pos1.x * GSYS.DrawSetting.Blend3DMatrixF.m[0][0] + Pos1.y * GSYS.DrawSetting.Blend3DMatrixF.m[1][0] + Pos1.z * GSYS.DrawSetting.Blend3DMatrixF.m[2][0] + GSYS.DrawSetting.Blend3DMatrixF.m[3][0]  ;
 		TempVect[0].pos.y = Pos1.x * GSYS.DrawSetting.Blend3DMatrixF.m[0][1] + Pos1.y * GSYS.DrawSetting.Blend3DMatrixF.m[1][1] + Pos1.z * GSYS.DrawSetting.Blend3DMatrixF.m[2][1] + GSYS.DrawSetting.Blend3DMatrixF.m[3][1]  ;
 		TempVect[0].pos.z = Pos1.x * GSYS.DrawSetting.Blend3DMatrixF.m[0][2] + Pos1.y * GSYS.DrawSetting.Blend3DMatrixF.m[1][2] + Pos1.z * GSYS.DrawSetting.Blend3DMatrixF.m[2][2] + GSYS.DrawSetting.Blend3DMatrixF.m[3][2]  ;
@@ -14743,11 +14912,11 @@ extern	int		Graphics_Hardware_DrawTriangle3D_PF( VECTOR Pos1, VECTOR Pos2, VECTO
 		DrawArea->bottom = _FTOL( dbottom ) + 1 ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawQuadrangle
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawQuadrangle
 extern	int		Graphics_Hardware_DrawQuadrangle_PF( int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, unsigned int Color, int FillFlag )
 {
 	VERTEX_NOTEX_2D *vec ;
@@ -14760,23 +14929,23 @@ extern	int		Graphics_Hardware_DrawQuadrangle_PF( int x1, int y1, int x2, int y2,
 		return -1 ;
 	}
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// F‚»‚Ì‘¼ƒXƒe[ƒ^ƒX‚ÌƒZƒbƒg
+	// è‰²ãã®ä»–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ã‚»ãƒƒãƒˆ
 	NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 	SETUPCOLOR( Color )
 
-	// “h‚è‚Â‚Ô‚µ‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+	// å¡—ã‚Šã¤ã¶ã—ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 	if( FillFlag )
 	{
-		// “h‚è‚Â‚Ô‚µ‚Ìê‡
+		// å¡—ã‚Šã¤ã¶ã—ã®å ´åˆ
 
-		// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒg
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆ
 		GETVERTEX_QUAD( vec )
 
 		vec[ 0 ].color = Color ;
@@ -14807,12 +14976,12 @@ extern	int		Graphics_Hardware_DrawQuadrangle_PF( int x1, int y1, int x2, int y2,
 		vec[4].rhw = 1.0f ;
 		vec[5].rhw = 1.0f ;
 
-		// ’¸“_ƒf[ƒ^‚Ìo—Í
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®å‡ºåŠ›
 		ADD4VERTEX_NOTEX
 	}
 	else
 	{
-		// “h‚è‚Â‚Ô‚µ‚Å‚Í–³‚¢ê‡
+		// å¡—ã‚Šã¤ã¶ã—ã§ã¯ç„¡ã„å ´åˆ
 
 		GETVERTEX_LINE( vec ) ;
 
@@ -14831,7 +15000,7 @@ extern	int		Graphics_Hardware_DrawQuadrangle_PF( int x1, int y1, int x2, int y2,
 		vec[ 1 ].pos.x = ( float )( x2 ) ;
 		vec[ 1 ].pos.y = ( float )( y2 ) ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_LINE
 
 
@@ -14852,7 +15021,7 @@ extern	int		Graphics_Hardware_DrawQuadrangle_PF( int x1, int y1, int x2, int y2,
 		vec[ 1 ].pos.x = ( float )( x3 ) ;
 		vec[ 1 ].pos.y = ( float )( y3 ) ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_LINE
 
 
@@ -14873,7 +15042,7 @@ extern	int		Graphics_Hardware_DrawQuadrangle_PF( int x1, int y1, int x2, int y2,
 		vec[ 1 ].pos.x = ( float )( x4 ) ;
 		vec[ 1 ].pos.y = ( float )( y4 ) ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_LINE
 
 
@@ -14894,15 +15063,15 @@ extern	int		Graphics_Hardware_DrawQuadrangle_PF( int x1, int y1, int x2, int y2,
 		vec[ 1 ].pos.x = ( float )( x1 ) ;
 		vec[ 1 ].pos.y = ( float )( y1 ) ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_LINE
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawQuadrangle
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawQuadrangle
 extern	int		Graphics_Hardware_DrawQuadrangleF_PF( float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, unsigned int Color, int FillFlag )
 {
 	VERTEX_NOTEX_2D *vec ;
@@ -14915,23 +15084,23 @@ extern	int		Graphics_Hardware_DrawQuadrangleF_PF( float x1, float y1, float x2, 
 		return -1 ;
 	}
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// F‚»‚Ì‘¼ƒXƒe[ƒ^ƒX‚ÌƒZƒbƒg
+	// è‰²ãã®ä»–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ã‚»ãƒƒãƒˆ
 	NS_GetColor2( Color, &Red, &Green, &Blue ) ;
 	SETUPCOLOR( Color )
 
-	// “h‚è‚Â‚Ô‚µ‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+	// å¡—ã‚Šã¤ã¶ã—ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 	if( FillFlag )
 	{
-		// “h‚è‚Â‚Ô‚µ‚Ìê‡
+		// å¡—ã‚Šã¤ã¶ã—ã®å ´åˆ
 
-		// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒg
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆ
 		GETVERTEX_QUAD( vec )
 
 		vec[ 0 ].color = Color ;
@@ -14962,12 +15131,12 @@ extern	int		Graphics_Hardware_DrawQuadrangleF_PF( float x1, float y1, float x2, 
 		vec[4].rhw = 1.0f ;
 		vec[5].rhw = 1.0f ;
 
-		// ’¸“_ƒf[ƒ^‚Ìo—Í
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®å‡ºåŠ›
 		ADD4VERTEX_NOTEX
 	}
 	else
 	{
-		// “h‚è‚Â‚Ô‚µ‚Å‚Í–³‚¢ê‡
+		// å¡—ã‚Šã¤ã¶ã—ã§ã¯ç„¡ã„å ´åˆ
 
 		GETVERTEX_LINE( vec ) ;
 
@@ -14986,7 +15155,7 @@ extern	int		Graphics_Hardware_DrawQuadrangleF_PF( float x1, float y1, float x2, 
 		vec[ 1 ].pos.x = x2 ;
 		vec[ 1 ].pos.y = y2 ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_LINE
 
 
@@ -15007,7 +15176,7 @@ extern	int		Graphics_Hardware_DrawQuadrangleF_PF( float x1, float y1, float x2, 
 		vec[ 1 ].pos.x = x3 ;
 		vec[ 1 ].pos.y = y3 ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_LINE
 
 
@@ -15028,7 +15197,7 @@ extern	int		Graphics_Hardware_DrawQuadrangleF_PF( float x1, float y1, float x2, 
 		vec[ 1 ].pos.x = x4 ;
 		vec[ 1 ].pos.y = y4 ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_LINE
 
 
@@ -15049,15 +15218,15 @@ extern	int		Graphics_Hardware_DrawQuadrangleF_PF( float x1, float y1, float x2, 
 		vec[ 1 ].pos.x = x1 ;
 		vec[ 1 ].pos.y = y1 ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_LINE
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawPixel
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawPixel
 extern	int		Graphics_Hardware_DrawPixel_PF( int x, int y, unsigned int Color )
 {
 	VERTEX_NOTEX_2D *VectData ;
@@ -15068,11 +15237,11 @@ extern	int		Graphics_Hardware_DrawPixel_PF( int x, int y, unsigned int Color )
 		return -1 ;
 	}
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	// F‚»‚Ì‘¼ƒXƒe[ƒ^ƒX‚ÌƒZƒbƒg
+	// è‰²ãã®ä»–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ã‚»ãƒƒãƒˆ
 	GETVERTEX_POINT( VectData ) ;
 
 	if( GANDR.Device.DrawInfo.DiffuseColor == 0xffffffff )
@@ -15093,20 +15262,20 @@ extern	int		Graphics_Hardware_DrawPixel_PF( int x, int y, unsigned int Color )
 		SETUPCOLOR( VectData->color )
 	}
 
-	// À•W‚ÌƒZƒbƒg
+	// åº§æ¨™ã®ã‚»ãƒƒãƒˆ
 	VectData->pos.x = ( float )x + 0.1f ;
 	VectData->pos.y = ( float )y + 0.1f ;
 	VectData->pos.z = GSYS.DrawSetting.DrawZ ;
 	VectData->rhw   = 1.0f ;
 
-	// ’¸“_‚Ì’Ç‰Á
+	// é ‚ç‚¹ã®è¿½åŠ 
 	ADD4VERTEX_POINT
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawPixel3D
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawPixel3D
 extern	int		Graphics_Hardware_DrawPixel3D_PF( VECTOR Pos, unsigned int Color, int DrawFlag, RECT *DrawArea )
 {
 	VERTEX_NOTEX_3D *VectData ; 
@@ -15120,11 +15289,11 @@ extern	int		Graphics_Hardware_DrawPixel3D_PF( VECTOR Pos, unsigned int Color, in
 			return -1 ;
 		}
 
-		// •`‰æ‚Ì€”õ
+		// æç”»ã®æº–å‚™
 		Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB | DX_ANDROID_DRAWPREP_3D | DX_ANDROID_DRAWPREP_FOG ;
 		DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-		// F‚»‚Ì‘¼ƒXƒe[ƒ^ƒX‚ÌƒZƒbƒg
+		// è‰²ãã®ä»–ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®ã‚»ãƒƒãƒˆ
 		GETVERTEX_POINT3D( VectData ) ;
 
 		NS_GetColor2( Color, &Red, &Green, &Blue ) ;
@@ -15144,17 +15313,17 @@ extern	int		Graphics_Hardware_DrawPixel3D_PF( VECTOR Pos, unsigned int Color, in
 			SETUPCOLOR( *( ( DWORD * )&VectData->b ) )
 		}
 
-		// À•W‚ÌƒZƒbƒg
+		// åº§æ¨™ã®ã‚»ãƒƒãƒˆ
 		VectData->pos = Pos ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_POINT3D
 	}
 	else
 	{
 		VERTEX_2D TempVect ;
 
-		// ƒXƒNƒŠ[ƒ“À•W‚É•ÏŠ·
+		// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³åº§æ¨™ã«å¤‰æ›
 		TempVect.pos.x = Pos.x * GSYS.DrawSetting.Blend3DMatrixF.m[0][0] + Pos.y * GSYS.DrawSetting.Blend3DMatrixF.m[1][0] + Pos.z * GSYS.DrawSetting.Blend3DMatrixF.m[2][0] + GSYS.DrawSetting.Blend3DMatrixF.m[3][0]  ;
 		TempVect.pos.y = Pos.x * GSYS.DrawSetting.Blend3DMatrixF.m[0][1] + Pos.y * GSYS.DrawSetting.Blend3DMatrixF.m[1][1] + Pos.z * GSYS.DrawSetting.Blend3DMatrixF.m[2][1] + GSYS.DrawSetting.Blend3DMatrixF.m[3][1]  ;
 		TempVect.pos.z = Pos.x * GSYS.DrawSetting.Blend3DMatrixF.m[0][2] + Pos.y * GSYS.DrawSetting.Blend3DMatrixF.m[1][2] + Pos.z * GSYS.DrawSetting.Blend3DMatrixF.m[2][2] + GSYS.DrawSetting.Blend3DMatrixF.m[3][2]  ;
@@ -15171,11 +15340,11 @@ extern	int		Graphics_Hardware_DrawPixel3D_PF( VECTOR Pos, unsigned int Color, in
 		DrawArea->bottom = _FTOL( TempVect.pos.y ) + 1 ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawPixelSet
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawPixelSet
 extern	int		Graphics_Hardware_DrawPixelSet_PF( const POINTDATA *PointData, int Num )
 {
 	VERTEX_NOTEX_2D *VectData ;
@@ -15191,17 +15360,17 @@ extern	int		Graphics_Hardware_DrawPixelSet_PF( const POINTDATA *PointData, int N
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// ƒxƒNƒgƒ‹Šî–{ƒXƒe[ƒ^ƒX‚ğæ“¾
+	// ãƒ™ã‚¯ãƒˆãƒ«åŸºæœ¬ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å–å¾—
 	ColorData = *( ( COLORDATA * )NS_GetDispColorData() ) ;
 	
 	MaxRed		= ( 1 << ColorData.RedWidth	  ) - 1 ; 
@@ -15223,15 +15392,15 @@ extern	int		Graphics_Hardware_DrawPixelSet_PF( const POINTDATA *PointData, int N
 		*((DWORD *)&VectData->pos.z) = drawz ;
 		VectData->rhw    = 1.0f ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_POINT
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawLineSet
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawLineSet
 extern	int		Graphics_Hardware_DrawLineSet_PF( const LINEDATA *LineData, int Num )
 {
 	int i ;
@@ -15247,17 +15416,17 @@ extern	int		Graphics_Hardware_DrawLineSet_PF( const LINEDATA *LineData, int Num 
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğƒZƒbƒg‚·‚é
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
 
-	// ƒxƒNƒgƒ‹Šî–{ƒXƒe[ƒ^ƒX‚ğæ“¾
+	// ãƒ™ã‚¯ãƒˆãƒ«åŸºæœ¬ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å–å¾—
 	ColorData = *( ( COLORDATA * )NS_GetDispColorData() ) ;
 	
 	MaxRed		= ( 1 << ColorData.RedWidth	) - 1 ; 
@@ -15279,21 +15448,198 @@ extern	int		Graphics_Hardware_DrawLineSet_PF( const LINEDATA *LineData, int Num 
 		VectData[0].rhw   =
 		VectData[1].rhw   = 1.0f ;
  
-		// À•W‚ÌƒZƒbƒg•ƒEƒCƒ“ƒhƒE’¼Ú•`‰æ•â³
+		// åº§æ¨™ã®ã‚»ãƒƒãƒˆï¼†ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ç›´æ¥æç”»æ™‚è£œæ­£
 		VectData[0].pos.x = ( float )LineData->x1 ;
 		VectData[0].pos.y = ( float )LineData->y1 ;
 		VectData[1].pos.x = ( float )LineData->x2 ;
 		VectData[1].pos.y = ( float )LineData->y2 ;
 
-		// À•W‚Ì•â³
+		// åº§æ¨™ã®è£œæ­£
 		if( LineData->x1 == LineData->x2 ) VectData[ 1 ].pos.y += LineData->y2 > LineData->y1 ? -0.1F : 0.1F ;
 		if( LineData->y1 == LineData->y2 ) VectData[ 1 ].pos.x += LineData->x2 > LineData->x1 ? -0.1F : 0.1F ;
 
-		// ’¸“_‚Ì’Ç‰Á
+		// é ‚ç‚¹ã®è¿½åŠ 
 		ADD4VERTEX_LINE
 	}
 
-	// I—¹
+	// çµ‚äº†
+	return 0 ;
+}
+
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ä½¿ç”¨ç‰ˆ DrawBoxSet
+extern	int		Graphics_Hardware_DrawBoxSet_PF( const RECTDATA *RectData, int Num )
+{
+	int i ;
+	VERTEX_NOTEX_2D *VectData ;
+	COLORDATA ColorData ;
+	int MaxRed, MaxGreen, MaxBlue ; 
+	unsigned int Color ;
+	int Flag ;
+	DWORD drawz ;
+
+	if( ANDR_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
+	DRAWSTOCKINFO
+
+	// æç”»ã®æº–å‚™
+	Flag = DX_ANDROID_DRAWPREP_DIFFUSERGB ;
+	DX_ANDROID_DRAWPREP_NOTEX( Flag )
+
+	// ï¼ºãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ï¼ºå€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
+	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
+
+	// ãƒ™ã‚¯ãƒˆãƒ«åŸºæœ¬ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å–å¾—
+	ColorData = *( ( COLORDATA * )NS_GetDispColorData() ) ;
+	
+	if( ColorData.AlphaMask == 0xff000000 &&
+		ColorData.RedMask   == 0x000000ff &&
+		ColorData.GreenMask == 0x0000ff00 &&
+		ColorData.BlueMask  == 0x00ff0000 )
+	{
+		for( i = 0 ; i < Num ; i ++, RectData ++ )
+		{
+			int x1, y1, x2, y2 ;
+
+			if( RectData->x1 > RectData->x2 )
+			{
+				x1 = RectData->x2 ;
+				x2 = RectData->x1 ;
+			}
+			else
+			{
+				x1 = RectData->x1 ;
+				x2 = RectData->x2 ;
+			}
+
+			if( RectData->y1 > RectData->y2 )
+			{
+				y1 = RectData->y2 ;
+				y2 = RectData->y1 ;
+			}
+			else
+			{
+				y1 = RectData->y1 ;
+				y2 = RectData->y2 ;
+			}
+
+			GETVERTEX_QUAD( VectData ) ;
+
+			Color = ( RectData->color & 0x00ffffff ) | ( RectData->pal << 24 ) ;
+			VectData[0].color = Color ;
+			VectData[1].color = Color ;
+			VectData[2].color = Color ;
+			VectData[3].color = Color ;
+			VectData[4].color = Color ;
+			VectData[5].color = Color ;
+			VectData[0].pos.x = ( float )RectData->x1 ;
+			VectData[0].pos.y = ( float )RectData->y1 ;
+			VectData[1].pos.x = ( float )RectData->x2 ;
+			VectData[1].pos.y = ( float )RectData->y1 ;
+			VectData[2].pos.x = ( float )RectData->x1 ;
+			VectData[2].pos.y = ( float )RectData->y2 ;
+			VectData[3].pos.x = ( float )RectData->x2 ;
+			VectData[3].pos.y = ( float )RectData->y2 ;
+			VectData[4].pos.x = ( float )RectData->x1 ;
+			VectData[4].pos.y = ( float )RectData->y2 ;
+			VectData[5].pos.x = ( float )RectData->x2 ;
+			VectData[5].pos.y = ( float )RectData->y1 ;
+			*((DWORD *)&VectData[0].pos.z) = drawz ;
+			*((DWORD *)&VectData[1].pos.z) = drawz ;
+			*((DWORD *)&VectData[2].pos.z) = drawz ;
+			*((DWORD *)&VectData[3].pos.z) = drawz ;
+			*((DWORD *)&VectData[4].pos.z) = drawz ;
+			*((DWORD *)&VectData[5].pos.z) = drawz ;
+			VectData[0].rhw   = 1.0f ;
+			VectData[1].rhw   = 1.0f ;
+			VectData[2].rhw   = 1.0f ;
+			VectData[3].rhw   = 1.0f ;
+			VectData[4].rhw   = 1.0f ;
+			VectData[5].rhw   = 1.0f ;
+
+			// é ‚ç‚¹ã®è¿½åŠ 
+			ADD4VERTEX_NOTEX
+		}
+	}
+	else
+	{
+		MaxRed		= ( 1 << ColorData.RedWidth	  ) - 1 ; 
+		MaxGreen	= ( 1 << ColorData.GreenWidth ) - 1 ;
+		MaxBlue		= ( 1 << ColorData.BlueWidth  ) - 1 ; 
+
+		for( i = 0 ; i < Num ; i ++, RectData ++ )
+		{
+			int x1, y1, x2, y2 ;
+
+			if( RectData->x1 > RectData->x2 )
+			{
+				x1 = RectData->x2 ;
+				x2 = RectData->x1 ;
+			}
+			else
+			{
+				x1 = RectData->x1 ;
+				x2 = RectData->x2 ;
+			}
+
+			if( RectData->y1 > RectData->y2 )
+			{
+				y1 = RectData->y2 ;
+				y2 = RectData->y1 ;
+			}
+			else
+			{
+				y1 = RectData->y1 ;
+				y2 = RectData->y2 ;
+			}
+
+			GETVERTEX_QUAD( VectData ) ;
+
+			Color = RectData->color ;
+			Color = ( RectData->pal << 24 ) |
+							( ( ( ( ( ( Color & ColorData.RedMask	) >> ColorData.RedLoc	) << 8 ) - 1 ) / MaxRed		)       ) |
+							( ( ( ( ( ( Color & ColorData.GreenMask	) >> ColorData.GreenLoc	) << 8 ) - 1 ) / MaxGreen	) << 8  ) |
+							( ( ( ( ( ( Color & ColorData.BlueMask	) >> ColorData.BlueLoc	) << 8 ) - 1 ) / MaxBlue	) << 16 ) ; 
+			VectData[0].color = Color ;
+			VectData[1].color = Color ;
+			VectData[2].color = Color ;
+			VectData[3].color = Color ;
+			VectData[4].color = Color ;
+			VectData[5].color = Color ;
+			VectData[0].pos.x = ( float )RectData->x1 ;
+			VectData[0].pos.y = ( float )RectData->y1 ;
+			VectData[1].pos.x = ( float )RectData->x2 ;
+			VectData[1].pos.y = ( float )RectData->y1 ;
+			VectData[2].pos.x = ( float )RectData->x1 ;
+			VectData[2].pos.y = ( float )RectData->y2 ;
+			VectData[3].pos.x = ( float )RectData->x2 ;
+			VectData[3].pos.y = ( float )RectData->y2 ;
+			VectData[4].pos.x = ( float )RectData->x1 ;
+			VectData[4].pos.y = ( float )RectData->y2 ;
+			VectData[5].pos.x = ( float )RectData->x2 ;
+			VectData[5].pos.y = ( float )RectData->y1 ;
+			*((DWORD *)&VectData[0].pos.z) = drawz ;
+			*((DWORD *)&VectData[1].pos.z) = drawz ;
+			*((DWORD *)&VectData[2].pos.z) = drawz ;
+			*((DWORD *)&VectData[3].pos.z) = drawz ;
+			*((DWORD *)&VectData[4].pos.z) = drawz ;
+			*((DWORD *)&VectData[5].pos.z) = drawz ;
+			VectData[0].rhw   = 1.0f ;
+			VectData[1].rhw   = 1.0f ;
+			VectData[2].rhw   = 1.0f ;
+			VectData[3].rhw   = 1.0f ;
+			VectData[4].rhw   = 1.0f ;
+			VectData[5].rhw   = 1.0f ;
+
+			// é ‚ç‚¹ã®è¿½åŠ 
+			ADD4VERTEX_NOTEX
+		}
+	}
+
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -15310,15 +15656,15 @@ extern	int		Graphics_Hardware_DrawLineSet_PF( const LINEDATA *LineData, int Num 
 
 
 
-// DrawPrimitive3D Œn‚Ì‹¤’Ê‚Ì€”õˆ—‚ğs‚¤ŠÖ”
+// DrawPrimitive3D ç³»ã®å…±é€šã®æº–å‚™å‡¦ç†ã‚’è¡Œã†é–¢æ•°
 __inline int Graphics_Android_DrawPrimitive3DPreparation( int AddFlag, IMAGEDATA *Image, int TransFlag, int TextureNo = 0 )
 {
 	int Flag ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = TransFlag | DX_ANDROID_DRAWPREP_3D | DX_ANDROID_DRAWPREP_FOG | DX_ANDROID_DRAWPREP_TEXADDRESS | DX_ANDROID_DRAWPREP_CULLING | AddFlag ;
 	if( Image )
 	{
@@ -15378,17 +15724,17 @@ extern	int		Graphics_Hardware_DrawPrimitive_PF( const VERTEX_3D *Vertex, int Ver
 	Graphics_Android_DeviceState_NormalDrawSetup() ;
 	GANDR.Device.DrawInfo.Use3DVertex = BackupUse3DVertex ;
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_3D ].InputInfo,
 		Vertex
 	) ;	
 
-	// •`‰æ
+	// æç”»
 	glDrawArrays( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], 0, VertexNum ) ;
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
@@ -15403,7 +15749,7 @@ extern	int		Graphics_Hardware_DrawPrimitive_PF( const VERTEX_3D *Vertex, int Ver
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -15445,17 +15791,17 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive_PF( const VERTEX_3D *Vertex, 
 	Graphics_Android_DeviceState_NormalDrawSetup() ;
 	GANDR.Device.DrawInfo.Use3DVertex = BackupUse3DVertex ;
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_3D ].InputInfo,
 		Vertex
 	) ;
 
-	// •`‰æ
+	// æç”»
 	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_SHORT, Indices );
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
@@ -15470,7 +15816,74 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive_PF( const VERTEX_3D *Vertex, 
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
+	return 0 ;
+}
+
+extern	int		Graphics_Hardware_Draw32bitIndexedPrimitive_PF( const VERTEX_3D *Vertex, int VertexNum, const DWORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag )
+{
+	int i ;
+	VERTEX_3D *VertP ;
+	unsigned char tmp ;
+	int BackupUse3DVertex ;
+
+	if( ANDR_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	if( PrimitiveType < DX_PRIMTYPE_MIN || PrimitiveType > DX_PRIMTYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	if( Graphics_Android_DrawPrimitive3DPreparation( 0, Image, TransFlag ) < 0 )
+	{
+		return -1 ;
+	}
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX_3D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->b ;
+			VertP->b = VertP->r ;
+			VertP->r = tmp ;
+		}
+	}
+
+	BackupUse3DVertex = GANDR.Device.DrawInfo.Use3DVertex ;
+	GANDR.Device.DrawInfo.Use3DVertex = 1 ;
+	Graphics_Android_DeviceState_NormalDrawSetup() ;
+	GANDR.Device.DrawInfo.Use3DVertex = BackupUse3DVertex ;
+
+	// Uniform ã®æ›´æ–°
+	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
+
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
+	Graphics_Android_DeviceState_SetupShaderVertexData(
+		GANDR.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_3D ].InputInfo,
+		Vertex
+	) ;
+
+	// æç”»
+	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_INT, Indices );
+	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX_3D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->b ;
+			VertP->b = VertP->r ;
+			VertP->r = tmp ;
+		}
+	}
+
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -15510,23 +15923,23 @@ extern	int		Graphics_Hardware_DrawPrimitiveLight_PF( const VERTEX3D *Vertex, int
 		}
 	}
 
-	// ƒVƒF[ƒ_[‚ğƒZƒbƒg
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 	if( Graphics_Android_Shader_Normal3DDraw_Setup() == FALSE )
 	{
 		return -1 ;
 	}
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
 		Vertex
 	) ;	
 
-	// •`‰æ
+	// æç”»
 	glDrawArrays( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], 0, VertexNum ) ;
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
@@ -15545,7 +15958,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveLight_PF( const VERTEX3D *Vertex, int
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -15585,23 +15998,23 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_PF( const VERTEX3D *Vert
 		}
 	}
 
-	// ƒVƒF[ƒ_[‚ğƒZƒbƒg
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 	if( Graphics_Android_Shader_Normal3DDraw_Setup() == FALSE )
 	{
 		return -1 ;
 	}
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
 		Vertex
 	) ;
 
-	// •`‰æ
+	// æç”»
 	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_SHORT, Indices );
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
@@ -15620,7 +16033,82 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_PF( const VERTEX3D *Vert
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
+	return 0 ;
+}
+
+extern	int		Graphics_Hardware_Draw32bitIndexedPrimitiveLight_PF( const VERTEX3D *Vertex, int VertexNum, const DWORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag )
+{
+	int i ;
+	VERTEX3D *VertP ;
+	unsigned char tmp ;
+
+	if( ANDR_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	if( PrimitiveType < DX_PRIMTYPE_MIN || PrimitiveType > DX_PRIMTYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	if( Graphics_Android_DrawPrimitive3DPreparation( DX_ANDROID_DRAWPREP_LIGHTING | DX_ANDROID_DRAWPREP_SPECULAR, Image, TransFlag ) < 0 )
+	{
+		return -1 ;
+	}
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX3D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->dif.b ;
+			VertP->dif.b = VertP->dif.r ;
+			VertP->dif.r = tmp ;
+
+			tmp = VertP->spc.b ;
+			VertP->spc.b = VertP->spc.r ;
+			VertP->spc.r = tmp ;
+		}
+	}
+
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
+	if( Graphics_Android_Shader_Normal3DDraw_Setup() == FALSE )
+	{
+		return -1 ;
+	}
+
+	// Uniform ã®æ›´æ–°
+	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
+
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
+	Graphics_Android_DeviceState_SetupShaderVertexData(
+		GANDR.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
+		Vertex
+	) ;
+
+	// æç”»
+	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_INT, Indices );
+	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX3D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->dif.b ;
+			VertP->dif.b = VertP->dif.r ;
+			VertP->dif.r = tmp ;
+
+			tmp = VertP->spc.b ;
+			VertP->spc.b = VertP->spc.r ;
+			VertP->spc.r = tmp ;
+		}
+	}
+
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -15643,7 +16131,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveLight_UseVertexBuffer_PF(
 		return -1 ;
 	}
 
-	// VERTEX3D\‘¢‘Ì‚Ì‚İ‘Î‰
+	// VERTEX3Dæ§‹é€ ä½“ã®ã¿å¯¾å¿œ
 	if( VertexBuffer->Type != DX_VERTEX_TYPE_NORMAL_3D )
 	{
 		return -1 ;
@@ -15654,16 +16142,16 @@ extern	int		Graphics_Hardware_DrawPrimitiveLight_UseVertexBuffer_PF(
 		return -1 ;
 	}
 
-	// ’¸“_ƒVƒF[ƒ_[‚ğƒZƒbƒg
+	// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 	if( Graphics_Android_Shader_Normal3DDraw_Setup() == FALSE )
 	{
 		return -1 ;
 	}
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
@@ -15671,11 +16159,11 @@ extern	int		Graphics_Hardware_DrawPrimitiveLight_UseVertexBuffer_PF(
 		VertexBuffer->PF->VertexBuffer
 	) ;
 
-	// •`‰æ
+	// æç”»
 	glDrawArrays( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], StartVertex, UseVertexNum );
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -15700,7 +16188,7 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_UseVertexBuffer_PF(
 		return -1 ;
 	}
 
-	// Œ»ó‚Å‚Í StartIndex ‚ª 0 ˆÈŠO‚Ìê‡‚Í•`‰æ‚Å‚«‚È‚¢
+	// ç¾çŠ¶ã§ã¯ StartIndex ãŒ 0 ä»¥å¤–ã®å ´åˆã¯æç”»ã§ããªã„
 	if( StartIndex != 0 )
 	{
 		return -1 ;
@@ -15711,7 +16199,7 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_UseVertexBuffer_PF(
 		return -1 ;
 	}
 
-	// VERTEX3D\‘¢‘Ì‚Ì‚İ‘Î‰
+	// VERTEX3Dæ§‹é€ ä½“ã®ã¿å¯¾å¿œ
 	if( VertexBuffer->Type != DX_VERTEX_TYPE_NORMAL_3D )
 	{
 		return -1 ;
@@ -15735,17 +16223,17 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_UseVertexBuffer_PF(
 		return -1 ;
 	}
 
-	// ’¸“_ƒVƒF[ƒ_[‚ğƒZƒbƒg
+	// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 	if( Graphics_Android_Shader_Normal3DDraw_Setup() == FALSE )
 	{
 		return -1 ;
 	}
 
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
@@ -15753,7 +16241,7 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_UseVertexBuffer_PF(
 		VertexBuffer->PF->VertexBuffer
 	) ;
 
-	// •`‰æ
+	// æç”»
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, IndexBuffer->PF->IndexBuffer ) ;
 
 	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], UseIndexNum, IndexFormat, NULL );
@@ -15761,7 +16249,7 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_UseVertexBuffer_PF(
 
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 ) ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -15784,10 +16272,10 @@ extern	int		Graphics_Hardware_DrawPrimitive2D_PF( VERTEX_2D *Vertex, int VertexN
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	if( BillboardFlag == TRUE )
 	{
 		Flag = TransFlag | ( Is3D ? DX_ANDROID_DRAWPREP_3D | DX_ANDROID_DRAWPREP_FOG : 0 ) | DX_ANDROID_DRAWPREP_TEXADDRESS ;
@@ -15823,7 +16311,7 @@ extern	int		Graphics_Hardware_DrawPrimitive2D_PF( VERTEX_2D *Vertex, int VertexN
 		DX_ANDROID_DRAWPREP_NOTEX( Flag )
 	}
 
-	// ƒrƒ‹ƒ{[ƒh‚Ìê‡‚Í‚t‚u’l‚ğƒT[ƒtƒFƒXƒf[ƒ^‚©‚çæ“¾‚·‚é
+	// ãƒ“ãƒ«ãƒœãƒ¼ãƒ‰ã®å ´åˆã¯ï¼µï¼¶å€¤ã‚’ã‚µãƒ¼ãƒ•ã‚§ã‚¹ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰å–å¾—ã™ã‚‹
 	if( BillboardFlag == TRUE )
 	{
 		float tu1, tv1, tu2, tv2 ;
@@ -15884,17 +16372,17 @@ extern	int		Graphics_Hardware_DrawPrimitive2D_PF( VERTEX_2D *Vertex, int VertexN
 		}
 	}
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_2D ].InputInfo,
 		Vertex
 	) ;	
 
-	// •`‰æ
+	// æç”»
 	glDrawArrays( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], 0, VertexNum ) ;
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
@@ -15909,7 +16397,7 @@ extern	int		Graphics_Hardware_DrawPrimitive2D_PF( VERTEX_2D *Vertex, int VertexN
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -15930,10 +16418,10 @@ extern	int		Graphics_Hardware_DrawPrimitive2DUser_PF( const VERTEX2D *Vertex, in
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = TransFlag | ( Is3D ? DX_ANDROID_DRAWPREP_3D | DX_ANDROID_DRAWPREP_FOG : 0 ) | DX_ANDROID_DRAWPREP_TEXADDRESS | DX_ANDROID_DRAWPREP_CULLING ;
 	if( Image )
 	{
@@ -15955,17 +16443,17 @@ extern	int		Graphics_Hardware_DrawPrimitive2DUser_PF( const VERTEX2D *Vertex, in
 		}
 	}
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_2D ].InputInfo,
 		Vertex
 	) ;	
 
-	// •`‰æ
+	// æç”»
 	glDrawArrays( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], 0, VertexNum ) ;
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
@@ -15980,7 +16468,7 @@ extern	int		Graphics_Hardware_DrawPrimitive2DUser_PF( const VERTEX2D *Vertex, in
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -16001,10 +16489,10 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive2DUser_PF( const VERTEX2D *Ver
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Flag = TransFlag | DX_ANDROID_DRAWPREP_TEXADDRESS | DX_ANDROID_DRAWPREP_CULLING ;
 	if( Image )
 	{
@@ -16026,17 +16514,17 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive2DUser_PF( const VERTEX2D *Ver
 		}
 	}
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_2D ].InputInfo,
 		Vertex
 	) ;
 
-	// •`‰æ
+	// æç”»
 	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_SHORT, Indices );
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
@@ -16051,7 +16539,78 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive2DUser_PF( const VERTEX2D *Ver
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
+	return 0 ;
+}
+
+extern	int		Graphics_Hardware_Draw32bitIndexedPrimitive2DUser_PF( const VERTEX2D *Vertex, int VertexNum, const DWORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag )
+{
+	int Flag ;
+	int i ;
+	VERTEX2D *VertP ;
+	unsigned char tmp ;
+
+	if( ANDR_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	if( PrimitiveType < DX_PRIMTYPE_MIN || PrimitiveType > DX_PRIMTYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
+	DRAWSTOCKINFO
+
+	// æç”»ã®æº–å‚™
+	Flag = TransFlag | DX_ANDROID_DRAWPREP_TEXADDRESS | DX_ANDROID_DRAWPREP_CULLING ;
+	if( Image )
+	{
+		DX_ANDROID_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+	}
+	else
+	{
+		DX_ANDROID_DRAWPREP_NOTEX( Flag )
+	}
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX2D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->dif.b ;
+			VertP->dif.b = VertP->dif.r ;
+			VertP->dif.r = tmp ;
+		}
+	}
+
+	// Uniform ã®æ›´æ–°
+	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
+
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
+	Graphics_Android_DeviceState_SetupShaderVertexData(
+		GANDR.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_2D ].InputInfo,
+		Vertex
+	) ;
+
+	// æç”»
+	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_INT, Indices );
+	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX2D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->dif.b ;
+			VertP->dif.b = VertP->dif.r ;
+			VertP->dif.r = tmp ;
+		}
+	}
+
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -16066,20 +16625,30 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive2DUser_PF( const VERTEX2D *Ver
 
 
 
-// ƒVƒF[ƒ_[•`‰æ—p•`‰æ‘OƒZƒbƒgƒAƒbƒvŠÖ”
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼æç”»ç”¨æç”»å‰ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—é–¢æ•°
 extern void Graphics_Android_DrawPreparationToShader( int ParamFlag, int Is2D )
 {
 	int							Flag ;
 
-	// Šî–{“I‚ÈƒZƒbƒgƒAƒbƒvˆ—
+	// åŸºæœ¬çš„ãªã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—å‡¦ç†
 	Flag = ParamFlag | DX_ANDROID_DRAWPREP_SPECULAR | DX_ANDROID_DRAWPREP_TEXADDRESS | DX_ANDROID_DRAWPREP_NOBLENDSETTING | DX_ANDROID_DRAWPREP_CULLING | ( Is2D ? 0 : DX_ANDROID_DRAWPREP_3D ) ;
 	DX_ANDROID_DRAWPREP_NOTEX( Flag )
 
-	Graphics_Android_DeviceState_SetBlendMode( GSYS.DrawSetting.BlendMode, GANDR.Device.DrawSetting.NotWriteAlphaChannelFlag ) ;
+	Graphics_Android_DeviceState_SetBlendMode(
+		GSYS.DrawSetting.BlendMode,
+		GSYS.DrawSetting.BlendEnable,
+		GSYS.DrawSetting.BlendRGBSrc,
+		GSYS.DrawSetting.BlendRGBDest,
+		GSYS.DrawSetting.BlendRGBOp,
+		GSYS.DrawSetting.BlendASrc,
+		GSYS.DrawSetting.BlendADest,
+		GSYS.DrawSetting.BlendAOp,
+		GANDR.Device.DrawSetting.NotWriteAlphaChannelFlag
+	) ;
 }
 
-// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
-extern	int		Graphics_Hardware_DrawPrimitive2DToShader_PF(        const VERTEX2DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ )
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ã£ã¦ï¼’ï¼¤ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’æç”»ã™ã‚‹
+extern	int		Graphics_Hardware_DrawPrimitive2DToShader_PF(        const VERTEX2DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST ç­‰ */ )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
 	{
@@ -16091,32 +16660,32 @@ extern	int		Graphics_Hardware_DrawPrimitive2DToShader_PF(        const VERTEX2DS
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Graphics_Android_DrawPreparationToShader( 0, TRUE ) ;
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_BLENDTEX_2D ].InputInfo,
 		Vertex
 	) ;	
 
-	// •`‰æ
+	// æç”»
 	glDrawArrays( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], 0, VertexNum ) ;
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
-extern	int		Graphics_Hardware_DrawPrimitive3DToShader_PF(        const VERTEX3DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ )
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ã£ã¦ï¼“ï¼¤ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’æç”»ã™ã‚‹
+extern	int		Graphics_Hardware_DrawPrimitive3DToShader_PF(        const VERTEX3DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST ç­‰ */ )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
 	{
@@ -16128,37 +16697,37 @@ extern	int		Graphics_Hardware_DrawPrimitive3DToShader_PF(        const VERTEX3DS
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Graphics_Android_DrawPreparationToShader( DX_ANDROID_DRAWPREP_LIGHTING | DX_ANDROID_DRAWPREP_FOG, FALSE ) ;
 
-	// ‚R‚cs—ñ‚ğƒn[ƒhƒEƒGƒA‚É”½‰f‚·‚é
+	// ï¼“ï¼¤è¡Œåˆ—ã‚’ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã«åæ˜ ã™ã‚‹
 	if( GSYS.DrawSetting.MatchHardware3DMatrix == FALSE )
 		Graphics_DrawSetting_ApplyLib3DMatrixToHardware() ;
 
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
 		Vertex
 	) ;	
 
-	// •`‰æ
+	// æç”»
 	glDrawArrays( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], 0, VertexNum ) ;
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
-extern	int		Graphics_Hardware_DrawPrimitiveIndexed2DToShader_PF( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ )
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ã£ã¦ï¼’ï¼¤ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’æç”»ã™ã‚‹( é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ä½¿ç”¨ã™ã‚‹ )
+extern	int		Graphics_Hardware_DrawPrimitiveIndexed2DToShader_PF( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST ç­‰ */ )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
 	{
@@ -16170,32 +16739,32 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed2DToShader_PF( const VERTEX2DS
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Graphics_Android_DrawPreparationToShader( 0, TRUE ) ;
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_BLENDTEX_2D ].InputInfo,
 		Vertex
 	) ;
 
-	// •`‰æ
+	// æç”»
 	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_SHORT, Indices );
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
-extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_PF( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ )
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ã£ã¦ï¼’ï¼¤ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’æç”»ã™ã‚‹( é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ä½¿ç”¨ã™ã‚‹ )
+extern	int		Graphics_Hardware_DrawPrimitive32bitIndexed2DToShader_PF( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST ç­‰ */ )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
 	{
@@ -16207,38 +16776,116 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_PF( const VERTEX3DS
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
+	Graphics_Android_DrawPreparationToShader( 0, TRUE ) ;
+
+	// Uniform ã®æ›´æ–°
+	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
+
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
+	Graphics_Android_DeviceState_SetupShaderVertexData(
+		GANDR.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_BLENDTEX_2D ].InputInfo,
+		Vertex
+	) ;
+
+	// æç”»
+	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_INT, Indices );
+	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+	// çµ‚äº†
+	return 0 ;
+}
+
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ã£ã¦ï¼“ï¼¤ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’æç”»ã™ã‚‹( é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ä½¿ç”¨ã™ã‚‹ )
+extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_PF( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST ç­‰ */ )
+{
+	if( ANDR_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	if( PrimitiveType < DX_PRIMTYPE_MIN || PrimitiveType > DX_PRIMTYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
+	DRAWSTOCKINFO
+
+	// æç”»ã®æº–å‚™
 	Graphics_Android_DrawPreparationToShader( DX_ANDROID_DRAWPREP_LIGHTING | DX_ANDROID_DRAWPREP_FOG, FALSE ) ;
 
-	// ‚R‚cs—ñ‚ğƒn[ƒhƒEƒGƒA‚É”½‰f‚·‚é
+	// ï¼“ï¼¤è¡Œåˆ—ã‚’ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã«åæ˜ ã™ã‚‹
 	if( GSYS.DrawSetting.MatchHardware3DMatrix == FALSE )
 		Graphics_DrawSetting_ApplyLib3DMatrixToHardware() ;
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
 		Vertex
 	) ;
 
-	// •`‰æ
+	// æç”»
 	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_SHORT, Indices );
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒoƒbƒtƒ@g—p”Å )
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ã£ã¦ï¼“ï¼¤ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’æç”»ã™ã‚‹( é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ä½¿ç”¨ã™ã‚‹ )
+extern	int		Graphics_Hardware_DrawPrimitive32bitIndexed3DToShader_PF( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST ç­‰ */ )
+{
+	if( ANDR_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	if( PrimitiveType < DX_PRIMTYPE_MIN || PrimitiveType > DX_PRIMTYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
+	DRAWSTOCKINFO
+
+	// æç”»ã®æº–å‚™
+	Graphics_Android_DrawPreparationToShader( DX_ANDROID_DRAWPREP_LIGHTING | DX_ANDROID_DRAWPREP_FOG, FALSE ) ;
+
+	// ï¼“ï¼¤è¡Œåˆ—ã‚’ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã«åæ˜ ã™ã‚‹
+	if( GSYS.DrawSetting.MatchHardware3DMatrix == FALSE )
+		Graphics_DrawSetting_ApplyLib3DMatrixToHardware() ;
+
+	// Uniform ã®æ›´æ–°
+	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
+
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
+	Graphics_Android_DeviceState_SetupShaderVertexData(
+		GANDR.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
+		Vertex
+	) ;
+
+	// æç”»
+	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_INT, Indices );
+	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+	// çµ‚äº†
+	return 0 ;
+}
+
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ã£ã¦ï¼“ï¼¤ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’æç”»ã™ã‚‹( é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ä½¿ç”¨ç‰ˆ )
 extern	int		Graphics_Hardware_DrawPrimitive3DToShader_UseVertexBuffer2_PF(
 	int VertexBufHandle,
-	int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */,
+	int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST ç­‰ */,
 	int StartVertex,
 	int UseVertexNum
 )
@@ -16255,33 +16902,33 @@ extern	int		Graphics_Hardware_DrawPrimitive3DToShader_UseVertexBuffer2_PF(
 		return -1 ;
 	}
 
-	// ƒGƒ‰[”»’è
+	// ã‚¨ãƒ©ãƒ¼åˆ¤å®š
 	if( VERTEXBUFFERCHK( VertexBufHandle, VertexBuffer ) )
 	{
 		return -1 ;
 	}
 
-	// ƒVƒF[ƒ_[—p’¸“_ƒf[ƒ^‚Å‚Í‚È‚¢ê‡‚ÍƒGƒ‰[
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç”¨é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã§ã¯ãªã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if( VertexBuffer->Type != DX_VERTEX_TYPE_SHADER_3D )
 	{
 		return -1 ;
 	}
 
-	// ‚R‚cs—ñ‚ğƒn[ƒhƒEƒGƒA‚É”½‰f‚·‚é
+	// ï¼“ï¼¤è¡Œåˆ—ã‚’ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã«åæ˜ ã™ã‚‹
 	if( GSYS.DrawSetting.MatchHardware3DMatrix == FALSE )
 		Graphics_DrawSetting_ApplyLib3DMatrixToHardware() ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Graphics_Android_DrawPreparationToShader( DX_ANDROID_DRAWPREP_LIGHTING | DX_ANDROID_DRAWPREP_FOG, FALSE ) ;
 
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
@@ -16289,19 +16936,19 @@ extern	int		Graphics_Hardware_DrawPrimitive3DToShader_UseVertexBuffer2_PF(
 		VertexBuffer->PF->VertexBuffer
 	) ;
 
-	// •`‰æ
+	// æç”»
 	glDrawArrays( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], StartVertex, UseVertexNum );
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒoƒbƒtƒ@‚ÆƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@g—p”Å )
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ã£ã¦ï¼“ï¼¤ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã‚’æç”»ã™ã‚‹( é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ä½¿ç”¨ç‰ˆ )
 extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF(
 	int VertexBufHandle,
 	int IndexBufHandle,
-	int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */,
+	int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST ç­‰ */,
 	int BaseVertex,
 	int StartVertex,
 	int UseVertexNum,
@@ -16322,7 +16969,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 		return -1 ;
 	}
 
-	// Œ»ó‚Å‚Í StartIndex ‚ª 0 ˆÈŠO‚Ìê‡‚Í•`‰æ‚Å‚«‚È‚¢
+	// ç¾çŠ¶ã§ã¯ StartIndex ãŒ 0 ä»¥å¤–ã®å ´åˆã¯æç”»ã§ããªã„
 	if( StartIndex != 0 )
 	{
 		return -1 ;
@@ -16333,7 +16980,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 		return -1 ;
 	}
 
-	// ƒGƒ‰[”»’è
+	// ã‚¨ãƒ©ãƒ¼åˆ¤å®š
 	if( VERTEXBUFFERCHK( VertexBufHandle, VertexBuffer ) )
 	{
 		return -1 ;
@@ -16343,7 +16990,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 		return -1 ;
 	}
 
-	// ƒVƒF[ƒ_[—p’¸“_ƒf[ƒ^‚Å‚Í‚È‚¢ê‡‚ÍƒGƒ‰[
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç”¨é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã§ã¯ãªã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if( VertexBuffer->Type != DX_VERTEX_TYPE_SHADER_3D )
 	{
 		return -1 ;
@@ -16362,17 +17009,17 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 	}
 //	IndexSize = IndexFormat == GL_UNSIGNED_SHORT ? 2 : 4 ;
 
-	// ‚R‚cs—ñ‚ğƒn[ƒhƒEƒGƒA‚É”½‰f‚·‚é
+	// ï¼“ï¼¤è¡Œåˆ—ã‚’ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã«åæ˜ ã™ã‚‹
 	if( GSYS.DrawSetting.MatchHardware3DMatrix == FALSE )
 		Graphics_DrawSetting_ApplyLib3DMatrixToHardware() ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚Ì€”õ
+	// æç”»ã®æº–å‚™
 	Graphics_Android_DrawPreparationToShader( DX_ANDROID_DRAWPREP_LIGHTING | DX_ANDROID_DRAWPREP_FOG, FALSE ) ;
 
-	// g—p‚·‚éƒeƒNƒXƒ`ƒƒ‚ğ—ñ‹“
+	// ä½¿ç”¨ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’åˆ—æŒ™
 	UseTextureNum = 0 ;
 	for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 	{
@@ -16396,7 +17043,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 		UseTextureNum = i + 1 ;
 	}
 
-	// g—p‚·‚éƒeƒNƒXƒ`ƒƒ‚ğƒZƒbƒg
+	// ä½¿ç”¨ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚»ãƒƒãƒˆ
 	if( UseTextureNum > 0 )
 	{
 		for( i = 0 ; i < UseTextureNum ; i ++ )
@@ -16405,10 +17052,10 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 		}
 	}
 
-	// Uniform ‚ÌXV
+	// Uniform ã®æ›´æ–°
 	Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader_Force != NULL ? GANDR.Device.State.SetShader_Force : GANDR.Device.State.SetShader, 3 ) ;
 
-	// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Android_DeviceState_SetupShaderVertexData(
 		GANDR.Device.State.SetShader_Force != NULL ? GANDR.Device.State.SetShader_Force : GANDR.Device.State.SetShader,
 		&g_BaseSimpleVertexShaderInfo[ ANDROID_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
@@ -16416,7 +17063,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 		VertexBuffer->PF->VertexBuffer
 	) ;
 
-	// •`‰æ
+	// æç”»
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, IndexBuffer->PF->IndexBuffer ) ;
 
 	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], UseIndexNum, IndexFormat, NULL );
@@ -16424,7 +17071,7 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 ) ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -16455,54 +17102,54 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF
 
 
 
-// ŠÂ‹«ˆË‘¶‰Šú‰»ŠÖŒW
+// ç’°å¢ƒä¾å­˜åˆæœŸåŒ–é–¢ä¿‚
 
-// •`‰æˆ—‚ÌŠÂ‹«ˆË‘¶•”•ª‚Ì‰Šú‰»‚ğs‚¤ŠÖ”( Às‰ÓŠ‹æ•Ê‚O )
+// æç”»å‡¦ç†ã®ç’°å¢ƒä¾å­˜éƒ¨åˆ†ã®åˆæœŸåŒ–ã‚’è¡Œã†é–¢æ•°( å®Ÿè¡Œç®‡æ‰€åŒºåˆ¥ï¼ )
 extern	int		Graphics_Initialize_Timing0_PF( void )
 {
-	// g_AndroidSys.NativeWindow ‚É’l‚ª‘ã“ü‚³‚ê‚é‚Ü‚Å‘Ò‚Â
+	// g_AndroidSys.NativeWindow ã«å€¤ãŒä»£å…¥ã•ã‚Œã‚‹ã¾ã§å¾…ã¤
 	while( g_AndroidSys.NativeWindow == NULL )
 	{
 		NS_ProcessMessage() ;
 		Thread_Sleep( 1 ) ;
 	}
 
-	// Android ‚ğg—p‚µ‚½ƒOƒ‰ƒtƒBƒbƒNƒXˆ—‚Ì‰Šú‰»
+	// Android ã‚’ä½¿ç”¨ã—ãŸã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹å‡¦ç†ã®åˆæœŸåŒ–
 	if( Graphics_Android_Initialize() == -1 )
 	{
 		return -1 ;
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// •`‰æˆ—‚ÌŠÂ‹«ˆË‘¶•”•ª‚Ì‰Šú‰»‚ğs‚¤ŠÖ”( Às‰ÓŠ‹æ•Ê‚Q )
+// æç”»å‡¦ç†ã®ç’°å¢ƒä¾å­˜éƒ¨åˆ†ã®åˆæœŸåŒ–ã‚’è¡Œã†é–¢æ•°( å®Ÿè¡Œç®‡æ‰€åŒºåˆ¥ï¼’ )
 extern	int		Graphics_Initialize_Timing1_PF( void )
 {
-	// ƒfƒoƒCƒX‚Ìİ’è‚ğƒŠƒtƒŒƒbƒVƒ…
+	// ãƒ‡ãƒã‚¤ã‚¹ã®è¨­å®šã‚’ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥
 	Graphics_Android_DeviceState_RefreshRenderState() ;
 
-	// ‰æ–Ê‚Ì‰Šú‰»
+	// ç”»é¢ã®åˆæœŸåŒ–
 	Graphics_Hardware_ClearDrawScreen_PF( NULL ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^‚ğg—p‚·‚éê‡‚ÌŠÂ‹«ˆË‘¶‚Ì‰Šú‰»ˆ—‚ğs‚¤
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚¢ã‚¯ã‚»ãƒ©ãƒ¬ãƒ¼ã‚¿ã‚’ä½¿ç”¨ã™ã‚‹å ´åˆã®ç’°å¢ƒä¾å­˜ã®åˆæœŸåŒ–å‡¦ç†ã‚’è¡Œã†
 extern	int		Graphics_Hardware_Initialize_PF( void )
 {
 	return Graphics_Android_Device_Initialize() ;
 }
 
-// •`‰æˆ—‚ÌŠÂ‹«ˆË‘¶•”•ª‚ÌŒãn––‚ğs‚¤ŠÖ”
+// æç”»å‡¦ç†ã®ç’°å¢ƒä¾å­˜éƒ¨åˆ†ã®å¾Œå§‹æœ«ã‚’è¡Œã†é–¢æ•°
 extern	int		Graphics_Terminate_PF( void )
 {
-	// Android ‚Ì•`‰æˆ—‚ÌŒãn––
+	// Android ã®æç”»å‡¦ç†ã®å¾Œå§‹æœ«
 	Graphics_Android_Terminate() ;
 
-	// ƒVƒF[ƒ_[ƒR[ƒh‚ÌŒãn––
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ã®å¾Œå§‹æœ«
 	Graphics_Android_ShaderCode_Base_Terminate() ;
 	Graphics_Android_ShaderCode_Base3D_Terminate() ;
 
@@ -16510,15 +17157,15 @@ extern	int		Graphics_Terminate_PF( void )
 	Graphics_Android_ShaderCode_Model_Terminate() ;
 #endif // DX_NON_MODEL
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒOƒ‰ƒtƒBƒbƒNƒXƒVƒXƒeƒ€‚Ì•œ‹AA–”‚Í•ÏX•t‚«‚ÌÄƒZƒbƒgƒAƒbƒv‚ğs‚¤
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã‚·ã‚¹ãƒ†ãƒ ã®å¾©å¸°ã€åˆã¯å¤‰æ›´ä»˜ãã®å†ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã‚’è¡Œã†
 extern	int		Graphics_RestoreOrChangeSetupGraphSystem_PF( int Change, int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, int RefreshRate )
 {
 #ifndef DX_NON_ASYNCLOAD
-	// ”ñ“¯Šú“Ç‚İ‚İ‚Ì“r’†‚Ìê‡‚ÍA”ñ“¯Šú“Ç‚İ‚İ‚ªI—¹‚·‚é‚Ü‚Å‘Ò‚Â
+	// éåŒæœŸèª­ã¿è¾¼ã¿ã®é€”ä¸­ã®å ´åˆã¯ã€éåŒæœŸèª­ã¿è¾¼ã¿ãŒçµ‚äº†ã™ã‚‹ã¾ã§å¾…ã¤
 	while( NS_GetASyncLoadNum() > 0 )
 	{
 		ProcessASyncLoadRequestMainThread() ;
@@ -16530,16 +17177,16 @@ extern	int		Graphics_RestoreOrChangeSetupGraphSystem_PF( int Change, int ScreenS
 
 	if( Change == TRUE )
 	{
-		// ‰æ–Êƒ‚[ƒh‚ÌƒZƒbƒg
+		// ç”»é¢ãƒ¢ãƒ¼ãƒ‰ã®ã‚»ãƒƒãƒˆ
 		Graphics_Screen_SetMainScreenSize( ScreenSizeX, ScreenSizeY ) ;
 		GSYS.Screen.MainScreenColorBitDepth = ColorBitDepth ;
 		GSYS.Screen.MainScreenRefreshRate   = RefreshRate ;
 //		SetMemImgDefaultColorType( ColorBitDepth == 32 ? 1 : 0 ) ;
 
-		// ƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ìì‚è’¼‚µ‚ğs‚¤
+		// ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®ä½œã‚Šç›´ã—ã‚’è¡Œã†
 		Graphics_Android_TerminateSubBackBuffer() ;
 
-		// ƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ìì¬
+		// ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®ä½œæˆ
 		if( Graphics_Android_SetupSubBackBuffer() < 0 )
 		{
 			return -1 ;
@@ -16555,31 +17202,31 @@ extern	int		Graphics_RestoreOrChangeSetupGraphSystem_PF( int Change, int ScreenS
 	}
 	else
 	{
-		// DirectInput ƒIƒuƒWƒFƒNƒg‚ÌÄƒZƒbƒgƒAƒbƒv
+		// DirectInput ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å†ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 #ifndef DX_NON_INPUT
 		TerminateInputSystem() ;
 		InitializeInputSystem() ;
 #endif // DX_NON_INPUT
 	}
 
-//	DXST_LOGFILEFMT_ADDUTF16LE(( L"Šm•Ûƒƒ‚ƒŠ”:%d  Šm•Ûƒƒ‚ƒŠ‘ƒTƒCƒY:%dByte(%dKByte)", NS_DxGetAllocNum(), NS_DxGetAllocSize(), NS_DxGetAllocSize() / 1024 )) ;
+//	DXST_LOGFILEFMT_ADDUTF16LE(( L"ç¢ºä¿ãƒ¡ãƒ¢ãƒªæ•°:%d  ç¢ºä¿ãƒ¡ãƒ¢ãƒªç·ã‚µã‚¤ã‚º:%dByte(%dKByte)", NS_DxGetAllocNum(), NS_DxGetAllocSize(), NS_DxGetAllocSize() / 1024 )) ;
 
 	if( DxSysData.NotDrawFlag == FALSE )
 	{
 		MATRIX_D ViewMatrix, ProjectionMatrix, ViewportMatrix ;
 
-		// OpenGL ES ‚É‚æ‚é•`‰æˆ—‚Ì‰Šú‰»
+		// OpenGL ES ã«ã‚ˆã‚‹æç”»å‡¦ç†ã®åˆæœŸåŒ–
 		GSYS.Screen.FullScreenResolutionModeAct = GSYS.Screen.FullScreenResolutionMode ;
 		Graphics_Android_Initialize() ;
 
-		// ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ª‚Â OpenGL ES ƒIƒuƒWƒFƒNƒg‚ÌÄì¬
+		// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒãƒ³ãƒ‰ãƒ«ãŒæŒã¤ OpenGL ES ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å†ä½œæˆ
 		Graphics_Android_CreateObjectAll() ;
 
 #ifndef DX_NON_MASK
-		// ƒ}ƒXƒNƒT[ƒtƒFƒX‚ÌÄì¬
+		// ãƒã‚¹ã‚¯ã‚µãƒ¼ãƒ•ã‚§ã‚¹ã®å†ä½œæˆ
 		Mask_ReCreateSurface() ;
 #endif
-		// ƒAƒNƒeƒBƒuƒOƒ‰ƒtƒBƒbƒN‚ÌƒAƒhƒŒƒX‚ğÄ“xİ’è
+		// ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å†åº¦è¨­å®š
 		if( Change == FALSE )
 		{
 			ViewMatrix       = GSYS.DrawSetting.ViewMatrix ;
@@ -16589,45 +17236,45 @@ extern	int		Graphics_RestoreOrChangeSetupGraphSystem_PF( int Change, int ScreenS
 //		NS_SetRenderTargetToShader( 0, GSYS.DrawSetting.TargetScreen[ 0 ], GSYS.DrawSetting.TargetScreenSurface[ 0 ] ) ;
 		NS_SetDrawScreen( GSYS.DrawSetting.TargetScreen[ 0 ] ) ;
 
-		// ƒOƒ‰ƒtƒBƒbƒNŠÖŒW‚Ìİ’è‚ğ‰Šú‰»
+		// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯é–¢ä¿‚ã®è¨­å®šã‚’åˆæœŸåŒ–
 		Graphics_Android_Device_ReInitialize() ;
 
-		// ‰æ–Ê‚Ì‰Šú‰»
+		// ç”»é¢ã®åˆæœŸåŒ–
 //		NS_ClearDrawScreen( NULL ) ;
 //		NS_ScreenFlip() ;
 //		NS_ClearDrawScreen( NULL ) ;
 //		NS_ScreenFlip() ;
 
-		// ƒfƒoƒCƒXƒƒXƒg”­¶‚Éíœ‚·‚éƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚éƒOƒ‰ƒtƒBƒbƒN‚ğíœ‚·‚é
+		// ãƒ‡ãƒã‚¤ã‚¹ãƒ­ã‚¹ãƒˆç™ºç”Ÿæ™‚ã«å‰Šé™¤ã™ã‚‹ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ã‚‹ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚’å‰Šé™¤ã™ã‚‹
 		Graphics_Image_DeleteDeviceLostDelete() ;
 
-		// ƒOƒ‰ƒtƒBƒbƒN‚Ì•œŒ³
+		// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã®å¾©å…ƒ
 		NS_RunRestoreShred() ;
 
-		// ƒOƒ‰ƒtƒBƒbƒNƒXƒfƒoƒCƒX‚ÌƒƒXƒg‚©‚ç•œ‹A‚·‚é‘O‚ÉŒÄ‚ÔŠÖ”‚ª“o˜^‚³‚ê‚Ä‚¢‚½‚çÀs‚·‚é
+		// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ãƒ‡ãƒã‚¤ã‚¹ã®ãƒ­ã‚¹ãƒˆã‹ã‚‰å¾©å¸°ã™ã‚‹å‰ã«å‘¼ã¶é–¢æ•°ãŒç™»éŒ²ã•ã‚Œã¦ã„ãŸã‚‰å®Ÿè¡Œã™ã‚‹
 		if( GANDR.Device.Setting.DeviceLostCallbackFunction )
 		{
 			GANDR.Device.Setting.DeviceLostCallbackFunction( GANDR.Device.Setting.DeviceLostCallbackData ) ;
 		}
 
-		// ƒOƒ‰ƒtƒBƒbƒNƒXƒfƒoƒCƒX‚ÌƒƒXƒg‚©‚ç•œ‹A‚µ‚½‚Æ‚«‚ÉŒÄ‚ÔŠÖ”‚ª“o˜^‚³‚ê‚Ä‚¢‚½‚çÀs‚·‚é
+		// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ãƒ‡ãƒã‚¤ã‚¹ã®ãƒ­ã‚¹ãƒˆã‹ã‚‰å¾©å¸°ã—ãŸã¨ãã«å‘¼ã¶é–¢æ•°ãŒç™»éŒ²ã•ã‚Œã¦ã„ãŸã‚‰å®Ÿè¡Œã™ã‚‹
 		if( GANDR.Device.Setting.DeviceRestoreCallbackFunction )
 		{
 			GANDR.Device.Setting.DeviceRestoreCallbackFunction( GANDR.Device.Setting.DeviceRestoreCallbackData ) ;
 		}
 
-		// ƒn[ƒhƒEƒGƒA‚Ìİ’è‚ğƒŠƒtƒŒƒbƒVƒ…
+		// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã®è¨­å®šã‚’ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥
 		Graphics_Android_DeviceState_RefreshRenderState() ;
 
 #ifndef DX_NON_MODEL
-		// ’¸“_ƒoƒbƒtƒ@‚ÌƒZƒbƒgƒAƒbƒv
+		// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 		MV1SetupVertexBufferAll() ;
 #endif
 
-		// ƒ‰ƒCƒg‚Ìİ’è‚ğ Direct3D ‚ÉÄ”½‰f‚·‚é‚æ‚¤‚Éƒtƒ‰ƒO‚ğƒZƒbƒg
+		// ãƒ©ã‚¤ãƒˆã®è¨­å®šã‚’ Direct3D ã«å†åæ˜ ã™ã‚‹ã‚ˆã†ã«ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆ
 		GSYS.Light.HardwareRefresh = TRUE ;
 
-		// ‚»‚Ì‘¼‚ÌÄİ’è
+		// ãã®ä»–ã®å†è¨­å®š
 		if( Change == FALSE )
 		{
 			NS_SetDrawArea( GSYS.DrawSetting.OriginalDrawRect.left, GSYS.DrawSetting.OriginalDrawRect.top, GSYS.DrawSetting.OriginalDrawRect.right, GSYS.DrawSetting.OriginalDrawRect.bottom ) ;
@@ -16637,18 +17284,18 @@ extern	int		Graphics_RestoreOrChangeSetupGraphSystem_PF( int Change, int ScreenS
 			NS_SetTransformToViewportD( &ViewportMatrix );
 		}
 
-//		// ‚OˆÈŠO‚Ìƒ^[ƒQƒbƒg‚ÌƒZƒbƒgƒAƒbƒv
+//		// ï¼ä»¥å¤–ã®ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 //		for( i = 1 ; i < GSYS.HardInfo.RenderTargetNum ; i ++ )
 //		{
 //			NS_SetRenderTargetToShader( i, GSYS.DrawSetting.TargetScreen[ i ], GSYS.DrawSetting.TargetScreenSurface[ i ] ) ;
 //		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// •`‰æ—pƒfƒoƒCƒX‚ª—LŒø‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( –ß‚è’l  TRUE:—LŒø  FALSE:–³Œø )
+// æç”»ç”¨ãƒ‡ãƒã‚¤ã‚¹ãŒæœ‰åŠ¹ã‹ã©ã†ã‹ã‚’å–å¾—ã™ã‚‹( æˆ»ã‚Šå€¤  TRUE:æœ‰åŠ¹  FALSE:ç„¡åŠ¹ )
 extern	int		Graphics_Hardware_CheckValid_PF( void )
 {
 	return ANDR_CHECKVALID_HARDWARE ;
@@ -16699,54 +17346,54 @@ extern	int		Graphics_Hardware_CheckValid_PF( void )
 
 
 
-// ŠÂ‹«ˆË‘¶•`‰æİ’èŠÖŒW
+// ç’°å¢ƒä¾å­˜æç”»è¨­å®šé–¢ä¿‚
 
-// ƒVƒF[ƒ_[•`‰æ‚Å‚Ì•`‰ææ‚ğİ’è‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼æç”»ã§ã®æç”»å…ˆã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Hardware_SetRenderTargetToShader_PF( int TargetIndex, int DrawScreen, int SurfaceIndex, int MipLevel )
 {
 	IMAGEDATA *Image ;
 	IMAGEDATA *OldImage ;
 
-	// ƒ^[ƒQƒbƒg‚ª‚OˆÈŠO‚Ìê‡‚ÍƒVƒF[ƒ_[‚ªg—p‚Å‚«‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+	// ã‚¿ãƒ¼ã‚²ãƒƒãƒˆãŒï¼ä»¥å¤–ã®å ´åˆã¯ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãŒä½¿ç”¨ã§ããªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if( GSYS.HardInfo.UseShader == FALSE )
 		return -1 ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// ƒZƒbƒg‚µ‚Ä‚¢‚½ƒeƒNƒXƒ`ƒƒ[‚ğŠO‚·
+	// ã‚»ãƒƒãƒˆã—ã¦ã„ãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’å¤–ã™
 	Graphics_Android_DrawSetting_SetTexture( NULL ) ;
 
-	// ¡‚Ü‚Å‚Ì•`‰ææ‚Ì‰æ‘œî•ñ‚Ìæ“¾
+	// ä»Šã¾ã§ã®æç”»å…ˆã®ç”»åƒæƒ…å ±ã®å–å¾—
 	if( GRAPHCHKFULL( GSYS.DrawSetting.TargetScreen[ TargetIndex ], OldImage ) )
 	{
 		OldImage = NULL ;
 	}
 
-	// ‰æ‘œ‚©‚Ç‚¤‚©‚ğ”»’è
+	// ç”»åƒã‹ã©ã†ã‹ã‚’åˆ¤å®š
 	if( GRAPHCHKFULL( DrawScreen, Image ) )
 	{
-		// ‰æ‘œ‚Å‚Í‚È‚¢ê‡‚Í•`‰æ‘ÎÛ‚ğ–³Œø‚É‚·‚é
+		// ç”»åƒã§ã¯ãªã„å ´åˆã¯æç”»å¯¾è±¡ã‚’ç„¡åŠ¹ã«ã™ã‚‹
 		GSYS.DrawSetting.TargetScreen[ TargetIndex ] = 0 ;
 		GSYS.DrawSetting.TargetScreenSurface[ TargetIndex ] = 0 ;
 //		Graphics_Android_DeviceState_SetRenderTarget( 0, 0, 0 ) ;
 		return 0 ;
 	}
 
-	// ‰æ‘œ‚¾‚Á‚½ê‡‚Í•`‰æ‰Â”\‚Å‚Í–³‚¢ê‡‚ÍƒGƒ‰[
+	// ç”»åƒã ã£ãŸå ´åˆã¯æç”»å¯èƒ½ã§ã¯ç„¡ã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼
 	if( Image->Orig->FormatDesc.DrawValidFlag == FALSE )
 	{
 		return -1 ;
 	}
 
-	// •`‰ææ‚ğƒZƒbƒg
+	// æç”»å…ˆã‚’ã‚»ãƒƒãƒˆ
 	Graphics_Android_DeviceState_SetRenderTarget( Image->Hard.Draw[ 0 ].Tex->PF->FrameBuffer, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Width, Image->Hard.Draw[ 0 ].Tex->PF->Texture.Height ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚Ì”wŒiF‚ğİ’è‚·‚é( Red,Green,Blue:‚»‚ê‚¼‚ê ‚O`‚Q‚T‚T )
+// ãƒ¡ã‚¤ãƒ³ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ã®èƒŒæ™¯è‰²ã‚’è¨­å®šã™ã‚‹( Red,Green,Blue:ãã‚Œãã‚Œ ï¼ï½ï¼’ï¼•ï¼• )
 extern	int		Graphics_Hardware_SetBackgroundColor_PF( int Red, int Green, int Blue, int Alpha )
 {
 	Graphics_Android_DeviceState_SetBackgroundColor( Red, Green, Blue, Alpha ) ;
@@ -16754,70 +17401,80 @@ extern	int		Graphics_Hardware_SetBackgroundColor_PF( int Red, int Green, int Blu
 	return 0 ;
 }
 
-// SetDrawBright ‚Ìˆø”‚ªˆê‚Â”Å
+// SetDrawBright ã®å¼•æ•°ãŒä¸€ã¤ç‰ˆ
 extern	int		Graphics_Hardware_SetDrawBrightToOneParam_PF( DWORD Bright )
 {
-	// ƒfƒBƒt[ƒYƒJƒ‰[‚ÌXV
+	// ãƒ‡ã‚£ãƒ•ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã®æ›´æ–°
 	GANDR.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// •`‰æƒuƒŒƒ“ƒhƒ‚[ƒh‚ğƒZƒbƒg‚·‚é
+// æç”»ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_SetDrawBlendMode_PF( int BlendMode, int BlendParam )
 {
-	// ƒfƒBƒt[ƒYƒJƒ‰[‚ÌXV
+	// ãƒ‡ã‚£ãƒ•ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã®æ›´æ–°
 	GANDR.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// •`‰æ‚ÌƒAƒ‹ƒtƒ@ƒeƒXƒg‚Ìİ’è‚ğs‚¤( TestMode:DX_CMP_GREATER“™( -1:ƒfƒtƒHƒ‹ƒg“®ì‚É–ß‚· )  TestParam:•`‰æƒAƒ‹ƒtƒ@’l‚Æ‚Ì”äŠr‚Ég—p‚·‚é’l )
+// ã‚«ã‚¹ã‚¿ãƒ ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®šã™ã‚‹
+extern	int		Graphics_Hardware_SetDrawCustomBlendMode_PF(int BlendEnable, int SrcBlendRGB, int DestBlendRGB, int BlendOpRGB, int SrcBlendA, int DestBlendA, int BlendOpA, int BlendParam)
+{
+	// ãƒ‡ã‚£ãƒ•ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã®æ›´æ–°
+	GANDR.Device.DrawInfo.DiffuseColor = GetDiffuseColor();
+
+	// æ­£å¸¸çµ‚äº†
+	return 0;
+}
+
+// æç”»æ™‚ã®ã‚¢ãƒ«ãƒ•ã‚¡ãƒ†ã‚¹ãƒˆã®è¨­å®šã‚’è¡Œã†( TestMode:DX_CMP_GREATERç­‰( -1:ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå‹•ä½œã«æˆ»ã™ )  TestParam:æç”»ã‚¢ãƒ«ãƒ•ã‚¡å€¤ã¨ã®æ¯”è¼ƒã«ä½¿ç”¨ã™ã‚‹å€¤ )
 extern	int		Graphics_Hardware_SetDrawAlphaTest_PF( int TestMode, int TestParam )
 {
-	// ƒfƒBƒt[ƒYƒJƒ‰[‚ÌXV
+	// ãƒ‡ã‚£ãƒ•ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã®æ›´æ–°
 	GANDR.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// •`‰æƒ‚[ƒh‚ğƒZƒbƒg‚·‚é
+// æç”»ãƒ¢ãƒ¼ãƒ‰ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_SetDrawMode_PF( int DrawMode )
 {
 	Graphics_Android_DeviceState_SetDrawMode( DrawMode ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// •`‰æ‹P“x‚ğƒZƒbƒg
+// æç”»è¼åº¦ã‚’ã‚»ãƒƒãƒˆ
 extern	int		Graphics_Hardware_SetDrawBright_PF( int RedBright, int GreenBright, int BlueBright )
 {
-	// ƒfƒBƒt[ƒYƒJƒ‰[‚ÌXV
+	// ãƒ‡ã‚£ãƒ•ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼ã®æ›´æ–°
 	GANDR.Device.DrawInfo.DiffuseColor = GetDiffuseColor() ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// •`‰æ‹P“x‚ğƒZƒbƒg
+// æç”»è¼åº¦ã‚’ã‚»ãƒƒãƒˆ
 extern	int		Graphics_Hardware_SetDrawAddColor_PF( int Red, int Green, int Blue )
 {
 	GANDR.Device.Shader.Constant.uAddColor[ 0 ] = GSYS.DrawSetting.DrawAddColorF.r ;
 	GANDR.Device.Shader.Constant.uAddColor[ 1 ] = GSYS.DrawSetting.DrawAddColorF.g ;
 	GANDR.Device.Shader.Constant.uAddColor[ 2 ] = GSYS.DrawSetting.DrawAddColorF.b ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// SetBlendGraphParam ‚Ì‰Â•Ï’·ˆø”ƒpƒ‰ƒ[ƒ^•t‚«
+// SetBlendGraphParam ã®å¯å¤‰é•·å¼•æ•°ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ä»˜ã
 extern	int		Graphics_Hardware_SetBlendGraphParamBase_PF( IMAGEDATA *BlendImage, int BlendType, int *Param )
 {
-	// ƒuƒŒƒ“ƒh‰æ‘œ‚ª NULL ‚à‚µ‚­‚ÍƒeƒNƒXƒ`ƒƒ‚Å‚Í‚È‚©‚Á‚½‚çƒuƒŒƒ“ƒh‰æ‘œˆ—‚Ì‰ğœ
+	// ãƒ–ãƒ¬ãƒ³ãƒ‰ç”»åƒãŒ NULL ã‚‚ã—ãã¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ã§ã¯ãªã‹ã£ãŸã‚‰ãƒ–ãƒ¬ãƒ³ãƒ‰ç”»åƒå‡¦ç†ã®è§£é™¤
 	if( BlendImage == NULL || BlendImage->Orig->FormatDesc.TextureFlag == FALSE )
 	{
 		GSYS.DrawSetting.BlendGraph = -1 ;
@@ -16825,41 +17482,41 @@ extern	int		Graphics_Hardware_SetBlendGraphParamBase_PF( IMAGEDATA *BlendImage, 
 	}
 	else
 	{
-		// ƒuƒŒƒ“ƒhƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg‚·‚é
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 		Graphics_Android_DrawSetting_SetBlendTexture( &BlendImage->Hard.Draw[ 0 ].Tex[ 0 ].PF->Texture ) ;
 		Graphics_Android_DrawSetting_SetBlendTextureParam( BlendType, Param ) ;
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// Å‘åˆÙ•û«‚Ì’l‚ğƒZƒbƒg‚·‚é
+// æœ€å¤§ç•°æ–¹æ€§ã®å€¤ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_SetMaxAnisotropy_PF( int MaxAnisotropy )
 {
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒ[ƒ‹ƒh•ÏŠ·—ps—ñ‚ğƒZƒbƒg‚·‚é
+// ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ç”¨è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_SetTransformToWorld_PF( const MATRIX *Matrix )
 {
 	Graphics_Android_DeviceState_SetWorldMatrix( Matrix ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒrƒ…[•ÏŠ·—ps—ñ‚ğƒZƒbƒg‚·‚é
+// ãƒ“ãƒ¥ãƒ¼å¤‰æ›ç”¨è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_SetTransformToView_PF( const MATRIX *Matrix )
 {
 	Graphics_Android_DeviceState_SetViewMatrix( Matrix ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// Android ‚Éİ’è‚·‚éË‰es—ñ‚ğXV‚·‚é
+// Android ã«è¨­å®šã™ã‚‹å°„å½±è¡Œåˆ—ã‚’æ›´æ–°ã™ã‚‹
 static void Graphics_Hardware_ANDROID_RefreshProjectionMatrix( void )
 {
 	MATRIX *UseProjectionMatrix ;
@@ -16899,116 +17556,116 @@ static void Graphics_Hardware_ANDROID_RefreshProjectionMatrix( void )
 	Graphics_Android_DeviceState_SetProjectionMatrix( &TempMatrix ) ;
 }
 
-// “Š‰e•ÏŠ·—ps—ñ‚ğƒZƒbƒg‚·‚é
+// æŠ•å½±å¤‰æ›ç”¨è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_SetTransformToProjection_PF( const MATRIX *Matrix )
 {
 	Graphics_Hardware_ANDROID_RefreshProjectionMatrix() ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒrƒ…[ƒ|[ƒgs—ñ‚ğƒZƒbƒg‚·‚é
+// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆè¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_SetTransformToViewport_PF( const MATRIX * /* Matrix */ )
 {
 	Graphics_Hardware_ANDROID_RefreshProjectionMatrix() ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒƒAƒhƒŒƒXƒ‚[ƒh‚ğİ’è‚·‚é
-extern	int		Graphics_Hardware_SetTextureAddressMode_PF( int Mode /* DX_TEXADDRESS_WRAP “™ */, int Stage )
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¢ãƒ‰ãƒ¬ã‚¹ãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®šã™ã‚‹
+extern	int		Graphics_Hardware_SetTextureAddressMode_PF( int Mode /* DX_TEXADDRESS_WRAP ç­‰ */, int Stage )
 {
 	Graphics_Android_DeviceState_SetTextureAddress( Mode, Stage ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒƒAƒhƒŒƒXƒ‚[ƒh‚ğİ’è‚·‚é
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¢ãƒ‰ãƒ¬ã‚¹ãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Hardware_SetTextureAddressModeUV_PF( int ModeU, int ModeV, int Stage )
 {
 	Graphics_Android_DeviceState_SetTextureAddressU( ModeU, Stage ) ;
 	Graphics_Android_DeviceState_SetTextureAddressV( ModeV, Stage ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒÀ•W•ÏŠ·s—ñ‚ğƒZƒbƒg‚·‚é
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™å¤‰æ›è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_SetTextureAddressTransformMatrix_PF( int UseFlag, MATRIX *Matrix, int Sampler )
 {
 	Graphics_Android_DeviceState_SetTextureAddressTransformMatrix( UseFlag, Matrix ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒtƒHƒO‚ğ—LŒø‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:—LŒø  FALSE:–³Œø )
+// ãƒ•ã‚©ã‚°ã‚’æœ‰åŠ¹ã«ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹( TRUE:æœ‰åŠ¹  FALSE:ç„¡åŠ¹ )
 extern	int		Graphics_Hardware_SetFogEnable_PF( int Flag )
 {
 	Graphics_Android_DeviceState_SetFogEnable( Flag ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒtƒHƒOƒ‚[ƒh‚ğİ’è‚·‚é
-extern	int		Graphics_Hardware_SetFogMode_PF( int Mode /* DX_FOGMODE_NONE “™ */ )
+// ãƒ•ã‚©ã‚°ãƒ¢ãƒ¼ãƒ‰ã‚’è¨­å®šã™ã‚‹
+extern	int		Graphics_Hardware_SetFogMode_PF( int Mode /* DX_FOGMODE_NONE ç­‰ */ )
 {
 	Graphics_Android_DeviceState_SetFogVertexMode( Mode ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒtƒHƒOƒJƒ‰[‚ğ•ÏX‚·‚é
+// ãƒ•ã‚©ã‚°ã‚«ãƒ©ãƒ¼ã‚’å¤‰æ›´ã™ã‚‹
 extern	int		Graphics_Hardware_SetFogColor_PF( DWORD FogColor )
 {
 	Graphics_Android_DeviceState_SetFogColor( FogColor ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒtƒHƒO‚ªn‚Ü‚é‹——£‚ÆI—¹‚·‚é‹——£‚ğİ’è‚·‚é( 0.0f ` 1.0f )
+// ãƒ•ã‚©ã‚°ãŒå§‹ã¾ã‚‹è·é›¢ã¨çµ‚äº†ã™ã‚‹è·é›¢ã‚’è¨­å®šã™ã‚‹( 0.0f ï½ 1.0f )
 extern	int		Graphics_Hardware_SetFogStartEnd_PF( float start, float end )
 {
 	Graphics_Android_DeviceState_SetFogStartEnd( start, end ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒtƒHƒO‚Ì–§“x‚ğİ’è‚·‚é( 0.0f ` 1.0f )
+// ãƒ•ã‚©ã‚°ã®å¯†åº¦ã‚’è¨­å®šã™ã‚‹( 0.0f ï½ 1.0f )
 extern	int		Graphics_Hardware_SetFogDensity_PF( float density )
 {
 	Graphics_Android_DeviceState_SetFogDensity( density ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒ[ƒ‹ƒh•ÏŠ·—ps—ñ‚ğƒZƒbƒg‚·‚é
+// ãƒ¯ãƒ¼ãƒ«ãƒ‰å¤‰æ›ç”¨è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_DeviceDirect_SetWorldMatrix_PF( const MATRIX *Matrix )
 {
 	return Graphics_Android_DeviceState_SetWorldMatrix( Matrix ) ;
 }
 
-// ƒrƒ…[•ÏŠ·—ps—ñ‚ğƒZƒbƒg‚·‚é
+// ãƒ“ãƒ¥ãƒ¼å¤‰æ›ç”¨è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_DeviceDirect_SetViewMatrix_PF( const MATRIX *Matrix )
 {
 	return Graphics_Android_DeviceState_SetViewMatrix( Matrix ) ;
 }
 
-// “Š‰e•ÏŠ·—ps—ñ‚ğƒZƒbƒg‚·‚é
+// æŠ•å½±å¤‰æ›ç”¨è¡Œåˆ—ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_DeviceDirect_SetProjectionMatrix_PF( const MATRIX *Matrix )
 {
 	return Graphics_Android_DeviceState_SetProjectionMatrix( Matrix ) ;
 }
 
-// Šî–{ƒf[ƒ^‚Éİ’è‚³‚ê‚Ä‚¢‚éƒtƒHƒOî•ñ‚ğƒn[ƒhƒEƒFƒA‚É”½‰f‚·‚é
+// åŸºæœ¬ãƒ‡ãƒ¼ã‚¿ã«è¨­å®šã•ã‚Œã¦ã„ã‚‹ãƒ•ã‚©ã‚°æƒ…å ±ã‚’ãƒãƒ¼ãƒ‰ã‚¦ã‚§ã‚¢ã«åæ˜ ã™ã‚‹
 extern	int		Graphics_Hardware_ApplyLigFogToHardware_PF( void )
 {
 	if( GANDR.Device.State.FogEnable != GSYS.DrawSetting.FogEnable )
@@ -17016,20 +17673,20 @@ extern	int		Graphics_Hardware_ApplyLigFogToHardware_PF( void )
 		Graphics_Android_DeviceState_SetFogEnable( GSYS.DrawSetting.FogEnable ) ;
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ˆÈ‘O‚Ì DrawModiGraph ŠÖ”‚ÌƒR[ƒh‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é
+// ä»¥å‰ã® DrawModiGraph é–¢æ•°ã®ã‚³ãƒ¼ãƒ‰ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_SetUseOldDrawModiGraphCodeFlag_PF( int Flag )
 {
 	GANDR.Setting.UseOldDrawModiGraphCodeFlag = Flag ;
 	
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// •`‰ææ‚É³‚µ‚¢ƒ¿’l‚ğ‘‚«‚Ş‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğXV‚·‚é
+// æç”»å…ˆã«æ­£ã—ã„Î±å€¤ã‚’æ›¸ãè¾¼ã‚€ã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°ã‚’æ›´æ–°ã™ã‚‹
 extern	int		Graphics_Hardware_RefreshAlphaChDrawMode_PF( void )
 {
 	IMAGEDATA *Image ;
@@ -17038,38 +17695,38 @@ extern	int		Graphics_Hardware_RefreshAlphaChDrawMode_PF( void )
 
 	NextFlag = FALSE ;
 
-	// ‚O”ÔˆÈŠO‚É‚à•`‰ææ‚ªİ’è‚³‚ê‚Ä‚¢‚½ê‡‚Í’Êíƒ‚[ƒh
+	// ï¼ç•ªä»¥å¤–ã«ã‚‚æç”»å…ˆãŒè¨­å®šã•ã‚Œã¦ã„ãŸå ´åˆã¯é€šå¸¸ãƒ¢ãƒ¼ãƒ‰
 	for( i = 1 ; i < DX_RENDERTARGET_COUNT ; i ++ )
 	{
 		if( GSYS.DrawSetting.TargetScreen[ i ] != 0 )
 			goto END ;
 	}
 
-	// •`‰ææ‚ª’Êí‰æ–Ê‚Ìê‡‚Í‰½‚à‚µ‚È‚¢
+	// æç”»å…ˆãŒé€šå¸¸ç”»é¢ã®å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if( ( DWORD )GSYS.DrawSetting.TargetScreen[ 0 ] == DX_SCREEN_BACK ||
 		( DWORD )GSYS.DrawSetting.TargetScreen[ 0 ] == DX_SCREEN_FRONT ||
 		( DWORD )GSYS.DrawSetting.TargetScreen[ 0 ] == DX_SCREEN_WORK ||
 		( DWORD )GSYS.DrawSetting.TargetScreen[ 0 ] == DX_SCREEN_TEMPFRONT )
 		goto END ;
 
-	// •`‰ææ‚Æ‚È‚Á‚Ä‚¢‚é‰æ‘œ‚ª–³Œø‚Ìê‡‚Í‰½‚à‚µ‚È‚¢
+	// æç”»å…ˆã¨ãªã£ã¦ã„ã‚‹ç”»åƒãŒç„¡åŠ¹ã®å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if( GRAPHCHKFULL( GSYS.DrawSetting.TargetScreen[ 0 ], Image ) )
 		goto END ;
 
-	// •`‰ææ‚Ì‰æ‘œ‚Éƒ¿ƒ`ƒƒƒ“ƒlƒ‹‚ª–³‚¢ê‡‚à‰½‚à‚µ‚È‚¢
+	// æç”»å…ˆã®ç”»åƒã«Î±ãƒãƒ£ãƒ³ãƒãƒ«ãŒç„¡ã„å ´åˆã‚‚ä½•ã‚‚ã—ãªã„
 	if( Image->Orig->FormatDesc.AlphaChFlag == FALSE )
 		goto END ;
 	
-	// ƒeƒNƒXƒ`ƒƒ‚Å‚Í‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã§ã¯ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if( Image->Orig->FormatDesc.TextureFlag == FALSE )
 		goto END ;
 
-	// ‚±‚±‚É—ˆ‚½‚Æ‚¢‚¤‚±‚Æ‚Í³Šm‚Èƒ¿ƒ`ƒƒƒ“ƒlƒ‹‚ÌŒvZ‚ğs‚¤‚Æ‚¢‚¤‚±‚Æ
+	// ã“ã“ã«æ¥ãŸã¨ã„ã†ã“ã¨ã¯æ­£ç¢ºãªÎ±ãƒãƒ£ãƒ³ãƒãƒ«ã®è¨ˆç®—ã‚’è¡Œã†ã¨ã„ã†ã“ã¨
 	NextFlag = TRUE ;
 
 END :
 /*
-	// ƒeƒNƒXƒ`ƒƒ‚Ì•Û‘¶
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ä¿å­˜
 	if( NextFlag == TRUE )
 	{
 		IMAGEDATA *WorkImage ;
@@ -17090,25 +17747,25 @@ END :
 		GRH.RenderTargetTexture = FALSE ;
 	}
 */
-	// ˆÈ‘O‚Æƒtƒ‰ƒO‚Ìó‘Ô‚ªˆÙ‚È‚éê‡‚Ì‚İƒuƒŒƒ“ƒhƒ‚[ƒh‚ÌXV‚às‚¤
+	// ä»¥å‰ã¨ãƒ•ãƒ©ã‚°ã®çŠ¶æ…‹ãŒç•°ãªã‚‹å ´åˆã®ã¿ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã®æ›´æ–°ã‚‚è¡Œã†
 	if( NextFlag != GSYS.DrawSetting.AlphaChDrawMode )
 	{
-		// ƒtƒ‰ƒO‚Ì•Û‘¶
+		// ãƒ•ãƒ©ã‚°ã®ä¿å­˜
 		GSYS.DrawSetting.AlphaChDrawMode = NextFlag ;
 		GANDR.Device.DrawSetting.ChangeBlendParamFlag = TRUE ;
 		GSYS.ChangeSettingFlag = TRUE ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒ~ƒhƒ‹ƒEƒFƒA“™‚ğg—p‚µ‚½Œã‚É Direct3D ‚â OpenGL ‚Ì‚c‚wƒ‰ƒCƒuƒ‰ƒŠ—p‚Ìİ’è‚ğÄ“xs‚¤‚½‚ß‚ÌŠÖ”
+// ãƒŸãƒ‰ãƒ«ã‚¦ã‚§ã‚¢ç­‰ã‚’ä½¿ç”¨ã—ãŸå¾Œã« Direct3D ã‚„ OpenGL ã®ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªç”¨ã®è¨­å®šã‚’å†åº¦è¡Œã†ãŸã‚ã®é–¢æ•°
 extern int Graphics_Hardware_RefreshSetting_PF( void )
 {
 	Graphics_Android_DeviceState_RefreshRenderState() ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -17135,65 +17792,65 @@ extern int Graphics_Hardware_RefreshSetting_PF( void )
 
 
 
-// ŠÂ‹«ˆË‘¶İ’èŠÖŒW
+// ç’°å¢ƒä¾å­˜è¨­å®šé–¢ä¿‚
 
-// ƒn[ƒhƒEƒGƒA‚Ì’¸“_‰‰Zˆ—‹@”\‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
+// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã®é ‚ç‚¹æ¼”ç®—å‡¦ç†æ©Ÿèƒ½ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Hardware_SetUseHardwareVertexProcessing_PF( int Flag )
 {
 	return 0 ;
 }
 
-// ƒsƒNƒZƒ‹’PˆÊ‚Åƒ‰ƒCƒeƒBƒ“ƒO‚ğs‚¤‚©‚Ç‚¤‚©‚ğİ’è‚·‚éA—v ShaderModel 3.0( TRUE:ƒsƒNƒZƒ‹’PˆÊ‚Ìƒ‰ƒCƒeƒBƒ“ƒO‚ğs‚¤  FALSE:’¸“_’PˆÊ‚Ìƒ‰ƒCƒeƒBƒ“ƒO‚ğs‚¤( ƒfƒtƒHƒ‹ƒg ) )
+// ãƒ”ã‚¯ã‚»ãƒ«å˜ä½ã§ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã‚’è¡Œã†ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹ã€è¦ ShaderModel 3.0( TRUE:ãƒ”ã‚¯ã‚»ãƒ«å˜ä½ã®ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã‚’è¡Œã†  FALSE:é ‚ç‚¹å˜ä½ã®ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã‚’è¡Œã†( ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ ) )
 extern	int		Graphics_Hardware_SetUsePixelLighting_PF( int Flag )
 {
 	GANDR.UsePixelLightingShader = Flag ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒOƒ‰ƒtƒBƒbƒNƒXƒfƒoƒCƒX‚ªƒƒXƒg‚©‚ç•œ‹A‚µ‚½Û‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”‚ğİ’è‚·‚é
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ãƒ‡ãƒã‚¤ã‚¹ãŒãƒ­ã‚¹ãƒˆã‹ã‚‰å¾©å¸°ã—ãŸéš›ã«å‘¼ã°ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Hardware_SetGraphicsDeviceRestoreCallbackFunction_PF( void (* Callback )( void *Data ), void *CallbackData )
 {
 	GANDR.Device.Setting.DeviceRestoreCallbackFunction = Callback ;
 	GANDR.Device.Setting.DeviceRestoreCallbackData = CallbackData ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒOƒ‰ƒtƒBƒbƒNƒXƒfƒoƒCƒX‚ªƒƒXƒg‚©‚ç•œ‹A‚·‚é‘O‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”‚ğİ’è‚·‚é
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ãƒ‡ãƒã‚¤ã‚¹ãŒãƒ­ã‚¹ãƒˆã‹ã‚‰å¾©å¸°ã™ã‚‹å‰ã«å‘¼ã°ã‚Œã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Hardware_SetGraphicsDeviceLostCallbackFunction_PF( void (* Callback )( void *Data ), void *CallbackData )
 {
 	GANDR.Device.Setting.DeviceLostCallbackFunction = Callback ;
 	GANDR.Device.Setting.DeviceLostCallbackData = CallbackData ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ’Êí•`‰æ‚ÉƒvƒƒOƒ‰ƒ}ƒuƒ‹ƒVƒF[ƒ_[‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:g—p‚·‚é( ƒfƒtƒHƒ‹ƒg )  FALSE:g—p‚µ‚È‚¢ )
+// é€šå¸¸æç”»ã«ãƒ—ãƒ­ã‚°ãƒ©ãƒãƒ–ãƒ«ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½¿ç”¨ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹( TRUE:ä½¿ç”¨ã™ã‚‹( ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ )  FALSE:ä½¿ç”¨ã—ãªã„ )
 extern	int		Graphics_Hardware_SetUseNormalDrawShader_PF( int Flag )
 {
-	return 0 ;
+	return -1 ;
 }
 
-// ƒrƒfƒIƒƒ‚ƒŠ‚Ì—e—Ê‚ğ“¾‚é
-extern	int		Graphics_Hardware_GetVideoMemorySize_PF( int *AllSize, int *FreeSize )
+// ãƒ“ãƒ‡ã‚ªãƒ¡ãƒ¢ãƒªã®å®¹é‡ã‚’å¾—ã‚‹
+extern	int		Graphics_Hardware_GetVideoMemorySizeEx_PF( ULONGLONG *TotalSize, ULONGLONG *UseSize )
 {
-	return 0 ;
+	return -1 ;
 }
 
-// VistaˆÈ~‚Ì Windows Aero ‚ğ–³Œø‚É‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg‚·‚éATRUE:–³Œø‚É‚·‚é  FALSE:—LŒø‚É‚·‚é( DxLib_Init ‚Ì‘O‚ÉŒÄ‚Ô•K—v‚ª‚ ‚è‚Ü‚· )
+// Vistaä»¥é™ã® Windows Aero ã‚’ç„¡åŠ¹ã«ã™ã‚‹ã‹ã©ã†ã‹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€TRUE:ç„¡åŠ¹ã«ã™ã‚‹  FALSE:æœ‰åŠ¹ã«ã™ã‚‹( DxLib_Init ã®å‰ã«å‘¼ã¶å¿…è¦ãŒã‚ã‚Šã¾ã™ )
 extern	int		Graphics_SetAeroDisableFlag_PF( int Flag )
 {
-	// ‰Šú‰»‘O‚Ì‚İ—LŒø
+	// åˆæœŸåŒ–å‰ã®ã¿æœ‰åŠ¹
 	if( DxSysData.DxLib_InitializeFlag == TRUE )
 	{
 		return -1 ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -17227,16 +17884,16 @@ extern	int		Graphics_SetAeroDisableFlag_PF( int Flag )
 
 
 
-// ŠÂ‹«ˆË‘¶‰æ–ÊŠÖŒW
+// ç’°å¢ƒä¾å­˜ç”»é¢é–¢ä¿‚
 
-// İ’è‚ÉŠî‚Ã‚¢‚Äg—p‚·‚é‚yƒoƒbƒtƒ@‚ğƒZƒbƒg‚·‚é
+// è¨­å®šã«åŸºã¥ã„ã¦ä½¿ç”¨ã™ã‚‹ï¼ºãƒãƒƒãƒ•ã‚¡ã‚’ã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_SetupUseZBuffer_PF( void )
 {
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ‰æ–Ê‚Ì‚yƒoƒbƒtƒ@‚Ìó‘Ô‚ğ‰Šú‰»‚·‚é
+// ç”»é¢ã®ï¼ºãƒãƒƒãƒ•ã‚¡ã®çŠ¶æ…‹ã‚’åˆæœŸåŒ–ã™ã‚‹
 extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -17244,30 +17901,30 @@ extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
-	// •`‰æ‘ÎÛƒT[ƒtƒFƒX‚ğ•ÏX‚·‚é
+	// æç”»å¯¾è±¡ã‚µãƒ¼ãƒ•ã‚§ã‚¹ã‚’å¤‰æ›´ã™ã‚‹
 #ifndef DX_NON_MASK
 	if( MASKD.MaskValidFlag && MASKANDR.MaskScreenFrameBuffer )
 	{
 		IMAGEDATA           *Image = NULL ;
 		SHADOWMAPDATA       *ShadowMap = NULL ;
 
-		// •`‰ææ‰æ‘œ‚Ì‰æ‘œî•ñ‚ğæ“¾
+		// æç”»å…ˆç”»åƒã®ç”»åƒæƒ…å ±ã‚’å–å¾—
 		GRAPHCHKFULL( GSYS.DrawSetting.TargetScreen[ 0 ], Image ) ;
 		SHADOWMAPCHKFULL( GSYS.DrawSetting.TargetScreen[ 0 ], ShadowMap ) ;
 
-		// ƒVƒƒƒhƒEƒ}ƒbƒv‚ª—LŒø‚Èê‡‚ÍƒVƒƒƒhƒEƒ}ƒbƒv‚ğ•`‰æ‘ÎÛ‚É‚·‚é
+		// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ãŒæœ‰åŠ¹ãªå ´åˆã¯ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã‚’æç”»å¯¾è±¡ã«ã™ã‚‹
 		if( ShadowMap )
 		{
 			Graphics_Android_DeviceState_SetRenderTarget( ShadowMap->PF->FrameBuffer, ShadowMap->PF->Texture.Width, ShadowMap->PF->Texture.Height ) ;
 		}
 		else
-		// •`‰æ‰Â”\‰æ‘œ‚ª—LŒø‚Èê‡‚Í•`‰æ‰Â”\‰æ‘œ‚ğ•`‰æ‘ÎÛ‚É‚·‚é
+		// æç”»å¯èƒ½ç”»åƒãŒæœ‰åŠ¹ãªå ´åˆã¯æç”»å¯èƒ½ç”»åƒã‚’æç”»å¯¾è±¡ã«ã™ã‚‹
 		if( Image )
 		{
 			if( Image->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget != 0 )
@@ -17280,14 +17937,14 @@ extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
 			}
 		}
 		else
-		// ‚»‚êˆÈŠO‚Ìê‡‚ÍƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚ğ•`‰æ‘ÎÛ‚É‚·‚é
+		// ãã‚Œä»¥å¤–ã®å ´åˆã¯ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚’æç”»å¯¾è±¡ã«ã™ã‚‹
 		{
 			Graphics_Android_DeviceState_SetRenderTarget( GANDR.Device.Screen.SubBackBufferFrameBuffer, GANDR.Device.Screen.SubBackBufferTextureSizeX, GANDR.Device.Screen.SubBackBufferTextureSizeY ) ;
 		}
 	}
 #endif
 
-	// ƒrƒ…[ƒ|[ƒg‚ğƒT[ƒtƒFƒX‘S‘Ì‚É‚·‚é
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã‚’ã‚µãƒ¼ãƒ•ã‚§ã‚¹å…¨ä½“ã«ã™ã‚‹
 	{
 		RECT Viewport ;
 
@@ -17310,7 +17967,7 @@ extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
     glClear( GL_DEPTH_BUFFER_BIT ) ;
 	glDepthMask( GANDR.Device.State.DepthWriteEnable ? GL_TRUE : GL_FALSE ) ;
 
-	// •`‰æ‘ÎÛƒT[ƒtƒFƒX‚ğŒ³‚É–ß‚·
+	// æç”»å¯¾è±¡ã‚µãƒ¼ãƒ•ã‚§ã‚¹ã‚’å…ƒã«æˆ»ã™
 #ifndef DX_NON_MASK
 	if( MASKD.MaskValidFlag && MASKANDR.MaskScreenFrameBuffer )
 	{
@@ -17322,14 +17979,14 @@ extern	int		Graphics_Hardware_ClearDrawScreenZBuffer_PF( const RECT *ClearRect )
 	}
 #endif
 
-	// ƒrƒ…[ƒ|[ƒg‚Ì”ÍˆÍ‚ğŒ³‚É–ß‚·
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®ç¯„å›²ã‚’å…ƒã«æˆ»ã™
 	Graphics_Android_DeviceState_SetViewport( &GSYS.DrawSetting.DrawArea ) ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ‰æ–Ê‚Ìó‘Ô‚ğ‰Šú‰»‚·‚é
+// ç”»é¢ã®çŠ¶æ…‹ã‚’åˆæœŸåŒ–ã™ã‚‹
 extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -17337,30 +17994,30 @@ extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
-	// •`‰æ‘ÎÛƒT[ƒtƒFƒX‚ğ•ÏX‚·‚é
+	// æç”»å¯¾è±¡ã‚µãƒ¼ãƒ•ã‚§ã‚¹ã‚’å¤‰æ›´ã™ã‚‹
 #ifndef DX_NON_MASK
 	if( MASKD.MaskValidFlag && MASKANDR.MaskScreenFrameBuffer )
 	{
 		IMAGEDATA           *Image = NULL ;
 		SHADOWMAPDATA       *ShadowMap = NULL ;
 
-		// •`‰ææ‰æ‘œ‚Ì‰æ‘œî•ñ‚ğæ“¾
+		// æç”»å…ˆç”»åƒã®ç”»åƒæƒ…å ±ã‚’å–å¾—
 		GRAPHCHKFULL( GSYS.DrawSetting.TargetScreen[ 0 ], Image ) ;
 		SHADOWMAPCHKFULL( GSYS.DrawSetting.TargetScreen[ 0 ], ShadowMap ) ;
 
-		// ƒVƒƒƒhƒEƒ}ƒbƒv‚ª—LŒø‚Èê‡‚ÍƒVƒƒƒhƒEƒ}ƒbƒv‚ğ•`‰æ‘ÎÛ‚É‚·‚é
+		// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ãŒæœ‰åŠ¹ãªå ´åˆã¯ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã‚’æç”»å¯¾è±¡ã«ã™ã‚‹
 		if( ShadowMap )
 		{
 			Graphics_Android_DeviceState_SetRenderTarget( ShadowMap->PF->FrameBuffer, ShadowMap->PF->Texture.Width, ShadowMap->PF->Texture.Height ) ;
 		}
 		else
-		// •`‰æ‰Â”\‰æ‘œ‚ª—LŒø‚Èê‡‚Í•`‰æ‰Â”\‰æ‘œ‚ğ•`‰æ‘ÎÛ‚É‚·‚é
+		// æç”»å¯èƒ½ç”»åƒãŒæœ‰åŠ¹ãªå ´åˆã¯æç”»å¯èƒ½ç”»åƒã‚’æç”»å¯¾è±¡ã«ã™ã‚‹
 		if( Image )
 		{
 			if( Image->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget != 0 )
@@ -17373,14 +18030,14 @@ extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
 			}
 		}
 		else
-		// ‚»‚êˆÈŠO‚Ìê‡‚ÍƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚ğ•`‰æ‘ÎÛ‚É‚·‚é
+		// ãã‚Œä»¥å¤–ã®å ´åˆã¯ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚’æç”»å¯¾è±¡ã«ã™ã‚‹
 		{
 			Graphics_Android_DeviceState_SetRenderTarget( GANDR.Device.Screen.SubBackBufferFrameBuffer, GANDR.Device.Screen.SubBackBufferTextureSizeX, GANDR.Device.Screen.SubBackBufferTextureSizeY ) ;
 		}
 	}
 #endif
 
-	// ƒrƒ…[ƒ|[ƒg‚ğƒT[ƒtƒFƒX‘S‘Ì‚É‚·‚é
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã‚’ã‚µãƒ¼ãƒ•ã‚§ã‚¹å…¨ä½“ã«ã™ã‚‹
 	{
 		RECT Viewport ;
 
@@ -17403,7 +18060,7 @@ extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ) ;
 	glDepthMask( GANDR.Device.State.DepthWriteEnable ? GL_TRUE : GL_FALSE ) ;
 
-	// •`‰æ‘ÎÛƒT[ƒtƒFƒX‚ğŒ³‚É–ß‚·
+	// æç”»å¯¾è±¡ã‚µãƒ¼ãƒ•ã‚§ã‚¹ã‚’å…ƒã«æˆ»ã™
 #ifndef DX_NON_MASK
 	if( MASKD.MaskValidFlag && MASKANDR.MaskScreenFrameBuffer )
 	{
@@ -17415,34 +18072,34 @@ extern	int		Graphics_Hardware_ClearDrawScreen_PF( const RECT *ClearRect )
 	}
 #endif
 
-	// ƒrƒ…[ƒ|[ƒg‚Ì”ÍˆÍ‚ğŒ³‚É–ß‚·
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®ç¯„å›²ã‚’å…ƒã«æˆ»ã™
 	Graphics_Android_DeviceState_SetViewport( &GSYS.DrawSetting.DrawArea ) ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// •`‰ææ‰æ–Ê‚ÌƒZƒbƒg
+// æç”»å…ˆç”»é¢ã®ã‚»ãƒƒãƒˆ
 extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSurface, int OldScreenMipLevel, IMAGEDATA *NewTargetImage, IMAGEDATA *OldTargetImage, SHADOWMAPDATA *NewTargetShadowMap, SHADOWMAPDATA *OldTargetShadowMap )
 {
 	int i ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
-	// ƒZƒbƒg‚µ‚Ä‚¢‚½ƒeƒNƒXƒ`ƒƒ[‚ğŠO‚·
+	// ã‚»ãƒƒãƒˆã—ã¦ã„ãŸãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ¼ã‚’å¤–ã™
 	Graphics_Android_DrawSetting_SetTexture( NULL ) ;
 	for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 	{
 		Graphics_Android_DeviceState_SetTexture( 0, NULL ) ;
 	}
 
-	// •`‰ææ‚Ì•ÏX
+	// æç”»å…ˆã®å¤‰æ›´
 
-	// ƒ}ƒXƒNƒT[ƒtƒFƒX‚ª‘¶İ‚µ‚Ä‚¢‚ÄŠ‚Â—LŒø‚Èê‡‚Íƒ}ƒXƒNƒT[ƒtƒFƒX‚ğ•`‰æ‘ÎÛ‚É‚·‚é
+	// ãƒã‚¹ã‚¯ã‚µãƒ¼ãƒ•ã‚§ã‚¹ãŒå­˜åœ¨ã—ã¦ã„ã¦ä¸”ã¤æœ‰åŠ¹ãªå ´åˆã¯ãƒã‚¹ã‚¯ã‚µãƒ¼ãƒ•ã‚§ã‚¹ã‚’æç”»å¯¾è±¡ã«ã™ã‚‹
 #ifndef DX_NON_MASK
 	if( MASKD.MaskValidFlag && MASKANDR.MaskScreenFrameBuffer )
 	{
@@ -17450,13 +18107,13 @@ extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSur
 	}
 	else
 #endif
-	// ƒVƒƒƒhƒEƒ}ƒbƒv‚ª—LŒø‚Èê‡‚ÍƒVƒƒƒhƒEƒ}ƒbƒv‚ğ•`‰æ‘ÎÛ‚É‚·‚é
+	// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ãŒæœ‰åŠ¹ãªå ´åˆã¯ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã‚’æç”»å¯¾è±¡ã«ã™ã‚‹
 	if( NewTargetShadowMap )
 	{
 		Graphics_Android_DeviceState_SetRenderTarget( NewTargetShadowMap->PF->FrameBuffer, NewTargetShadowMap->PF->Texture.Width, NewTargetShadowMap->PF->Texture.Height ) ;
 	}
 	else
-	// •`‰æ‰Â”\‰æ‘œ‚ª—LŒø‚Èê‡‚Í•`‰æ‰Â”\‰æ‘œ‚ğ•`‰æ‘ÎÛ‚É‚·‚é
+	// æç”»å¯èƒ½ç”»åƒãŒæœ‰åŠ¹ãªå ´åˆã¯æç”»å¯èƒ½ç”»åƒã‚’æç”»å¯¾è±¡ã«ã™ã‚‹
 	if( NewTargetImage )
 	{
 		if( NewTargetImage->Hard.Draw[ 0 ].Tex->PF->MSRenderTarget != 0 )
@@ -17469,26 +18126,26 @@ extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSur
 		}
 	}
 	else
-	// ‚»‚êˆÈŠO‚Ìê‡‚ÍƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚ğ•`‰æ‘ÎÛ‚É‚·‚é
+	// ãã‚Œä»¥å¤–ã®å ´åˆã¯ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‚’æç”»å¯¾è±¡ã«ã™ã‚‹
 	{
 		Graphics_Android_DeviceState_SetRenderTarget( GANDR.Device.Screen.SubBackBufferFrameBuffer, GANDR.Device.Screen.SubBackBufferTextureSizeX, GANDR.Device.Screen.SubBackBufferTextureSizeY ) ;
 	}
 
-	// g—p‚·‚é‚yƒoƒbƒtƒ@‚ÌƒZƒbƒgƒAƒbƒv
+	// ä½¿ç”¨ã™ã‚‹ï¼ºãƒãƒƒãƒ•ã‚¡ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 	Graphics_Screen_SetupUseZBuffer() ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// SetDrawScreen ‚ÌÅŒã‚ÅŒÄ‚Î‚ê‚éŠÖ”
+// SetDrawScreen ã®æœ€å¾Œã§å‘¼ã°ã‚Œã‚‹é–¢æ•°
 extern	int		Graphics_Hardware_SetDrawScreen_Post_PF( int DrawScreen )
 {
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// •`‰æ‰Â”\—Ìˆæ‚ÌƒZƒbƒg
+// æç”»å¯èƒ½é ˜åŸŸã®ã‚»ãƒƒãƒˆ
 extern	int		Graphics_Hardware_SetDrawArea_PF( int x1, int y1, int x2, int y2 )
 {
 	RECT Viewport ;
@@ -17499,25 +18156,25 @@ extern	int		Graphics_Hardware_SetDrawArea_PF( int x1, int y1, int x2, int y2 )
 		return -1 ;
 	}
 
-	// ƒrƒ…[ƒ|[ƒg‚ÌƒZƒbƒg
+	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã®ã‚»ãƒƒãƒˆ
 	Viewport.left	= GSYS.DrawSetting.DrawArea.left ;
 	Viewport.top	= GSYS.DrawSetting.DrawArea.top ;
 	Viewport.right	= GSYS.DrawSetting.DrawArea.right  ;
 	Viewport.bottom	= GSYS.DrawSetting.DrawArea.bottom ;
 	Graphics_Android_DeviceState_SetViewport( &Viewport ) ;
 
-	// Ë‰es—ñ‚Æƒrƒ…[ƒ|[ƒgs—ñ‚Ì‹ts—ñ‚ğæZ‚µ‚½‚à‚Ì‚ğƒZƒbƒg
+	// å°„å½±è¡Œåˆ—ã¨ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆè¡Œåˆ—ã®é€†è¡Œåˆ—ã‚’ä¹—ç®—ã—ãŸã‚‚ã®ã‚’ã‚»ãƒƒãƒˆ
 	Graphics_Hardware_ANDROID_RefreshProjectionMatrix() ;
 	GSYS.DrawSetting.MatchHardwareProjectionMatrix = TRUE ;
 
-	// ƒAƒ“ƒ`ƒrƒ…[ƒ|[ƒgs—ñ‚ğXV
+	// ã‚¢ãƒ³ãƒãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆè¡Œåˆ—ã‚’æ›´æ–°
 	Graphics_Android_DeviceState_SetAntiViewportMatrix( &GSYS.DrawSetting.Direct3DViewportMatrixAntiF ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// •`‰ææƒoƒbƒtƒ@‚ğƒƒbƒN‚·‚é
+// æç”»å…ˆãƒãƒƒãƒ•ã‚¡ã‚’ãƒ­ãƒƒã‚¯ã™ã‚‹
 extern	int		Graphics_Hardware_LockDrawScreenBuffer_PF( RECT *LockRect, BASEIMAGE *BaseImage, int TargetScreen, IMAGEDATA *TargetImage, int TargetScreenSurface, int TargetScreenMipLevel, int ReadOnly, int TargetScreenTextureNo )
 {
 	GLuint TargetFrameBuffer ;
@@ -17526,15 +18183,15 @@ extern	int		Graphics_Hardware_LockDrawScreenBuffer_PF( RECT *LockRect, BASEIMAGE
 	GLuint TargetHeight ;
 //	COLORDATA *TargetColorData ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
-	// æ‚è‚İŒ³‚Æ‚È‚éƒT[ƒtƒFƒX‚ÌŒˆ’è
+	// å–ã‚Šè¾¼ã¿å…ƒã¨ãªã‚‹ã‚µãƒ¼ãƒ•ã‚§ã‚¹ã®æ±ºå®š
 
-	// •`‰æ‰Â”\‰æ‘œ‚ª‘ÎÛ‚Ìê‡
+	// æç”»å¯èƒ½ç”»åƒãŒå¯¾è±¡ã®å ´åˆ
 	if( TargetImage )
 	{
 		TargetFrameBuffer = TargetImage->Orig->Hard.Tex[ TargetScreenTextureNo ].PF->FrameBuffer ;
@@ -17558,47 +18215,47 @@ extern	int		Graphics_Hardware_LockDrawScreenBuffer_PF( RECT *LockRect, BASEIMAGE
 //	BaseImage->MipMapCount    = 0 ;
 //	BaseImage->GraphDataCount = 0 ;
 
-	// ƒ}ƒbƒv
+	// ãƒãƒƒãƒ—
 	if( Graphics_Android_Texture_Map( TargetTexture, TargetFrameBuffer, TargetWidth, TargetHeight, LockRect, BaseImage, &GANDR.Device.Screen.DrawScreenLockImage ) < 0 )
 	{
-		DXST_LOGFILE_ADDUTF16LE( "\xcf\x63\x3b\x75\xfe\x5b\x61\x8c\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x6e\x30\xed\x30\xc3\x30\xaf\x30\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"•`‰æ‘ÎÛƒoƒbƒtƒ@‚ÌƒƒbƒN‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\xcf\x63\x3b\x75\xfe\x5b\x61\x8c\xd0\x30\xc3\x30\xd5\x30\xa1\x30\x6e\x30\xed\x30\xc3\x30\xaf\x30\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"æç”»å¯¾è±¡ãƒãƒƒãƒ•ã‚¡ã®ãƒ­ãƒƒã‚¯ã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ;
 		return -1 ;
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// •`‰ææƒoƒbƒtƒ@‚ğƒAƒ“ƒƒbƒN‚·‚é
+// æç”»å…ˆãƒãƒƒãƒ•ã‚¡ã‚’ã‚¢ãƒ³ãƒ­ãƒƒã‚¯ã™ã‚‹
 extern	int		Graphics_Hardware_UnlockDrawScreenBuffer_PF( void )
 {
-	// ƒ}ƒbƒv‚ğ‰ğœ
+	// ãƒãƒƒãƒ—ã‚’è§£é™¤
 	Graphics_Android_Texture_Unmap( GANDR.Device.Screen.DrawScreenLockImage ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// — ‰æ–Ê‚Ì“à—e‚ğ•\‰æ–Ê‚É•`‰æ‚·‚é
+// è£ç”»é¢ã®å†…å®¹ã‚’è¡¨ç”»é¢ã«æç”»ã™ã‚‹
 extern	int		Graphics_Hardware_ScreenCopy_PF( int DrawTargetFrontScreenMode_Copy )
 {
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒfƒBƒXƒvƒŒƒC‚Ìî•ñ‚ğƒZƒbƒgƒAƒbƒv‚·‚é
+// ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ã®æƒ…å ±ã‚’ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã™ã‚‹
 extern int Graphics_SetupDisplayInfo_PF( void )
 {
 	return 0 ;
 }
 
-// ‚’¼“¯ŠúM†‚ğ‘Ò‚Â
+// å‚ç›´åŒæœŸä¿¡å·ã‚’å¾…ã¤
 extern	int		Graphics_Hardware_WaitVSync_PF( int SyncNum )
 {
 	return 0 ;
 }
 
-// ScreenFlip Às‚É‚u‚r‚x‚m‚b‘Ò‚¿‚ğ‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
+// ScreenFlip å®Ÿè¡Œæ™‚ã«ï¼¶ï¼³ï¼¹ï¼®ï¼£å¾…ã¡ã‚’ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_SetWaitVSyncFlag_PF( int Flag )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -17614,7 +18271,7 @@ extern	int		Graphics_SetWaitVSyncFlag_PF( int Flag )
 
 
 
-// — ‰æ–Ê‚Æ•\‰æ–Ê‚ğŒğŠ·‚·‚é
+// è£ç”»é¢ã¨è¡¨ç”»é¢ã‚’äº¤æ›ã™ã‚‹
 extern	int		Graphics_ScreenFlipBase_PF( void )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -17622,18 +18279,25 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		return -1 ;
 	}
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚ğI—¹‚·‚é
+	// æç”»ã‚’çµ‚äº†ã™ã‚‹
 	Graphics_Android_RenderEnd() ;
 
-	// ƒTƒuƒoƒbƒNƒoƒbƒtƒ@‚Ì“à—e‚ğÀƒoƒbƒtƒ@‚É“]‘—‚·‚é
+	// ã‚µãƒ–ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã®å†…å®¹ã‚’å®Ÿãƒãƒƒãƒ•ã‚¡ã«è»¢é€ã™ã‚‹
 	{
 		RECT DestRect ;
 		DWORD DestW ;
 		DWORD DestH ;
 		int BlendMode ;
+		int BlendEnable ;
+		int BlendRGBSrc ;
+		int BlendRGBDest ;
+		int BlendRGBOp ;
+		int BlendASrc ;
+		int BlendADest ;
+		int BlendAOp ;
 		int NotWriteAlphaChannelFlag ;
 		float VertexData[ 4 ][ 4 ] =
 		{
@@ -17675,39 +18339,46 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		DestRect.right  = DestRect.left + DestW ;
 		DestRect.bottom = DestRect.top  + DestH ;
 
-		// ƒuƒŒƒ“ƒhƒ‚[ƒh‚ğƒuƒŒƒ“ƒh–³‚µ‚É•ÏX
-		BlendMode = GANDR.Device.State.BlendMode ;
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’ãƒ–ãƒ¬ãƒ³ãƒ‰ç„¡ã—ã«å¤‰æ›´
+		BlendMode		= GANDR.Device.State.BlendMode ;
+		BlendEnable		= GANDR.Device.State.BlendEnable ;
+		BlendRGBSrc		= GANDR.Device.State.BlendRGBSrc ;
+		BlendRGBDest	= GANDR.Device.State.BlendRGBDest ;
+		BlendRGBOp		= GANDR.Device.State.BlendRGBOp ;
+		BlendASrc		= GANDR.Device.State.BlendASrc ;
+		BlendADest		= GANDR.Device.State.BlendADest ;
+		BlendAOp		= GANDR.Device.State.BlendAOp ;
 		NotWriteAlphaChannelFlag = GANDR.Device.State.NotWriteAlphaChannelFlag ;
-		Graphics_Android_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE ) ;
+		Graphics_Android_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, FALSE ) ;
 
-		// •`‰ææ‚ğƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚É•ÏX( İ’è‚Í Graphics_Android_DeviceState_RefreshRenderState ‚Å–ß‚· )
+		// æç”»å…ˆã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«å¤‰æ›´( è¨­å®šã¯ Graphics_Android_DeviceState_RefreshRenderState ã§æˆ»ã™ )
 		glBindFramebuffer( GL_FRAMEBUFFER, 0 ) ;
 
-		// ƒrƒ…[ƒ|[ƒg‚ğƒZƒbƒg( İ’è‚Í Graphics_Android_DeviceState_RefreshRenderState ‚Å–ß‚· )
+		// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã‚’ã‚»ãƒƒãƒˆ( è¨­å®šã¯ Graphics_Android_DeviceState_RefreshRenderState ã§æˆ»ã™ )
 		glViewport( DestRect.left, DestRect.top, DestRect.right - DestRect.left, DestRect.bottom - DestRect.top ) ;
 
-		// ‚yƒoƒbƒtƒ@‚ğ–³Œø‚É‚·‚é
+		// ï¼ºãƒãƒƒãƒ•ã‚¡ã‚’ç„¡åŠ¹ã«ã™ã‚‹
 		Graphics_Android_DeviceState_SetDepthEnable( FALSE ) ;
 		Graphics_Android_DeviceState_SetDepthWriteEnable( FALSE ) ;
 
-		// ƒJƒŠƒ“ƒO‚ğ–³Œø‚É‚·‚é
+		// ã‚«ãƒªãƒ³ã‚°ã‚’ç„¡åŠ¹ã«ã™ã‚‹
 		Graphics_Android_DeviceState_SetCullMode( DX_CULLING_NONE ) ;
 
-		// ‰æ–Ê‚ğƒNƒŠƒA( İ’è‚Í Graphics_Android_DeviceState_RefreshRenderState ‚Å–ß‚· )
+		// ç”»é¢ã‚’ã‚¯ãƒªã‚¢( è¨­å®šã¯ Graphics_Android_DeviceState_RefreshRenderState ã§æˆ»ã™ )
 		glClearColor( 0.0f, 0.0f, 0.0f, 0.0f ) ;
 		glClear( GL_COLOR_BUFFER_BIT ) ;
 
-		// ’Pƒ“]‘—ƒVƒF[ƒ_[‚ğƒZƒbƒg
+		// å˜ç´”è»¢é€ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ã‚»ãƒƒãƒˆ
 		Graphics_Android_DeviceState_SetShader( &GANDR.Device.Shader.Base.StretchRect_Shader, FALSE ) ;
 
-		// Uniform ‚ÌXV
+		// Uniform ã®æ›´æ–°
 		Graphics_Android_DeviceState_UpdateShaderUniform( GANDR.Device.State.SetShader, 0 ) ;
 
-		// ƒeƒNƒXƒ`ƒƒ‚ğƒZƒbƒg( İ’è‚Í Graphics_Android_DeviceState_RefreshRenderState ‚Å–ß‚· )
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ã‚»ãƒƒãƒˆ( è¨­å®šã¯ Graphics_Android_DeviceState_RefreshRenderState ã§æˆ»ã™ )
 		glActiveTexture( GL_TEXTURE0 ) ;
 		glBindTexture( GL_TEXTURE_2D, GANDR.Device.Screen.SubBackBufferTexture ) ;
 
-		// ƒ†[ƒU[w’è‚Ìƒƒ‚ƒŠƒCƒ[ƒW‚ª‚ ‚é‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+		// ãƒ¦ãƒ¼ã‚¶ãƒ¼æŒ‡å®šã®ãƒ¡ãƒ¢ãƒªã‚¤ãƒ¡ãƒ¼ã‚¸ãŒã‚ã‚‹ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 		if( GSYS.Screen.UserScreenImage != NULL )
 		{
 			BYTE *Src = ( BYTE * )GSYS.Screen.UserScreenImage ;
@@ -17715,7 +18386,7 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 			DWORD i ;
 			DWORD Bytes ;
 
-			// ƒlƒCƒeƒBƒu‚É‘Î‰‚µ‚Ä‚¢‚È‚¢ê‡‚Í•ÏŠ·‚µ‚Ä‚©‚ç“]‘—
+			// ãƒã‚¤ãƒ†ã‚£ãƒ–ã«å¯¾å¿œã—ã¦ã„ãªã„å ´åˆã¯å¤‰æ›ã—ã¦ã‹ã‚‰è»¢é€
 			if( GSYS.Screen.UserScreenImagePixelFormat == DX_USER_SCREEN_PIXEL_FORMAT_X8R8G8B8 &&
 				GANDR.Device.Caps.Extensions[ ANDROID_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] == FALSE )
 			{
@@ -17776,10 +18447,10 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 			}
 		}
 		else
-		// ƒ\ƒtƒgƒEƒFƒAƒŒƒ“ƒ_ƒŠƒ“ƒOƒ‚[ƒh‚Ìê‡‚Í‚±‚±‚ÅƒeƒNƒXƒ`ƒƒ‚ğXV
+		// ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã¯ã“ã“ã§ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’æ›´æ–°
 		if( GSYS.Setting.NotUseHardware )
 		{
-			// ƒlƒCƒeƒBƒu‚É‘Î‰‚µ‚Ä‚¢‚éê‡‚Í’Pƒ“]‘—
+			// ãƒã‚¤ãƒ†ã‚£ãƒ–ã«å¯¾å¿œã—ã¦ã„ã‚‹å ´åˆã¯å˜ç´”è»¢é€
 			if( GSYS.Screen.MainScreenColorBitDepth == 16 || GANDR.Device.Caps.Extensions[ ANDROID_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] )
 			{
 				glTexSubImage2D(
@@ -17801,7 +18472,7 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 				DWORD i ;
 				DWORD Bytes ;
 
-				// ‘Î‰‚µ‚Ä‚¢‚È‚¢ê‡‚Í•ÏŠ·‚µ‚Ä‚©‚ç“]‘—
+				// å¯¾å¿œã—ã¦ã„ãªã„å ´åˆã¯å¤‰æ›ã—ã¦ã‹ã‚‰è»¢é€
 				Src = GSYS.SoftRender.MainBufferMemImg.UseImage ;
 				Dst = ( BYTE * )GANDR.Device.Screen.SubBackBufferTextureTempBuffer ;
 				Bytes = GANDR.Device.Screen.SubBackBufferTextureSizeX * GANDR.Device.Screen.SubBackBufferTextureSizeY * 4 ;
@@ -17826,7 +18497,7 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 			}
 		}
 
-		// Šg‘åƒ‚[ƒh‚ğƒZƒbƒg
+		// æ‹¡å¤§ãƒ¢ãƒ¼ãƒ‰ã‚’ã‚»ãƒƒãƒˆ
 		{
 			GLint FilterMode = GL_LINEAR ;
 			switch( GSYS.Screen.FullScreenScalingMode )
@@ -17841,45 +18512,55 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ) ;
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE ) ;
 
-		// ’¸“_ƒf[ƒ^‚ÌƒZƒbƒgƒAƒbƒv
+		// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—
 		Graphics_Android_DeviceState_SetupShaderVertexData(
 			&GANDR.Device.Shader.Base.StretchRect_Shader,
 			&g_StretchRectVertexInputInfo,
 			VertexData
 		) ;
 
-		// •`‰æ
+		// æç”»
 		glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ) ;
 		GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
-		// ƒuƒŒƒ“ƒhƒ‚[ƒh‚ğŒ³‚É–ß‚·
-		Graphics_Android_DeviceState_SetBlendMode( BlendMode, NotWriteAlphaChannelFlag ) ;
+		// ãƒ–ãƒ¬ãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã‚’å…ƒã«æˆ»ã™
+		Graphics_Android_DeviceState_SetBlendMode(
+			BlendMode,
+			BlendEnable,
+			BlendRGBSrc,
+			BlendRGBDest,
+			BlendRGBOp,
+			BlendASrc,
+			BlendADest,
+			BlendAOp,
+			NotWriteAlphaChannelFlag
+		) ;
 	}
 
-	// ƒXƒƒbƒv‚·‚é
+	// ã‚¹ãƒ¯ãƒƒãƒ—ã™ã‚‹
 	eglSwapBuffers( GANDR.Device.Screen.Display, GANDR.Device.Screen.Surface );
 
-	// ¡‚Ü‚Å‚Ìİ’è‚ğ•œ‹A‚·‚é
+	// ä»Šã¾ã§ã®è¨­å®šã‚’å¾©å¸°ã™ã‚‹
 	Graphics_Android_DeviceState_RefreshRenderState() ;
 
 	return 0 ;
 }
 
-// ƒƒCƒ“‰æ–Ê‚Ì‚yƒoƒbƒtƒ@‚Ìİ’è‚ğ•ÏX‚·‚é
+// ãƒ¡ã‚¤ãƒ³ç”»é¢ã®ï¼ºãƒãƒƒãƒ•ã‚¡ã®è¨­å®šã‚’å¤‰æ›´ã™ã‚‹
 extern	int		Graphics_Hardware_SetZBufferMode_PF( int ZBufferSizeX, int ZBufferSizeY, int ZBufferBitDepth )
 {
-	// –¢À‘•
+	// æœªå®Ÿè£…
 	return 0 ;
 }
 
-// •`‰ææ‚yƒoƒbƒtƒ@‚ÌƒZƒbƒg
+// æç”»å…ˆï¼ºãƒãƒƒãƒ•ã‚¡ã®ã‚»ãƒƒãƒˆ
 extern	int		Graphics_Hardware_SetDrawZBuffer_PF( int DrawScreen, IMAGEDATA *Image )
 {
-	// –¢À‘•
+	// æœªå®Ÿè£…
 	return 0 ;
 }
 
-// Œ»İ‚Ì‰æ–Ê‚ÌƒŠƒtƒŒƒbƒVƒ…ƒŒ[ƒg‚ğæ“¾‚·‚é
+// ç¾åœ¨ã®ç”»é¢ã®ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥ãƒ¬ãƒ¼ãƒˆã‚’å–å¾—ã™ã‚‹
 extern	int		Graphics_GetRefreshRate_PF( void )
 {
 	return 60 ;
@@ -17908,21 +18589,21 @@ extern	int		Graphics_GetRefreshRate_PF( void )
 
 
 
-// ŠÂ‹«ˆË‘¶î•ñæ“¾ŠÖŒW
+// ç’°å¢ƒä¾å­˜æƒ…å ±å–å¾—é–¢ä¿‚
 
-// GetColor ‚â GetColor2 ‚Åg—p‚·‚éƒJƒ‰[ƒf[ƒ^‚ğæ“¾‚·‚é
+// GetColor ã‚„ GetColor2 ã§ä½¿ç”¨ã™ã‚‹ã‚«ãƒ©ãƒ¼ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—ã™ã‚‹
 extern const COLORDATA *Graphics_Hardware_GetMainColorData_PF( void )
 {
 	return Graphics_Android_GetDataFormatColorData( ANDROID_PIXEL_FORMAT_R8G8B8A8 ) ;
 }
 
-// ƒfƒBƒXƒvƒŒ[‚ÌƒJƒ‰[ƒf[ƒ^ƒ|ƒCƒ“ƒ^‚ğ“¾‚é
+// ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ãƒ¼ã®ã‚«ãƒ©ãƒ¼ãƒ‡ãƒ¼ã‚¿ãƒã‚¤ãƒ³ã‚¿ã‚’å¾—ã‚‹
 extern	const COLORDATA *Graphics_Hardware_GetDispColorData_PF( void )
 {
 	return Graphics_Android_GetDataFormatColorData( GANDR.Device.Caps.ScreenFormat ) ;
 }
 
-// w’èÀ•W‚ÌF‚ğæ“¾‚·‚é
+// æŒ‡å®šåº§æ¨™ã®è‰²ã‚’å–å¾—ã™ã‚‹
 extern	DWORD Graphics_Hardware_GetPixel_PF( int x, int y )
 {
 	RECT            SrcRect ;
@@ -17931,13 +18612,13 @@ extern	DWORD Graphics_Hardware_GetPixel_PF( int x, int y )
 	DWORD           Ret = 0xffffffff ;
 	int	Red, Green, Blue, Alpha ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
-	// •`‰ææƒoƒbƒtƒ@‚ğƒƒbƒN
+	// æç”»å…ˆãƒãƒƒãƒ•ã‚¡ã‚’ãƒ­ãƒƒã‚¯
 	SrcRect.left   = x ;
 	SrcRect.right  = x + 1 ;
 	SrcRect.top    = y ;
@@ -17989,14 +18670,14 @@ extern	DWORD Graphics_Hardware_GetPixel_PF( int x, int y )
 
 	Ret = 0xff000000 | ( ( ( unsigned int )Red ) << 16 ) | ( ( ( unsigned int )Green ) << 8 ) | ( ( unsigned int )Blue ) ;
 
-	// •`‰ææƒoƒbƒtƒ@‚ğƒAƒ“ƒƒbƒN
+	// æç”»å…ˆãƒãƒƒãƒ•ã‚¡ã‚’ã‚¢ãƒ³ãƒ­ãƒƒã‚¯
 	Graphics_Screen_UnlockDrawScreen() ;
 
-	// F‚ğ•Ô‚·
+	// è‰²ã‚’è¿”ã™
 	return Ret ;
 }
 
-// w’èÀ•W‚ÌF‚ğæ“¾‚·‚é( floatŒ^ )
+// æŒ‡å®šåº§æ¨™ã®è‰²ã‚’å–å¾—ã™ã‚‹( floatå‹ )
 extern COLOR_F Graphics_Hardware_GetPixelF_PF( int x, int y )
 {
 	RECT            SrcRect ;
@@ -18004,13 +18685,13 @@ extern COLOR_F Graphics_Hardware_GetPixelF_PF( int x, int y )
 	BASEIMAGE       BufferImage ;
 	COLOR_F			Result ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
-	// •`‰ææƒoƒbƒtƒ@‚ğƒƒbƒN
+	// æç”»å…ˆãƒãƒƒãƒ•ã‚¡ã‚’ãƒ­ãƒƒã‚¯
 	SrcRect.left   = x ;
 	SrcRect.right  = x + 1 ;
 	SrcRect.top    = y ;
@@ -18060,10 +18741,10 @@ extern COLOR_F Graphics_Hardware_GetPixelF_PF( int x, int y )
 		Result.a = ( float )Alpha / 255.0f ;
 	}
 
-	// •`‰ææƒoƒbƒtƒ@‚ğƒAƒ“ƒƒbƒN
+	// æç”»å…ˆãƒãƒƒãƒ•ã‚¡ã‚’ã‚¢ãƒ³ãƒ­ãƒƒã‚¯
 	Graphics_Screen_UnlockDrawScreen() ;
 
-	// F‚ğ•Ô‚·
+	// è‰²ã‚’è¿”ã™
 	return Result ;
 }
 
@@ -18091,45 +18772,45 @@ extern COLOR_F Graphics_Hardware_GetPixelF_PF( int x, int y )
 
 
 
-// ŠÂ‹«ˆË‘¶‰æ‘œŠÖŒW
+// ç’°å¢ƒä¾å­˜ç”»åƒé–¢ä¿‚
 
-// YUVƒT[ƒtƒFƒX‚ğg‚Á‚½ Theora “®‰æ‚Ì“à—e‚ğƒOƒ‰ƒtƒBƒbƒNƒXƒnƒ“ƒhƒ‹‚ÌƒeƒNƒXƒ`ƒƒ‚É“]‘—‚·‚é
+// YUVã‚µãƒ¼ãƒ•ã‚§ã‚¹ã‚’ä½¿ã£ãŸ Theora å‹•ç”»ã®å†…å®¹ã‚’ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¹ãƒãƒ³ãƒ‰ãƒ«ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«è»¢é€ã™ã‚‹
 extern	int		Graphics_Hardware_UpdateGraphMovie_TheoraYUV_PF( MOVIEGRAPH *Movie, IMAGEDATA *Image )
 {
-	// –¢À‘•
+	// æœªå®Ÿè£…
 	return 0 ;
 }
 
-// ƒOƒ‰ƒtƒBƒbƒNƒƒ‚ƒŠ—Ìˆæ‚ÌƒƒbƒN
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ãƒ­ãƒƒã‚¯
 extern	int		Graphics_Hardware_GraphLock_PF( IMAGEDATA *Image, COLORDATA **ColorDataP, int WriteOnly )
 {
 	COLORDATA    *TargetColorData ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
-	// ƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğæ“¾‚·‚é
+	// ã‚«ãƒ©ãƒ¼ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’å–å¾—ã™ã‚‹
 	TargetColorData = Graphics_Android_GetDataFormatColorData( GANDR.Device.Caps.TextureFormat[ Image->Orig->ColorFormat ] ) ;
 
-	// •W€ƒtƒH[ƒ}ƒbƒgˆÈŠO‚Å‚ÍƒƒbƒN‚Å‚«‚È‚¢
+	// æ¨™æº–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆä»¥å¤–ã§ã¯ãƒ­ãƒƒã‚¯ã§ããªã„
 	if( TargetColorData->Format != DX_BASEIMAGE_FORMAT_NORMAL )
 	{
 		return -1 ;
 	}
 
-	// ƒeƒ“ƒ|ƒ‰ƒŠƒoƒbƒtƒ@‚ğŠm•Û‚·‚é
+	// ãƒ†ãƒ³ãƒãƒ©ãƒªãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿ã™ã‚‹
 	Image->LockImagePitch	= ( DWORD )( TargetColorData->PixelByte * Image->WidthI ) ;
 	Image->LockImage		= ( BYTE * )DXALLOC( Image->LockImagePitch * Image->HeightI ) ;
 	if( Image->LockImage == NULL )
 	{
-		DXST_LOGFILE_ADDUTF16LE( "\xed\x30\xc3\x30\xaf\x30\x28\x75\xc6\x30\xf3\x30\xdd\x30\xe9\x30\xea\x30\xa4\x30\xe1\x30\xfc\x30\xb8\x30\x3c\x68\x0d\x7d\x28\x75\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒƒbƒN—pƒeƒ“ƒ|ƒ‰ƒŠƒCƒ[ƒWŠi”[—pƒƒ‚ƒŠ‚ÌŠm•Û‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\xed\x30\xc3\x30\xaf\x30\x28\x75\xc6\x30\xf3\x30\xdd\x30\xe9\x30\xea\x30\xa4\x30\xe1\x30\xfc\x30\xb8\x30\x3c\x68\x0d\x7d\x28\x75\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ãƒ­ãƒƒã‚¯ç”¨ãƒ†ãƒ³ãƒãƒ©ãƒªã‚¤ãƒ¡ãƒ¼ã‚¸æ ¼ç´ç”¨ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ;
 		goto ERR ;
 	}
 
-	// ‘‚«‚İê—p‚Å‚Í‚È‚¢ê‡‚Íƒeƒ“ƒ|ƒ‰ƒŠƒoƒbƒtƒ@‚Éƒf[ƒ^‚ğ“]‘—‚·‚é
+	// æ›¸ãè¾¼ã¿å°‚ç”¨ã§ã¯ãªã„å ´åˆã¯ãƒ†ãƒ³ãƒãƒ©ãƒªãƒãƒƒãƒ•ã‚¡ã«ãƒ‡ãƒ¼ã‚¿ã‚’è»¢é€ã™ã‚‹
 	if( WriteOnly == FALSE )
 	{
 		int                  i ;
@@ -18145,11 +18826,11 @@ extern	int		Graphics_Hardware_GraphLock_PF( IMAGEDATA *Image, COLORDATA **ColorD
 
 		NS_CreateARGB8ColorData( &SrcColorData ) ;
 
-		// •`‰æî•ñ‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+		// æç”»æƒ…å ±ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 		DrawTex = Image->Hard.Draw ;
 		for( i = 0 ; i < Image->Hard.DrawNum ; i ++, DrawTex ++ )
 		{
-			// ƒ}ƒbƒv
+			// ãƒãƒƒãƒ—
 			if( Graphics_Android_Texture_Map(
 				DrawTex->Tex->PF->Texture.TextureBuffer,
 				DrawTex->Tex->PF->FrameBuffer,
@@ -18162,7 +18843,7 @@ extern	int		Graphics_Hardware_GraphLock_PF( IMAGEDATA *Image, COLORDATA **ColorD
 				goto ERR ;
 			}
 
-			// “]‘—
+			// è»¢é€
 			Src  = ( BYTE * )MapBaseImage.GraphData + DrawTex->UsePosXI  * TargetColorData->PixelByte + DrawTex->UsePosYI  * MapBaseImage.Pitch ;
 			Dest = Image->LockImage                 + DrawTex->DrawPosXI * TargetColorData->PixelByte + DrawTex->DrawPosYI * Image->LockImagePitch ;
 //			WidthByte = ( DWORD )( DrawTex->WidthI * TargetColorData->PixelByte ) ;
@@ -18181,15 +18862,15 @@ extern	int		Graphics_Hardware_GraphLock_PF( IMAGEDATA *Image, COLORDATA **ColorD
 				FALSE
 			) ;
 
-			// ƒ}ƒbƒv‚Ì‰ğœ
+			// ãƒãƒƒãƒ—ã®è§£é™¤
 			Graphics_Android_Texture_Unmap( MapTempImage ) ;
 		}
 	}
 
-	// ƒJƒ‰[ƒf[ƒ^‚ÌƒAƒhƒŒƒX‚ğ•Û‘¶
+	// ã‚«ãƒ©ãƒ¼ãƒ‡ãƒ¼ã‚¿ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ä¿å­˜
 	*ColorDataP = TargetColorData ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 
 ERR :
@@ -18200,11 +18881,11 @@ ERR :
 		Image->LockImage = NULL ;
 	}
 
-	// ƒGƒ‰[I—¹
+	// ã‚¨ãƒ©ãƒ¼çµ‚äº†
 	return -1 ;
 }
 
-// ƒOƒ‰ƒtƒBƒbƒNƒƒ‚ƒŠ—Ìˆæ‚ÌƒƒbƒN‰ğœ
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ãƒ­ãƒƒã‚¯è§£é™¤
 extern	int		Graphics_Hardware_GraphUnlock_PF( IMAGEDATA *Image )
 {
 	COLORDATA           *ColorData ;
@@ -18212,13 +18893,13 @@ extern	int		Graphics_Hardware_GraphUnlock_PF( IMAGEDATA *Image )
 	BASEIMAGE            AlphaBaseImage ;
 	RECT                 Rect ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// ƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğæ“¾‚·‚é
+	// ã‚«ãƒ©ãƒ¼ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’å–å¾—ã™ã‚‹
 	ColorData = Graphics_Android_GetDataFormatColorData( GANDR.Device.Caps.TextureFormat[ Image->Orig->ColorFormat ] ) ;
 
-	// Šî–{ƒCƒ[ƒW‚ğ\’z‚·‚é
+	// åŸºæœ¬ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ§‹ç¯‰ã™ã‚‹
 	_MEMSET( &AlphaBaseImage, 0, sizeof( AlphaBaseImage ) ) ;
 	BaseImage.ColorData      = *ColorData ;
 	BaseImage.Width          = Image->WidthI ;
@@ -18228,46 +18909,46 @@ extern	int		Graphics_Hardware_GraphUnlock_PF( IMAGEDATA *Image )
 	BaseImage.MipMapCount    = 0 ;
 	BaseImage.GraphDataCount = 0 ;
 
-	// “]‘—
+	// è»¢é€
 	Rect.left   = 0 ;
 	Rect.top    = 0 ;
 	Rect.right  = Image->WidthI ;
 	Rect.bottom = Image->HeightI ;
 	Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF( &Rect, 0, 0, Image->HandleInfo.Handle, &BaseImage, &AlphaBaseImage, FALSE, FALSE, TRUE, FALSE ) ;
 
-	// ƒƒbƒNƒCƒ[ƒW‚Ì‰ğ•ú
+	// ãƒ­ãƒƒã‚¯ã‚¤ãƒ¡ãƒ¼ã‚¸ã®è§£æ”¾
 	if( Image->LockImage )
 	{
 		DXFREE( Image->LockImage ) ;
 		Image->LockImage = NULL ;
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒOƒ‰ƒtƒBƒbƒN‚Ì‚yƒoƒbƒtƒ@‚Ìó‘Ô‚ğ•Ê‚ÌƒOƒ‰ƒtƒBƒbƒN‚Ì‚yƒoƒbƒtƒ@‚ÉƒRƒs[‚·‚é( DestGrHandle ‚à SrcGrHandle ‚à‚yƒoƒbƒtƒ@‚ğ‚Á‚Ä‚¢‚é•`‰æ‰Â”\‰æ‘œ‚ÅAŠ‚ÂƒAƒ“ƒ`ƒGƒCƒŠƒAƒX‰æ‘œ‚Å‚Í‚È‚¢‚±‚Æ‚ªğŒ )
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã®ï¼ºãƒãƒƒãƒ•ã‚¡ã®çŠ¶æ…‹ã‚’åˆ¥ã®ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã®ï¼ºãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼ã™ã‚‹( DestGrHandle ã‚‚ SrcGrHandle ã‚‚ï¼ºãƒãƒƒãƒ•ã‚¡ã‚’æŒã£ã¦ã„ã‚‹æç”»å¯èƒ½ç”»åƒã§ã€ä¸”ã¤ã‚¢ãƒ³ãƒã‚¨ã‚¤ãƒªã‚¢ã‚¹ç”»åƒã§ã¯ãªã„ã“ã¨ãŒæ¡ä»¶ )
 extern	int		Graphics_Hardware_CopyGraphZBufferImage_PF( IMAGEDATA *DestImage, IMAGEDATA *SrcImage )
 {
-	// –¢À‘•
+	// æœªå®Ÿè£…
 	return 0 ;
 }
 
-// ‰æ‘œƒf[ƒ^‚Ì‰Šú‰»
+// ç”»åƒãƒ‡ãƒ¼ã‚¿ã®åˆæœŸåŒ–
 extern	int		Graphics_Hardware_InitGraph_PF( void )
 {
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒOƒ‰ƒtƒBƒbƒN‚ğ“Á’è‚ÌF‚Å“h‚è‚Â‚Ô‚·
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚’ç‰¹å®šã®è‰²ã§å¡—ã‚Šã¤ã¶ã™
 extern	int		Graphics_Hardware_FillGraph_PF( IMAGEDATA *Image, int Red, int Green, int Blue, int Alpha, int ASyncThread )
 {
-	// •W€ˆ—‚ğs‚¤
+	// æ¨™æº–å‡¦ç†ã‚’è¡Œã†
 	return 2 ;
 }
 
-// •`‰æ‰Â”\‰æ‘œ‚âƒoƒbƒNƒoƒbƒtƒ@‚©‚çw’è—Ìˆæ‚ÌƒOƒ‰ƒtƒBƒbƒN‚ğæ“¾‚·‚é
+// æç”»å¯èƒ½ç”»åƒã‚„ãƒãƒƒã‚¯ãƒãƒƒãƒ•ã‚¡ã‹ã‚‰æŒ‡å®šé ˜åŸŸã®ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚’å–å¾—ã™ã‚‹
 extern	int		Graphics_Hardware_GetDrawScreenGraphBase_PF( IMAGEDATA *Image, IMAGEDATA *TargetImage, int TargetScreen, int TargetScreenSurface, int TargetScreenMipLevel, int TargetScreenWidth, int TargetScreenHeight, int x1, int y1, int x2, int y2, int destX, int destY )
 {
 	RECT SrcRect ;
@@ -18275,17 +18956,17 @@ extern	int		Graphics_Hardware_GetDrawScreenGraphBase_PF( IMAGEDATA *Image, IMAGE
 	RECT Rect ;
 	int Width, Height ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO
 
-	// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+	// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 	Graphics_Android_RenderEnd() ;
 
-	// •‚Æ‚‚³‚ğŒvZ
+	// å¹…ã¨é«˜ã•ã‚’è¨ˆç®—
 	Width  = x2 - x1 ;
 	Height = y2 - y1 ;
 
-	// “]‘—æ‚Æ‚È‚éƒT[ƒtƒFƒX‚ª•`‰æ‰Â”\ƒeƒNƒXƒ`ƒƒ‚¾‚Á‚½ê‡‚Í’Pƒ‚É“]‘—
+	// è»¢é€å…ˆã¨ãªã‚‹ã‚µãƒ¼ãƒ•ã‚§ã‚¹ãŒæç”»å¯èƒ½ãƒ†ã‚¯ã‚¹ãƒãƒ£ã ã£ãŸå ´åˆã¯å˜ç´”ã«è»¢é€
 	if( Image->Orig->FormatDesc.DrawValidFlag )
 	{
 //		GLuint TargetFrameBuffer ;
@@ -18293,9 +18974,9 @@ extern	int		Graphics_Hardware_GetDrawScreenGraphBase_PF( IMAGEDATA *Image, IMAGE
 		GLuint TargetWidth ;
 		GLuint TargetHeight ;
 
-		// æ‚è‚İŒ³‚Æ‚È‚éƒeƒNƒXƒ`ƒƒ‚ÌŒˆ’è
+		// å–ã‚Šè¾¼ã¿å…ƒã¨ãªã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ±ºå®š
 
-		// •`‰æ‰Â”\‰æ‘œ‚ª‘ÎÛ‚Ìê‡
+		// æç”»å¯èƒ½ç”»åƒãŒå¯¾è±¡ã®å ´åˆ
 		if( TargetImage )
 		{
 //			TargetFrameBuffer = TargetImage->Orig->Hard.Tex[ 0 ].PF->FrameBuffer ;
@@ -18329,13 +19010,13 @@ extern	int		Graphics_Hardware_GetDrawScreenGraphBase_PF( IMAGEDATA *Image, IMAGE
 			&DestRect
 		) ; 
 
-		// •`‰æ‚ğI—¹‚µ‚Ä‚¨‚­
+		// æç”»ã‚’çµ‚äº†ã—ã¦ãŠã
 		Graphics_Android_RenderEnd() ;
 	}
 	else
-	// ’Êí‚ÌƒeƒNƒXƒ`ƒƒ‚¾‚Á‚½ê‡‚ÍÅ‰‚ÉƒƒbƒN‚ğ‚·
+	// é€šå¸¸ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã ã£ãŸå ´åˆã¯æœ€åˆã«ãƒ­ãƒƒã‚¯ã‚’è©¦ã™
 	{
-		// •`‰ææƒoƒbƒtƒ@‚ğƒƒbƒN
+		// æç”»å…ˆãƒãƒƒãƒ•ã‚¡ã‚’ãƒ­ãƒƒã‚¯
 		BASEIMAGE LockImage ;
 		SrcRect.left   = x1 ;
 		SrcRect.top    = y1 ;
@@ -18346,7 +19027,7 @@ extern	int		Graphics_Hardware_GetDrawScreenGraphBase_PF( IMAGEDATA *Image, IMAGE
 			return -1 ;
 		}
 
-		// ƒeƒNƒXƒ`ƒƒ‚É“]‘—
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«è»¢é€
 		Rect.left   = 0 ;
 		Rect.top    = 0 ;
 		Rect.right  = LockImage.Width ;
@@ -18361,11 +19042,11 @@ extern	int		Graphics_Hardware_GetDrawScreenGraphBase_PF( IMAGEDATA *Image, IMAGE
 			FALSE
 		) ;
 
-		// •`‰ææƒoƒbƒtƒ@‚ÌƒAƒ“ƒƒbƒN
+		// æç”»å…ˆãƒãƒƒãƒ•ã‚¡ã®ã‚¢ãƒ³ãƒ­ãƒƒã‚¯
 		Graphics_Screen_UnlockDrawScreen() ;
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
@@ -18398,7 +19079,7 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 		return -1 ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚ÌƒJƒ‰[î•ñ‚ğæ“¾‚·‚é
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã‚«ãƒ©ãƒ¼æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	DestColor = Graphics_Android_GetDataFormatColorData( DestColorFormat ) ;
 	PixelFormat = &g_AndroidPixelFormat[ DestColorFormat ] ;
 
@@ -18406,7 +19087,7 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 
 	ImageNum = Orig->FormatDesc.CubeMapTextureFlag ? CUBEMAP_SURFACE_NUM : 1 ;
 
-	// “]‘—æ‚ªƒeƒNƒXƒ`ƒƒ‘S‘Ì‚ÅAŠ‚Â“]‘—Œ³‚Éƒ~ƒbƒvƒ}ƒbƒvî•ñ‚ª‚ ‚éê‡‚Í•ªŠò
+	// è»¢é€å…ˆãŒãƒ†ã‚¯ã‚¹ãƒãƒ£å…¨ä½“ã§ã€ä¸”ã¤è»¢é€å…ƒã«ãƒŸãƒƒãƒ—ãƒãƒƒãƒ—æƒ…å ±ãŒã‚ã‚‹å ´åˆã¯åˆ†å²
 	if( DestRect->left == 0 && DestRect->right  == TexWidth  &&
 		DestRect->top  == 0 && DestRect->bottom == TexHeight &&
 		RgbBaseImage->MipMapCount >= Orig->Hard.MipMapCount )
@@ -18422,7 +19103,7 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 			Height = RgbBaseImage->Height ;
 			for( j = 0 ; ( DWORD )j < MipMapCount ; j ++ )
 			{
-				// ƒeƒNƒXƒ`ƒƒ‚Ö“]‘—
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¸è»¢é€
 				glTexSubImage2D_ASync(
 					UseTex,
 					GL_TEXTURE_2D,
@@ -18437,13 +19118,13 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 					ASyncThread
 				) ;
 
-				// Ÿ‚ÌƒCƒ[ƒW‚ÌƒTƒCƒY‚ğƒZƒbƒg
+				// æ¬¡ã®ã‚¤ãƒ¡ãƒ¼ã‚¸ã®ã‚µã‚¤ã‚ºã‚’ã‚»ãƒƒãƒˆ
 				Width  >>= 1 ;
 				Height >>= 1 ;
 				if( Width  == 0 ) Width  = 1 ;
 				if( Height == 0 ) Height = 1 ;
 
-				// “]‘—Œ³ƒAƒhƒŒƒX‚ği‚ß‚é
+				// è»¢é€å…ƒã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’é€²ã‚ã‚‹
 				ImageBuffer  = ( BYTE * )ImageBuffer + ImageSize ;
 				ImageSize   /= 4 ;
 				if( ImageSize < 8 )
@@ -18476,7 +19157,7 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 		DestPoint.x = 0 ;
 		DestPoint.y = 0 ;
 
-		// ˆêƒoƒbƒtƒ@‚ÉŠi”[
+		// ä¸€æ™‚ãƒãƒƒãƒ•ã‚¡ã«æ ¼ç´
 		ts = DestRect->right  - DestRect->left ;
 		for( ImageW = 1 ; ImageW < ts ; ImageW <<= 1 ){}
 		ts = DestRect->bottom - DestRect->top  ;
@@ -18484,7 +19165,7 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 		ImagePitch  = DestColor->PixelByte * ImageW ;
 		ImageSize   = ImagePitch * ImageH ;
 
-		// ƒsƒbƒ`‚Í‚S‚Ì”{”‚É‚·‚é
+		// ãƒ”ãƒƒãƒã¯ï¼”ã®å€æ•°ã«ã™ã‚‹
 		ImagePitch = ( ImagePitch + 3 ) / 4 * 4 ;
 
 		if( ASyncThread )
@@ -18492,7 +19173,7 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 			ImageBuffer = DXALLOC( ( size_t )( ImageSize * 2 ) ) ;
 			if( ImageBuffer == NULL )
 			{
-				DXST_LOGFILE_ADDUTF16LE( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x78\x30\xe2\x8e\x01\x90\x59\x30\x8b\x30\x3b\x75\xcf\x50\x92\x30\x00\x4e\x42\x66\x84\x76\x6b\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒeƒNƒXƒ`ƒƒ‚Ö“]‘—‚·‚é‰æ‘œ‚ğˆê“I‚ÉŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ;
+				DXST_LOGFILE_ADDUTF16LE( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x78\x30\xe2\x8e\x01\x90\x59\x30\x8b\x30\x3b\x75\xcf\x50\x92\x30\x00\x4e\x42\x66\x84\x76\x6b\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¸è»¢é€ã™ã‚‹ç”»åƒã‚’ä¸€æ™‚çš„ã«æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ;
 				return -1 ;
 			}
 		}
@@ -18511,7 +19192,7 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 		AlphaImageSize = AlphaBaseImage->Pitch * AlphaBaseImage->Height ;
 		for( i = 0 ; i < ImageNum ; i ++ )
 		{
-			// ƒ~ƒbƒvƒ}ƒbƒv‚Ì[‚³‚¾‚¯ŒJ‚è•Ô‚µ
+			// ãƒŸãƒƒãƒ—ãƒãƒƒãƒ—ã®æ·±ã•ã ã‘ç¹°ã‚Šè¿”ã—
 			ImageSW     = ImageW ;
 			ImageSH     = ImageH ;
 			ImagePitchS = ImagePitch ;
@@ -18520,10 +19201,10 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 			ImagePitchD = ImagePitch ;
 			for( j = 0 ; j < Orig->Hard.MipMapCount ; j ++ )
 			{
-				// k¬‰æ‘œ‚Ìì¬
+				// ç¸®å°ç”»åƒã®ä½œæˆ
 				if( j == 0 )
 				{
-					// level0 ‚Ì‚Í“™”{‚Ìo—ÍƒtƒH[ƒ}ƒbƒg‰æ‘œ‚ğì¬‚·‚é
+					// level0 ã®æ™‚ã¯ç­‰å€ã®å‡ºåŠ›ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆç”»åƒã‚’ä½œæˆã™ã‚‹
 					NS_GraphColorMatchBltVer2(
 						Image1,                                                   ImagePitch,            DestColor,
 						( BYTE * )RgbBaseImage->GraphData   + RgbImageSize   * i, RgbBaseImage->Pitch,   &RgbBaseImage->ColorData,
@@ -18552,7 +19233,7 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 					GraphHalfScaleBlt( DestColor, ImageD, ImagePitchD, ImageS, ImagePitchS, 0, 0, 0, 0, ImageSW, ImageSH ) ;
 				}
 
-				// ƒeƒNƒXƒ`ƒƒ‚É“]‘—
+				// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«è»¢é€
 				{
 					RECT TempRect ;
 
@@ -18584,7 +19265,7 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 					) ;
 				}
 
-				// Ÿ‚ÌƒCƒ[ƒW‚ÌƒTƒCƒY‚ğƒZƒbƒg
+				// æ¬¡ã®ã‚¤ãƒ¡ãƒ¼ã‚¸ã®ã‚µã‚¤ã‚ºã‚’ã‚»ãƒƒãƒˆ
 				ImageSW = ImageDW ;
 				ImageSH = ImageDH ;
 				ImagePitchS = ImagePitchD ;
@@ -18594,19 +19275,19 @@ static int Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
 				if( ImageDH == 0 ) ImageDH = 1 ;
 				ImagePitchD = ImageDW * DestColor->PixelByte ;
 
-				// ƒsƒbƒ`‚Í‚S‚Ì”{”‚É‚·‚é
+				// ãƒ”ãƒƒãƒã¯ï¼”ã®å€æ•°ã«ã™ã‚‹
 				ImagePitchD = ( ImagePitchD + 3 ) / 4 * 4 ;
 			}
 		}
 
-		// ƒƒ‚ƒŠ‚Ì‰ğ•ú
+		// ãƒ¡ãƒ¢ãƒªã®è§£æ”¾
 		if( ASyncThread )
 		{
 			DXFREE( ImageBuffer ) ;
 		}
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
@@ -18652,7 +19333,7 @@ extern int Graphics_Android_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 		return -1 ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚ÌƒJƒ‰[î•ñ‚ğæ“¾‚·‚é
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ã‚«ãƒ©ãƒ¼æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	DestColor = Graphics_Android_GetDataFormatColorData( DestColorFormat ) ;
 	PixelFormat = &g_AndroidPixelFormat[ DestColorFormat ] ;
 
@@ -18676,7 +19357,7 @@ extern int Graphics_Android_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 	TempBufferPitch  =                   ( TempBufferWidth  + ( RightLineFillFlag  ? 1 : 0 ) ) * DestColor->PixelByte ;
 	TempBufferSize   = ( unsigned int )( ( TempBufferHeight + ( BottomLineFillFlag ? 1 : 0 ) ) * TempBufferPitch ) ;
 
-	// ƒsƒbƒ`‚Í‚S‚Ì”{”‚É‚·‚é
+	// ãƒ”ãƒƒãƒã¯ï¼”ã®å€æ•°ã«ã™ã‚‹
 	TempBufferPitch = ( TempBufferPitch + 3 ) / 4 * 4 ;
 
 	if( ASyncThread )
@@ -18684,7 +19365,7 @@ extern int Graphics_Android_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 		TempBuffer      = DXALLOC( TempBufferSize ) ;
 		if( TempBuffer == NULL )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6b\x30\x3b\x75\xcf\x50\x92\x30\xe2\x8e\x01\x90\x59\x30\x8b\x30\x5f\x30\x81\x30\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x5b\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x50\x00\x53\x00\x34\x00\x5f\x00\x42\x00\x6c\x00\x74\x00\x42\x00\x6d\x00\x70\x00\x4f\x00\x72\x00\x42\x00\x61\x00\x73\x00\x65\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x54\x00\x6f\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x33\x00\x5f\x00\x4e\x00\x6f\x00\x4d\x00\x69\x00\x70\x00\x4d\x00\x61\x00\x70\x00\x42\x00\x6c\x00\x74\x00\x5d\x00\x0a\x00\x00"/*@ L"ƒeƒNƒXƒ`ƒƒ‚É‰æ‘œ‚ğ“]‘—‚·‚é‚½‚ß‚Ìƒƒ‚ƒŠ‚ÌŠm•Û‚É¸”s‚µ‚Ü‚µ‚½[Graphics_Android_BltBmpOrBaseImageToGraph3_NoMipMapBlt]\n" @*/ )) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x6b\x30\x3b\x75\xcf\x50\x92\x30\xe2\x8e\x01\x90\x59\x30\x8b\x30\x5f\x30\x81\x30\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x5b\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x69\x00\x63\x00\x73\x00\x5f\x00\x50\x00\x53\x00\x34\x00\x5f\x00\x42\x00\x6c\x00\x74\x00\x42\x00\x6d\x00\x70\x00\x4f\x00\x72\x00\x42\x00\x61\x00\x73\x00\x65\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x54\x00\x6f\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x33\x00\x5f\x00\x4e\x00\x6f\x00\x4d\x00\x69\x00\x70\x00\x4d\x00\x61\x00\x70\x00\x42\x00\x6c\x00\x74\x00\x5d\x00\x0a\x00\x00"/*@ L"ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«ç”»åƒã‚’è»¢é€ã™ã‚‹ãŸã‚ã®ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ[Graphics_Android_BltBmpOrBaseImageToGraph3_NoMipMapBlt]\n" @*/ )) ;
 			return -1 ;
 		}
 	}
@@ -18699,7 +19380,7 @@ extern int Graphics_Android_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 
 	for( i = 0 ; i < ImageNum ; i ++ )
 	{
-		// “]‘—ˆ—
+		// è»¢é€å‡¦ç†
 
 		ImageSize      = ( DWORD )( RgbBaseImage->Pitch   * RgbBaseImage->Height   ) ;
 		AlphaImageSize = ( DWORD )( AlphaBaseImage->Pitch * AlphaBaseImage->Height ) ;
@@ -18707,7 +19388,7 @@ extern int Graphics_Android_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 		SrcRgbAddr   = ( BYTE * )RgbBaseImage->GraphData   + i * ImageSize ;
 		SrcAlphaAddr = ( BYTE * )AlphaBaseImage->GraphData + i * AlphaImageSize ;
 
-		// ƒeƒ“ƒ|ƒ‰ƒŠƒoƒbƒtƒ@‚É‰æ‘œƒf[ƒ^‚ğ“]‘—‚·‚é
+		// ãƒ†ãƒ³ãƒãƒ©ãƒªãƒãƒƒãƒ•ã‚¡ã«ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’è»¢é€ã™ã‚‹
 		{
 			NS_GraphColorMatchBltVer2(
 				TempBuffer,     TempBufferPitch,       DestColor,
@@ -18757,7 +19438,7 @@ extern int Graphics_Android_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 				}
 			}
 
-			// ƒeƒNƒXƒ`ƒƒ‚Ö“]‘—
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¸è»¢é€
 			glTexSubImage2D_ASync(
 				UseTex,
 				GL_TEXTURE_2D,
@@ -18784,11 +19465,11 @@ extern int Graphics_Android_BltBmpOrBaseImageToGraph3_NoMipMapBlt(
 		}
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// Android ‚ÌƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚É‰æ‘œƒf[ƒ^‚ğ“]‘—‚·‚é‚½‚ß‚ÌŠÖ”
+// Android ã®ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒãƒ³ãƒ‰ãƒ«ã«ç”»åƒãƒ‡ãƒ¼ã‚¿ã‚’è»¢é€ã™ã‚‹ãŸã‚ã®é–¢æ•°
 extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 	const RECT		*SrcRect,
 	      int		DestX,
@@ -18816,10 +19497,10 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 	int							SrcWidth ;
 	int							SrcHeight ;
 
-	// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+	// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 	DRAWSTOCKINFO_ASYNC( ASyncThread ) ;
 
-	// DXTˆ³k‚Ì‰æ‘œ‚©‚ğ’²‚×‚Ä‚¨‚­
+	// DXTåœ§ç¸®ã®ç”»åƒã‹ã‚’èª¿ã¹ã¦ãŠã
 	IsDXT =
 		( RgbBaseImage->ColorData.Format == DX_BASEIMAGE_FORMAT_DXT1 ||
 		  RgbBaseImage->ColorData.Format == DX_BASEIMAGE_FORMAT_DXT2 ||
@@ -18829,7 +19510,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 		  RgbBaseImage->ColorData.Format == DX_BASEIMAGE_FORMAT_BC7_UNORM ||
 		  RgbBaseImage->ColorData.Format == DX_BASEIMAGE_FORMAT_BC7_UNORM_SRGB ) ? TRUE : FALSE ;
 
-	// “]‘—•‚ğŒvZ‚µ‚Ä‚¨‚­
+	// è»¢é€å¹…ã‚’è¨ˆç®—ã—ã¦ãŠã
 	SrcWidth  = SrcRect->right  - SrcRect->left ;
 	SrcHeight = SrcRect->bottom - SrcRect->top ;
 	if( SrcWidth <= 0 || SrcHeight <= 0 )
@@ -18837,7 +19518,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 		return 0 ;
 	}
 
-	// ƒGƒ‰[”»’è
+	// ã‚¨ãƒ©ãƒ¼åˆ¤å®š
 	if( ASyncThread )
 	{
 		if( GRAPHCHK_ASYNC( GrHandle, Image ) )
@@ -18854,23 +19535,23 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 	}
 	Orig = Image->Orig ;
 
-	// ƒCƒ[ƒW‚Ì”‚ğƒZƒbƒg
+	// ã‚¤ãƒ¡ãƒ¼ã‚¸ã®æ•°ã‚’ã‚»ãƒƒãƒˆ
 //	ImageNum = RgbBaseImage->GraphDataCount == 0 ? 1 : RgbBaseImage->GraphDataCount ;
 
-	// “]‘—ˆÊ’u‚ÌƒZƒbƒg
+	// è»¢é€ä½ç½®ã®ã‚»ãƒƒãƒˆ
 //	DestPoint.x = 0 ;
 //	DestPoint.y = 0 ;
 
-	// “]‘—‘ÎÛ‚ªƒIƒŠƒWƒiƒ‹‰æ‘œ‚É‘Î‚µ‚Ä‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+	// è»¢é€å¯¾è±¡ãŒã‚ªãƒªã‚¸ãƒŠãƒ«ç”»åƒã«å¯¾ã—ã¦ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 	if( TargetOrig == TRUE )
 	{
-		// ƒIƒŠƒWƒiƒ‹‰æ‘œ‚É‘Î‚µ‚Ä‚Ìê‡
+		// ã‚ªãƒªã‚¸ãƒŠãƒ«ç”»åƒã«å¯¾ã—ã¦ã®å ´åˆ
 
-		// ƒeƒNƒXƒ`ƒƒ‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 		OrigTex = Orig->Hard.Tex ;
 		for( i = 0 ; i < Orig->Hard.TexNum ; i ++, OrigTex ++ )
 		{
-			// “]‘—‹éŒ`‚Ìì¬
+			// è»¢é€çŸ©å½¢ã®ä½œæˆ
 			if( Graphics_Image_BltBmpOrBaseImageToGraph3_Make_OrigTex_MoveRect(
 					OrigTex,
 					SrcRect,
@@ -18887,7 +19568,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 
 			UseTex = OrigTex->PF->Texture.TextureBuffer ;
 
-			// ƒ~ƒbƒvƒ}ƒbƒv‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+			// ãƒŸãƒƒãƒ—ãƒãƒƒãƒ—ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 			if( Orig->Hard.MipMapCount > 1 )
 			{
 				if( Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
@@ -18929,15 +19610,15 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 	}
 	else
 	{
-		// ƒIƒŠƒWƒiƒ‹‰æ‘œ‚É‘Î‚µ‚Ä‚Å‚Í‚È‚¢ê‡
+		// ã‚ªãƒªã‚¸ãƒŠãƒ«ç”»åƒã«å¯¾ã—ã¦ã§ã¯ãªã„å ´åˆ
 
-		// •`‰æî•ñ‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+		// æç”»æƒ…å ±ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 		DrawTex = Image->Hard.Draw ;
 //		DestPoint.x = 0 ;
 //		DestPoint.y = 0 ;
 		for( i = 0 ; i < Image->Hard.DrawNum ; i ++, DrawTex ++ )
 		{
-			// “]‘—‹éŒ`‚Ìì¬
+			// è»¢é€çŸ©å½¢ã®ä½œæˆ
 			if( Graphics_Image_BltBmpOrBaseImageToGraph3_Make_DrawTex_MoveRect(
 					DrawTex,
 					SrcRect,
@@ -18954,7 +19635,7 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 
 			UseTex = DrawTex->Tex->PF->Texture.TextureBuffer ;
 
-			// ƒ~ƒbƒvƒ}ƒbƒv‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+			// ãƒŸãƒƒãƒ—ãƒãƒƒãƒ—ã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 			if( Orig->Hard.MipMapCount > 1 )
 			{
 				if( Graphics_Android_BltBmpOrBaseImageToGraph3_MipMapBlt(
@@ -18995,11 +19676,11 @@ extern	int		Graphics_Hardware_BltBmpOrBaseImageToGraph3_PF(
 		}
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 
 
-	// ƒGƒ‰[I—¹
+	// ã‚¨ãƒ©ãƒ¼çµ‚äº†
 ERR :
 	return -1 ;
 }
@@ -19011,7 +19692,7 @@ static int Graphics_Hardware_CreateOrigTexture_ASyncCallback( ASYNCLOAD_MAINTHRE
 }
 #endif // DX_NON_ASYNCLOAD
 
-// ƒIƒŠƒWƒiƒ‹‰æ‘œî•ñ’†‚ÌƒeƒNƒXƒ`ƒƒ‚ğì¬‚·‚é( 0:¬Œ÷  -1:¸”s )
+// ã‚ªãƒªã‚¸ãƒŠãƒ«ç”»åƒæƒ…å ±ä¸­ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆã™ã‚‹( 0:æˆåŠŸ  -1:å¤±æ•— )
 extern	int		Graphics_Hardware_CreateOrigTexture_PF(  IMAGEDATA_ORIG *Orig, int ASyncThread )
 {
 	int							i, j ;
@@ -19028,17 +19709,17 @@ extern	int		Graphics_Hardware_CreateOrigTexture_PF(  IMAGEDATA_ORIG *Orig, int A
 	}
 #endif // DX_NON_ASYNCLOAD
 
-	// ƒn[ƒhƒEƒGƒA‚ğg—p‚·‚é‰æ‘œ‚Å‚Í‚È‚¢ê‡‚Í‰½‚à‚¹‚¸‚ÉI—¹
+	// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚’ä½¿ç”¨ã™ã‚‹ç”»åƒã§ã¯ãªã„å ´åˆã¯ä½•ã‚‚ã›ãšã«çµ‚äº†
 	if( Orig->FormatDesc.TextureFlag == FALSE )
 	{
 		return 0 ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚Ìê‡‚ÍƒeƒNƒXƒ`ƒƒ‚Ì”‚¾‚¯ƒeƒNƒXƒ`ƒƒ‚ğì¬
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®å ´åˆã¯ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ•°ã ã‘ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆ
 	OrigTex = Orig->Hard.Tex ;
 	for( i = 0 ; i < Orig->Hard.TexNum ; i ++, OrigTex ++ )
 	{
-		// ƒeƒNƒXƒ`ƒƒ‚ğì¬
+		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆ
 		if( OrigTex->PF->Texture.TextureBuffer == 0 )
 		{
 			PIXELFORMAT_INFO_ANDR *PixelFormat ;
@@ -19110,41 +19791,41 @@ extern	int		Graphics_Hardware_CreateOrigTexture_PF(  IMAGEDATA_ORIG *Orig, int A
 			}
 		}
 
-		// •`‰æ‘ÎÛ‚É‚Å‚«‚éê‡‚ÍƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ğì¬
+		// æç”»å¯¾è±¡ã«ã§ãã‚‹å ´åˆã¯ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ
 		if( Orig->FormatDesc.DrawValidFlag )
 		{
-			// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ğì¬
+			// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ
 			if( OrigTex->PF->FrameBuffer == 0 )
 			{
 				glGenFramebuffers( 1, &OrigTex->PF->FrameBuffer ) ;
 				glBindFramebuffer( GL_FRAMEBUFFER, OrigTex->PF->FrameBuffer ) ;
 
-				// [“xƒoƒbƒtƒ@‚ğì¬
+				// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ
 				glGenRenderbuffers( 1, &OrigTex->PF->DepthBuffer ) ;
 				glBindRenderbuffer( GL_RENDERBUFFER, OrigTex->PF->DepthBuffer ) ;
 				glRenderbufferStorage( GL_RENDERBUFFER, GANDR.Device.Caps.DepthBufferFormat[ Orig->ZBufferBitDepthIndex ], OrigTex->TexWidth, OrigTex->TexHeight ) ;
 
-				// [“xƒoƒbƒtƒ@‚ÆƒeƒNƒXƒ`ƒƒ‚ğƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÉƒAƒ^ƒbƒ`
+				// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã¨ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«ã‚¢ã‚¿ãƒƒãƒ
 				glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,  GL_RENDERBUFFER, OrigTex->PF->DepthBuffer ) ;
 				glFramebufferTexture2D(    GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,   OrigTex->PF->Texture.TextureBuffer, 0 ) ;
 
-				// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğŒ³‚É–ß‚·
+				// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’å…ƒã«æˆ»ã™
 				glBindFramebuffer( GL_FRAMEBUFFER, GANDR.Device.State.TargetFrameBuffer ) ;
 			}
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒeƒNƒXƒ`ƒƒ‚ğ‰ğ•ú‚·‚é
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è§£æ”¾ã™ã‚‹
 static int Graphics_Hardware_Android_DeleteTexture( GLuint Texture )
 {
 	int i ;
 	int Flag ;
 
-	// ƒVƒF[ƒ_[‚Åg—p‚·‚éƒeƒNƒXƒ`ƒƒ‚Æ‚µ‚Äİ’è‚³‚ê‚Ä‚¢‚½‚ç‰ğœ‚·‚é
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã§ä½¿ç”¨ã™ã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¨ã—ã¦è¨­å®šã•ã‚Œã¦ã„ãŸã‚‰è§£é™¤ã™ã‚‹
 	Flag = FALSE ;
 	for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
 	{
@@ -19156,7 +19837,7 @@ static int Graphics_Hardware_Android_DeleteTexture( GLuint Texture )
 
 		if( Flag == FALSE )
 		{
-			// •`‰æ‘Ò‹@‚µ‚Ä‚¢‚é•`‰æ•¨‚ğ•`‰æ
+			// æç”»å¾…æ©Ÿã—ã¦ã„ã‚‹æç”»ç‰©ã‚’æç”»
 			DRAWSTOCKINFO
 			Flag = TRUE ;
 		}
@@ -19164,25 +19845,25 @@ static int Graphics_Hardware_Android_DeleteTexture( GLuint Texture )
 		Graphics_Android_DeviceState_SetTexture( i, NULL ) ;
 	}
 
-	// ‚Ç‚±‚©‚ÌƒXƒƒbƒg‚ÉƒZƒbƒg‚³‚ê‚Ä‚¢‚½‚ç•`‰æ—pƒeƒNƒXƒ`ƒƒ‚à‰ğœ
+	// ã©ã“ã‹ã®ã‚¹ãƒ­ãƒƒãƒˆã«ã‚»ãƒƒãƒˆã•ã‚Œã¦ã„ãŸã‚‰æç”»ç”¨ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚‚è§£é™¤
 	if( Flag )
 	{
 		Graphics_Android_DrawSetting_SetTexture( NULL ) ;
 	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚ğíœ‚·‚é
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’å‰Šé™¤ã™ã‚‹
 	glDeleteTextures( 1, &Texture ) ;
 
 	return 0 ;
 }
 
-// ƒIƒŠƒWƒiƒ‹‰æ‘œî•ñ’†‚ÌƒeƒNƒXƒ`ƒƒ‚ğ‰ğ•ú‚·‚é
+// ã‚ªãƒªã‚¸ãƒŠãƒ«ç”»åƒæƒ…å ±ä¸­ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è§£æ”¾ã™ã‚‹
 extern int Graphics_Hardware_ReleaseOrigTexture_PF( IMAGEDATA_ORIG *Orig )
 {
 	int i ;
 	IMAGEDATA_ORIG_HARD_TEX *OrigTex ;
 
-	// ƒn[ƒhƒEƒGƒA‚ğg—p‚·‚é‰æ‘œ‚Å‚Í‚È‚¢ê‡‚Í‰½‚à‚¹‚¸‚ÉI—¹
+	// ãƒãƒ¼ãƒ‰ã‚¦ã‚¨ã‚¢ã‚’ä½¿ç”¨ã™ã‚‹ç”»åƒã§ã¯ãªã„å ´åˆã¯ä½•ã‚‚ã›ãšã«çµ‚äº†
 	if( Orig->FormatDesc.TextureFlag == FALSE )
 	{
 		return 0 ;
@@ -19210,17 +19891,17 @@ extern int Graphics_Hardware_ReleaseOrigTexture_PF( IMAGEDATA_ORIG *Orig )
 		}
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// w’è‚Ìƒ}ƒ‹ƒ`ƒTƒ“ƒvƒ‹”‚Åg—p‚Å‚«‚éÅ‘åƒNƒIƒŠƒeƒB’l‚ğæ“¾‚·‚é
+// æŒ‡å®šã®ãƒãƒ«ãƒã‚µãƒ³ãƒ—ãƒ«æ•°ã§ä½¿ç”¨ã§ãã‚‹æœ€å¤§ã‚¯ã‚ªãƒªãƒ†ã‚£å€¤ã‚’å–å¾—ã™ã‚‹
 extern	int		Graphics_Hardware_GetMultiSampleQuality_PF( int Samples )
 {
 	return 0 ;
 }
 
-// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Åg—p‚·‚éŠÂ‹«ˆË‘¶‚ÌƒeƒNƒXƒ`ƒƒƒtƒH[ƒ}ƒbƒg‚ğw’è‚·‚é
+// ä½œæˆã™ã‚‹ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒãƒ³ãƒ‰ãƒ«ã§ä½¿ç”¨ã™ã‚‹ç’°å¢ƒä¾å­˜ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’æŒ‡å®šã™ã‚‹
 extern int Graphics_Hardware_SetUsePlatformTextureFormat_PF( int PlatformTextureFormat )
 {
 	return 0 ;
@@ -19253,9 +19934,9 @@ extern int Graphics_Hardware_SetUsePlatformTextureFormat_PF( int PlatformTexture
 
 
 
-// ŠÂ‹«ˆË‘¶’¸“_ƒoƒbƒtƒ@EƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ŠÖŒW
+// ç’°å¢ƒä¾å­˜é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒ»ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡é–¢ä¿‚
 
-// ’¸“_ƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚Ì’¸“_ƒoƒbƒtƒ@‚ğì¬‚·‚é
+// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒãƒ³ãƒ‰ãƒ«ã®é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆã™ã‚‹
 extern	int		Graphics_Hardware_VertexBuffer_Create_PF( VERTEXBUFFERHANDLEDATA *VertexBuffer )
 {
 	glGenBuffers( 1, &VertexBuffer->PF->VertexBuffer ) ;
@@ -19266,7 +19947,7 @@ extern	int		Graphics_Hardware_VertexBuffer_Create_PF( VERTEXBUFFERHANDLEDATA *Ve
 	return 0 ;
 }
 
-// ’¸“_ƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚ÌŒãn––
+// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ãƒãƒ³ãƒ‰ãƒ«ã®å¾Œå§‹æœ«
 extern	int		Graphics_Hardware_VertexBuffer_Terminate_PF( VERTEXBUFFERHANDLEDATA *VertexBuffer )
 {
 	glDeleteBuffers( 1, &VertexBuffer->PF->VertexBuffer ) ;
@@ -19274,18 +19955,18 @@ extern	int		Graphics_Hardware_VertexBuffer_Terminate_PF( VERTEXBUFFERHANDLEDATA 
 	return 0 ;
 }
 
-// ’¸“_ƒoƒbƒtƒ@‚É’¸“_ƒf[ƒ^‚ğ“]‘—‚·‚é
+// é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã«é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’è»¢é€ã™ã‚‹
 extern	int		Graphics_Hardware_VertexBuffer_SetData_PF( VERTEXBUFFERHANDLEDATA *VertexBuffer, int SetIndex, const void *VertexData, int VertexNum )
 {
 	glBindBuffer(    GL_ARRAY_BUFFER, VertexBuffer->PF->VertexBuffer ) ;
 	glBufferSubData( GL_ARRAY_BUFFER, SetIndex * VertexBuffer->UnitSize, VertexNum * VertexBuffer->UnitSize, VertexData ) ;
 	glBindBuffer(    GL_ARRAY_BUFFER, 0 ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚ÌƒZƒbƒgƒAƒbƒv‚ğs‚¤
+// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ãƒãƒ³ãƒ‰ãƒ«ã®ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã‚’è¡Œã†
 extern	int		Graphics_Hardware_IndexBuffer_Create_PF( INDEXBUFFERHANDLEDATA *IndexBuffer )
 {
 	glGenBuffers( 1, &IndexBuffer->PF->IndexBuffer ) ;
@@ -19296,7 +19977,7 @@ extern	int		Graphics_Hardware_IndexBuffer_Create_PF( INDEXBUFFERHANDLEDATA *Inde
 	return 0 ;
 }
 
-// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚ÌŒãn––
+// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ãƒãƒ³ãƒ‰ãƒ«ã®å¾Œå§‹æœ«
 extern	int		Graphics_Hardware_IndexBuffer_Terminate_PF( INDEXBUFFERHANDLEDATA *IndexBuffer )
 {
 	glDeleteBuffers( 1, &IndexBuffer->PF->IndexBuffer ) ;
@@ -19304,14 +19985,14 @@ extern	int		Graphics_Hardware_IndexBuffer_Terminate_PF( INDEXBUFFERHANDLEDATA *I
 	return 0 ;
 }
 
-// ƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@‚ÉƒCƒ“ƒfƒbƒNƒXƒf[ƒ^‚ğ“]‘—‚·‚é
+// ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒãƒƒãƒ•ã‚¡ã«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ‡ãƒ¼ã‚¿ã‚’è»¢é€ã™ã‚‹
 extern	int		Graphics_Hardware_IndexBuffer_SetData_PF( INDEXBUFFERHANDLEDATA *IndexBuffer, int SetIndex, const void *IndexData, int IndexNum )
 {
 	glBindBuffer(    GL_ELEMENT_ARRAY_BUFFER, IndexBuffer->PF->IndexBuffer ) ;
 	glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, SetIndex * IndexBuffer->UnitSize, IndexNum * IndexBuffer->UnitSize, IndexData ) ;
 	glBindBuffer(    GL_ELEMENT_ARRAY_BUFFER, 0 ) ;
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
@@ -19337,30 +20018,37 @@ extern	int		Graphics_Hardware_IndexBuffer_SetData_PF( INDEXBUFFERHANDLEDATA *Ind
 
 
 
-// ŠÂ‹«ˆË‘¶ƒ‰ƒCƒgŠÖŒW
+// ç’°å¢ƒä¾å­˜ãƒ©ã‚¤ãƒˆé–¢ä¿‚
 
-// ƒ‰ƒCƒeƒBƒ“ƒO‚ğs‚¤‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
+// ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ã‚’è¡Œã†ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Hardware_Light_SetUse_PF( int Flag )
 {
 	return Graphics_Android_DeviceState_SetLighting( Flag ) ;
 }
 
-// ƒOƒ[ƒoƒ‹ƒAƒ“ƒrƒGƒ“ƒgƒ‰ƒCƒgƒJƒ‰[‚ğİ’è‚·‚é
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆãƒ©ã‚¤ãƒˆã‚«ãƒ©ãƒ¼ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Hardware_Light_GlobalAmbient_PF( COLOR_F *Color )
 {
 	return Graphics_Android_DeviceState_SetAmbient( Color ) ;
 }
 
-// ƒ‰ƒCƒgƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg
+// ãƒ©ã‚¤ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’ã‚»ãƒƒãƒˆ
 extern	int		Graphics_Hardware_Light_SetState_PF( int LightNumber, LIGHTPARAM *LightParam )
 {
 	return Graphics_Android_DeviceState_SetLightState( LightNumber, LightParam ) ;
 }
 
-// ƒ‰ƒCƒg‚Ì—LŒøA–³Œø‚ğ•ÏX
+// ãƒ©ã‚¤ãƒˆã®æœ‰åŠ¹ã€ç„¡åŠ¹ã‚’å¤‰æ›´
 extern	int		Graphics_Hardware_Light_SetEnable_PF( int LightNumber, int EnableState )
 {
 	return Graphics_Android_DeviceState_SetLightEnable( LightNumber, EnableState ) ;
+}
+
+// ãƒ©ã‚¤ãƒˆã®è¨ˆç®—ã§è§’åº¦æ¸›è¡°ã‚’è¡Œã‚ãªã„ã‚ˆã†ã«ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¨­å®šã™ã‚‹
+extern	int		Graphics_Hardware_Light_SetNoAngleAttenuation_PF( int NoAngleAttenuation )
+{
+	// æœªå®Ÿè£…
+	return 0 ;
 }
 
 
@@ -19389,10 +20077,9 @@ extern	int		Graphics_Hardware_Light_SetEnable_PF( int LightNumber, int EnableSta
 
 
 
+// ç’°å¢ƒä¾å­˜ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—é–¢ä¿‚
 
-// ŠÂ‹«ˆË‘¶ƒVƒƒƒhƒEƒ}ƒbƒvŠÖŒW
-
-// ƒVƒƒƒhƒEƒ}ƒbƒvƒf[ƒ^‚É•K—v‚ÈƒeƒNƒXƒ`ƒƒ‚ğì¬‚·‚é
+// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ãƒ‡ãƒ¼ã‚¿ã«å¿…è¦ãªãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆã™ã‚‹
 extern	int		Graphics_Hardware_ShadowMap_CreateTexture_PF( SHADOWMAPDATA *ShadowMap, int ASyncThread )
 {
 	if( ANDR_CHECKVALID_HARDWARE == FALSE )
@@ -19400,7 +20087,7 @@ extern	int		Graphics_Hardware_ShadowMap_CreateTexture_PF( SHADOWMAPDATA *ShadowM
 		return -1 ;
 	}
 
-	// ƒtƒH[ƒ}ƒbƒg‚ÌŒˆ’è
+	// ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®æ±ºå®š
 	if( ShadowMap->TexFormat_Float )
 	{
 		if( ShadowMap->TexFormat_BitDepth == 16 )
@@ -19428,14 +20115,14 @@ extern	int		Graphics_Hardware_ShadowMap_CreateTexture_PF( SHADOWMAPDATA *ShadowM
 		}
 	}
 
-//	// Œˆ’è‚µ‚½ƒtƒH[ƒ}ƒbƒg‚ªì¬‚Å‚«‚È‚¢ê‡‚Í¸”s
+//	// æ±ºå®šã—ãŸãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãŒä½œæˆã§ããªã„å ´åˆã¯å¤±æ•—
 //	if( GANDR.Device.Caps.TextureFormat[ ShadowMap->ColorFormat ] == D_DXGI_FORMAT_UNKNOWN )
 //	{
-//		DXST_LOGFILE_ADDUTF16LE( "\xb7\x30\xe3\x30\xc9\x30\xa6\x30\xde\x30\xc3\x30\xd7\x30\xc7\x30\xfc\x30\xbf\x30\x28\x75\x6e\x30\xd5\x30\xa9\x30\xfc\x30\xde\x30\xc3\x30\xc8\x30\x67\x30\x5c\x4f\x10\x62\x67\x30\x4d\x30\x8b\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xd5\x30\xa9\x30\xfc\x30\xde\x30\xc3\x30\xc8\x30\x4c\x30\x42\x30\x8a\x30\x7e\x30\x5b\x30\x93\x30\x67\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒVƒƒƒhƒEƒ}ƒbƒvƒf[ƒ^—p‚ÌƒtƒH[ƒ}ƒbƒg‚Åì¬‚Å‚«‚éƒeƒNƒXƒ`ƒƒƒtƒH[ƒ}ƒbƒg‚ª‚ ‚è‚Ü‚¹‚ñ‚Å‚µ‚½\n" @*/ ) ;
+//		DXST_LOGFILE_ADDUTF16LE( "\xb7\x30\xe3\x30\xc9\x30\xa6\x30\xde\x30\xc3\x30\xd7\x30\xc7\x30\xfc\x30\xbf\x30\x28\x75\x6e\x30\xd5\x30\xa9\x30\xfc\x30\xde\x30\xc3\x30\xc8\x30\x67\x30\x5c\x4f\x10\x62\x67\x30\x4d\x30\x8b\x30\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xd5\x30\xa9\x30\xfc\x30\xde\x30\xc3\x30\xc8\x30\x4c\x30\x42\x30\x8a\x30\x7e\x30\x5b\x30\x93\x30\x67\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ãƒ‡ãƒ¼ã‚¿ç”¨ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã§ä½œæˆã§ãã‚‹ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãŒã‚ã‚Šã¾ã›ã‚“ã§ã—ãŸ\n" @*/ ) ;
 //		return -1 ;
 //	}
 
-	// ƒeƒNƒXƒ`ƒƒ‚ğì¬
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆ
 	{
 		PIXELFORMAT_INFO_ANDR *PixelFormat ;
 
@@ -19490,14 +20177,14 @@ extern	int		Graphics_Hardware_ShadowMap_CreateTexture_PF( SHADOWMAPDATA *ShadowM
 		}
 	}
 
-	// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ğì¬
+	// ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ
 	if( ShadowMap->PF->FrameBuffer == 0 )
 	{
 		glGenFramebuffers( 1, &ShadowMap->PF->FrameBuffer ) ;
 	}
 	glBindFramebuffer( GL_FRAMEBUFFER, ShadowMap->PF->FrameBuffer ) ;
 
-	// [“xƒoƒbƒtƒ@‚ğì¬
+	// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã‚’ä½œæˆ
 	if( ShadowMap->PF->DepthBuffer == 0 )
 	{
 		glGenRenderbuffers( 1, &ShadowMap->PF->DepthBuffer ) ;
@@ -19505,15 +20192,15 @@ extern	int		Graphics_Hardware_ShadowMap_CreateTexture_PF( SHADOWMAPDATA *ShadowM
 	glBindRenderbuffer( GL_RENDERBUFFER, ShadowMap->PF->DepthBuffer ) ;
 	glRenderbufferStorage( GL_RENDERBUFFER, GANDR.Device.Caps.DepthBufferFormat[ ShadowMap->ZBufferFormat ], ShadowMap->BaseSizeX, ShadowMap->BaseSizeY ) ;
 
-	// [“xƒoƒbƒtƒ@‚ÆƒeƒNƒXƒ`ƒƒ‚ğƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÉƒAƒ^ƒbƒ`
+	// æ·±åº¦ãƒãƒƒãƒ•ã‚¡ã¨ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«ã‚¢ã‚¿ãƒƒãƒ
 	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,  GL_RENDERBUFFER, ShadowMap->PF->DepthBuffer ) ;
 	glFramebufferTexture2D(    GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,   ShadowMap->PF->Texture.TextureBuffer, 0 ) ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒƒƒhƒEƒ}ƒbƒvƒf[ƒ^‚É•K—v‚ÈƒeƒNƒXƒ`ƒƒ‚ğ‰ğ•ú‚·‚é
+// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ãƒ‡ãƒ¼ã‚¿ã«å¿…è¦ãªãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’è§£æ”¾ã™ã‚‹
 extern	int		Graphics_Hardware_ShadowMap_ReleaseTexture_PF( SHADOWMAPDATA *ShadowMap )
 {
 	if( ShadowMap->PF->FrameBuffer != 0 )
@@ -19534,11 +20221,11 @@ extern	int		Graphics_Hardware_ShadowMap_ReleaseTexture_PF( SHADOWMAPDATA *Shadow
 		ShadowMap->PF->DepthBuffer = 0 ;
 	}
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ’¸“_ƒVƒF[ƒ_[‚Éİ’è‚·‚éƒVƒƒƒhƒEƒ}ƒbƒv‚Ìî•ñ‚ğXV‚·‚é
+// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«è¨­å®šã™ã‚‹ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã®æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 extern	void	Graphics_Hardware_ShadowMap_RefreshVSParam_PF( void )
 {
 	SHADOWMAPDATA *ShadowMap ;
@@ -19553,14 +20240,14 @@ extern	void	Graphics_Hardware_ShadowMap_RefreshVSParam_PF( void )
 
 	for( i = 0 ; i < MAX_USE_SHADOWMAP_NUM ; i ++ )
 	{
-		// ƒAƒhƒŒƒX‚Ìæ“¾
+		// ã‚¢ãƒ‰ãƒ¬ã‚¹ã®å–å¾—
 		if( SHADOWMAPCHKFULL( GSYS.DrawSetting.ShadowMap[ i ], ShadowMap ) )
 		{
 			_MEMCPY( GANDR.Device.Shader.Constant.uSMLVPMat[ i * 4 ], TranspMatDef, sizeof( TranspMatDef ) ) ;
 		}
 		else
 		{
-			// s—ñ‚ÌƒZƒbƒg
+			// è¡Œåˆ—ã®ã‚»ãƒƒãƒˆ
 			GANDR.Device.Shader.Constant.uSMLVPMat[ i * 4 + 0 ][ 0 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 0 ][ 0 ] ;
 			GANDR.Device.Shader.Constant.uSMLVPMat[ i * 4 + 0 ][ 1 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 1 ][ 0 ] ;
 			GANDR.Device.Shader.Constant.uSMLVPMat[ i * 4 + 0 ][ 2 ] = ShadowMap->ShadowMapViewProjectionMatrix.m[ 2 ][ 0 ] ;
@@ -19581,7 +20268,7 @@ extern	void	Graphics_Hardware_ShadowMap_RefreshVSParam_PF( void )
 	}
 }
 
-// ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚Éİ’è‚·‚éƒVƒƒƒhƒEƒ}ƒbƒv‚Ìî•ñ‚ğXV‚·‚é
+// ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«è¨­å®šã™ã‚‹ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã®æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 extern	void	Graphics_Hardware_ShadowMap_RefreshPSParam_PF( void )
 {
 	SHADOWMAPDATA *ShadowMap ;
@@ -19598,7 +20285,7 @@ extern	void	Graphics_Hardware_ShadowMap_RefreshPSParam_PF( void )
 		GANDR.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 1 ] = 1.0f ;
 		GANDR.Device.Shader.Constant.uShadowMapLightEnable[ i ][ 2 ] = 1.0f ;
 
-		// ƒAƒhƒŒƒX‚Ìæ“¾
+		// ã‚¢ãƒ‰ãƒ¬ã‚¹ã®å–å¾—
 		if( SHADOWMAPCHKFULL( GSYS.DrawSetting.ShadowMap[ i ], ShadowMap ) )
 		{
 			GANDR.Device.Shader.Constant.uShadowMap_DAdj_Grad[ i ][ 0 ] = 1.0f ;
@@ -19634,24 +20321,24 @@ extern	void	Graphics_Hardware_ShadowMap_RefreshPSParam_PF( void )
 	}
 }
 
-// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æ‚Ì€”õ‚ğs‚¤
+// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã¸ã®æç”»ã®æº–å‚™ã‚’è¡Œã†
 extern	int		Graphics_Hardware_ShadowMap_DrawSetup_PF( SHADOWMAPDATA *ShadowMap )
 {
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æ‚ğI—¹‚·‚é
+// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã¸ã®æç”»ã‚’çµ‚äº†ã™ã‚‹
 extern	int		Graphics_Hardware_ShadowMap_DrawEnd_PF( SHADOWMAPDATA *ShadowMap )
 {
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// •`‰æ‚Åg—p‚·‚éƒVƒƒƒhƒEƒ}ƒbƒv‚ğw’è‚·‚é( ƒXƒƒbƒg‚Í‚O‚©‚P‚©‚ğw’è‰Â”\ )
+// æç”»ã§ä½¿ç”¨ã™ã‚‹ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã‚’æŒ‡å®šã™ã‚‹( ã‚¹ãƒ­ãƒƒãƒˆã¯ï¼ã‹ï¼‘ã‹ã‚’æŒ‡å®šå¯èƒ½ )
 extern	int		Graphics_Hardware_ShadowMap_SetUse_PF( int SlotIndex, SHADOWMAPDATA *ShadowMap )
 {
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
@@ -19685,9 +20372,9 @@ extern	int		Graphics_Hardware_ShadowMap_SetUse_PF( int SlotIndex, SHADOWMAPDATA 
 
 
 
-// ŠÂ‹«ˆË‘¶ƒVƒF[ƒ_[ŠÖŒW
+// ç’°å¢ƒä¾å­˜ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼é–¢ä¿‚
 
-// ƒVƒF[ƒ_[ƒnƒ“ƒhƒ‹‚ğ‰Šú‰»‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒãƒ³ãƒ‰ãƒ«ã‚’åˆæœŸåŒ–ã™ã‚‹
 extern	int		Graphics_Hardware_Shader_Create_PF(
 	int ShaderHandle,
 	int ShaderType,
@@ -19703,7 +20390,7 @@ extern	int		Graphics_Hardware_Shader_Create_PF(
 	GRAPHICS_HARDWARE_ANDROID_SHADERCODE_INFO ShaderCodeInfo ;
 	int Result ;
 
-	// ƒGƒ‰[”»’è
+	// ã‚¨ãƒ©ãƒ¼åˆ¤å®š
 	if( ASyncThread )
 	{
 		if( SHADERCHK_ASYNC( ShaderHandle, pShader ) )
@@ -19715,7 +20402,7 @@ extern	int		Graphics_Hardware_Shader_Create_PF(
 			return -1 ;
 	}
 
-	// ƒVƒF[ƒ_[‚ğì¬‚·‚é
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½œæˆã™ã‚‹
 	ShaderCodeInfo.Binary = Image ;
 	ShaderCodeInfo.Size   = ImageSize ;
 	switch( ShaderType )
@@ -19724,7 +20411,7 @@ extern	int		Graphics_Hardware_Shader_Create_PF(
 		Result = Graphics_Android_VertexShader_Create( &ShaderCodeInfo, &VertexShader, 1 ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILE_ADDUTF16LE( "\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"’¸“_ƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ;
+			DXST_LOGFILE_ADDUTF16LE( "\x02\x98\xb9\x70\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ;
 			goto ERR ;
 		}
 		break ;
@@ -19733,34 +20420,34 @@ extern	int		Graphics_Hardware_Shader_Create_PF(
 		Result = Graphics_Android_FragmentShader_Create( &ShaderCodeInfo, &FragmentShader, 1 ) ;
 		if( Result < 0 )
 		{
-			DXST_LOGFILE_ADDUTF16LE( "\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ƒtƒ‰ƒOƒƒ“ƒgƒVƒF[ƒ_[‚Ìì¬‚É¸”s‚µ‚Ü‚µ‚½\n" @*/ ) ;
+			DXST_LOGFILE_ADDUTF16LE( "\xd4\x30\xaf\x30\xbb\x30\xeb\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"ãƒ•ãƒ©ã‚°ãƒ¡ãƒ³ãƒˆã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ä½œæˆã«å¤±æ•—ã—ã¾ã—ãŸ\n" @*/ ) ;
 			goto ERR ;
 		}
 		break ;
 
 	default :
-		DXST_LOGFILE_ADDUTF16LE( "\xfe\x5b\xdc\x5f\x57\x30\x66\x30\x44\x30\x6a\x30\x44\x30\xbf\x30\xa4\x30\xd7\x30\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x92\x30\x5c\x4f\x10\x62\x57\x30\x88\x30\x46\x30\x68\x30\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"‘Î‰‚µ‚Ä‚¢‚È‚¢ƒ^ƒCƒv‚ÌƒVƒF[ƒ_[‚ğì¬‚µ‚æ‚¤‚Æ‚µ‚Ü‚µ‚½\n" @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\xfe\x5b\xdc\x5f\x57\x30\x66\x30\x44\x30\x6a\x30\x44\x30\xbf\x30\xa4\x30\xd7\x30\x6e\x30\xb7\x30\xa7\x30\xfc\x30\xc0\x30\xfc\x30\x92\x30\x5c\x4f\x10\x62\x57\x30\x88\x30\x46\x30\x68\x30\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"å¯¾å¿œã—ã¦ã„ãªã„ã‚¿ã‚¤ãƒ—ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’ä½œæˆã—ã‚ˆã†ã¨ã—ã¾ã—ãŸ\n" @*/ ) ;
 		goto ERR ;
 	}
 
-	// ƒoƒCƒiƒŠƒCƒ[ƒW‚ğ•Û‘¶‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+	// ãƒã‚¤ãƒŠãƒªã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ä¿å­˜ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 	pShader->FunctionCode = DXCALLOC( ( size_t )ImageSize ) ;
 	if( pShader->FunctionCode == NULL )
 	{
-		DXST_LOGFILE_ADDUTF16LE( "\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x00"/*@ L"ƒƒ‚ƒŠ‚ÌŠm•Û‚É¸”s‚µ‚Ü‚µ‚½" @*/ ) ;
+		DXST_LOGFILE_ADDUTF16LE( "\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x00"/*@ L"ãƒ¡ãƒ¢ãƒªã®ç¢ºä¿ã«å¤±æ•—ã—ã¾ã—ãŸ" @*/ ) ;
 		goto ERR ;
 	}
 
-	// ƒoƒCƒiƒŠƒCƒ[ƒW‚ğ•Û‘¶‚·‚é
+	// ãƒã‚¤ãƒŠãƒªã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ä¿å­˜ã™ã‚‹
 	_MEMCPY( pShader->FunctionCode, Image, ( size_t )ImageSize ) ;
 
-	// ƒoƒCƒiƒŠƒCƒ[ƒW‚ÌƒTƒCƒY‚ğ•Û‘¶‚·‚é
+	// ãƒã‚¤ãƒŠãƒªã‚¤ãƒ¡ãƒ¼ã‚¸ã®ã‚µã‚¤ã‚ºã‚’ä¿å­˜ã™ã‚‹
 	pShader->FunctionCodeSize = ImageSize ;
 
-	// ƒVƒF[ƒ_[ƒ^ƒCƒv‚ğ•Û‘¶‚·‚é
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚¿ã‚¤ãƒ—ã‚’ä¿å­˜ã™ã‚‹
 	pShader->ShaderType = ShaderType ;
 
-	// ƒVƒF[ƒ_[‚ÌƒAƒhƒŒƒX‚ğ•Û‘¶
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ä¿å­˜
 	if( ShaderType == DX_SHADERTYPE_VERTEX )
 	{
 		pShader->PF->Shader = VertexShader ;
@@ -19770,13 +20457,13 @@ extern	int		Graphics_Hardware_Shader_Create_PF(
 		pShader->PF->Shader = FragmentShader ;
 	}
 
-	// ˆ—Œã‚É‰ğ•ú‚·‚×‚µ‚Ìƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚½‚ç‰ğ•ú‚·‚é
+	// å‡¦ç†å¾Œã«è§£æ”¾ã™ã¹ã—ã®ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ãŸã‚‰è§£æ”¾ã™ã‚‹
 	if( ImageAfterFree )
 	{
 		DXFREE( Image ) ;
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 
 ERR :
@@ -19784,7 +20471,7 @@ ERR :
 	Graphics_Android_VertexShaderArray_Release( &VertexShader, 1 ) ;
 	Graphics_Android_FragmentShaderArray_Release(  &FragmentShader,  1 ) ;
 
-	// ˆ—Œã‚É‰ğ•ú‚·‚×‚µ‚Ìƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚½‚ç‰ğ•ú‚·‚é
+	// å‡¦ç†å¾Œã«è§£æ”¾ã™ã¹ã—ã®ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ãŸã‚‰è§£æ”¾ã™ã‚‹
 	if( ImageAfterFree )
 	{
 		DXFREE( Image ) ;
@@ -19793,10 +20480,10 @@ ERR :
 	return -1 ;
 }
 
-// ƒVƒF[ƒ_[ƒnƒ“ƒhƒ‹‚ÌŒãn––
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒãƒ³ãƒ‰ãƒ«ã®å¾Œå§‹æœ«
 extern	int		Graphics_Hardware_Shader_TerminateHandle_PF( SHADERHANDLEDATA *Shader )
 {
-	// ƒVƒF[ƒ_[‚Ì‰ğ•ú
+	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®è§£æ”¾
 	if( Shader->ShaderType == DX_SHADERTYPE_VERTEX )
 	{
 		Graphics_Android_VertexShaderArray_Release( &Shader->PF->Shader, 1 ) ;
@@ -19806,50 +20493,50 @@ extern	int		Graphics_Hardware_Shader_TerminateHandle_PF( SHADERHANDLEDATA *Shade
 		Graphics_Android_FragmentShaderArray_Release(  &Shader->PF->Shader,  1 ) ;
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// g—p‚Å‚«‚éƒVƒF[ƒ_[‚Ìƒo[ƒWƒ‡ƒ“‚ğæ“¾‚·‚é( 0=g‚¦‚È‚¢  200=ƒVƒF[ƒ_[ƒ‚ƒfƒ‹‚QD‚O‚ªg—p‰Â”\  300=ƒVƒF[ƒ_[ƒ‚ƒfƒ‹‚RD‚O‚ªg—p‰Â”\ )
+// ä½¿ç”¨ã§ãã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’å–å¾—ã™ã‚‹( 0=ä½¿ãˆãªã„  200=ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ¢ãƒ‡ãƒ«ï¼’ï¼ï¼ãŒä½¿ç”¨å¯èƒ½  300=ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ¢ãƒ‡ãƒ«ï¼“ï¼ï¼ãŒä½¿ç”¨å¯èƒ½ )
 extern	int		Graphics_Hardware_Shader_GetValidShaderVersion_PF( void )
 {
 	return 500 ;
 }
 
-// w’è‚Ì–¼‘O‚ğ‚Â’è”‚ªg—p‚·‚éƒVƒF[ƒ_[’è”‚Ì”Ô†‚ğæ“¾‚·‚é
+// æŒ‡å®šã®åå‰ã‚’æŒã¤å®šæ•°ãŒä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å®šæ•°ã®ç•ªå·ã‚’å–å¾—ã™ã‚‹
 extern	int		Graphics_Hardware_Shader_GetConstIndex_PF( const wchar_t *ConstantName, SHADERHANDLEDATA *Shader )
 {
 	return 0 ;
 }
 
-// w’è‚Ì–¼‘O‚ğ‚Â’è”‚ªg—p‚·‚éƒVƒF[ƒ_[’è”‚Ì”‚ğæ“¾‚·‚é
+// æŒ‡å®šã®åå‰ã‚’æŒã¤å®šæ•°ãŒä½¿ç”¨ã™ã‚‹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å®šæ•°ã®æ•°ã‚’å–å¾—ã™ã‚‹
 extern	int		Graphics_Hardware_Shader_GetConstCount_PF( const wchar_t *ConstantName, SHADERHANDLEDATA *Shader )
 {
 	return 0 ;
 }
 
-// w’è‚Ì–¼‘O‚ğ‚Â•‚“®¬”“_’è”‚ÌƒfƒtƒHƒ‹ƒgƒpƒ‰ƒ[ƒ^‚ªŠi”[‚³‚ê‚Ä‚¢‚éƒƒ‚ƒŠƒAƒhƒŒƒX‚ğæ“¾‚·‚é
+// æŒ‡å®šã®åå‰ã‚’æŒã¤æµ®å‹•å°æ•°ç‚¹å®šæ•°ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒæ ¼ç´ã•ã‚Œã¦ã„ã‚‹ãƒ¡ãƒ¢ãƒªã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—ã™ã‚‹
 extern	const FLOAT4 *Graphics_Hardware_Shader_GetConstDefaultParamF_PF( const wchar_t *ConstantName, SHADERHANDLEDATA *Shader )
 {
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[’è”î•ñ‚ğİ’è‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å®šæ•°æƒ…å ±ã‚’è¨­å®šã™ã‚‹
 extern	int		Graphics_Hardware_Shader_SetConst_PF( int TypeIndex, int SetIndex, int ConstantIndex, const void *Param, int ParamNum, int UpdateUseArea )
 {
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// w’è—Ìˆæ‚ÌƒVƒF[ƒ_[’è”î•ñ‚ğƒŠƒZƒbƒg‚·‚é
+// æŒ‡å®šé ˜åŸŸã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼å®šæ•°æƒ…å ±ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
 extern	int		Graphics_Hardware_Shader_ResetConst_PF( int TypeIndex, int SetIndex, int ConstantIndex, int ParamNum )
 {
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
 #ifndef DX_NON_MODEL
-// ‚R‚cƒ‚ƒfƒ‹—p‚ÌƒVƒF[ƒ_[ƒR[ƒh‚Ì‰Šú‰»‚ğs‚¤
+// ï¼“ï¼¤ãƒ¢ãƒ‡ãƒ«ç”¨ã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚³ãƒ¼ãƒ‰ã®åˆæœŸåŒ–ã‚’è¡Œã†
 extern	int		Graphics_Hardware_Shader_ModelCode_Init_PF( void )
 {
 	if( Graphics_Android_ShaderCode_Model_Initialize() == FALSE )
@@ -19857,7 +20544,7 @@ extern	int		Graphics_Hardware_Shader_ModelCode_Init_PF( void )
 		return -1 ;
 	}
 
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 #endif // DX_NON_MODEL
@@ -19893,38 +20580,38 @@ extern	int		Graphics_Hardware_Shader_ModelCode_Init_PF( void )
 
 
 
-// ŠÂ‹«ˆË‘¶ƒVƒF[ƒ_[—p’è”ƒoƒbƒtƒ@ŠÖŒW
+// ç’°å¢ƒä¾å­˜ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç”¨å®šæ•°ãƒãƒƒãƒ•ã‚¡é–¢ä¿‚
 
-// ƒVƒF[ƒ_[—p’è”ƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚ğ‰Šú‰»‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç”¨å®šæ•°ãƒãƒƒãƒ•ã‚¡ãƒãƒ³ãƒ‰ãƒ«ã‚’åˆæœŸåŒ–ã™ã‚‹
 extern	int		Graphics_Hardware_ShaderConstantBuffer_Create_PF( int ShaderConstantBufferHandle, int BufferSize, int ASyncThread ) 
 {
 	return -1 ;
 }
 
-// ƒVƒF[ƒ_[—p’è”ƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚ÌŒãn––
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç”¨å®šæ•°ãƒãƒƒãƒ•ã‚¡ãƒãƒ³ãƒ‰ãƒ«ã®å¾Œå§‹æœ«
 extern	int		Graphics_Hardware_ShaderConstantBuffer_TerminateHandle_PF( SHADERCONSTANTBUFFERHANDLEDATA *ShaderConstantBuffer )
 {
-	// ³íI—¹
+	// æ­£å¸¸çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[—p’è”ƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚Ì’è”ƒoƒbƒtƒ@‚ÌƒAƒhƒŒƒX‚ğæ“¾‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç”¨å®šæ•°ãƒãƒƒãƒ•ã‚¡ãƒãƒ³ãƒ‰ãƒ«ã®å®šæ•°ãƒãƒƒãƒ•ã‚¡ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—ã™ã‚‹
 extern	void *	Graphics_Hardware_ShaderConstantBuffer_GetBuffer_PF( SHADERCONSTANTBUFFERHANDLEDATA *ShaderConstantBuffer )
 {
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[—p’è”ƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚Ì’è”ƒoƒbƒtƒ@‚Ö‚Ì•ÏX‚ğ“K—p‚·‚é
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç”¨å®šæ•°ãƒãƒƒãƒ•ã‚¡ãƒãƒ³ãƒ‰ãƒ«ã®å®šæ•°ãƒãƒƒãƒ•ã‚¡ã¸ã®å¤‰æ›´ã‚’é©ç”¨ã™ã‚‹
 extern	int		Graphics_Hardware_ShaderConstantBuffer_Update_PF( SHADERCONSTANTBUFFERHANDLEDATA *ShaderConstantBuffer )
 {
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒVƒF[ƒ_[—p’è”ƒoƒbƒtƒ@ƒnƒ“ƒhƒ‹‚Ì’è”ƒoƒbƒtƒ@‚ğw’è‚ÌƒVƒF[ƒ_[‚Ìw’è‚ÌƒXƒƒbƒg‚ÉƒZƒbƒg‚·‚é
-extern	int		Graphics_Hardware_ShaderConstantBuffer_Set_PF( SHADERCONSTANTBUFFERHANDLEDATA *ShaderConstantBuffer, int TargetShader /* DX_SHADERTYPE_VERTEX ‚È‚Ç */, int Slot )
+// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ç”¨å®šæ•°ãƒãƒƒãƒ•ã‚¡ãƒãƒ³ãƒ‰ãƒ«ã®å®šæ•°ãƒãƒƒãƒ•ã‚¡ã‚’æŒ‡å®šã®ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®æŒ‡å®šã®ã‚¹ãƒ­ãƒƒãƒˆã«ã‚»ãƒƒãƒˆã™ã‚‹
+extern	int		Graphics_Hardware_ShaderConstantBuffer_Set_PF( SHADERCONSTANTBUFFERHANDLEDATA *ShaderConstantBuffer, int TargetShader /* DX_SHADERTYPE_VERTEX ãªã© */, int Slot )
 {
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
@@ -19964,12 +20651,12 @@ extern	int		Graphics_Hardware_ShaderConstantBuffer_Set_PF( SHADERCONSTANTBUFFERH
 
 
 
-// ŠÂ‹«ˆË‘¶•`‰æŠÖŒW
+// ç’°å¢ƒä¾å­˜æç”»é–¢ä¿‚
 
-// w’è“_‚©‚ç‹«ŠEF‚ª‚ ‚é‚Æ‚±‚ë‚Ü‚Å“h‚è‚Â‚Ô‚·
+// æŒ‡å®šç‚¹ã‹ã‚‰å¢ƒç•Œè‰²ãŒã‚ã‚‹ã¨ã“ã‚ã¾ã§å¡—ã‚Šã¤ã¶ã™
 extern	int		Graphics_Hardware_Paint_PF( int x, int y, unsigned int FillColor, ULONGLONG BoundaryColor )
 {
-	// ƒfƒtƒHƒ‹ƒg‚Ìˆ—‚ğs‚¤
+	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®å‡¦ç†ã‚’è¡Œã†
 	return 2 ;
 }
 
@@ -19983,7 +20670,7 @@ extern	int		Graphics_Hardware_Paint_PF( int x, int y, unsigned int FillColor, UL
 
 
 
-// OpenGL ŠÖŒW‚Ìî•ñ‚ğæ“¾‚·‚é
+// OpenGL é–¢ä¿‚ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 extern int GetOpenGLInfo(
 	TCHAR **Version,
 	TCHAR **Renderer,
@@ -20013,26 +20700,26 @@ extern int GetOpenGLInfo(
 	if( Shader_Max_Texture_Image_Units				!= NULL ) *Shader_Max_Texture_Image_Units			= GANDR.Device.Caps.Shader_Max_Texture_Image_Units ;
 	if( Shader_Max_Fragment_Uniform_Vectors			!= NULL ) *Shader_Max_Fragment_Uniform_Vectors		= GANDR.Device.Caps.Shader_Max_Fragment_Uniform_Vectors ;
 
-	// I—¹
+	// çµ‚äº†
 	return 0 ;
 }
 
-// ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ÌƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg‚ğæ“¾‚·‚é
+// ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒãƒ³ãƒ‰ãƒ«ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹
 extern unsigned int GetGraphOpenGLESTextureObject( int GrHandle )
 {
 	IMAGEDATA *Image ;
 //	int Ret ;
 
-	// ‰Šú‰»”»’è
+	// åˆæœŸåŒ–åˆ¤å®š
 	if( DxSysData.DxLib_InitializeFlag == FALSE )
 	{
 		return -1 ;
 	}
 
-	// ƒ\ƒtƒg‚ª”ñƒAƒNƒeƒBƒu‚Ìê‡‚ÍƒAƒNƒeƒBƒu‚É‚È‚é‚Ü‚Å‘Ò‚Â
+	// ã‚½ãƒ•ãƒˆãŒéã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã®å ´åˆã¯ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ã«ãªã‚‹ã¾ã§å¾…ã¤
 	CheckActiveState() ;
 
-	// ƒGƒ‰[”»’è
+	// ã‚¨ãƒ©ãƒ¼åˆ¤å®š
 	if( GRAPHCHK( GrHandle, Image ) )
 	{
 		return ( GLuint )-1 ;
@@ -20042,10 +20729,10 @@ extern unsigned int GetGraphOpenGLESTextureObject( int GrHandle )
 }
 
 
-// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ªs‚Á‚½ OpenGL ES ‚Ìİ’è‚ğÄ“xs‚¤( “Áê—p“r )
+// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªãŒè¡Œã£ãŸ OpenGL ES ã®è¨­å®šã‚’å†åº¦è¡Œã†( ç‰¹æ®Šç”¨é€” )
 extern int RefreshDxLibOpenGLESSetting( void )
 {
-	// ¡‚Ü‚Å‚Ìİ’è‚ğ•œ‹A‚·‚é
+	// ä»Šã¾ã§ã®è¨­å®šã‚’å¾©å¸°ã™ã‚‹
 	Graphics_Android_DeviceState_RefreshRenderState() ;
 
 	return 0 ;
@@ -20076,7 +20763,7 @@ static int glTexSubImage2D_ASyncCallback( ASYNCLOAD_MAINTHREAD_REQUESTINFO *Info
 }
 #endif // DX_NON_ASYNCLOAD
 
-// glTexSubImage2D ‚Ì”ñ“¯ŠúÀs—p‚ÌŠÖ”
+// glTexSubImage2D ã®éåŒæœŸå®Ÿè¡Œç”¨ã®é–¢æ•°
 static int glTexSubImage2D_ASync(
 	GLuint texture,
 	GLenum target,

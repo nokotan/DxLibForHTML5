@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用ファイル関係プログラム
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
@@ -39,12 +39,14 @@ namespace DxLib
 int g_EnableRootDirName = 0 ;
 
 // 追加のドライブ名の数
-int g_AddDriveNameNum = 0 ;
+int g_AddDriveNameNum = 3 ;
 
 // 追加のドライブ名
 const char * g_AddDriveName[ 16 ] =
 {
-	NULL
+	"/data/",
+	"/mnt/",
+	"/storage/",
 } ;
 
 // 関数宣言 -------------------------------------------------------------------
