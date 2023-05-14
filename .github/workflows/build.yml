@@ -41,12 +41,16 @@ jobs:
         if: ${{ contains(github.ref, 'tags/') }}
         id: create-release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
+          tag_name: ${{ github.ref }} 
 
       - name: Upload Release Asset (zip)
         if: ${{ contains(github.ref, 'tags/') }}
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
           asset_path: DxLibForHTML5.zip
@@ -55,6 +59,8 @@ jobs:
       - name: Upload Release Asset (zip)
         if: ${{ contains(github.ref, 'tags/') }}
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
           asset_path: DxLibForHTML5.tgz
