@@ -143,8 +143,6 @@ extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE 
 		ConvString( ( char * )ManageData->FontName, -1, WCHAR_T_CHARCODEFORMAT, UTF8_FontName, sizeof( UTF8_FontName ), DX_CHARCODEFORMAT_UTF8 ) ;
 		stream = (FT_Stream)DXALLOC(sizeof(*stream));
 
-        DXST_LOGFILEFMT_ADDA(("Font Init: FontName=%s\n", UTF8_FontName));
-
     	if ( stream == NULL ) {
         	return -1;
 		}
@@ -447,8 +445,6 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
                 return -1;
             }
             memset( dst->buffer, 0, dst->pitch * dst->rows );
-
-            DXST_LOGFILEFMT_ADDA(("Font Init: Src Pixel Mode is %d\n", src->pixel_mode));
 
             for ( i = 0; i < src->rows; i++ ) {
                 int soffset = i * src->pitch;
