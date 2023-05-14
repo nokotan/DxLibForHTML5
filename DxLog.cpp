@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ログプログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -166,7 +166,7 @@ extern int LogFileInitialize( void )
 }
 
 // ログファイル( Log.txt ) に文字列を出力する
-extern int LogFileAdd_WCHAR_T( int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など*/, const wchar_t *String )
+extern int LogFileAdd_WCHAR_T( int IsSystem, int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など*/, const wchar_t *String )
 {
 	wchar_t			LogFilePath[ FILEPATH_MAX ] ;
 	wchar_t *		UseBuffer ;
@@ -182,6 +182,12 @@ extern int LogFileAdd_WCHAR_T( int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など
 
 	// ログ出力抑制フラグが立っている場合は出力を行わない
 	if( LogData.NotLogOutFlag == TRUE )
+	{
+		return ErrorCode != 0 ? -1 : 0 ;
+	}
+
+	// ＤＸライブラリ内部のログ出力で、且つシステムのログは出力しないフラグが立っていたら何もせずに終了
+	if( IsSystem == TRUE && LogData.NotSystemLogOutFlag == TRUE )
 	{
 		return ErrorCode != 0 ? -1 : 0 ;
 	}
@@ -258,7 +264,7 @@ extern int LogFileAdd_WCHAR_T( int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など
 		_WCSCPY( Dest, p1 ) ;
 	}
 
-	// 最後の文字が改行意外だった場合はタブストップフラグを立てる
+	// 最後の文字が改行以外だった場合はタブストップフラグを立てる
 	LogData.LogFileTabStop = UseBuffer[ _WCSLEN( UseBuffer ) - 1 ] != L'\n' ? TRUE : FALSE ;
 
 	// ログファイルのパスを作成
@@ -302,7 +308,7 @@ extern int LogFileAddA( const char *String )
 
 	SHIFT_JIS_TO_WCHAR_T_STRING_ONE_BEGIN( String, return -1 ) ;
 
-	Result = LogFileAdd_WCHAR_T( 0, UseStringBuffer ) ;
+	Result = LogFileAdd_WCHAR_T( TRUE, 0, UseStringBuffer ) ;
 
 	SHIFT_JIS_TO_WCHAR_T_STRING_END( String ) ;
 
@@ -313,7 +319,7 @@ extern int LogFileAddA( const char *String )
 	CHAR_TO_WCHAR_T_STRING_BEGIN( String )
 	CHAR_TO_WCHAR_T_STRING_SETUP( String, return -1, DX_CHARCODEFORMAT_SHIFTJIS ) ;
 
-	Result = LogFileAdd_WCHAR_T( 0, UseStringBuffer ) ;
+	Result = LogFileAdd_WCHAR_T( TRUE, 0, UseStringBuffer ) ;
 
 	CHAR_TO_WCHAR_T_STRING_END( String ) ;
 
@@ -324,7 +330,7 @@ extern int LogFileAddA( const char *String )
 // ログファイルに文字列を書き出す( wchar_t版 )
 extern int LogFileAddW( const wchar_t *String )
 {
-	return LogFileAdd_WCHAR_T( 0, String ) ;
+	return LogFileAdd_WCHAR_T( TRUE, 0, String ) ;
 }
 
 // ログファイルに文字列を書き出す( UTF16LE版 )
@@ -335,7 +341,7 @@ extern int LogFileAddUTF16LE( const char *String )
 	CHAR_TO_WCHAR_T_STRING_BEGIN( String )
 	CHAR_TO_WCHAR_T_STRING_SETUP( String, return -1, DX_CHARCODEFORMAT_UTF16LE ) ;
 
-	Result = LogFileAdd_WCHAR_T( 0, UseStringBuffer ) ;
+	Result = LogFileAdd_WCHAR_T( TRUE, 0, UseStringBuffer ) ;
 
 	CHAR_TO_WCHAR_T_STRING_END( String ) ;
 
@@ -426,7 +432,7 @@ extern int LogFileAddWithErrorCode_A( int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COL
 
 	SHIFT_JIS_TO_WCHAR_T_STRING_ONE_BEGIN( String, return -1 ) ;
 
-	Result = LogFileAdd_WCHAR_T( ErrorCode, UseStringBuffer ) ;
+	Result = LogFileAdd_WCHAR_T( TRUE, ErrorCode, UseStringBuffer ) ;
 
 	SHIFT_JIS_TO_WCHAR_T_STRING_END( String ) ;
 
@@ -437,7 +443,7 @@ extern int LogFileAddWithErrorCode_A( int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COL
 	CHAR_TO_WCHAR_T_STRING_BEGIN( String )
 	CHAR_TO_WCHAR_T_STRING_SETUP( String, return -1, DX_CHARCODEFORMAT_SHIFTJIS ) ;
 
-	Result = LogFileAdd_WCHAR_T( ErrorCode, UseStringBuffer ) ;
+	Result = LogFileAdd_WCHAR_T( TRUE, ErrorCode, UseStringBuffer ) ;
 
 	CHAR_TO_WCHAR_T_STRING_END( String ) ;
 
@@ -448,7 +454,7 @@ extern int LogFileAddWithErrorCode_A( int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COL
 // ログファイルに文字列を書き出す、エラーコード設定つき( wchar_t版 )
 extern int LogFileAddWithErrorCode_W( int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など*/, const wchar_t *String )
 {
-	return LogFileAdd_WCHAR_T( ErrorCode, String ) ;
+	return LogFileAdd_WCHAR_T( TRUE, ErrorCode, String ) ;
 }
 
 // ログファイルに文字列を書き出す、エラーコード設定つき( UTF16LE版 )
@@ -459,7 +465,7 @@ extern int LogFileAddWithErrorCode_UTF16LE( int ErrorCode/* DX_ERRORCODE_WIN_24B
 	CHAR_TO_WCHAR_T_STRING_BEGIN( String )
 	CHAR_TO_WCHAR_T_STRING_SETUP( String, return -1, DX_CHARCODEFORMAT_UTF16LE ) ;
 
-	Result = LogFileAdd_WCHAR_T( ErrorCode, UseStringBuffer ) ;
+	Result = LogFileAdd_WCHAR_T( TRUE, ErrorCode, UseStringBuffer ) ;
 
 	CHAR_TO_WCHAR_T_STRING_END( String ) ;
 
@@ -559,13 +565,13 @@ extern int NS_ErrorLogAdd( const TCHAR *String )
 extern int NS_LogFileAdd( const TCHAR *String )
 {
 #ifdef UNICODE
-	return LogFileAdd_WCHAR_T( 0, String ) ;
+	return LogFileAdd_WCHAR_T( FALSE, 0, String ) ;
 #else
 	int Result ;
 
 	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( String, return -1 ) ;
 
-	Result = LogFileAdd_WCHAR_T( 0, UseStringBuffer ) ;
+	Result = LogFileAdd_WCHAR_T( FALSE, 0, UseStringBuffer ) ;
 
 	TCHAR_TO_WCHAR_T_STRING_END( String )
 
@@ -579,11 +585,11 @@ extern int NS_LogFileAddWithStrLen( const TCHAR *String, size_t StringLength )
 	int Result ;
 #ifdef UNICODE
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( String, StringLength, return -1 )
-	Result = LogFileAdd_WCHAR_T( 0, UseStringBuffer ) ;
+	Result = LogFileAdd_WCHAR_T( FALSE, 0, UseStringBuffer ) ;
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( String )
 #else
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( String, StringLength, return -1 )
-	Result = LogFileAdd_WCHAR_T( 0, UseStringBuffer ) ;
+	Result = LogFileAdd_WCHAR_T( FALSE, 0, UseStringBuffer ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( String )
 #endif
 	return Result ;
@@ -620,7 +626,7 @@ extern int NS_LogFileFmtAdd( const TCHAR *FormatString , ... )
 }
 
 // 書式付きで ログファイル( Log.txt ) に文字列を出力する( 書式は printf と同じ )
-extern int LogFileFmt_WCHAR_T( int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など*/, const wchar_t *FormatString , ... )
+extern int LogFileFmtAdd_WCHAR_T( int IsSystem, int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など*/, const wchar_t *FormatString , ... )
 {
 	int Result ;
 
@@ -630,7 +636,7 @@ extern int LogFileFmt_WCHAR_T( int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など
 	_WCSCAT_S( String, sizeof( String ), L"\n" ) ;
 
 	// ログ出力する
-	Result = LogFileAdd_WCHAR_T( ErrorCode, String ) ;
+	Result = LogFileAdd_WCHAR_T( IsSystem, ErrorCode, String ) ;
 	
 	return Result ;
 }
@@ -715,6 +721,16 @@ extern int NS_SetOutApplicationLogValidFlag( int Flag )
 {
 	// フラグセット
 	LogData.NotLogOutFlag = !Flag ;
+
+	// 終了
+	return 0 ;
+}
+
+// ログファイル( Log.txt ) にＤＸライブラリ内部のログ出力を行うかどうか設定する( TRUE:ＤＸライブラリ内部のログ出力を行う( デフォルト )  FALSE:ＤＸライブラリ内部のログ出力を行わない )
+extern int NS_SetOutApplicationSystemLogValidFlag( int Flag )
+{
+	// フラグを保存
+	LogData.NotSystemLogOutFlag = !Flag ;
 
 	// 終了
 	return 0 ;
@@ -862,6 +878,8 @@ extern int AppLogAdd_VaList( const TCHAR *String, va_list VaList )
 	return NS_ErrorLogAdd( StringBuf ) ;
 }
 
+#ifndef DX_NON_PRINTF_DX
+
 // printf と同じ引数で画面に文字列を表示するための関数
 extern int printfDx_VaList( const TCHAR *FormatString, va_list VaList )
 {
@@ -883,6 +901,7 @@ extern int printfDx_VaList( const TCHAR *FormatString, va_list VaList )
 	return Result ;
 }
 
+#endif // DX_NON_PRINTF_DX
 
 
 
@@ -1027,7 +1046,8 @@ static int CrLog( void )
 		// 外れる場合は一行分データを全て上げる
 
 		// 文字列を１行分ずらす
-		_MEMMOVE( LogData.LogString[0], LogData.LogString[1], sizeof( wchar_t ) * LOG_MAXLENGTH * LogData.LogY ) ;
+		_MEMMOVE( LogData.LogString[0],      LogData.LogString[1],      sizeof( wchar_t )     * LOG_MAXLENGTH * LogData.LogY ) ;
+		_MEMMOVE( LogData.LogStringColor[0], LogData.LogStringColor[1], ( sizeof( int ) * 2 ) * LOG_MAXLENGTH * LogData.LogY ) ;
 	}
 	else
 	{
@@ -1036,7 +1056,8 @@ static int CrLog( void )
 	}
 
 	// 新しい行の文字列を初期化する
-	_MEMSET( LogData.LogString[ LogData.LogY ], 0, sizeof( wchar_t ) * LOG_MAXLENGTH ) ;
+	_MEMSET( LogData.LogString[ LogData.LogY ],      0, sizeof( wchar_t )     * LOG_MAXLENGTH ) ;
+	_MEMSET( LogData.LogStringColor[ LogData.LogY ], 0, ( sizeof( int ) * 2 ) * LOG_MAXLENGTH ) ;
 
 	// 描画幅を初期化
 	LogData.LogDrawWidth = 0 ;

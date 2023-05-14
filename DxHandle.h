@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ハンドル管理プログラムヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -15,7 +15,7 @@
 
 #ifndef DX_NON_ASYNCLOAD
 	#include "DxASyncLoad.h"
-#endif DX_NON_ASYNCLOAD
+#endif // DX_NON_ASYNCLOAD
 
 #ifndef DX_NON_NAMESPACE
 
@@ -39,29 +39,6 @@ namespace DxLib
 #define DX_HANDLETYPE_MAX							(32)				// ハンドルタイプの最大数
 
 #define DX_HANDLEERROR_MASK							(0x80000000)		// エラーチェックマスク( ０ではなかったらエラー )
-
-// ハンドルタイプ定義
-#define DX_HANDLETYPE_NONE							(0)					// ハンドルタイプ０は未使用
-#define DX_HANDLETYPE_GRAPH							(1)					// グラフィックハンドル
-#define DX_HANDLETYPE_SOFTIMAGE						(2)					// ソフトウエアで扱うイメージハンドル
-#define DX_HANDLETYPE_SOUND							(3)					// サウンドハンドル
-#define DX_HANDLETYPE_SOFTSOUND						(4)					// ソフトサウンドハンドル
-#define DX_HANDLETYPE_MUSIC							(5)					// ミュージックハンドル
-#define DX_HANDLETYPE_MOVIE							(6)					// ムービーハンドル
-#define DX_HANDLETYPE_GMASK							(7)					// マスクハンドル
-#define DX_HANDLETYPE_FONT							(8)					// フォントハンドル
-#define DX_HANDLETYPE_KEYINPUT						(9)					// 文字列入力ハンドル
-#define DX_HANDLETYPE_NETWORK						(10)				// ネットワークハンドル
-#define DX_HANDLETYPE_LIGHT							(11)				// ライト
-#define DX_HANDLETYPE_SHADER						(12)				// シェーダーハンドル
-#define DX_HANDLETYPE_MODEL_BASE					(13)				// ３Ｄモデル基本データ
-#define DX_HANDLETYPE_MODEL							(14)				// ３Ｄモデル
-#define DX_HANDLETYPE_VERTEX_BUFFER					(15)				// 頂点バッファハンドル
-#define DX_HANDLETYPE_INDEX_BUFFER					(16)				// インデックスバッファハンドル
-#define DX_HANDLETYPE_FILE							(17)				// ファイルハンドル
-#define DX_HANDLETYPE_SHADOWMAP						(18)				// シャドウマップハンドル
-#define DX_HANDLETYPE_SHADER_CONSTANT_BUFFER		(19)				// シェーダー用定数バッファハンドル
-#define DX_HANDLETYPE_LIVE2D_CUBISM4_MODEL			(20)				// Live2D Cubism 4 モデルハンドル
 
 #define DX_HANDLETYPE_MASK_GRAPH					(DX_HANDLETYPE_GRAPH                  << DX_HANDLETYPE_ADDRESS)		// グラフィックハンドル
 #define DX_HANDLETYPE_MASK_SOFTIMAGE				(DX_HANDLETYPE_SOFTIMAGE              << DX_HANDLETYPE_ADDRESS)		// ソフトウエアで扱うイメージハンドル
@@ -189,6 +166,7 @@ struct HANDLEMANAGE
 	DX_CRITICAL_SECTION		CriticalSection ;					// データアクセス時用クリティカルセクション
 	int						( *InitializeFunction )( HANDLEINFO *HandleInfo ) ;	// ハンドルの初期化をする関数へのポインタ
 	int						( *TerminateFunction )( HANDLEINFO *HandleInfo ) ;	// ハンドルの後始末をする関数へのポインタ
+	int						( *DumpInfoFunction )( HANDLEINFO *HandleInfo ) ;	// ハンドルの情報を出力する関数へのポインタ
 	const wchar_t			*Name ;								// ハンドル名
 	char					NameUTF16LE[ 128 ] ;				// ハンドル名( UTF16LE )
 } ;
@@ -200,7 +178,7 @@ extern HANDLEMANAGE HandleManageArray[ DX_HANDLETYPE_MAX ] ;
 // 関数プロトタイプ宣言-----------------------------------------------------------
 
 // ハンドル共通関係
-extern	int		InitializeHandleManage( int HandleType, int OneSize, int MaxNum, int ( *InitializeFunction )( HANDLEINFO *HandleInfo ), int ( *TerminateFunction )( HANDLEINFO *HandleInfo ), const wchar_t *Name ) ;	// ハンドル管理情報を初期化する( InitializeFlag には FALSE が入っている必要がある )
+extern	int		InitializeHandleManage( int HandleType, int OneSize, int MaxNum, int ( *InitializeFunction )( HANDLEINFO *HandleInfo ), int ( *TerminateFunction )( HANDLEINFO *HandleInfo ), int ( *DumpInfoFunction )( HANDLEINFO *HandleInfo ), const wchar_t *Name ) ;	// ハンドル管理情報を初期化する( InitializeFlag には FALSE が入っている必要がある )
 extern	int		TerminateHandleManage( int HandleType ) ;																		// ハンドル管理情報の後始末を行う
 
 extern	int		AddHandle( int HandleType, int ASyncThread, int Handle /* = -1 */ ) ;										// ハンドルを追加する

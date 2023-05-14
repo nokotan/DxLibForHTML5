@@ -1,13 +1,13 @@
 // -------------------------------------------------------------------------------
 // 
-// 		ＤＸライブラリ		Nintendo Switch用データタイプ定義ヘッダファイル
+// 		ＤＸライブラリ		Android用データタイプ定義ヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
-#ifndef DX_DATATYPENSW_H
-#define DX_DATATYPENSW_H
+#ifndef DX_DATATYPEANDR_H
+#define DX_DATATYPEANDR_H
 
 // インクルード ------------------------------------------------------------------
 #include "DxCompileConfig.h"
@@ -228,4 +228,4 @@ typedef struct tagBITMAPINFO
 // 
 // #endif // DX_NON_NAMESPACE
 
-#endif // DX_DATATYPENSW_H
+#endif // DX_DATATYPEANDR_H

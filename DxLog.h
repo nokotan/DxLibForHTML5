@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ログプログラムヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -102,6 +102,7 @@ struct LOGDATA
 
 	int						NonUseTimeStampFlag ;				// タイムスタンプを出力しないかどうかのフラグ
 	int						NotLogOutFlag ;						// ログ出力を行うかフラグ(TRUEで行わない)
+	int						NotSystemLogOutFlag ;				// ＤＸライブラリ内部のログ出力を行うかフラグ(TRUEで行わない)
 	int						LogStartTime ;						// 起動時のタイムスタンプ
 	wchar_t					UserLogFileName[ 256 ] ;			// SetApplicationLogFileName で設定されたログファイル名
 	wchar_t					LogOutDirectory[ FILEPATH_MAX ] ;	// ログ出力を行うファイルを保存するディレクトリ
@@ -158,8 +159,8 @@ extern 	int			LogFileFmtAddWithErrorCode_W(		int ErrorCode/* DX_ERRORCODE_WIN_24
 extern 	int			LogFileFmtAddWithErrorCode_UTF16LE(	int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など*/, const char    *FormatString , ... ) ;			// ログファイルに書式付き文字列を書き出す、エラーコード設定つき( UTF16LE版 )
 
 // wchar_t版関数
-extern	int			LogFileAdd_WCHAR_T(		int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など*/, const wchar_t *ErrorStr ) ;					// ログファイル( Log.txt ) に文字列を出力する
-extern 	int			LogFileFmtAdd_WCHAR_T(	int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など*/, const wchar_t *FormatString , ... ) ;			// 書式付きで ログファイル( Log.txt ) に文字列を出力する( 書式は printf と同じ )
+extern	int			LogFileAdd_WCHAR_T(		int IsSystem, int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など*/, const wchar_t *ErrorStr ) ;					// ログファイル( Log.txt ) に文字列を出力する
+extern 	int			LogFileFmtAdd_WCHAR_T(	int IsSystem, int ErrorCode/* DX_ERRORCODE_WIN_24BIT_COLOR など*/, const wchar_t *FormatString , ... ) ;			// 書式付きで ログファイル( Log.txt ) に文字列を出力する( 書式は printf と同じ )
 
 extern	int			SetApplicationLogSaveDirectory_WCHAR_T(	const wchar_t *DirectoryPath );	// ログファイル( Log.txt ) を保存するディレクトリパスを設定する
 extern	int			SetApplicationLogFileName_WCHAR_T(      const wchar_t *FileName ) ;		// ログファイルの名前を設定する( Log.txt 以外にしたい場合に使用 )

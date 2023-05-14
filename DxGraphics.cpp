@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // ----------------------------------------------------------------------------
 
@@ -435,6 +435,7 @@ static int  Graphics_Software_DrawQuadrangle(       int x1, int y1, int x2, int 
 static int  Graphics_Software_DrawPixel(            int x, int y,                                                   unsigned int Color ) ;						// ソフトウエアレンダリング版 DrawPixel
 static int  Graphics_Software_DrawPixelSet(         const POINTDATA *PointData, int Num ) ;																// ソフトウエアレンダリング版 DrawPixelSet
 static int  Graphics_Software_DrawLineSet(          const LINEDATA  *LineData,  int Num ) ;																// ソフトウエアレンダリング版 DrawLineSet
+static int  Graphics_Software_DrawBoxSet(           const RECTDATA  *RectData,  int Num ) ;																// ソフトウエアレンダリング版 DrawBoxSet
 
 
 
@@ -1906,6 +1907,14 @@ static int	Graphics_Software_DrawLineSet( const LINEDATA *LineData, int Num )
 	return 0 ;
 }
 
+// ソフトウエアレンダリング版 DrawBoxSet
+static int  Graphics_Software_DrawBoxSet( const RECTDATA *RectData, int Num )
+{
+	DrawBoxSetMemImg( GSYS.SoftRender.TargetMemImg, RectData, Num ) ;
+
+	// 終了
+	return 0 ;
+}
 
 
 
@@ -3691,14 +3700,14 @@ extern int NS_CreateDXGraph( const BASEIMAGE *RgbBaseImage, const BASEIMAGE *Alp
 
 	CheckActiveState() ;
 
+	Graphics_Image_InitSetupGraphHandleGParam( &GParam ) ;
+
 	// ハンドルの作成
-	NewGraphHandle = Graphics_Image_AddHandle( FALSE ) ;
+	NewGraphHandle = Graphics_Image_AddHandle( GParam.CreateGraphHandle <= 0 ? -1 : GParam.CreateGraphHandle, FALSE ) ;
 	if( NewGraphHandle == -1 )
 	{
 		return -1 ;
 	}
-
-	Graphics_Image_InitSetupGraphHandleGParam( &GParam ) ;
 
 	Result = Graphics_Image_CreateDXGraph_UseGParam( &GParam, NewGraphHandle, RgbBaseImage, AlphaBaseImage, TextureFlag ) ;
 	if( Result < 0 )
@@ -4550,6 +4559,62 @@ extern int NS_GetCreateGraphInitGraphDelete( void )
 	return GSYS.CreateImage.NotInitGraphDeleteUserFlag != FALSE ? FALSE : TRUE ;
 }
 
+// 作成するグラフィックハンドルのハンドル値を設定する( 存在しないグラフィックハンドルの値の場合のみ有効 )
+extern int NS_SetCreateGraphHandle( int GrHandle )
+{
+	// 値を保存する
+	GSYS.CreateImage.CreateGraphHandle = GrHandle ;
+	
+	// 終了
+	return 0 ;
+}
+
+// 作成するグラフィックハンドルのハンドル値を取得する
+extern int NS_GetCreateGraphHandle( void )
+{
+	// 値を返す
+	return GSYS.CreateImage.CreateGraphHandle ;
+}
+
+// 作成するグラフィックハンドルのハンドル値を設定する、LoadDivGraph 等の分割画像読み込み用、HandleArray に NULL を渡すと設定解除( 存在しないグラフィックハンドルの値の場合のみ有効 )
+extern int NS_SetCreateDivGraphHandle( const int *HandleArray, int HandleNum )
+{
+	if( GSYS.CreateImage.CreateDivGraphHandle != NULL )
+	{
+		DXFREE( GSYS.CreateImage.CreateDivGraphHandle ) ;
+		GSYS.CreateImage.CreateDivGraphHandle = NULL ;
+		GSYS.CreateImage.CreateDivGraphHandleNum = 0 ;
+	}
+
+	if( HandleArray != NULL && HandleNum > 0 )
+	{
+		GSYS.CreateImage.CreateDivGraphHandle = ( int * )DXALLOC( sizeof( int ) * HandleNum ) ;
+		if( GSYS.CreateImage.CreateDivGraphHandle == NULL )
+		{
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x53\x00\x65\x00\x74\x00\x43\x00\x72\x00\x65\x00\x61\x00\x74\x00\x65\x00\x44\x00\x69\x00\x76\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x48\x00\x61\x00\x6e\x00\x64\x00\x6c\x00\x65\x00\x20\x00\x6e\x30\x4d\x91\x17\x52\x24\x50\xdd\x4f\x58\x5b\x28\x75\xe1\x30\xe2\x30\xea\x30\x20\x00\x25\x00\x64\x00\x62\x00\x79\x00\x74\x00\x65\x00\x20\x00\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x00"/*@ L"SetCreateDivGraphHandle の配列値保存用メモリ %dbyte の確保に失敗しました" @*/, sizeof( int ) * HandleNum )) ;
+			return -1 ;
+		}
+
+		_MEMCPY( GSYS.CreateImage.CreateDivGraphHandle, HandleArray, sizeof( int ) * HandleNum ) ;
+		GSYS.CreateImage.CreateDivGraphHandleNum = HandleNum ;
+	}
+
+	// 正常終了
+	return 0 ;
+}
+
+// 作成するグラフィックハンドルのハンドル値を取得する、LoadDivGraph 等の分割画像読み込み用、戻り値は SetCreateDivGraphHandle の引数 HandleNum に渡した値、HandleArray を NULL にすることが可能　
+extern int NS_GetCreateDivGraphHandle( int *HandleArray )
+{
+	if( HandleArray != NULL && GSYS.CreateImage.CreateDivGraphHandle != NULL && GSYS.CreateImage.CreateDivGraphHandleNum > 0 )
+	{
+		_MEMCPY( HandleArray, GSYS.CreateImage.CreateDivGraphHandle, sizeof( int ) * GSYS.CreateImage.CreateDivGraphHandleNum ) ;
+	}
+
+	// 設定されている数を返す
+	return GSYS.CreateImage.CreateDivGraphHandleNum ;
+}
+
 // 描画可能なグラフィックを作成するかどうかのフラグをセットする( TRUE:作成する  FALSE:作成しない )
 extern int NS_SetDrawValidGraphCreateFlag( int Flag )
 {
@@ -4970,6 +5035,23 @@ extern int NS_GetUseSystemMemGraphCreateFlag( void )
 {
 //	return GSYS.SystemMemImageCreateFlag ;
 	return FALSE ;
+}
+
+// LoadDivGraph 系の分割画像読み込み関数でサイズのチェックを行うかどうかを設定する( Flag:TRUE( チェックを行う(デフォルト) )  FALSE:チェックを行わない )
+extern int NS_SetUseLoadDivGraphSizeCheckFlag( int Flag )
+{
+	// フラグを保存
+	GSYS.CreateImage.NotUseLoadDivGraphSizeCheck = Flag ? FALSE : TRUE ;
+
+	// 終了
+	return 0 ;
+}
+
+// LoadDivGraph 系の分割画像読み込み関数でサイズのチェックを行うかどうかの設定を取得する
+extern int NS_GetUseLoadDivGraphSizeCheckFlag( void )
+{
+	// フラグを返す
+	return GSYS.CreateImage.NotUseLoadDivGraphSizeCheck ;
 }
 
 
@@ -10314,6 +10396,40 @@ extern	int NS_DrawLineSet( const LINEDATA *LineData, int Num )
 }
 #undef SETDRAWRECTCODE
 
+// 矩形の集合を描画する
+#define SETDRAWRECTCODE\
+	SETRECT( DrawRect, 0, 0, GSYS.DrawSetting.DrawSizeX, GSYS.DrawSetting.DrawSizeY )\
+	DRAWRECT_DRAWAREA_CLIP
+extern int NS_DrawBoxSet( const RECTDATA *RectData, int Num )
+{
+	int Ret = -1 ;
+	int Flag ;
+
+	if( /* GSYS.NotDrawFlag || */ GSYS.DrawSetting.NotDrawFlagInSetDrawArea )
+		return 0 ;
+	
+	Flag = GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE ;
+
+	CheckActiveState() ;
+
+	// ２Ｄ行列をハードウエアに反映する
+	if( GSYS.DrawSetting.MatchHardware_2DMatrix == FALSE && GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+		Graphics_DrawSetting_ApplyLib2DMatrixToHardware() ;
+
+	// 描画
+	DRAW_DEF(
+		Graphics_Hardware_DrawBoxSet_PF( RectData, Num ),
+		Graphics_Software_DrawBoxSet(    RectData, Num ),
+		SETDRAWRECTCODE,
+		Ret,
+		Flag
+	)
+
+	// 終了
+	return Ret ;
+}
+#undef SETDRAWRECTCODE
+
 // ３Ｄの点を描画する
 extern int NS_DrawPixel3D( VECTOR Pos, unsigned int Color )
 {
@@ -13250,7 +13366,7 @@ extern	int NS_DrawChipMap2( int MapWidth, int MapHeight, const int *MapData, int
 
 	// マップを描く
 	Result = NS_DrawChipMap( ScreenX, ScreenY, MapDrawWidth, MapDrawHeight,
-							 MapData + MapDrawPointX + MapDrawPointY * MapWidth, MapWidth, ChipTypeNum, ChipGrHandle, TransFlag ) ;
+							 MapData + MapDrawPointX + MapDrawPointY * MapWidth, ChipTypeNum, MapWidth, ChipGrHandle, TransFlag ) ;
 						 
 	return Result ;
 }
@@ -13350,7 +13466,10 @@ extern	int NS_DrawRectGraph( int DestX, int DestY, int SrcX, int SrcY, int Width
 
 		// エラー判定
 		if( GRAPHCHK( GraphHandle, Image ) )
-			return -1 ;
+		{
+			hr = -1 ;
+			goto END ;
+		}
 
 		if( ReverseXFlag && ReverseYFlag )
 		{
@@ -13371,6 +13490,8 @@ extern	int NS_DrawRectGraph( int DestX, int DestY, int SrcX, int SrcY, int Width
 	{
 		hr = NS_DrawGraph( DestX - SrcX, DestY - SrcY, GraphHandle, TransFlag ) ;
 	}
+
+END :
 
 	// 描画矩形を元に戻す
 #ifndef DX_NON_MASK
@@ -14730,10 +14851,22 @@ extern int NS_DrawPolygonIndexed2D( const VERTEX2D  *Vertex, int VertexNum, cons
 	return NS_DrawPrimitiveIndexed2D( Vertex, VertexNum, Indices, PolygonNum * 3, DX_PRIMTYPE_TRIANGLELIST, GrHandle, TransFlag ) ;
 }
 
+// ２Ｄポリゴンを描画する( 頂点インデックスを使用 )
+extern int NS_DrawPolygon32bitIndexed2D( const VERTEX2D  *Vertex, int VertexNum, const unsigned int *Indices, int PolygonNum, int GrHandle, int TransFlag )
+{
+	return NS_DrawPrimitive32bitIndexed2D( Vertex, VertexNum, Indices, PolygonNum * 3, DX_PRIMTYPE_TRIANGLELIST, GrHandle, TransFlag ) ;
+}
+
 // ３Ｄポリゴンを描画する(インデックス)
 extern int NS_DrawPolygonIndexed3D( const VERTEX3D *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum, int GrHandle, int TransFlag )
 {
 	return NS_DrawPrimitiveIndexed3D( Vertex, VertexNum, Indices, PolygonNum * 3, DX_PRIMTYPE_TRIANGLELIST, GrHandle, TransFlag ) ;
+}
+
+// ３Ｄポリゴンを描画する(インデックス)
+extern int NS_DrawPolygon32bitIndexed3D( const VERTEX3D *Vertex, int VertexNum, const unsigned int *Indices, int PolygonNum, int GrHandle, int TransFlag )
+{
+	return NS_DrawPrimitive32bitIndexed3D( Vertex, VertexNum, Indices, PolygonNum * 3, DX_PRIMTYPE_TRIANGLELIST, GrHandle, TransFlag ) ;
 }
 
 // ３Ｄポリゴンを描画する(インデックス)
@@ -14828,6 +14961,107 @@ extern	int NS_DrawPolygonIndexed3DBase( const VERTEX_3D *Vertex, int VertexNum, 
 	
 	DRAW_DEF(
 		Graphics_Hardware_DrawIndexedPrimitive_PF( UseVertex, VertexNum, Indices, IndexNum, PrimitiveType, Image, TransFlag ),
+		0,
+		DrawRect = GSYS.DrawSetting.DrawArea ;,
+		Ret,
+		Flag
+	)
+
+	return Ret ;
+}
+
+// ３Ｄポリゴンを描画する(インデックス)
+extern	int NS_DrawPolygon32bitIndexed3DBase( const VERTEX_3D *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType, int GrHandle, int TransFlag )
+{
+	IMAGEDATA *Image ;
+	int Ret, i, Flag ;
+	const VERTEX_3D *UseVertex ;
+
+	Ret = -1;
+
+	// ソフトが非アクティブの場合はアクティブになるまで待つ
+	CheckActiveState() ;
+
+	// エラー判定
+	Image = NULL ;
+	if( ( DWORD )GrHandle != DX_NONE_GRAPH )
+	{
+		if( GRAPHCHK( GrHandle, Image ) )
+			return -1 ;
+		Flag = Image->Orig->FormatDesc.TextureFlag ;
+	}
+	else
+	{
+		Flag = GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE ;
+	}
+
+#ifndef DX_NON_MOVIE
+	if( ( DWORD )GrHandle != DX_NONE_GRAPH )
+	{
+		if( Image->Orig->MovieHandle != -1 )
+			UpdateMovie( Image->Orig->MovieHandle, FALSE ) ;
+	}
+#endif
+
+	// ３Ｄ行列をハードウエアに反映する
+	if( GSYS.DrawSetting.MatchHardware3DMatrix == FALSE && GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+		Graphics_DrawSetting_ApplyLib3DMatrixToHardware() ;
+
+	// 色の変換が必要な場合はここで処理する
+	if( GSYS.DrawSetting.DrawBright.Red   != 255 ||
+		GSYS.DrawSetting.DrawBright.Green != 255 ||
+		GSYS.DrawSetting.DrawBright.Blue  != 255 ||
+		( GSYS.DrawSetting.BlendMode != DX_BLENDMODE_NOBLEND && GSYS.DrawSetting.BlendParam != 255 ) )
+	{
+		DWORD *RedTable, *GreenTable, *BlueTable, *AlphaTable ;
+		const VERTEX_3D *sv ;
+		VERTEX_3D *dv ;
+		unsigned int Size ;
+
+		// テーブルを用意する
+		RedTable   = MemImgManage.RateTable[GSYS.DrawSetting.DrawBright.Red] ;
+		GreenTable = MemImgManage.RateTable[GSYS.DrawSetting.DrawBright.Green] ;
+		BlueTable  = MemImgManage.RateTable[GSYS.DrawSetting.DrawBright.Blue] ;
+		AlphaTable = MemImgManage.RateTable[GSYS.DrawSetting.BlendParam] ;
+		if( GSYS.DrawSetting.BlendMode == DX_BLENDMODE_NOBLEND ) AlphaTable = MemImgManage.RateTable[255] ;
+
+		// 頂点データを格納するメモリ領域が足りない場合は確保する
+		Size = sizeof( VERTEX_3D ) * VertexNum ;
+		if( GSYS.Resource.TempVertexBufferSize < ( int )Size )
+		{
+			if( GSYS.Resource.TempVertexBuffer )
+			{
+				DXFREE( GSYS.Resource.TempVertexBuffer ) ;
+				GSYS.Resource.TempVertexBufferSize = 0 ;
+			}
+			GSYS.Resource.TempVertexBuffer = DXALLOC( Size ) ;
+			if( GSYS.Resource.TempVertexBuffer == NULL )
+				return -1 ;
+			GSYS.Resource.TempVertexBufferSize = ( int )Size ;
+		}
+
+		// 一時バッファに変換しながら転送
+		sv = Vertex;
+		dv = ( VERTEX_3D * )GSYS.Resource.TempVertexBuffer ;
+		for( i = 0 ; i < VertexNum ; i ++, sv ++, dv ++ )
+		{
+			dv->pos = sv->pos ;
+			dv->u = sv->u ;
+			dv->v = sv->v ;
+			dv->b = ( BYTE )BlueTable [ sv->b ] ;
+			dv->g = ( BYTE )GreenTable[ sv->g ] ;
+			dv->r = ( BYTE )RedTable  [ sv->r ] ;
+			dv->a = ( BYTE )AlphaTable[ sv->a ] ;
+		}
+		UseVertex = ( VERTEX_3D * )GSYS.Resource.TempVertexBuffer ;
+	}
+	else
+	{
+		UseVertex = Vertex ;
+	}
+	
+	DRAW_DEF(
+		Graphics_Hardware_Draw32bitIndexedPrimitive_PF( UseVertex, VertexNum, ( DWORD * )Indices, IndexNum, PrimitiveType, Image, TransFlag ),
 		0,
 		DrawRect = GSYS.DrawSetting.DrawArea ;,
 		Ret,
@@ -15452,6 +15686,112 @@ extern int NS_DrawPrimitiveIndexed2D( const VERTEX2D *Vertex, int VertexNum, con
 	return Ret ;
 }
 
+// ２Ｄプリミティブを描画する(インデックス)
+extern int NS_DrawPrimitive32bitIndexed2D( const VERTEX2D *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType, int GrHandle, int TransFlag )
+{
+	IMAGEDATA *Image ;
+	int Ret, i, Flag ;
+	const VERTEX2D *UseVertex ;
+
+	Ret = -1;
+
+	// ソフトが非アクティブの場合はアクティブになるまで待つ
+	CheckActiveState() ;
+
+	// エラー判定
+	Image = NULL ;
+	if( ( DWORD )GrHandle != DX_NONE_GRAPH )
+	{
+		if( GRAPHCHK( GrHandle, Image ) )
+			return -1 ;
+		Flag = Image->Orig->FormatDesc.TextureFlag ;
+	}
+	else
+	{
+		Flag = GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE ;
+	}
+
+#ifndef DX_NON_MOVIE
+	if( ( DWORD )GrHandle != DX_NONE_GRAPH )
+	{
+		if( Image->Orig->MovieHandle != -1 )
+			UpdateMovie( Image->Orig->MovieHandle, FALSE ) ;
+	}
+#endif
+
+	// ３Ｄ行列をハードウエアに反映する
+	if( GSYS.DrawSetting.MatchHardware3DMatrix == FALSE && GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+		Graphics_DrawSetting_ApplyLib3DMatrixToHardware() ;
+
+	// 色の変換が必要な場合はここで処理する
+	if( GSYS.DrawSetting.DrawBright.Red   != 255 ||
+		GSYS.DrawSetting.DrawBright.Green != 255 ||
+		GSYS.DrawSetting.DrawBright.Blue  != 255 ||
+		( GSYS.DrawSetting.BlendMode != DX_BLENDMODE_NOBLEND && GSYS.DrawSetting.BlendParam != 255 ) )
+	{
+		DWORD *RedTable, *GreenTable, *BlueTable, *AlphaTable ;
+		const VERTEX2D *sv ;
+		VERTEX2D *dv ;
+		unsigned int Size ;
+
+		// テーブルを用意する
+		RedTable   = MemImgManage.RateTable[GSYS.DrawSetting.DrawBright.Red] ;
+		GreenTable = MemImgManage.RateTable[GSYS.DrawSetting.DrawBright.Green] ;
+		BlueTable  = MemImgManage.RateTable[GSYS.DrawSetting.DrawBright.Blue] ;
+		AlphaTable = MemImgManage.RateTable[GSYS.DrawSetting.BlendParam] ;
+		if( GSYS.DrawSetting.BlendMode == DX_BLENDMODE_NOBLEND ) AlphaTable = MemImgManage.RateTable[255] ;
+
+		// 頂点データを格納するメモリ領域が足りない場合は確保する
+		Size = sizeof( VERTEX2D ) * VertexNum ;
+		if( GSYS.Resource.TempVertexBufferSize < ( int )Size )
+		{
+			if( GSYS.Resource.TempVertexBuffer )
+			{
+				DXFREE( GSYS.Resource.TempVertexBuffer ) ;
+				GSYS.Resource.TempVertexBufferSize = 0 ;
+			}
+			GSYS.Resource.TempVertexBuffer = DXALLOC( Size ) ;
+			if( GSYS.Resource.TempVertexBuffer == NULL )
+				return -1 ;
+			GSYS.Resource.TempVertexBufferSize = ( int )Size ;
+		}
+
+		// 一時バッファに変換しながら転送
+		sv = Vertex;
+		dv = ( VERTEX2D * )GSYS.Resource.TempVertexBuffer ;
+		for( i = 0 ; i < VertexNum ; i ++, sv ++, dv ++ )
+		{
+			dv->pos = sv->pos ;
+			dv->rhw = sv->rhw ;
+			dv->dif.b = ( BYTE )BlueTable [ sv->dif.b ] ;
+			dv->dif.g = ( BYTE )GreenTable[ sv->dif.g ] ;
+			dv->dif.r = ( BYTE )RedTable  [ sv->dif.r ] ;
+			dv->dif.a = ( BYTE )AlphaTable[ sv->dif.a ] ;
+			dv->u = sv->u ;
+			dv->v = sv->v ;
+		}
+		UseVertex = ( VERTEX2D * )GSYS.Resource.TempVertexBuffer ;
+	}
+	else
+	{
+		UseVertex = Vertex ;
+	}
+
+	// ２Ｄ行列をハードウエアに反映する
+	if( GSYS.DrawSetting.MatchHardware_2DMatrix == FALSE && GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+		Graphics_DrawSetting_ApplyLib2DMatrixToHardware() ;
+	
+	DRAW_DEF(
+		Graphics_Hardware_Draw32bitIndexedPrimitive2DUser_PF( UseVertex, VertexNum, ( DWORD * )Indices, IndexNum, PrimitiveType, Image, TransFlag ),
+		0,
+		DrawRect = GSYS.DrawSetting.DrawArea ;,
+		Ret,
+		Flag
+	)
+
+	return Ret ;
+}
+
 // ３Ｄポリゴンを描画する(インデックス)
 extern int NS_DrawPrimitiveIndexed3D( const VERTEX3D *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType, int GrHandle, int TransFlag )
 {
@@ -15551,6 +15891,114 @@ extern int NS_DrawPrimitiveIndexed3D( const VERTEX3D *Vertex, int VertexNum, con
 	
 	DRAW_DEF(
 		Graphics_Hardware_DrawIndexedPrimitiveLight_PF( UseVertex, VertexNum, Indices, IndexNum, PrimitiveType, Image, TransFlag ),
+		0,
+		DrawRect = GSYS.DrawSetting.DrawArea ;,
+		Ret,
+		Flag
+	)
+
+	return Ret ;
+}
+
+// ３Ｄポリゴンを描画する(インデックス)
+extern int NS_DrawPrimitive32bitIndexed3D( const VERTEX3D *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType, int GrHandle, int TransFlag )
+{
+	IMAGEDATA *Image ;
+	int Ret, i, Flag ;
+	const VERTEX3D *UseVertex ;
+
+	Ret = -1;
+
+	// ソフトが非アクティブの場合はアクティブになるまで待つ
+	CheckActiveState() ;
+
+	// エラー判定
+	Image = NULL ;
+	if( ( DWORD )GrHandle != DX_NONE_GRAPH )
+	{
+		if( GRAPHCHK( GrHandle, Image ) )
+			return -1 ;
+		Flag = Image->Orig->FormatDesc.TextureFlag ;
+	}
+	else
+	{
+		Flag = GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE ;
+	}
+
+#ifndef DX_NON_MOVIE
+	if( ( DWORD )GrHandle != DX_NONE_GRAPH )
+	{
+		if( Image->Orig->MovieHandle != -1 )
+			UpdateMovie( Image->Orig->MovieHandle, FALSE ) ;
+	}
+#endif
+
+	// ３Ｄ行列をハードウエアに反映する
+	if( GSYS.DrawSetting.MatchHardware3DMatrix == FALSE && GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+		Graphics_DrawSetting_ApplyLib3DMatrixToHardware() ;
+
+	// 色の変換が必要な場合はここで処理する
+	if( GSYS.DrawSetting.DrawBright.Red   != 255 ||
+		GSYS.DrawSetting.DrawBright.Green != 255 ||
+		GSYS.DrawSetting.DrawBright.Blue  != 255 ||
+		( GSYS.DrawSetting.BlendMode != DX_BLENDMODE_NOBLEND && GSYS.DrawSetting.BlendParam != 255 ) )
+	{
+		DWORD *RedTable, *GreenTable, *BlueTable, *AlphaTable ;
+		const VERTEX3D *sv ;
+		VERTEX3D *dv ;
+		unsigned int Size ;
+
+		// テーブルを用意する
+		RedTable   = MemImgManage.RateTable[GSYS.DrawSetting.DrawBright.Red] ;
+		GreenTable = MemImgManage.RateTable[GSYS.DrawSetting.DrawBright.Green] ;
+		BlueTable  = MemImgManage.RateTable[GSYS.DrawSetting.DrawBright.Blue] ;
+		AlphaTable = MemImgManage.RateTable[GSYS.DrawSetting.BlendParam] ;
+		if( GSYS.DrawSetting.BlendMode == DX_BLENDMODE_NOBLEND ) AlphaTable = MemImgManage.RateTable[255] ;
+
+		// 頂点データを格納するメモリ領域が足りない場合は確保する
+		Size = sizeof( VERTEX3D ) * VertexNum ;
+		if( GSYS.Resource.TempVertexBufferSize < ( int )Size )
+		{
+			if( GSYS.Resource.TempVertexBuffer )
+			{
+				DXFREE( GSYS.Resource.TempVertexBuffer ) ;
+				GSYS.Resource.TempVertexBufferSize = 0 ;
+			}
+			GSYS.Resource.TempVertexBuffer = DXALLOC( Size ) ;
+			if( GSYS.Resource.TempVertexBuffer == NULL )
+				return -1 ;
+			GSYS.Resource.TempVertexBufferSize = ( int )Size ;
+		}
+
+		// 一時バッファに変換しながら転送
+		sv = Vertex;
+		dv = ( VERTEX3D * )GSYS.Resource.TempVertexBuffer ;
+		for( i = 0 ; i < VertexNum ; i ++, sv ++, dv ++ )
+		{
+			dv->pos = sv->pos ;
+			dv->norm = sv->norm ;
+			dv->dif.b = ( BYTE )BlueTable [ sv->dif.b ] ;
+			dv->dif.g = ( BYTE )GreenTable[ sv->dif.g ] ;
+			dv->dif.r = ( BYTE )RedTable  [ sv->dif.r ] ;
+			dv->dif.a = ( BYTE )AlphaTable[ sv->dif.a ] ;
+			dv->spc.b = ( BYTE )BlueTable [ sv->spc.b ] ;
+			dv->spc.g = ( BYTE )GreenTable[ sv->spc.g ] ;
+			dv->spc.r = ( BYTE )RedTable  [ sv->spc.r ] ;
+			dv->spc.a = ( BYTE )AlphaTable[ sv->spc.a ] ;
+			dv->u = sv->u ;
+			dv->v = sv->v ;
+			dv->su = sv->su ;
+			dv->sv = sv->sv ;
+		}
+		UseVertex = ( VERTEX3D * )GSYS.Resource.TempVertexBuffer ;
+	}
+	else
+	{
+		UseVertex = Vertex ;
+	}
+	
+	DRAW_DEF(
+		Graphics_Hardware_Draw32bitIndexedPrimitiveLight_PF( UseVertex, VertexNum, ( DWORD * )Indices, IndexNum, PrimitiveType, Image, TransFlag ),
 		0,
 		DrawRect = GSYS.DrawSetting.DrawArea ;,
 		Ret,
@@ -16504,6 +16952,76 @@ extern int NS_GetDrawBlendMode( int *BlendMode, int *BlendParam )
 {
 	if( BlendMode	!= NULL ) *BlendMode =	GSYS.DrawSetting.BlendMode ;
 	if( BlendParam	!= NULL ) *BlendParam =	GSYS.DrawSetting.BlendParam ;
+
+	// 終了
+	return 0 ;
+}
+
+// カスタムブレンドモードを設定する
+extern int NS_SetDrawCustomBlendMode( int BlendEnable, int SrcBlendRGB /* DX_BLEND_SRC_COLOR 等 */, int DestBlendRGB /* DX_BLEND_SRC_COLOR 等 */, int BlendOpRGB /* DX_BLENDOP_ADD 等 */, int SrcBlendA /* DX_BLEND_SRC_COLOR 等 */, int DestBlendA /* DX_BLEND_SRC_COLOR 等 */, int BlendOpA /* DX_BLENDOP_ADD 等 */, int BlendParam )
+{
+	if( GSYS.DrawSetting.BlendMode		== DX_BLENDMODE_CUSTOM	&&
+		GSYS.DrawSetting.BlendEnable	== BlendEnable			&&
+		GSYS.DrawSetting.BlendRGBSrc	== SrcBlendRGB			&&
+		GSYS.DrawSetting.BlendRGBDest	== DestBlendRGB			&&
+		GSYS.DrawSetting.BlendRGBOp		== BlendOpRGB			&&
+		GSYS.DrawSetting.BlendASrc		== SrcBlendA			&&
+		GSYS.DrawSetting.BlendADest		== DestBlendA			&&
+		GSYS.DrawSetting.BlendAOp		== BlendOpA				&&
+		GSYS.DrawSetting.BlendParam		== BlendParam )
+	{
+		return 0 ;
+	}
+
+	// ソフトが非アクティブの場合はアクティブになるまで待つ
+	CheckActiveState() ;
+
+	// ブレンドモードの保存
+	if( GSYS.DrawSetting.BlendMode		!= DX_BLENDMODE_CUSTOM	||
+		GSYS.DrawSetting.BlendEnable	!= BlendEnable			||
+		GSYS.DrawSetting.BlendRGBSrc	!= SrcBlendRGB			||
+		GSYS.DrawSetting.BlendRGBDest	!= DestBlendRGB			||
+		GSYS.DrawSetting.BlendRGBOp		!= BlendOpRGB			||
+		GSYS.DrawSetting.BlendASrc		!= SrcBlendA			||
+		GSYS.DrawSetting.BlendADest		!= DestBlendA			||
+		GSYS.DrawSetting.BlendAOp		!= BlendOpA )
+	{
+		GSYS.DrawSetting.BlendMode		= DX_BLENDMODE_CUSTOM ;
+		GSYS.DrawSetting.BlendEnable	= BlendEnable ;
+		GSYS.DrawSetting.BlendRGBSrc	= SrcBlendRGB ;
+		GSYS.DrawSetting.BlendRGBDest	= DestBlendRGB ;
+		GSYS.DrawSetting.BlendRGBOp		= BlendOpRGB ;
+		GSYS.DrawSetting.BlendASrc		= SrcBlendA ;
+		GSYS.DrawSetting.BlendADest		= DestBlendA ;
+		GSYS.DrawSetting.BlendAOp		= BlendOpA ;
+		GSYS.ChangeSettingFlag = TRUE ;
+	}
+
+	if( BlendParam > 255 ) BlendParam = 255 ;
+	if( BlendParam < 0	 ) BlendParam = 0 ;
+	GSYS.DrawSetting.BlendParam = BlendParam ;
+
+	// ハードウエアアクセラレーションの設定に反映
+	if( GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+	{
+		Graphics_Hardware_SetDrawCustomBlendMode_PF( BlendEnable, SrcBlendRGB, DestBlendRGB, BlendOpRGB, SrcBlendA, DestBlendA, BlendOpA, BlendParam ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// カスタムブレンドモードを取得する
+extern int NS_GetDrawCustomBlendMode( int *BlendEnable, int *SrcBlendRGB, int *DestBlendRGB, int *BlendOpRGB, int *SrcBlendA, int *DestBlendA, int *BlendOpA, int *BlendParam )
+{
+	if( BlendEnable		!= NULL ) *BlendEnable	= GSYS.DrawSetting.BlendEnable ;
+	if( SrcBlendRGB		!= NULL ) *SrcBlendRGB	= GSYS.DrawSetting.BlendRGBSrc ;
+	if( DestBlendRGB	!= NULL ) *DestBlendRGB	= GSYS.DrawSetting.BlendRGBDest ;
+	if( BlendOpRGB		!= NULL ) *BlendOpRGB	= GSYS.DrawSetting.BlendRGBOp ;
+	if( SrcBlendA		!= NULL ) *SrcBlendA	= GSYS.DrawSetting.BlendASrc ;
+	if( DestBlendA		!= NULL ) *DestBlendA	= GSYS.DrawSetting.BlendADest ;
+	if( BlendOpA		!= NULL ) *BlendOpA		= GSYS.DrawSetting.BlendAOp ;
+	if( BlendParam		!= NULL ) *BlendParam	= GSYS.DrawSetting.BlendParam ;
 
 	// 終了
 	return 0 ;
@@ -17909,6 +18427,32 @@ extern int NS_GetUseBackCulling( void )
 	return GSYS.DrawSetting.CullMode ;
 }
 
+// 右手座標系のクリッピング処理を行うかを設定する( TRUE:右手座標系のクリッピング処理を行う  FALSE:左手座標系のクリッピング処理を行う( デフォルト ) )
+extern int NS_SetUseRightHandClippingProcess( int Flag )
+{
+	Flag = Flag == FALSE ? FALSE : TRUE ;
+
+	if( GSYS.DrawSetting.UseRightHandClippingProcess == Flag )
+	{
+		return 0 ;
+	}
+
+	// フラグを保存
+	GSYS.DrawSetting.UseRightHandClippingProcess = Flag ;
+
+	// クリッピング行列を更新
+	Graphics_DrawSetting_RefreshBlend3DTransformMatrix() ;
+
+	// 終了
+	return 0 ;
+}
+
+// 右手座標系のクリッピング処理を行うかを取得する( TRUE:右手座標系のクリッピング処理を行う  FALSE:左手座標系のクリッピング処理を行う( デフォルト ) )
+extern int NS_GetUseRightHandClippingProcess( void )
+{
+	return GSYS.DrawSetting.UseRightHandClippingProcess ;
+}
+
 
 // テクスチャアドレスモードを設定する
 extern	int NS_SetTextureAddressMode( int Mode /* DX_TEXADDRESS_WRAP 等 */, int Stage )
@@ -19035,7 +19579,7 @@ extern int NS_SetGraphMode( int ScreenSizeX, int ScreenSizeY, int ColorBitDepth,
 	RRate	= GSYS.Screen.MainScreenRefreshRate ;
 
 	// 画面モードを変更
-	Graphics_Screen_ChangeMode( ScreenSizeX, ScreenSizeY, ColorBitDepth, FALSE, RefreshRate ) ;
+	Graphics_Screen_ChangeMode( ScreenSizeX, ScreenSizeY, ColorBitDepth, FALSE, RefreshRate, FALSE ) ;
 
 	// 戻り値のセット
 	if( ScreenSizeX == GSYS.Screen.MainScreenSizeX &&
@@ -19043,9 +19587,9 @@ extern int NS_SetGraphMode( int ScreenSizeX, int ScreenSizeY, int ColorBitDepth,
 #ifdef WINDOWS_DESKTOP_OS
 		&&
 		(
-		  NS_GetWindowModeFlag() == FALSE ||
+		  ( NS_GetWindowModeFlag() == FALSE && NS_GetUseFullScreenResolutionMode() != DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW ) ||
 		  (
-		    NS_GetWindowModeFlag() == TRUE &&
+		    ( NS_GetWindowModeFlag() == TRUE || NS_GetUseFullScreenResolutionMode() == DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW ) &&
 		    ColorBitDepth	== GSYS.Screen.MainScreenColorBitDepth &&
 		    RefreshRate		== GSYS.Screen.MainScreenRefreshRate
 		  )
@@ -19071,9 +19615,9 @@ extern int NS_SetGraphMode( int ScreenSizeX, int ScreenSizeY, int ColorBitDepth,
 #ifdef WINDOWS_DESKTOP_OS
 				&& 
 				(
-				  NS_GetWindowModeFlag() == FALSE ||
+				  ( NS_GetWindowModeFlag() == FALSE && NS_GetUseFullScreenResolutionMode() != DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW ) ||
 				  (
-					NS_GetWindowModeFlag() == TRUE &&
+					( NS_GetWindowModeFlag() == TRUE || NS_GetUseFullScreenResolutionMode() == DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW ) &&
 				    GSYS.Screen.MainScreenColorBitDepth == DEFAULT_COLOR_BITDEPTH &&
 				    GSYS.Screen.MainScreenRefreshRate   == 0
 				  )
@@ -19137,15 +19681,30 @@ extern int NS_SetUserScreenImage( void *Image, int PixelFormat /* DX_USER_SCREEN
 extern int NS_SetFullScreenResolutionMode( int ResolutionMode /* DX_FSRESOLUTIONMODE_NATIVE 等 */ )
 {
 	// 初期後の場合は何もせず終了
-	if( DxSysData.DxLib_InitializeFlag == TRUE )
+//	if( DxSysData.DxLib_InitializeFlag == TRUE )
+//	{
+//		return -1 ;
+//	}
+
+	// 今までと設定が同じ場合は何もせず終了
+	if( GSYS.Screen.FullScreenResolutionMode == ResolutionMode )
 	{
-		return -1 ;
+		return 0 ;
 	}
 
 	// フルスクリーン解像度モードを保存する
 	GSYS.Screen.FullScreenResolutionMode    = ResolutionMode ;
 	GSYS.Screen.FullScreenResolutionModeAct = ResolutionMode ;
 
+#ifdef WINDOWS_DESKTOP_OS
+	// フルスクリーンモードの場合は設定の変更を適用する
+	if( NS_GetWindowModeFlag() == FALSE )
+	{
+		SetWindowStyle() ;
+		Graphics_Screen_ChangeMode( -1, -1, -1, FALSE, -1, TRUE ) ;
+	}
+#endif // WINDOWS_DESKTOP_OS
+	
 	// 終了
 	return 0 ;
 }
@@ -19165,6 +19724,12 @@ extern int NS_GetFullScreenResolutionMode( int *ResolutionMode, int *UseResoluti
 
 	// 終了
 	return 0 ;
+}
+
+// フルスクリーン解像度モードを取得する( GetFullScreenResolutionMode の UseResolutionMode で取得できる値を返す関数 )
+extern int NS_GetUseFullScreenResolutionMode( void )
+{
+	return GSYS.Screen.FullScreenResolutionModeAct ;
 }
 
 // フルスクリーンモード時の画面拡大モードを設定する
@@ -19329,20 +19894,44 @@ extern int NS_GetColorBitDepth( void )
 }
 
 // 画面モードが変更されているかどうかのフラグを取得する
-extern	int						NS_GetChangeDisplayFlag( void )
+extern int NS_GetChangeDisplayFlag( void )
 {
 #ifdef WINDOWS_DESKTOP_OS
 	// 終了
-	return NS_GetWindowModeFlag() == FALSE ;
+	return NS_GetWindowModeFlag() == FALSE && NS_GetUseFullScreenResolutionMode() != DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW ;
 #else // WINDOWS_DESKTOP_OS
 	return FALSE ;
 #endif // WINDOWS_DESKTOP_OS
 }
 
 // ビデオメモリの容量を得る
-extern	int						NS_GetVideoMemorySize( int *AllSize, int *FreeSize )
+extern int NS_GetVideoMemorySize( int *AllSize, int *FreeSize )
 {
-	return Graphics_Hardware_GetVideoMemorySize_PF( AllSize, FreeSize ) ;
+	ULONGLONG TotalSize, UseSize ;
+
+	if( Graphics_Hardware_GetVideoMemorySizeEx_PF( &TotalSize, &UseSize ) < 0 )
+	{
+		return -1 ;
+	}
+
+	if( AllSize != NULL )
+	{
+		*AllSize = TotalSize > 0x7fffffff ? 0x7fffffff : ( int )TotalSize ;
+	}
+
+	if( FreeSize != NULL )
+	{
+		ULONGLONG FreeSizeLL = TotalSize - UseSize ;
+		*FreeSize = FreeSizeLL > 0x7fffffff ? 0x7fffffff : ( int )FreeSizeLL ;
+	}
+
+	return 0 ;
+}
+
+// ビデオメモリの容量を得る( 64bit版 )
+extern int NS_GetVideoMemorySizeEx(	ULONGLONG *TotalSize, ULONGLONG *UseSize )
+{
+	return Graphics_Hardware_GetVideoMemorySizeEx_PF( TotalSize, UseSize ) ;
 }
 
 // 現在の画面のリフレッシュレートを取得する
@@ -21852,6 +22441,121 @@ extern int NS_CalcPolygonIndexedBinormalAndTangentsToShader( VERTEX3DSHADER *Ver
 	return 0 ;
 }
 
+// ポリゴンの頂点の接線と従法線をＵＶ座標から計算してセットする(インデックス)
+extern int NS_CalcPolygon32bitIndexedBinormalAndTangentsToShader( VERTEX3DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int PolygonNum )
+{
+	int i ;
+	VECTOR v1, v2, vt, du, dv, vb, vn ;
+	BYTE *UseFlag ;
+	const unsigned int *Index ;
+	int IndexNum ;
+	VERTEX3DSHADER *Vert[ 3 ] ;
+
+	// 使用している頂点のテーブルを作成する
+	{
+		UseFlag = ( BYTE * )DXALLOC( sizeof( BYTE ) * VertexNum ) ;
+		if( UseFlag == NULL )
+		{
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x02\x98\xb9\x70\x6e\x30\xa5\x63\xda\x7d\x68\x30\x93\x5f\xd5\x6c\xda\x7d\x6e\x30\x5c\x4f\x10\x62\x5c\x4f\x6d\x69\x6b\x30\xc5\x5f\x81\x89\x6a\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"頂点の接線と従法線の作成作業に必要なメモリ領域の確保に失敗しました\n" @*/ )) ;
+			return -1 ;
+		}
+		_MEMSET( UseFlag, 0, ( size_t )VertexNum ) ;
+
+		IndexNum = PolygonNum * 3 ;
+		for( i = 0 ; i < IndexNum ; i ++ )
+		{
+			UseFlag[ Indices[ i ] ] = 1 ;
+		}
+	}
+
+	// 接線と従法線の初期化
+	for( i = 0 ; i < VertexNum ; i ++ )
+	{
+		if( UseFlag[ i ] == 0 ) continue ;
+		Vertex[ i ].binorm.x = 0.0f ;
+		Vertex[ i ].binorm.y = 0.0f ;
+		Vertex[ i ].binorm.z = 0.0f ;
+		Vertex[ i ].tan.x = 0.0f ;
+		Vertex[ i ].tan.y = 0.0f ;
+		Vertex[ i ].tan.z = 0.0f ;
+	}
+
+	// 全ての面の数だけ繰り返し
+	Index = Indices ;
+	for( i = 0 ; i < PolygonNum ; i ++, Index += 3 )
+	{
+		Vert[ 0 ] = &Vertex[ Index[ 0 ] ] ;
+		Vert[ 1 ] = &Vertex[ Index[ 1 ] ] ;
+		Vert[ 2 ] = &Vertex[ Index[ 2 ] ] ;
+
+		v1.x = Vert[ 1 ]->pos.x - Vert[ 0 ]->pos.x ;
+		v1.y = Vert[ 1 ]->u - Vert[ 0 ]->u ;
+		v1.z = Vert[ 1 ]->v - Vert[ 0 ]->v ;
+
+		v2.x = Vert[ 2 ]->pos.x - Vert[ 0 ]->pos.x ;
+		v2.y = Vert[ 2 ]->u - Vert[ 0 ]->u ;
+		v2.z = Vert[ 2 ]->v - Vert[ 0 ]->v ;
+
+		vt = VCross( v1, v2 ) ;
+		du.x = 1.0f ;
+		if( VDot( vt, vt ) >= 0.0000001f )
+		{
+			du.x = -vt.y / vt.x ;
+			dv.x = -vt.z / vt.x ;
+		}
+
+		v1.x = Vert[ 1 ]->pos.y - Vert[ 0 ]->pos.y ;
+		v2.x = Vert[ 2 ]->pos.y - Vert[ 0 ]->pos.y ;
+
+		vt = VCross( v1, v2 ) ;
+		du.y = 1.0f ;
+		if( VDot( vt, vt ) >= 0.0000001f )
+		{
+			du.y = -vt.y / vt.x ;
+			dv.y = -vt.z / vt.x ;
+		}
+
+		v1.x = Vert[ 1 ]->pos.z - Vert[ 0 ]->pos.z ;
+		v2.x = Vert[ 2 ]->pos.z - Vert[ 0 ]->pos.z ;
+
+		vt = VCross( v1, v2 ) ;
+		du.z = 1.0f ;
+		if( VDot( vt, vt ) >= 0.0000001f )
+		{
+			du.z = -vt.y / vt.x ;
+			dv.z = -vt.z / vt.x ;
+		}
+
+		VectorAdd( &Vert[ 0 ]->tan, &Vert[ 0 ]->tan, &du ) ;
+		VectorAdd( &Vert[ 1 ]->tan, &Vert[ 1 ]->tan, &du ) ;
+		VectorAdd( &Vert[ 2 ]->tan, &Vert[ 2 ]->tan, &du ) ;
+
+		VectorAdd( &Vert[ 0 ]->binorm, &Vert[ 0 ]->binorm, &dv ) ;
+		VectorAdd( &Vert[ 1 ]->binorm, &Vert[ 1 ]->binorm, &dv ) ;
+		VectorAdd( &Vert[ 2 ]->binorm, &Vert[ 2 ]->binorm, &dv ) ;
+	}
+
+	// 法線の算出と正規化
+	for( i = 0 ; i < VertexNum ; i ++ )
+	{
+		if( UseFlag[ i ] == 0 ) continue ;
+
+		vt = VNorm( Vertex[ i ].tan ) ;
+		vn = VNorm( VCross( vt, Vertex[ i ].binorm ) ) ;
+		vb = VNorm( VCross( vn, vt ) ) ;
+
+		// 正規化
+		Vertex[ i ].tan    = vt ;
+		Vertex[ i ].binorm = vb ;
+	}
+
+	// メモリの解放
+	DXFREE( UseFlag ) ;
+
+	// 終了
+	return 0 ;
+}
+
 
 // シェーダーを使ってビルボードを描画する
 extern	int NS_DrawBillboard3DToShader( VECTOR Pos, float cx, float cy, float Size, float Angle, int GrHandle, int /*TransFlag*/, int ReverseXFlag, int ReverseYFlag )
@@ -22118,10 +22822,22 @@ extern	int			NS_DrawPolygonIndexed2DToShader( const VERTEX2DSHADER *Vertex, int 
 	return NS_DrawPrimitiveIndexed2DToShader( Vertex, VertexNum, Indices, PolygonNum * 3, DX_PRIMTYPE_TRIANGLELIST ) ;
 }
 
+// シェーダーを使って２Ｄポリゴンを描画する(インデックス)
+extern	int			NS_DrawPolygon32bitIndexed2DToShader( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int PolygonNum )
+{
+	return NS_DrawPrimitive32bitIndexed2DToShader( Vertex, VertexNum, Indices, PolygonNum * 3, DX_PRIMTYPE_TRIANGLELIST ) ;
+}
+
 // シェーダーを使って３Ｄポリゴンを描画する(インデックス)
 extern	int			NS_DrawPolygonIndexed3DToShader( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum )
 {
 	return NS_DrawPrimitiveIndexed3DToShader( Vertex, VertexNum, Indices, PolygonNum * 3, DX_PRIMTYPE_TRIANGLELIST ) ;
+}
+
+// シェーダーを使って３Ｄポリゴンを描画する(インデックス)
+extern	int			NS_DrawPolygon32bitIndexed3DToShader( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int PolygonNum )
+{
+	return NS_DrawPrimitive32bitIndexed3DToShader( Vertex, VertexNum, Indices, PolygonNum * 3, DX_PRIMTYPE_TRIANGLELIST ) ;
 }
 
 // シェーダーを使って２Ｄプリミティブを描画する
@@ -22150,10 +22866,26 @@ extern	int			NS_DrawPrimitiveIndexed2DToShader( const VERTEX2DSHADER *Vertex, in
 	return Graphics_Hardware_DrawPrimitiveIndexed2DToShader_PF( Vertex, VertexNum, Indices, IndexNum, PrimitiveType ) ;
 }
 
+// シェーダーを使って２Ｄプリミティブを描画する(インデックス)
+extern	int			NS_DrawPrimitive32bitIndexed2DToShader( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType )
+{
+	// ２Ｄ行列をハードウエアに反映する
+	if( GSYS.DrawSetting.MatchHardware_2DMatrix == FALSE && GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+		Graphics_DrawSetting_ApplyLib2DMatrixToHardware() ;
+
+	return Graphics_Hardware_DrawPrimitive32bitIndexed2DToShader_PF( Vertex, VertexNum, Indices, IndexNum, PrimitiveType ) ;
+}
+
 // シェーダーを使って３Ｄプリミティブを描画する(インデックス)
 extern	int			NS_DrawPrimitiveIndexed3DToShader( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType )
 {
 	return Graphics_Hardware_DrawPrimitiveIndexed3DToShader_PF( Vertex, VertexNum, Indices, IndexNum, PrimitiveType ) ;
+}
+
+// シェーダーを使って３Ｄプリミティブを描画する(インデックス)
+extern	int			NS_DrawPrimitive32bitIndexed3DToShader( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType )
+{
+	return Graphics_Hardware_DrawPrimitive32bitIndexed3DToShader_PF( Vertex, VertexNum, Indices, IndexNum, PrimitiveType ) ;
 }
 
 // シェーダーを使って３Ｄポリゴンを描画する( 頂点バッファ使用版 )
@@ -23606,6 +24338,26 @@ extern int NS_SetGlobalAmbientLight( COLOR_F Color )
 
 	// ハードウエアに設定する
 	Graphics_Hardware_Light_GlobalAmbient_PF( &Color ) ;
+
+	// 終了
+	return 0 ;
+}
+
+// ３Ｄ描画のライティング計算で角度減衰を行うかどうかを設定する( TRUE:角度減衰を行う( デフォルト )  FALSE:角度減衰を行わない )
+extern int NS_SetUseLightAngleAttenuation( int UseFlag )
+{
+	// 値が同じ場合は何もせず終了
+	if( ( GSYS.Light.NoLightAngleAttenuation == FALSE && UseFlag == TRUE  ) ||
+		( GSYS.Light.NoLightAngleAttenuation == TRUE  && UseFlag == FALSE ) )
+	{
+		return 0 ;
+	}
+
+	// 値を保存
+	GSYS.Light.NoLightAngleAttenuation = UseFlag ? FALSE : TRUE ;
+
+	// ハードウェアに設定する
+	Graphics_Hardware_Light_SetNoAngleAttenuation_PF( GSYS.Light.NoLightAngleAttenuation ) ;
 
 	// 終了
 	return 0 ;
@@ -25741,22 +26493,22 @@ extern int Graphics_Initialize( void )
 	}
 
 	// グラフィックハンドル管理情報の初期化
-	InitializeHandleManage( DX_HANDLETYPE_GRAPH, sizeof( IMAGEDATA ), MAX_IMAGE_NUM, Graphics_Image_InitializeHandle, Graphics_Image_TerminateHandle, L"Graph" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_GRAPH, sizeof( IMAGEDATA ), MAX_IMAGE_NUM, Graphics_Image_InitializeHandle, Graphics_Image_TerminateHandle, Graphics_Image_DumpInfoHandle, L"Graph" ) ;
 
 	// シェーダーハンドル管理情報の初期化
-	InitializeHandleManage( DX_HANDLETYPE_SHADER, sizeof( SHADERHANDLEDATA ) + sizeof( SHADERHANDLEDATA_PF ) , MAX_SHADER_NUM, Graphics_Shader_InitializeHandle, Graphics_Shader_TerminateHandle, L"Shader" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_SHADER, sizeof( SHADERHANDLEDATA ) + sizeof( SHADERHANDLEDATA_PF ) , MAX_SHADER_NUM, Graphics_Shader_InitializeHandle, Graphics_Shader_TerminateHandle, NULL, L"Shader" ) ;
 
 	// シェーダー用定数バッファハンドル管理情報の初期化
-	InitializeHandleManage( DX_HANDLETYPE_SHADER_CONSTANT_BUFFER, sizeof( SHADERCONSTANTBUFFERHANDLEDATA ) + sizeof( SHADERCONSTANTBUFFERHANDLEDATA_PF ) , MAX_CONSTANT_BUFFER_NUM, Graphics_ShaderConstantBuffer_InitializeHandle, Graphics_ShaderConstantBuffer_TerminateHandle, L"ShaderConstantBuffer" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_SHADER_CONSTANT_BUFFER, sizeof( SHADERCONSTANTBUFFERHANDLEDATA ) + sizeof( SHADERCONSTANTBUFFERHANDLEDATA_PF ) , MAX_CONSTANT_BUFFER_NUM, Graphics_ShaderConstantBuffer_InitializeHandle, Graphics_ShaderConstantBuffer_TerminateHandle, NULL, L"ShaderConstantBuffer" ) ;
 
 	// 頂点バッファハンドル管理情報の初期化
-	InitializeHandleManage( DX_HANDLETYPE_VERTEX_BUFFER, sizeof( VERTEXBUFFERHANDLEDATA ) + sizeof( VERTEXBUFFERHANDLEDATA_PF ), MAX_VERTEX_BUFFER_NUM, Graphics_VertexBuffer_InitializeHandle, Graphics_VertexBuffer_TerminateHandle, L"VertexBuffer" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_VERTEX_BUFFER, sizeof( VERTEXBUFFERHANDLEDATA ) + sizeof( VERTEXBUFFERHANDLEDATA_PF ), MAX_VERTEX_BUFFER_NUM, Graphics_VertexBuffer_InitializeHandle, Graphics_VertexBuffer_TerminateHandle, NULL, L"VertexBuffer" ) ;
 
 	// インデックスバッファハンドル管理情報の初期化
-	InitializeHandleManage( DX_HANDLETYPE_INDEX_BUFFER, sizeof( INDEXBUFFERHANDLEDATA ) + sizeof( INDEXBUFFERHANDLEDATA_PF ), MAX_INDEX_BUFFER_NUM, Graphics_IndexBuffer_InitializeHandle, Graphics_IndexBuffer_TerminateHandle, L"IndexBuffer" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_INDEX_BUFFER, sizeof( INDEXBUFFERHANDLEDATA ) + sizeof( INDEXBUFFERHANDLEDATA_PF ), MAX_INDEX_BUFFER_NUM, Graphics_IndexBuffer_InitializeHandle, Graphics_IndexBuffer_TerminateHandle, NULL, L"IndexBuffer" ) ;
 
 	// シャドウマップハンドル管理情報の初期化
-	InitializeHandleManage( DX_HANDLETYPE_SHADOWMAP, sizeof( SHADOWMAPDATA ) + sizeof( SHADOWMAPDATA_PF ), MAX_SHADOWMAP_NUM, Graphics_ShadowMap_InitializeHandle, Graphics_ShadowMap_TerminateHandle, L"ShadowMap" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_SHADOWMAP, sizeof( SHADOWMAPDATA ) + sizeof( SHADOWMAPDATA_PF ), MAX_SHADOWMAP_NUM, Graphics_ShadowMap_InitializeHandle, Graphics_ShadowMap_TerminateHandle, NULL, L"ShadowMap" ) ;
 
 	// 描画処理の環境依存部分の初期化その１
 	if( Graphics_Initialize_Timing0_PF() < 0 )
@@ -25918,6 +26670,14 @@ extern int Graphics_Terminate( void )
 		}
 	}
 
+	// 作成する分割画像に割り当てるグラフィックハンドル用のメモリが確保されていたら解放
+	if( GSYS.CreateImage.CreateDivGraphHandle != NULL )
+	{
+		DXFREE( GSYS.CreateImage.CreateDivGraphHandle ) ;
+		GSYS.CreateImage.CreateDivGraphHandle = NULL ;
+	}
+	GSYS.CreateImage.CreateDivGraphHandleNum = 0 ;
+
 	// シャドウマップハンドル管理情報の後始末
 	TerminateHandleManage( DX_HANDLETYPE_SHADOWMAP ) ;
 
@@ -26036,6 +26796,35 @@ extern	int		Graphics_Screen_SetupFullScreenModeInfo( void )
 LABEL_FULLSCREENMODE_SWITCH :
 	switch( GSYS.Screen.FullScreenResolutionModeAct )
 	{
+	case DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW :
+#ifdef WINDOWS_DESKTOP_OS
+		if( GSYS.Screen.DisplayInfo == NULL )
+		{
+			if( Graphics_SetupDisplayInfo_PF() < 0 )
+			{
+				HDC hdc ;
+
+				hdc = WinAPIData.Win32Func.GetDCFunc( NULL ) ;
+				GSYS.Screen.FullScreenUseDispModeData.Width         = WinAPIData.Win32Func.GetSystemMetricsFunc( SM_CXSCREEN ) ;
+				GSYS.Screen.FullScreenUseDispModeData.Height        = WinAPIData.Win32Func.GetSystemMetricsFunc( SM_CYSCREEN ) ;
+				GSYS.Screen.FullScreenUseDispModeData.ColorBitDepth = WinAPIData.Win32Func.GetDeviceCapsFunc( hdc , PLANES ) * WinAPIData.Win32Func.GetDeviceCapsFunc( hdc , BITSPIXEL ) ;
+				GSYS.Screen.FullScreenUseDispModeData.RefreshRate   = WinAPIData.Win32Func.GetDeviceCapsFunc( hdc , VREFRESH ) ;
+				WinAPIData.Win32Func.ReleaseDCFunc( NULL , hdc ) ;
+				break ;
+			}
+		}
+
+		// デスクトップのサイズをセット
+		GSYS.Screen.FullScreenUseDispModeData.Width         = GSYS.Screen.DisplayInfo[ UseDisplayIndex ].DesktopSizeX ;
+		GSYS.Screen.FullScreenUseDispModeData.Height        = GSYS.Screen.DisplayInfo[ UseDisplayIndex ].DesktopSizeY ;
+		GSYS.Screen.FullScreenUseDispModeData.ColorBitDepth = GSYS.Screen.DisplayInfo[ UseDisplayIndex ].DesktopColorBitDepth ;
+		GSYS.Screen.FullScreenUseDispModeData.RefreshRate   = GSYS.Screen.DisplayInfo[ UseDisplayIndex ].DesktopRefreshRate ;
+#else
+		GSYS.Screen.FullScreenResolutionModeAct = DX_FSRESOLUTIONMODE_NATIVE ;
+		goto LABEL_FULLSCREENMODE_SWITCH ;
+#endif
+		break ;
+
 	case DX_FSRESOLUTIONMODE_NATIVE :
 		// 指定の画面モードに対応しているか調べる
 		DispModeNum = NS_GetDisplayModeNum( UseDisplayIndex ) ;
@@ -26247,6 +27036,7 @@ extern	int		Graphics_Screen_SetupFullScreenScalingDestRect( void )
 
 	case DX_FSRESOLUTIONMODE_MAXIMUM :
 	case DX_FSRESOLUTIONMODE_DESKTOP :
+	case DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW :
 		// サブバックバッファの内容をピクセルの縦横比を１：１に保ちつつバックバッファに最大まで拡大して転送する矩形の算出
 		{
 			int DestSizeX ;
@@ -26261,18 +27051,30 @@ extern	int		Graphics_Screen_SetupFullScreenScalingDestRect( void )
 			static int MainScreenSizeYBackup = -1000 ;
 
 			// 転送先のサイズをセット
-			if( GSYS.Screen.FullScreenResolutionModeAct == DX_FSRESOLUTIONMODE_DESKTOP )
+			if( GSYS.Screen.FullScreenResolutionModeAct == DX_FSRESOLUTIONMODE_DESKTOP ||
+				GSYS.Screen.FullScreenResolutionModeAct == DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW )
 			{
 				GRAPHICSSYS_DISPLAYINFO *DisplayInfo ;
 
-				if( GSYS.Screen.DisplayInfo == NULL )
+				if( GSYS.Screen.DisplayInfo == NULL && Graphics_SetupDisplayInfo_PF() < 0 )
 				{
-					return -1 ;
-				}
+#ifdef WINDOWS_DESKTOP_OS
+					HDC hdc ;
 
-				DisplayInfo = &GSYS.Screen.DisplayInfo[ GSYS.Screen.ValidUseDisplayIndex ? GSYS.Screen.UseDisplayIndex : GSYS.Screen.PrimaryDisplayIndex ] ;
-				DestSizeX = DisplayInfo->DesktopSizeX ;
-				DestSizeY = DisplayInfo->DesktopSizeY ;
+					hdc = WinAPIData.Win32Func.GetDCFunc( NULL ) ;
+					DestSizeX = WinAPIData.Win32Func.GetSystemMetricsFunc( SM_CXSCREEN ) ;
+					DestSizeY = WinAPIData.Win32Func.GetSystemMetricsFunc( SM_CYSCREEN ) ;
+					WinAPIData.Win32Func.ReleaseDCFunc( NULL , hdc ) ;
+#else
+					return -1 ;
+#endif
+				}
+				else
+				{
+					DisplayInfo = &GSYS.Screen.DisplayInfo[ GSYS.Screen.ValidUseDisplayIndex ? GSYS.Screen.UseDisplayIndex : GSYS.Screen.PrimaryDisplayIndex ] ;
+					DestSizeX = DisplayInfo->DesktopSizeX ;
+					DestSizeY = DisplayInfo->DesktopSizeY ;
+				}
 
 				if( DestSizeXBackup != DestSizeX || DestSizeYBackup != DestSizeY )
 				{
@@ -26295,6 +27097,14 @@ extern	int		Graphics_Screen_SetupFullScreenScalingDestRect( void )
 			}
 
 			// 転送後のサイズを決定
+			if( GSYS.Screen.MainScreenSizeX == 0 )
+			{
+				GSYS.Screen.MainScreenSizeX = DEFAULT_SCREEN_SIZE_X ;
+			}
+			if( GSYS.Screen.MainScreenSizeY == 0 )
+			{
+				GSYS.Screen.MainScreenSizeY = DEFAULT_SCREEN_SIZE_Y ;
+			}
 			ScalingSizeX = DestSizeY * GSYS.Screen.MainScreenSizeX / GSYS.Screen.MainScreenSizeY ;
 			if( ScalingSizeX < DestSizeX )
 			{
@@ -26355,6 +27165,7 @@ extern int Graphics_Screen_ScreenPosConvSubBackbufferPos( int ScreenPosX, int Sc
 
 	case DX_FSRESOLUTIONMODE_MAXIMUM :
 	case DX_FSRESOLUTIONMODE_DESKTOP :
+	case DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW :
 		if( Graphics_Screen_SetupFullScreenScalingDestRect() < 0 )
 		{
 			return -1 ;
@@ -26394,6 +27205,7 @@ extern int Graphics_Screen_SubBackbufferPosConvScreenPos( int BackBufferPosX, in
 
 	case DX_FSRESOLUTIONMODE_MAXIMUM :
 	case DX_FSRESOLUTIONMODE_DESKTOP :
+	case DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW :
 		if( Graphics_Screen_SetupFullScreenScalingDestRect() < 0 )
 		{
 			return -1 ;
@@ -26439,7 +27251,7 @@ extern void Graphics_Screen_SetMainScreenSize( int SizeX, int SizeY )
 }
 
 // 画面モードの変更２
-extern int Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, int ChangeWindowFlag, int RefreshRate )
+extern int Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, int ChangeWindowFlag, int RefreshRate, int AlwaysRunFlag )
 {
 	int BackScSizeX, BackScSizeY, BackScColorBitDepth, BackRefreshRate ;
 	int Ret = DX_CHANGESCREEN_OK ;
@@ -26478,7 +27290,8 @@ extern int Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int Col
 		ScreenSizeY      == GSYS.Screen.MainScreenSizeY &&
 		ColorBitDepth    == GSYS.Screen.MainScreenColorBitDepth &&
 		ChangeWindowFlag == FALSE &&
-		RefreshRate      == GSYS.Screen.MainScreenRefreshRate )
+		RefreshRate      == GSYS.Screen.MainScreenRefreshRate &&
+		AlwaysRunFlag    == FALSE )
 	{
 		goto END ;
 	}
@@ -26519,7 +27332,7 @@ extern int Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int Col
 
 #ifdef WINDOWS_DESKTOP_OS
 		// ウインドウモードの場合は指定の解像度がデスクトップのサイズを超えていないかどうかを調べる
-		if( NS_GetWindowModeFlag() == TRUE )
+		if( NS_GetWindowModeFlag() == TRUE || NS_GetUseFullScreenResolutionMode() == DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW )
 		{
 			GRAPHICSSYS_DISPLAYINFO *DisplayInfo ;
 
@@ -26582,7 +27395,7 @@ extern int Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int Col
 
 #ifdef WINDOWS_DESKTOP_OS
 		// ウインドウスタイルセット
-		if( NS_GetWindowModeFlag() == TRUE )
+		if( NS_GetWindowModeFlag() == TRUE || NS_GetUseFullScreenResolutionMode() == DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW )
 		{
 			SetWindowStyle() ;
 		}
@@ -26732,7 +27545,7 @@ extern int Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int Col
 
 #ifdef WINDOWS_DESKTOP_OS
 		// ウインドウスタイルセット
-		if( NS_GetWindowModeFlag() == TRUE /*|| GSYS.Setting.ValidHardware == FALSE*/ )
+		if( NS_GetWindowModeFlag() == TRUE || NS_GetUseFullScreenResolutionMode() == DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW /*|| GSYS.Setting.ValidHardware == FALSE*/ )
 		{
 			SetWindowStyle() ;
 		}
@@ -27183,9 +27996,9 @@ extern int Graphics_Image_CheckMultiSampleDrawValid( int GrHandle )
 }
 
 // 新しいグラフィックハンドルを確保する
-extern int Graphics_Image_AddHandle( int ASyncThread )
+extern int Graphics_Image_AddHandle( int GrHandle, int ASyncThread )
 {
-	return AddHandle( DX_HANDLETYPE_GRAPH, ASyncThread, -1 );
+	return AddHandle( DX_HANDLETYPE_GRAPH, ASyncThread, GrHandle );
 }
 
 // グラフィックハンドルを初期化する
@@ -27803,13 +28616,24 @@ extern int Graphics_Image_TerminateHandle( HANDLEINFO *HandleInfo )
 	return 0 ;
 }
 
+// グラフィックハンドルの情報出力
+extern int Graphics_Image_DumpInfoHandle( HANDLEINFO *HandleInfo )
+{
+	IMAGEDATA *Image = ( IMAGEDATA * )HandleInfo ;
+
+	DXST_LOGFILEFMT_ADDW(( L"Handle:0x%08x Size:%dx%d UsePos:%d,%d File:%s", HandleInfo->Handle, Image->WidthI, Image->HeightI, Image->UseOrigXI, Image->UseOrigYI, Image->ReadBase != NULL && Image->ReadBase->FileName != NULL ? Image->ReadBase->FileName : L"None" )) ;
+
+	// 終了
+	return 0 ;
+}
+
 // 指定部分だけを抜き出したグラフィックハンドルを初期化する
 extern int Graphics_Image_InitializeDerivationHandle( int GrHandle, int IsFloat, int SrcXI, float SrcXF, int SrcYI, float SrcYF, int WidthI, float WidthF, int HeightI, float HeightF, int SrcGrHandle, int ASyncThread )
 {
 	IMAGEDATA *Image, *SrcImage ;
 	IMAGEDATA_ORIG *Orig ;
 
-	// アドレスの取得
+	// アドレスの取得ｓ
 	if( ASyncThread )
 	{
 		if( GRAPHCHK_ASYNC( GrHandle, Image ) ||
@@ -28260,6 +29084,9 @@ extern int Graphics_Image_CreateDXGraph_UseGParam(
 
 		// パレットテクスチャを使用するかどうかをセット
 		UsePaletteFlag = RgbBaseImage->ColorData.PixelByte  == 1 && 
+						 RgbBaseImage->ColorData.RedMask   == 0x00ff0000 &&
+						 RgbBaseImage->ColorData.GreenMask == 0x0000ff00 &&
+						 RgbBaseImage->ColorData.BlueMask  == 0x000000ff &&
 						 ( ( GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE ) || RgbBaseImage->ColorData.AlphaWidth == 0 ) &&
 						 AlphaBaseImage == NULL &&
 						 GParam->NotUsePaletteGraphFlag == FALSE ;
@@ -28339,7 +29166,7 @@ extern int Graphics_Image_DerivationGraph_UseGParam(
 	int Result ;
 
 	// 新たなグラフィックデータの追加
-	NewGraphHandle = Graphics_Image_AddHandle( ASyncThread ) ;
+	NewGraphHandle = Graphics_Image_AddHandle( GSYS.CreateImage.CreateGraphHandle <= 0 ? -1 : GSYS.CreateImage.CreateGraphHandle, ASyncThread ) ;
 	if( NewGraphHandle == -1 )
 	{
 		return -1 ;
@@ -29368,7 +30195,7 @@ extern int Graphics_Image_BltBmpOrGraphImageToDivGraphBase(
 	const BASEIMAGE	*AlphaBaseImage,
 	      int		AllNum,
 	      int		XNum,
-	      int		/*YNum*/,
+	      int		YNum,
 		  int		/*IsFloat*/,
 	      int		WidthI,
 	      float		WidthF,
@@ -29392,6 +30219,12 @@ extern int Graphics_Image_BltBmpOrGraphImageToDivGraphBase(
 	int				Count ;
 	int				x ;
 	int				y ;
+
+	// XNum, YNum の乗算値が AllNum に満たなかったらエラー
+	if( XNum * YNum < AllNum )
+	{
+		return -1 ;
+	}
 
 	if( GSYS.InitializeFlag == FALSE )
 	{
@@ -30171,7 +31004,7 @@ extern int Graphics_Image_GetWhiteTexHandle( void )
 		Graphics_Image_InitLoadGraphGParam( &GParam ) ;
 		Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( &GParam.CreateGraphGParam.InitHandleGParam, 16, TRUE, FALSE ) ;
 		GParam.CreateGraphGParam.InitHandleGParam.TransColor = ( BYTE )255 << 16 | ( BYTE )0 << 8 | ( BYTE )255 ;
-		GSYS.Resource.WhiteTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, GSYS.Resource.WhiteTexHandle, &BaseImage, NULL ) ;
+		GSYS.Resource.WhiteTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &BaseImage, NULL ) ;
 		NS_SetDeleteHandleFlag( GSYS.Resource.WhiteTexHandle, &GSYS.Resource.WhiteTexHandle ) ;
 		NS_SetDeviceLostDeleteGraphFlag( GSYS.Resource.WhiteTexHandle, TRUE ) ;
 
@@ -30217,7 +31050,7 @@ extern int Graphics_Image_GetRandomKernelRotationTexHandle( void )
 		GParam.CreateGraphGParam.InitHandleGParam.FloatTypeGraphCreateFlag = TRUE ;
 		GParam.CreateGraphGParam.InitHandleGParam.CreateImageChannelNum = 4 ;
 		GParam.CreateGraphGParam.InitHandleGParam.CreateImageChannelBitDepth = 32 ;
-		GSYS.Resource.RandomKernelRotationTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, GSYS.Resource.RandomKernelRotationTexHandle, &BaseImage, NULL ) ;
+		GSYS.Resource.RandomKernelRotationTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &BaseImage, NULL ) ;
 		NS_SetDeleteHandleFlag( GSYS.Resource.RandomKernelRotationTexHandle, &GSYS.Resource.RandomKernelRotationTexHandle ) ;
 		NS_SetDeviceLostDeleteGraphFlag( GSYS.Resource.RandomKernelRotationTexHandle, TRUE ) ;
 
@@ -30260,7 +31093,7 @@ extern int Graphics_Image_GetLineTexHandle( int IsPMA )
 			Graphics_Image_InitLoadGraphGParam( &GParam ) ;
 			Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( &GParam.CreateGraphGParam.InitHandleGParam, 16, TRUE, FALSE ) ;
 			GParam.CreateGraphGParam.InitHandleGParam.TransColor = ( BYTE )255 << 16 | ( BYTE )0 << 8 | ( BYTE )255 ;
-			GSYS.Resource.LineTexHandle_PMA = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, GSYS.Resource.LineTexHandle_PMA, &BaseImage, NULL ) ;
+			GSYS.Resource.LineTexHandle_PMA = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &BaseImage, NULL ) ;
 			NS_SetDeleteHandleFlag( GSYS.Resource.LineTexHandle_PMA, &GSYS.Resource.LineTexHandle_PMA ) ;
 			NS_SetDeviceLostDeleteGraphFlag( GSYS.Resource.LineTexHandle_PMA, TRUE ) ;
 
@@ -30299,7 +31132,7 @@ extern int Graphics_Image_GetLineTexHandle( int IsPMA )
 			Graphics_Image_InitLoadGraphGParam( &GParam ) ;
 			Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( &GParam.CreateGraphGParam.InitHandleGParam, 16, TRUE, FALSE ) ;
 			GParam.CreateGraphGParam.InitHandleGParam.TransColor = ( BYTE )255 << 16 | ( BYTE )0 << 8 | ( BYTE )255 ;
-			GSYS.Resource.LineTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, GSYS.Resource.LineTexHandle, &BaseImage, NULL ) ;
+			GSYS.Resource.LineTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &BaseImage, NULL ) ;
 			NS_SetDeleteHandleFlag( GSYS.Resource.LineTexHandle, &GSYS.Resource.LineTexHandle ) ;
 			NS_SetDeviceLostDeleteGraphFlag( GSYS.Resource.LineTexHandle, TRUE ) ;
 
@@ -30343,7 +31176,7 @@ extern int Graphics_Image_GetLineOneThicknessTexHandle( int IsPMA )
 			Graphics_Image_InitLoadGraphGParam( &GParam ) ;
 			Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( &GParam.CreateGraphGParam.InitHandleGParam, 16, TRUE, FALSE ) ;
 			GParam.CreateGraphGParam.InitHandleGParam.TransColor = ( BYTE )255 << 16 | ( BYTE )0 << 8 | ( BYTE )255 ;
-			GSYS.Resource.LineOneThicknessTexHandle_PMA = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, GSYS.Resource.LineOneThicknessTexHandle_PMA, &BaseImage, NULL ) ;
+			GSYS.Resource.LineOneThicknessTexHandle_PMA = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &BaseImage, NULL ) ;
 			NS_SetDeleteHandleFlag( GSYS.Resource.LineOneThicknessTexHandle_PMA, &GSYS.Resource.LineOneThicknessTexHandle_PMA ) ;
 			NS_SetDeviceLostDeleteGraphFlag( GSYS.Resource.LineOneThicknessTexHandle_PMA, TRUE ) ;
 
@@ -30382,7 +31215,7 @@ extern int Graphics_Image_GetLineOneThicknessTexHandle( int IsPMA )
 			Graphics_Image_InitLoadGraphGParam( &GParam ) ;
 			Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( &GParam.CreateGraphGParam.InitHandleGParam, 16, TRUE, FALSE ) ;
 			GParam.CreateGraphGParam.InitHandleGParam.TransColor = ( BYTE )255 << 16 | ( BYTE )0 << 8 | ( BYTE )255 ;
-			GSYS.Resource.LineOneThicknessTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, GSYS.Resource.LineOneThicknessTexHandle, &BaseImage, NULL ) ;
+			GSYS.Resource.LineOneThicknessTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &BaseImage, NULL ) ;
 			NS_SetDeleteHandleFlag( GSYS.Resource.LineOneThicknessTexHandle, &GSYS.Resource.LineOneThicknessTexHandle ) ;
 			NS_SetDeviceLostDeleteGraphFlag( GSYS.Resource.LineOneThicknessTexHandle, TRUE ) ;
 
@@ -30426,7 +31259,7 @@ extern int Graphics_Image_GetLineBoxTexHandle( int IsPMA )
 			Graphics_Image_InitLoadGraphGParam( &GParam ) ;
 			Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( &GParam.CreateGraphGParam.InitHandleGParam, 16, TRUE, FALSE ) ;
 			GParam.CreateGraphGParam.InitHandleGParam.TransColor = ( BYTE )255 << 16 | ( BYTE )0 << 8 | ( BYTE )255 ;
-			GSYS.Resource.LineBoxTexHandle_PMA = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, GSYS.Resource.LineBoxTexHandle_PMA, &BaseImage, NULL ) ;
+			GSYS.Resource.LineBoxTexHandle_PMA = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &BaseImage, NULL ) ;
 			NS_SetDeleteHandleFlag( GSYS.Resource.LineBoxTexHandle_PMA, &GSYS.Resource.LineBoxTexHandle_PMA ) ;
 			NS_SetDeviceLostDeleteGraphFlag( GSYS.Resource.LineBoxTexHandle_PMA, TRUE ) ;
 
@@ -30465,7 +31298,7 @@ extern int Graphics_Image_GetLineBoxTexHandle( int IsPMA )
 			Graphics_Image_InitLoadGraphGParam( &GParam ) ;
 			Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( &GParam.CreateGraphGParam.InitHandleGParam, 16, TRUE, FALSE ) ;
 			GParam.CreateGraphGParam.InitHandleGParam.TransColor = ( BYTE )255 << 16 | ( BYTE )0 << 8 | ( BYTE )255 ;
-			GSYS.Resource.LineBoxTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, GSYS.Resource.LineBoxTexHandle, &BaseImage, NULL ) ;
+			GSYS.Resource.LineBoxTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &BaseImage, NULL ) ;
 			NS_SetDeleteHandleFlag( GSYS.Resource.LineBoxTexHandle, &GSYS.Resource.LineBoxTexHandle ) ;
 			NS_SetDeviceLostDeleteGraphFlag( GSYS.Resource.LineBoxTexHandle, TRUE ) ;
 
@@ -30509,7 +31342,7 @@ extern int Graphics_Image_GetLineBoxOneThicknessTexHandle( int IsPMA )
 			Graphics_Image_InitLoadGraphGParam( &GParam ) ;
 			Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( &GParam.CreateGraphGParam.InitHandleGParam, 16, TRUE, FALSE ) ;
 			GParam.CreateGraphGParam.InitHandleGParam.TransColor = ( BYTE )255 << 16 | ( BYTE )0 << 8 | ( BYTE )255 ;
-			GSYS.Resource.LineBoxOneThicknessTexHandle_PMA = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, GSYS.Resource.LineBoxOneThicknessTexHandle_PMA, &BaseImage, NULL ) ;
+			GSYS.Resource.LineBoxOneThicknessTexHandle_PMA = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &BaseImage, NULL ) ;
 			NS_SetDeleteHandleFlag( GSYS.Resource.LineBoxOneThicknessTexHandle_PMA, &GSYS.Resource.LineBoxOneThicknessTexHandle_PMA ) ;
 			NS_SetDeviceLostDeleteGraphFlag( GSYS.Resource.LineBoxOneThicknessTexHandle_PMA, TRUE ) ;
 
@@ -30548,7 +31381,7 @@ extern int Graphics_Image_GetLineBoxOneThicknessTexHandle( int IsPMA )
 			Graphics_Image_InitLoadGraphGParam( &GParam ) ;
 			Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( &GParam.CreateGraphGParam.InitHandleGParam, 16, TRUE, FALSE ) ;
 			GParam.CreateGraphGParam.InitHandleGParam.TransColor = ( BYTE )255 << 16 | ( BYTE )0 << 8 | ( BYTE )255 ;
-			GSYS.Resource.LineBoxOneThicknessTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, GSYS.Resource.LineBoxOneThicknessTexHandle, &BaseImage, NULL ) ;
+			GSYS.Resource.LineBoxOneThicknessTexHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &BaseImage, NULL ) ;
 			NS_SetDeleteHandleFlag( GSYS.Resource.LineBoxOneThicknessTexHandle, &GSYS.Resource.LineBoxOneThicknessTexHandle ) ;
 			NS_SetDeviceLostDeleteGraphFlag( GSYS.Resource.LineBoxOneThicknessTexHandle, TRUE ) ;
 
@@ -30651,7 +31484,7 @@ extern int Graphics_Image_MakeGraph_UseGParam(
 	CheckActiveState() ;
 
 	// ハンドルの作成
-	GrHandle = Graphics_Image_AddHandle( ASyncThread ) ;
+	GrHandle = Graphics_Image_AddHandle( GSYS.CreateImage.CreateGraphHandle <= 0 ? -1 : GSYS.CreateImage.CreateGraphHandle, ASyncThread ) ;
 	if( GrHandle == -1 )
 	{
 		return -1 ;
@@ -30747,7 +31580,7 @@ static int Graphics_Image_CreateGraph_Static(
 	// 画像データの読み込み
 	Graphics_Image_CreateGraph_LoadBaseImage( Param, &LParam ) ;
 
-	if( LParam.LoadHr == -1 ) 
+	if( LParam.LoadHr == -1 )
 	{
 		// 再読み込みではない場合はムービーの可能性を見る
 		if( Param->ReCreateFlag == FALSE && ( Param->FileName != NULL || Param->RgbMemImage != NULL ) )
@@ -30901,10 +31734,21 @@ extern int Graphics_Image_CreateGraph_UseGParam(
 
 	if( Param->ReCreateFlag == FALSE )
 	{
-		Param->GrHandle = Graphics_Image_AddHandle( ASyncThread ) ;
-		if( Param->GrHandle < 0 )
+		if( Param->GrHandle <= 0 )
 		{
-			return -1 ;
+			Param->GrHandle = Graphics_Image_AddHandle( Param->GParam.CreateGraphGParam.InitHandleGParam.CreateGraphHandle <= 0 ? -1 : Param->GParam.CreateGraphGParam.InitHandleGParam.CreateGraphHandle, ASyncThread ) ;
+			if( Param->GrHandle < 0 )
+			{
+				return -1 ;
+			}
+		}
+		else
+		{
+			// 非同期読み込みカウントをインクリメント
+			if( ASyncThread )
+			{
+				IncASyncLoadCount( Param->GrHandle, -1 ) ;
+			}
 		}
 	}
 	else
@@ -31213,15 +32057,34 @@ extern int Graphics_Image_CreateDivGraph_UseGParam(
 	{
 		// グラフィックハンドルの作成
 		_MEMSET( Param->HandleArray, 0, sizeof( int ) * Param->AllNum ) ;
-		for( i = 0 ; i < Param->AllNum ; i ++ )
+		if( Param->GParam.CreateGraphGParam.InitHandleGParam.CreateDivGraphHandle != NULL &&
+			Param->GParam.CreateGraphGParam.InitHandleGParam.CreateDivGraphHandleNum >= Param->AllNum )
 		{
-			Param->HandleArray[ i ] = Graphics_Image_AddHandle( ASyncThread ) ;
-			if( Param->HandleArray[ i ] < 0 )
+			for( i = 0 ; i < Param->AllNum ; i ++ )
 			{
-				goto ERR ;
+				Param->HandleArray[ i ] = Graphics_Image_AddHandle( Param->GParam.CreateGraphGParam.InitHandleGParam.CreateDivGraphHandle[ i ], ASyncThread ) ;
+				if( Param->HandleArray[ i ] < 0 )
+				{
+					goto ERR ;
+				}
+			}
+
+			DXFREE( Param->GParam.CreateGraphGParam.InitHandleGParam.CreateDivGraphHandle ) ;
+			Param->GParam.CreateGraphGParam.InitHandleGParam.CreateDivGraphHandle = NULL ;
+			Param->GParam.CreateGraphGParam.InitHandleGParam.CreateDivGraphHandleNum = 0 ;
+		}
+		else
+		{
+			for( i = 0 ; i < Param->AllNum ; i ++ )
+			{
+				Param->HandleArray[ i ] = Graphics_Image_AddHandle( -1, ASyncThread ) ;
+				if( Param->HandleArray[ i ] < 0 )
+				{
+					goto ERR ;
+				}
 			}
 		}
-		Param->BaseHandle = Graphics_Image_AddHandle( ASyncThread ) ;
+		Param->BaseHandle = Graphics_Image_AddHandle( -1, ASyncThread ) ;
 		if( Param->BaseHandle < 0 )
 		{
 			goto ERR ;
@@ -31851,6 +32714,12 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam(
 	int Result ;
 	int GrSizeX, GrSizeY ;
 
+	// XNum, YNum の乗算値が AllNum に満たなかったらエラー
+	if( XNum * YNum < AllNum )
+	{
+		return -1 ;
+	}
+
 	if( StrideXI == 0 )
 	{
 		StrideXI = SizeXI ;
@@ -31903,8 +32772,9 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase_UseGParam(
 			for( j = 0 ; k < AllNum && j < XNum ; j ++, k ++ )
 			{
 				// サイズのチェック
-				if( ( BaseImage->Width  < basexI   + addxI * j + StrideXI ) ||
-					( BaseImage->Height < StrideYI         * i + StrideYI ) )
+				if( GSYS.CreateImage.NotUseLoadDivGraphSizeCheck == FALSE &&
+					( ( BaseImage->Width  < basexI   + addxI * j + StrideXI ) ||
+					  ( BaseImage->Height < StrideYI         * i + StrideYI ) ) )
 				{
 					DXST_LOGFILE_ADDUTF16LE( "\xb0\x30\xe9\x30\xd5\x30\xa3\x30\xc3\x30\xaf\x30\x6e\x30\x06\x52\x72\x52\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x02\x30\x06\x52\x72\x52\x8c\x5f\x6e\x30\xcf\x7d\xb5\x30\xa4\x30\xba\x30\x4c\x30\x06\x52\x72\x52\x43\x51\x6e\x30\x3b\x75\xcf\x50\x88\x30\x8a\x30\x82\x30\x27\x59\x4d\x30\x44\x30\x07\x63\x9a\x5b\x6b\x30\x6a\x30\x63\x30\x66\x30\x57\x30\x7e\x30\x63\x30\x66\x30\x44\x30\x7e\x30\x59\x30\x02\x30\x20\x00\x69\x00\x6e\x00\x20\x00\x43\x00\x72\x00\x65\x00\x61\x00\x74\x00\x65\x00\x44\x00\x69\x00\x76\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x46\x00\x72\x00\x6f\x00\x6d\x00\x47\x00\x72\x00\x61\x00\x70\x00\x68\x00\x49\x00\x6d\x00\x61\x00\x67\x00\x65\x00\x0a\x00\x00"/*@ L"グラフィックの分割に失敗しました。分割後の総サイズが分割元の画像よりも大きい指定になってしまっています。 in CreateDivGraphFromGraphImage\n" @*/ ) ;
 					return -1 ;
@@ -31981,13 +32851,13 @@ extern int Graphics_Image_CreateGraphFromGraphImageBase( BASEIMAGE *BaseImage, c
 
 	CheckActiveState() ;
 
-	GrHandle = Graphics_Image_AddHandle( ASyncThread ) ;
+	Graphics_Image_InitCreateGraphHandleAndBltGraphImageGParam( &GParam ) ;
+
+	GrHandle = Graphics_Image_AddHandle( GParam.InitHandleGParam.CreateGraphHandle <= 0 ? -1 : GParam.InitHandleGParam.CreateGraphHandle, ASyncThread ) ;
 	if( GrHandle == -1 )
 	{
 		return -1 ;
 	}
-
-	Graphics_Image_InitCreateGraphHandleAndBltGraphImageGParam( &GParam ) ;
 
 	Result = Graphics_Image_CreateGraphFromGraphImageBase_UseGParam( &GParam, FALSE, GrHandle, BaseImage, AlphaBaseImage, TextureFlag, FALSE ) ;
 #ifndef DX_NON_ASYNCLOAD
@@ -32032,7 +32902,7 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase(
 	}
 
 	// 基本グラフィックハンドルの作成
-	BaseHandle = Graphics_Image_AddHandle( FALSE ) ;
+	BaseHandle = Graphics_Image_AddHandle( -1, FALSE ) ;
 	if( BaseHandle == -1 )
 	{
 		return -1 ;
@@ -32042,7 +32912,7 @@ extern int Graphics_Image_CreateDivGraphFromGraphImageBase(
 	_MEMSET( HandleArray, 0, AllNum * sizeof( int ) ) ;
 	for( i = 0 ; i < AllNum ; i ++ )
 	{
-		HandleArray[ i ] = Graphics_Image_AddHandle( FALSE ) ;
+		HandleArray[ i ] = Graphics_Image_AddHandle( -1, FALSE ) ;
 		if( HandleArray[ i ] == -1 )
 		{
 			goto ERR ;
@@ -32148,6 +33018,26 @@ extern void Graphics_Image_InitSetupGraphHandleGParam( SETUP_GRAPHHANDLE_GPARAM 
 	GParam->NotUsePaletteGraphFlag				= GSYS.CreateImage.NotUsePaletteGraphFlag ;
 	GParam->NotInitGraphDelete					= FALSE ;
 	GParam->NotInitGraphDeleteUser				= GSYS.CreateImage.NotInitGraphDeleteUserFlag ;
+	GParam->CreateGraphHandle					= GSYS.CreateImage.CreateGraphHandle ;
+	if( GSYS.CreateImage.CreateDivGraphHandle != NULL && GSYS.CreateImage.CreateDivGraphHandleNum > 0 )
+	{
+		GParam->CreateDivGraphHandle = ( int * )DXALLOC( sizeof( int ) * GSYS.CreateImage.CreateDivGraphHandleNum ) ;
+		if( GParam->CreateDivGraphHandle == NULL )
+		{
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x06\x52\x72\x52\x3b\x75\xcf\x50\xb0\x30\xe9\x30\xd5\x30\xa3\x30\xc3\x30\xaf\x30\xcf\x30\xf3\x30\xc9\x30\xeb\x30\x24\x50\x07\x63\x9a\x5b\x28\x75\x4d\x91\x17\x52\x6e\x30\xe1\x30\xe2\x30\xea\x30\x20\x00\x25\x00\x64\x00\x62\x00\x79\x00\x74\x00\x65\x00\x20\x00\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x00"/*@ L"分割画像グラフィックハンドル値指定用配列のメモリ %dbyte の確保に失敗しました" @*/, sizeof( int ) * GSYS.CreateImage.CreateDivGraphHandleNum )) ;
+			GParam->CreateDivGraphHandleNum = 0 ;
+		}
+		else
+		{
+			_MEMCPY( GParam->CreateDivGraphHandle, GSYS.CreateImage.CreateDivGraphHandle, sizeof( int ) * GSYS.CreateImage.CreateDivGraphHandleNum ) ;
+			GParam->CreateDivGraphHandleNum = GSYS.CreateImage.CreateDivGraphHandleNum ;
+		}
+	}
+	else
+	{
+		GParam->CreateDivGraphHandle			= NULL ;
+		GParam->CreateDivGraphHandleNum			= 0 ;
+	}
 
 	GParam->UserPlatformTexture					= NULL ;
 }
@@ -32185,6 +33075,7 @@ extern void Graphics_Image_InitSetupGraphHandleGParam_Normal_NonDrawValid( SETUP
 	GParam->NotUsePaletteGraphFlag				= FALSE ;
 	GParam->NotInitGraphDelete					= FALSE ;
 	GParam->NotInitGraphDeleteUser				= FALSE ;
+	GParam->CreateGraphHandle					= 0 ;
 
 	GParam->UserPlatformTexture					= NULL ;
 }
@@ -32222,6 +33113,7 @@ extern void Graphics_Image_InitSetupGraphHandleGParam_Normal_DrawValid_NoneZBuff
 	GParam->NotUsePaletteGraphFlag				= FALSE ;
 	GParam->NotInitGraphDelete					= FALSE ;
 	GParam->NotInitGraphDeleteUser				= FALSE ;
+	GParam->CreateGraphHandle					= 0 ;
 
 	GParam->UserPlatformTexture					= NULL ;
 }
@@ -32881,10 +33773,20 @@ extern void Graphics_DrawSetting_RefreshBlend3DTransformMatrix( void )
 		GSYS.DrawSetting.ViewClipPos[ 0 ][ 0 ][ 1 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.right, GSYS.DrawSetting.DrawAreaF.top,    0.0 ) ) ;
 		GSYS.DrawSetting.ViewClipPos[ 0 ][ 1 ][ 0 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.left,  GSYS.DrawSetting.DrawAreaF.bottom, 0.0 ) ) ;
 		GSYS.DrawSetting.ViewClipPos[ 0 ][ 1 ][ 1 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.right, GSYS.DrawSetting.DrawAreaF.bottom, 0.0 ) ) ;
-		GSYS.DrawSetting.ViewClipPos[ 1 ][ 0 ][ 0 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.left,  GSYS.DrawSetting.DrawAreaF.top,    1.0 ) ) ;
-		GSYS.DrawSetting.ViewClipPos[ 1 ][ 0 ][ 1 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.right, GSYS.DrawSetting.DrawAreaF.top,    1.0 ) ) ;
-		GSYS.DrawSetting.ViewClipPos[ 1 ][ 1 ][ 0 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.left,  GSYS.DrawSetting.DrawAreaF.bottom, 1.0 ) ) ;
-		GSYS.DrawSetting.ViewClipPos[ 1 ][ 1 ][ 1 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.right, GSYS.DrawSetting.DrawAreaF.bottom, 1.0 ) ) ;
+		if( GSYS.DrawSetting.UseRightHandClippingProcess )
+		{
+			GSYS.DrawSetting.ViewClipPos[ 1 ][ 0 ][ 0 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.left,  GSYS.DrawSetting.DrawAreaF.top,    -1.0 ) ) ;
+			GSYS.DrawSetting.ViewClipPos[ 1 ][ 0 ][ 1 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.right, GSYS.DrawSetting.DrawAreaF.top,    -1.0 ) ) ;
+			GSYS.DrawSetting.ViewClipPos[ 1 ][ 1 ][ 0 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.left,  GSYS.DrawSetting.DrawAreaF.bottom, -1.0 ) ) ;
+			GSYS.DrawSetting.ViewClipPos[ 1 ][ 1 ][ 1 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.right, GSYS.DrawSetting.DrawAreaF.bottom, -1.0 ) ) ;
+		}
+		else
+		{
+			GSYS.DrawSetting.ViewClipPos[ 1 ][ 0 ][ 0 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.left,  GSYS.DrawSetting.DrawAreaF.top,    1.0 ) ) ;
+			GSYS.DrawSetting.ViewClipPos[ 1 ][ 0 ][ 1 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.right, GSYS.DrawSetting.DrawAreaF.top,    1.0 ) ) ;
+			GSYS.DrawSetting.ViewClipPos[ 1 ][ 1 ][ 0 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.left,  GSYS.DrawSetting.DrawAreaF.bottom, 1.0 ) ) ;
+			GSYS.DrawSetting.ViewClipPos[ 1 ][ 1 ][ 1 ] = NS_ConvScreenPosToWorldPosD( VGetD( GSYS.DrawSetting.DrawAreaF.right, GSYS.DrawSetting.DrawAreaF.bottom, 1.0 ) ) ;
+		}
 
 		VECTOR_D Normal ;
 
@@ -32935,6 +33837,8 @@ extern void Graphics_DrawSetting_RefreshBlend3DTransformMatrix( void )
 // ＤＸライブラリ内部で SetDrawScreen を使用して描画先を変更する際の、元のカメラ設定や描画領域を復元する為の情報を取得する処理を行う
 extern int Graphics_DrawSetting_GetScreenDrawSettingInfo( SCREENDRAWSETTINGINFO *ScreenDrawSettingInfo )
 {
+	int i ;
+
 	// 各種データ保存
 	ScreenDrawSettingInfo->Use3DFlag			= NS_GetUse3DFlag() ;
 	ScreenDrawSettingInfo->UseSysMemFlag		= NS_GetUseSystemMemGraphCreateFlag() ;
@@ -32958,6 +33862,14 @@ extern int Graphics_DrawSetting_GetScreenDrawSettingInfo( SCREENDRAWSETTINGINFO 
 	ScreenDrawSettingInfo->ProjectionMatrix     = GSYS.DrawSetting.ProjectionMatrix ;
 	ScreenDrawSettingInfo->ViewportMatrix       = GSYS.DrawSetting.ViewportMatrix ;
 	ScreenDrawSettingInfo->WorldMatrix          = GSYS.DrawSetting.WorldMatrix ;
+	for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
+	{
+		ScreenDrawSettingInfo->TexAddressModeU[ i ] = GSYS.DrawSetting.TexAddressModeU[ i ] ;
+		ScreenDrawSettingInfo->TexAddressModeV[ i ] = GSYS.DrawSetting.TexAddressModeV[ i ] ;
+		ScreenDrawSettingInfo->TexAddressModeW[ i ] = GSYS.DrawSetting.TexAddressModeW[ i ] ;
+	}
+	ScreenDrawSettingInfo->MaxAnisotropy		= GSYS.DrawSetting.MaxAnisotropy ;
+	ScreenDrawSettingInfo->CullMode				= GSYS.DrawSetting.CullMode ;
 	
 	// 描画領域を得る
 	NS_GetDrawArea( &ScreenDrawSettingInfo->DrawRect ) ;
@@ -32969,6 +33881,8 @@ extern int Graphics_DrawSetting_GetScreenDrawSettingInfo( SCREENDRAWSETTINGINFO 
 // ＤＸライブラリ内部で SetDrawScreen を使用して描画先を変更する際の、元のカメラ設定や描画領域を復元する処理を行う
 extern int Graphics_DrawSetting_SetScreenDrawSettingInfo( const SCREENDRAWSETTINGINFO *ScreenDrawSettingInfo )
 {
+	int i ;
+
 	// 保存しておいた設定を反映させる
 	NS_SetBackgroundColor( ScreenDrawSettingInfo->BackgroundRed, ScreenDrawSettingInfo->BackgroundGreen, ScreenDrawSettingInfo->BackgroundBlue, ScreenDrawSettingInfo->BackgroundAlpha ) ;
 	NS_SetDrawBlendMode( ScreenDrawSettingInfo->DrawBlendMode, ScreenDrawSettingInfo->DrawBlendParam ) ;
@@ -32999,6 +33913,14 @@ extern int Graphics_DrawSetting_SetScreenDrawSettingInfo( const SCREENDRAWSETTIN
 	NS_SetCameraDotAspectD( ScreenDrawSettingInfo->ProjDotAspect ) ;
 //	NS_SetTransformToProjection( &ScreenDrawSettingInfo->ProjectionMatrix );
 	NS_SetTransformToViewportD( &ScreenDrawSettingInfo->ViewportMatrix );
+
+	for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
+	{
+		NS_SetTextureAddressModeUV( ScreenDrawSettingInfo->TexAddressModeU[ i ], ScreenDrawSettingInfo->TexAddressModeV[ i ], i ) ;
+	}
+
+	NS_SetUseCullingFlag( ScreenDrawSettingInfo->CullMode ) ;
+	NS_SetMaxAnisotropy( ScreenDrawSettingInfo->MaxAnisotropy ) ;
 
 	// 正常終了
 	return 0 ;

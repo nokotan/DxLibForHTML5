@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ファイルアクセスプログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -95,6 +95,7 @@ extern const char *g_AddDriveName[ 16 ] ;	// 追加のドライブ名
 // ファイルハンドル関数
 static	int			InitializeFileHandle( HANDLEINFO *HandleInfo ) ;								// ファイルアクセスハンドルを初期化する
 static	int			TerminateFileHandle( HANDLEINFO *HandleInfo ) ;									// ファイルアクセスハンドルの後始末を行う
+static	int			DumpInfoFileHandle( HANDLEINFO *HandleInfo ) ;									// ファイルアクセスハンドルの情報出力
 
 // メモリに置かれたデータをファイルのデータに例えてつかうための関数
 static	LONGLONG	MemStreamTell( DWORD_PTR StreamDataPoint ) ;
@@ -202,7 +203,7 @@ extern int InitializeFile( void )
 	DXST_LOGFILE_ADDUTF16LE( "\xd5\x30\xa1\x30\xa4\x30\xeb\x30\xa2\x30\xaf\x30\xbb\x30\xb9\x30\xe6\x51\x06\x74\x6e\x30\x1d\x52\x1f\x67\x16\x53\x2e\x00\x2e\x00\x2e\x00\x00"/*@ L"ファイルアクセス処理の初期化..." @*/ ) ;  
 
 	// ファイル読み込みハンドル管理情報を初期化する
-	InitializeHandleManage( DX_HANDLETYPE_FILE, sizeof( FILEACCESSINFO ), MAX_FILE_NUM, InitializeFileHandle, TerminateFileHandle, L"File" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_FILE, sizeof( FILEACCESSINFO ), MAX_FILE_NUM, InitializeFileHandle, TerminateFileHandle, DumpInfoFileHandle, L"File" ) ;
 
 	// ストリームデータ読みこみ制御用ポインタ配列のデフォルト値をセット
 	{
@@ -744,6 +745,34 @@ static int TerminateFileHandle( HANDLEINFO *HandleInfo )
 	return 0 ;
 }
 
+// ファイルアクセスハンドルの情報出力
+static int DumpInfoFileHandle( HANDLEINFO *HandleInfo )
+{
+	FILEACCESSINFO *FileInfo = ( FILEACCESSINFO * )HandleInfo ;
+
+	// ハンドルのタイプによって処理を分岐
+	switch( FileInfo->HandleType )
+	{
+	case FILEHANDLETYPE_NORMAL :
+		{
+			LONGLONG Pos = FileInfo->StreamData.ReadShred.Tell( FileInfo->StreamData.DataPoint ) ;
+			LONGLONG Size = 0 ;
+			FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, 0, SEEK_END ) ;
+			Size = FileInfo->StreamData.ReadShred.Tell( FileInfo->StreamData.DataPoint ) ;
+			FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, Pos, SEEK_SET ) ;
+			DXST_LOGFILEFMT_ADDW(( L"Handle:0x%08x Type:Normal    FileSize:%lld CurrentPos:%lld", HandleInfo->Handle, Size, Pos )) ;
+		}
+		break ;
+
+	case FILEHANDLETYPE_FULLYLOAD :
+		DXST_LOGFILEFMT_ADDW(( L"Handle:0x%08x Type:FullyLoad FileSize:%lld CurrentPos:%lld", HandleInfo->Handle, FileInfo->FileSize, FileInfo->StreamData.ReadShred.Tell( FileInfo->StreamData.DataPoint ) )) ;
+		break ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
 // メモリに展開されたファイルを開く
 extern int NS_FileRead_open_mem( const void *FileImage, size_t FileImageSize )
 {
@@ -1028,6 +1057,24 @@ extern LONGLONG	NS_FileRead_size_WithStrLen( const TCHAR *FilePath, size_t FileP
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FilePath )
 #endif
 	return Result ;
+}
+
+// ファイルのサイズを取得する( ファイルハンドル使用版 )
+extern LONGLONG NS_FileRead_size_handle( int FileHandle )
+{
+	FILEACCESSINFO *FileInfo ;
+	LONGLONG NowPoint ;
+	LONGLONG FileSize ;
+
+	if( FILEHCHK( FileHandle, FileInfo ) )
+		return -1 ;
+
+	NowPoint = FileInfo->StreamData.ReadShred.Tell( FileInfo->StreamData.DataPoint ) ;
+	FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, 0, SEEK_END ) ;
+	FileSize = FileInfo->StreamData.ReadShred.Tell( FileInfo->StreamData.DataPoint ) ;
+	FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, NowPoint, SEEK_SET ) ;
+
+	return FileSize ;
 }
 
 extern int NS_FileRead_close( int FileHandle )

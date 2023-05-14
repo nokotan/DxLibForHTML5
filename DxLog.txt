@@ -3,9 +3,250 @@
 //　ＤＸライブラリ　非公式ログ
 //
 //　Creator : 山田　巧
-//  Last Access : 2021/11/23
+//  Last Access : 2023/2/24
 // ============================================================================
 
+Ver 3.24b	　正式公開のためにバージョン番号を変更。
+Ver 3.24a	　DxLibModelViewer.exe の実行時に Log.txt が作成されるように
+			仕様を変更。
+			　Windows版：SetEnableASIOFlag( TRUE ) ; を実行して ASIO の
+			使用を指定した場合で ASIO の初期化に失敗した場合は次に
+			WASAPI の使用を試みるように処理を変更。
+			　一部のタイプのハンドルの情報を Log.txt にダンプ出力する関数
+			DumpHandleInfo を追加。
+			　ゲームパッドのデフォルトのデッドゾーンを設定するための関数
+			SetJoypadDefaultDeadZoneAll を追加。
+			　関数 LoadDivGraph 等の分割読み込み系の関数で引数から算出される
+			合計サイズが分割元画像のサイズよりも大きい場合に関数をエラー終了
+			させるかどうかを設定するための関数 SetUseLoadDivGraphSizeCheckFlag
+			を追加。
+			　Windows版：接続されているモニターのログ出力で、出力される
+			解像度が正しくないことがあるバグを修正。
+			　ConvertStringCharCodeFormat で、変換元の文字列に
+			変換先の文字コードフォーマットに存在しない文字が含まれていた場合、
+			変換後の文字列が『存在しない文字』の箇所で終わってしまうバグを修正。
+			　KeyInputString などで入力中の文字列に使用中の文字コード
+			フォーマットに存在しない文字が含まれていた場合、GetIMEInputData で
+			取得できる文節情報が正常な値ではなくなるバグを修正。
+			　Windows版：指定のウィンドウの画像を取得するための関数
+			GetOtherWindowGraph を追加。
+			　Windows版：Direct3D 11 Device の作成時に 
+			D3D11_CREATE_DEVICE_BGRA_SUPPORT を指定するかを設定するための
+			関数 SetUseDirect3D11BGRASupport を追加。
+			　SetUsePremulAlphaConvertLoad と SetUseConvertNormalFormatLoad の
+			設定されている値を取得するための関数 
+			GetUsePremulAlphaConvertLoad と GetUseConvertNormalFormatLoad を追加。
+			　LoadGraph などで作成するグラフィックハンドルに割り当てる
+			グラフィックハンドル値を設定するための関数 SetCreateGraphHandle を追加。
+			( LoadDivGraph などの分割画像用として SetCreateDivGraphHandle も追加 )
+			　フォントが使用するグラフィックハンドルは InitGraph では
+			削除されないように処理を変更。
+			　Windows版：WIC( Windows Imaging Component ) による画像の
+			読み込み処理を追加。
+			　ＤＸライブラリ内部のログ出力を行うかどうかを設定するための
+			関数 SetOutApplicationSystemLogValidFlag を追加。
+			　Windows版：マウスポインターの表示状態についてメニューの表示状態の
+			影響を受けるかを設定するための関数 SetMouseDispIgnoreMenuFlag を追加。
+			　パレット付きの pngファイルを読み込むとメモリの不正なアクセスが
+			発生してしまうことがあるバグを修正。
+			　DXArchivePreLoad で事前に読み込んだ DXAファイルを
+			DXArchiveRelease で明示的に解放しなくても DxLib_End 実行時に
+			自動的に解放されるように処理を変更。
+			　指定のファイルハンドルのファイルのサイズを取得する為の関数
+			FileRead_size_handle を追加。
+			　strchrDx, strrchrDx が正常に動作しないことがあるバグを修正。
+			　文字列の描画で縁のみ、又は本体のみ描画を行うかどうかを設定する
+			ための関数 SetFontOnlyDrawType を追加。
+			　DrawModiString で正常な描画が行われないことがあるバグを修正。
+			　Windows版：MinGW 12.2.0 x86_64_release_win32_seh_ucrt_rt_v10_rev2 用の
+			ライブラリファイルを追加。
+			　Windows版：SetUseUpdateLayerdWindowFlag( TRUE ); や
+			SetUseBackBufferTransColorFlag( TRUE ); を使用して透過ウィンドウで
+			実行している際にマウスのイベントが後ろのウィンドウに透過するかを
+			設定するための関数 SetUseMouseEventTransparentWindowFlag を追加。
+			　DrawPolygonIndexed3D などの頂点インデックス付きポリゴン描画関数の
+			頂点インデックスの型が unsigned int となっている
+			DrawPolygon32bitIndexed3D などを追加。
+			　MV1LoadTexture を非同期読み込みに対応。
+			　Windows版：DxDataTypeWin.h から ULONG_PTR の定義を削除。
+			　printfDx で \n で改行を行いスクロールすると、文字が指定以外の
+			色になる( 主に黒になる )バグを修正。
+			　右手座標系用のクリッピング処理を行うかどうかを設定するための
+			関数 SetUseRightHandClippingProcess を追加。
+			　Android版：AndroidStudio用のライブラリファイルを追加。
+Ver 3.24	　Windows版：DxLib_Init 実行後でも SetFullScreenResolutionMode
+			によるフルスクリーン解像度モードの変更ができるように仕様を変更。
+			　Windows版：サウンド再生に使用する ASIOドライバーの番号を
+			設定するための関数 SetUseASIODriverIndex を追加。
+			　関数 DrawRectGraph を実行すると描画範囲が変更されてしまう
+			事があるバグを修正。
+			　Windows版：DxLib_Init の呼び出し前に SetGraphMode で
+			画面解像度を設定しなかった場合、DxLib_Init の中で0除算エラーが
+			発生してしまうバグを修正。
+			　DxLibModelViewer.exe で fbx読み込みエラーが発生した際の
+			ログ出力内容を追加。
+Ver 3.23f	　正式公開のためにバージョン番号を変更。
+Ver 3.23e	　DrawChipMap2 が正常に動作しないバグを修正。
+			　DX_LIB_LITEVER を有効にするとコンパイルエラーが発生して
+			ビルドが失敗するバグを修正。
+			　Windows版：SetAlwaysRunFlag( TRUE ) ; を実行してウィンドウが
+			非アクティブでも動作する設定にしていた場合は、StartJoypadVibration で
+			開始したゲームパッドの振動もウィンドウが非アクティブになっても
+			止まらないように仕様を変更。
+			　Windows版：SetUseDirectInputFlag( FALSE ) ; を実行した場合
+			XInput も無効になっていたバグを修正。
+			　フレーム単位のアニメーション再生時間を設定するための関数
+			MV1SetAttachAnimTimeToFrame を追加。
+			　Live2Dモデルの最後に再生したモーションの番号を取得するための
+			関数 Live2D_Model_GetLastPlayMotionNo を追加。
+			　Live2Dモデルの再生中のモーションの再生時間を取得するための
+			関数 Live2D_Model_GetMotionPlayTime を追加。
+			　Android版：アプリの ANativeWindow を取得するための関数
+			GetNativeWindow を追加。
+			　DxLibModelViewer のマテリアル調整機能にアルファテストの項目を
+			追加。
+			　Android版：アプリの入力イベントが発生した際に呼ばれるコールバック
+			関数を登録するための関数 SetAndroidInputEventFookFunction を追加。
+			　Windows版：SetFullScreenResolutionMode で指定できるフルスクリーン
+			解像度モードに仮想フルスクリーンモードである
+			DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW を追加。
+			　Windows版：デフォルトのフルスクリーン解像度モードを
+			DX_FSRESOLUTIONMODE_DESKTOP から
+			DX_FSRESOLUTIONMODE_BORDERLESS_WINDOW に変更。
+			　Windows版：SetFullScreenResolutionMode で 
+			DX_FSRESOLUTIONMODE_MAXIMUM や DX_FSRESOLUTIONMODE_DESKTOP を
+			指定した場合正常に動作しなかったバグを修正。
+			　Windows版：MinGW 8.1.0 x86_64_posix_sjis_rt_v6_rev0 用の
+			ライブラリファイルを追加。
+			　ブレンドパラメータを詳細に設定できる関数
+			SetDrawCustomBlendMode を追加。
+			　フォントハンドルの最大数を 40 から 256 に変更。
+Ver 3.23d	　正式公開のためにバージョン番号を変更。
+Ver 3.23c	　pngファイルの読み込みを高速化。
+			　4の倍数ではないサイズの DXT圧縮ファイルが正常に読み込まれない
+			事があるバグを修正。
+			　MME の waveOut を使用してサウンド出力を行うかどうかを設定する
+			為の関数 SetEnableMMEwaveOutFlag を追加。
+			　画像読み込み時に DXT圧縮されている画像ファイルをRGBA等の非圧縮
+			画像形式に変換するかどうかを設定するための関数
+			SetUseConvertNormalFormatLoad を追加。
+			　LoadSoftImage 等のＣＰＵで扱うイメージの読み込み関数を
+			SetUseASyncLoad( TRUE ) ; を実行して非同期読み込みを行った際に、
+			SetUsePremulAlphaConvertLoad 関数などの設定が反映されない
+			事があるバグを修正。
+			　CreateMaskScreen でマスクを有効にしていると DrawString で文字を
+			描画した際に文字の下側が描画されないことがあるバグを修正。
+			　DrawFormatString 等の書式指定文字列描画に縁の色を指定する引数
+			EdgeColor を追加した DrawFormatString2 等の関数を追加。
+			　DrawKeyInputString の拡大率を指定する引数を追加した
+			DrawKeyInputExtendString を追加。
+			　iOS版で内部関数 MemoryProcess が呼ばれていなかったバグを修正。
+			　DrawBoxSet の iOS版用の処理にバグがあったのを修正。
+			　Windows版：GetJoypadType で取得できるパッドタイプに
+			DX_PADTYPE_DUAL_SHOCK_3 を追加。
+			　入力システムを再初期化する関数 ReSetupInputSystem を追加。
+			　Windows版：Live2D で使用するシェーダーハンドルを設定するための
+			関数 Live2D_SetUserShader を追加。
+			　Live2D の描画の前に呼ばれるコールバック関数を設定するための
+			関数 Live2D_DrawCallback を追加。
+			　Windows版：Direct3D 9 を使用している場合、Live2D の描画を
+			行った後に GraphFilter が正常に動作しないことがあるバグを修正。
+			　Windows版：MinGW 12.1.0 i686_release_posix_dwarf_rt_v10_rev3 用の
+			ライブラリファイルを追加。
+			　DrawString や DrawExtendString などのフォントハンドルの指定の
+			無い文字列描画系の関数で使用されるフォントハンドルを指定するための
+			関数 ChangeFontFromHandle を追加。
+			　Windows版：出力先のオーディオデバイスが1チャンネルだった場合に
+			メモリの不正なアクセスエラーが発生してしまうバグを修正。
+			　Windows版：WASAPI のサウンドシステム終了処理の際にメモリの
+			不正なアクセスが発生していたバグを修正。
+			　Live2D の自動センタリング処理を行うかを設定するための関数
+			Live2D_SetUseAutoCentering を追加。
+			　Live2D の自動スケーリング処理を行うかを設定するための関数
+			Live2D_SetUseAutoScaling を追加。
+			　Live2D_Model_SetTranslate で指定する y の移動方向を反転するかを
+			設定するための関数 Live2D_SetUseReverseYAxis を追加。
+			　Live2Dモデルのキャンバスサイズを取得するための関数
+			Live2D_Model_GetCanvasWidth と Live2D_Model_GetCanvasHeight を追加。
+			　Windows版：Direct3D 11 を使用してウィンドウモードで起動した際に
+			初期化でエラーが発生して Direct3D 9 を使用するようになってしまう
+			事がある不具合に対応。
+			　Windows版：VRAMの容量を 64bitの値で取得するための関数
+			GetVideoMemorySizeEx を追加。
+			　PMD, PMX ファイル読み込み時にIKを無効化するかどうかを設定する
+			ための関数 MV1SetLoadModelIgnoreIK を追加。
+			　LoadDivGraph 等の分割読み込み系の関数の引数 XNum と YNum を
+			乗算した値が AllNum 未満の場合はエラーになるように処理を追加。
+Ver 3.23b	　正式公開のためにバージョン番号を変更。
+Ver 3.23a	　SetCreateSoundIgnoreLoopAreaInfo( TRUE ) ; を実行していても
+			ループ範囲情報テキストファイルが適用されてしまっていたバグを修正。
+			　Windows版：Log.txt の文字コード形式を UTF-8 に固定。
+			　矩形を大量に描画するための関数 DrawBoxSet を追加。
+			　fbxファイルのバンプマップ付きのマテリアルが正常に読み込めなかった
+			バグを修正。
+			　iOS版：ストリームサウンド処理用スレッドとサウンドバッファ再生処理用
+			スレッドが使用するスレッド終了指示確認用変数が誤っていたバグを修正。( 修正コード提供：draさん )
+			　iOS版：ALリソース解放処理の毎フレーム行う処理を行う関数内で
+			関数終了時にクリティカルセクションが解放されない事があるバグを修正。( 修正コード提供：draさん )
+			　DxHandle.h 内の #endif に不要な識別子の記述があったのを修正。( 修正コード提供：draさん )
+			　DxUseCLib.cpp で jinclude.h をインクルードしなくても済むように
+			コードを変更。( 変更コード提供：draさん )
+			　Windows版：ソフトウェアレンダリングモード時にウィンドウを
+			最大化してゲーム画面よりもウィンドウのクライアント領域が大きく
+			なった際に、クライアント領域の左上側にゲーム画面が寄ってしまうバグを修正。
+			　Windows版：Direct3D 9 を使用した場合、乗算済みαの描画処理が
+			正常に行われないバグを修正。
+			　Android版：ファイルをフルパス指定した場合に読み込みに失敗するバグを修正。
+			　指定のタイプのハンドルの数を取得するための関数 GetHandleNum を追加。
+			　指定のタイプのハンドルの作成可能最大数を取得するための関数 GetMaxHandleNum を追加。
+			　Android版：ペンタブレットの入力を取得するために TOUCHINPUTPOINT構造体に
+			メンバー変数 Pressure や ToolType 等を追加。
+			　Android版：ペンタブレットとマウスを接続すると、マウスのボタン
+			入力が取得できないことがあるバグを修正。
+			　Windows版：タグに画像が含まれる mp3 ファイルを再生すると
+			再生開始位置がズレてしまうバグを修正。
+			　Windows版：EDGE で出力したAVIファイルをフルスクリーンモードで
+			再生しようとするとエラーになるバグを修正。
+			　GraphBlendRectBlt にブレンド画像の右下座標も指定する為の引数を追加した
+			GraphBlendRectBlt2 を追加。
+			　Windows版：MinGW 10.3.0 用のライブラリファイルを追加。
+			　Windows版：MinGW 12.1.0 用のライブラリファイルを追加。
+			　Windows版：GetDragFilePath で取得できるファイルパスの順番が
+			ドラッグ＆ドロップしたファイルの順番と逆になっていたバグを修正。
+			　ライティング計算でライトや法線の方向を元にした角度減衰を行うか
+			を設定するための関数 SetUseLightAngleAttenuation を追加。
+			　Android版：Android Studio のブレーク機能などで一時停止したあと
+			再開すると音の再生が止まってしまう事がある不具合を修正。
+			　Windows版：SetWindowVisibleFlag( FALSE ); を実行してウィンドウを
+			非表示にしていても SetGraphMode を使用するとウィンドウが表示されて
+			しまうバグを修正。
+			　BC7フォーマットのDDSファイルを SetUsePremulAlphaConvertLoad( TRUE ); の
+			設定で読み込んだ場合にエラーになっていなかったバグを修正。
+			　Android版：GraphBlend や GraphFilter を使用した後の描画が、強制的に
+			バイリニアフィルタリングになってしまう事があるバグを修正。
+			　Android版：ディスプレイカットアウト情報を取得するための関数
+			GetDisplayCutoutRectCount と GetDisplayCutoutRect を追加。
+			　サウンドの再生中に SetSoundCurrentTime などで再生位置を変更すると
+			音の再生が正常に行われなくなる事があるバグを修正。
+			　Windows版：入力中のIME文字列を変更するための関数 SetIMEInputString を追加。
+			　MV1LoadModel で読み込むモデルで使用するテクスチャファイルを読み込むかどうかを
+			設定する関数 MV1SetLoadModelTextureLoad を追加。
+			　使用する zlib のバージョンを 1.2.12 に変更。
+			　使用する libpng のバージョンを 1.6.37 に変更。
+			　Windows版：GetJoypadType で取得できるパッドタイプに
+			DX_PADTYPE_SWITCH_HORI_PAD を追加。
+			　GraphBlend で GrHandle と BlendGrHandle のサイズが異なる場合に適用される
+			拡大フィルターモードを設定する為の関数 SetGraphBlendScalingFilterMode を追加。
+			　メルセンヌ・ツイスターアルゴリズムの乱数の生の値を取得するための関数
+			GetMersenneTwisterRand と GetMersenneTwisterRandHandle を追加。
+			　GetDrawStringSizeToHandle が引数 StrLen で指定した半角文字数より
+			多くの文字の描画幅が取得できてしまっていたバグを修正。
+			　CreateFontToHandle で縁に大きなサイズを指定した場合の縁の形を
+			丸みを帯びたものになるように改善。
+			　StopSoundMem に『次にループ範囲の終端まで再生したら音を止める
+			かどうか』を指定するための引数 IsNextLoopEnd を追加。
+			　GetTouchInputDownLogNum と GetTouchInputUpLogNum が正常に動作していなかった
+			バグを修正。
 Ver 3.23	　正式公開のためにバージョン番号を変更。
 Ver 3.22f	　Windows版：DirectInput のジョイパッド初期化処理に関する詳細な
 			ログを出力するように処理を変更。

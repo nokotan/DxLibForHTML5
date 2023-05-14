@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Live2D Cubism4 関係ヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -902,6 +902,7 @@ public:
 	void						Update() const ;											// モデルのパラメータの更新
 	float						GetCanvasWidth() const ;									// キャンバスの幅の取得
 	float						GetCanvasHeight() const ;									// キャンバスの高さの取得
+	void						GetCanvasInfo( D_CubismVector2 *SizeInPixels, D_CubismVector2 *OriginInPixels, float *PixelsPerUnit ) ;		// キャンバスの情報を取得する
 	int							GetPartIndex( D_CubismIdHandle partId ) ;					// パーツのインデックスの取得
 	int							GetPartCount() const ;										// パーツの個数の取得
 	void						SetPartOpacity( D_CubismIdHandle partId, float opacity ) ;	// パーツの不透明度の設定
@@ -1032,11 +1033,13 @@ public:
 	void						StopAllMotions() ;																		// すべてのモーションの停止
 	D_CubismMotionQueueEntry *	GetCubismMotionQueueEntry( D_CubismMotionQueueEntryHandle motionQueueEntryNumber ) ;	// 指定したD_CubismMotionQueueEntryの取得
 	void						SetEventCallback( D_CubismMotionEventFunction callback, void* customData = NULL ) ;		// イベントを受け取るCallbackの登録
+	float						GetMotionPlayTime(){ return _motionPlayTime; }
 
 protected:
 	virtual bool				DoUpdateMotion( D_CubismModel* model, float userTimeSeconds ) ;							// モーションの更新
 
 	float										_userTimeSeconds ;	// デルタ時間の積算値[秒]
+	float										_motionPlayTime ;	// モーション再生時間
 
 private:
 	D_csmVector< D_CubismMotionQueueEntry * >   _motions ;			// モーション
@@ -2221,7 +2224,7 @@ public:
 	bool						LoadAssets( const BYTE/*wchar_t*/ * dir, const BYTE/*wchar_t*/ * fileName, int ASyncThread ) ;	// model3.jsonが置かれたディレクトリとファイルパスからモデルを生成する
 	void						ReloadRenderer( int ASyncThread ) ;							// レンダラを再構築する
 	void						Update( float deltaTimeSeconds ) ;							// モデルの更新処理。モデルのパラメータから描画状態を決定する。
-	void						Draw( D_CubismMatrix44& matrix ) ;							// モデルを描画する処理。モデルを描画する空間のView-Projection行列を渡す。
+	void						Draw( D_CubismMatrix44& matrix, bool isMultModelMatrix ) ;	// モデルを描画する処理。モデルを描画する空間のView-Projection行列を渡す。
 	D_CubismMotionQueueEntryHandle StartMotion( const char* group, int no, int priority ) ;	// 引数で指定したモーションの再生を開始する。
 	D_CubismMotionQueueEntryHandle StartRandomMotion( const char* group, int priority ) ;	// ランダムに選ばれたモーションの再生を開始する。
 	void						SetExpression( const BYTE/*wchar_t*/ * expressionID ) ;		// 引数で指定した表情モーションをセットする
@@ -2265,6 +2268,9 @@ public:
 } ;
 
 // テーブル-----------------------------------------------------------------------
+
+extern int Live2D_VertexShaderToDxLibShader_Table[ 7 ] ;
+extern int Live2D_PixelShaderToDxLibShader_Table[ 7 ] ;
 
 // 内部大域変数宣言 --------------------------------------------------------------
 

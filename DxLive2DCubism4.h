@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Live2D Cubism4 関係プログラムヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -141,11 +141,13 @@ struct LIVE2DCUBISM4MODEL
 {
 	HANDLEINFO					HandleInfo ;				// ハンドル共通データ
 
-	float						PosX ;
+	float						PosX ;						// トランスレーションパラメータ
 	float						PosY ;
 	float						ExRateX ;
 	float						ExRateY ;
 	float						RotAngle ;
+
+	int							LastPlayMotionNo ;			// 最後に再生したモーションのグループ内の番号
 
 	D_LAppModel *				AppModel ;
 } ;
@@ -235,18 +237,29 @@ struct LIVE2DCUBISM4DLL
 // Live2D Cubism4 システム用データ構造体
 struct LIVE2DCUBISM4SYSTEMDATA
 {
-	int						InitializeFlag ;				// 初期化フラグ
+	int						InitializeFlag ;						// 初期化フラグ
 
-	int						EnableConstantBuffer ;			// コンスタントバッファが使用できるかどうか
+	int						EnableConstantBuffer ;					// コンスタントバッファが使用できるかどうか
 
-	SCREENDRAWSETTINGINFO	ScreenDrawSettingInfo ;			// Live2D描画開始前の描画設定
+	SCREENDRAWSETTINGINFO	ScreenDrawSettingInfo ;					// Live2D描画開始前の描画設定
 
 	D_CubismIdManager *		s_cubismIdManager ;
 
-	DXARC					ShaderBinDxa ;					// シェーダーオブジェクトファイルＤＸＡ構造体
-	void					*ShaderBinDxaImage ;			// シェーダーオブジェクトファイルＤＸＡのバイナリイメージ
+	DXARC					ShaderBinDxa ;							// シェーダーオブジェクトファイルＤＸＡ構造体
+	void					*ShaderBinDxaImage ;					// シェーダーオブジェクトファイルＤＸＡのバイナリイメージ
 
-	LIVE2DCUBISM4SYSTEMDATA_PF	PF ;						// 環境依存データ
+	int						NowDrawLive2DModelHandle ;				// 現在描画を行っている Live2Dモデルのハンドル
+
+	int						UserShader[ DX_LIVE2D_SHADER_NUM ] ;	// ユーザーシェーダー
+
+	void					( *DrawUserCallback )( int Live2DModelHandle, int TextureIndex, void *UserData ) ;		// 描画の前に呼ぶコールバック関数
+	void					*DrawUserCallbackData ;					// 描画の前に呼ぶコールバック関数に渡すアドレス
+
+	int						NotUseAutoScaling ;						// 画面サイズに応じた自動スケーリングを行なわないかどうか( TRUE:行なわない  FALSE:行う )
+	int						NotUseAutoCentering ;					// 自動で画面の中心に描画するかどうか( TRUE:画面の中心に描画しない   FALSE:画面の中心に描画する )
+	int						NotUseReverseYAxis ;					// Live2D_Model_SetTranslate で指定する平行移動値の y の向きを反転しないかどうか( TRUE:反転しない   FALSE:反転する )
+
+	LIVE2DCUBISM4SYSTEMDATA_PF	PF ;								// 環境依存データ
 } ;
 
 // テーブル-----------------------------------------------------------------------

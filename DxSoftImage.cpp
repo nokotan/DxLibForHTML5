@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ソフトウェアで扱う画像プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ extern int InitializeSoftImageManage( void )
 		return -1 ;
 
 	// ソフトイメージハンドル管理情報の初期化
-	InitializeHandleManage( DX_HANDLETYPE_SOFTIMAGE, sizeof( SOFTIMAGE ), MAX_SOFTIMAGE_NUM, InitializeSoftImageHandle, TerminateSoftImageHandle, L"SoftImage" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_SOFTIMAGE, sizeof( SOFTIMAGE ), MAX_SOFTIMAGE_NUM, InitializeSoftImageHandle, TerminateSoftImageHandle, NULL, L"SoftImage" ) ;
 
 	// 初期化フラグを立てる
 	SoftImageManage.InitializeFlag = TRUE ;
@@ -116,6 +116,7 @@ extern int NS_InitSoftImage( void )
 // LoadSoftImage の実処理関数
 static int LoadSoftImage_Static(
 	int SIHandle,
+	LOADBASEIMAGE_GPARAM *GParam,
 	const wchar_t *FileName,
 	int ASyncThread
 )
@@ -135,7 +136,14 @@ static int LoadSoftImage_Static(
 	}
 
 	// CreateBaseImageToFile でファイルから読み込み
-	if( CreateBaseImageToFile_WCHAR_T( FileName, &SoftImg->BaseImage, FALSE ) == -1 )
+	if( /* CreateBaseImageToFile_WCHAR_T( FileName, &SoftImg->BaseImage, FALSE ) == -1 */
+		CreateGraphImageOrDIBGraph_UseGParam(
+			GParam,
+			FileName,
+			NULL, 0, LOADIMAGE_TYPE_FILE,
+			FALSE, FALSE, FALSE,
+			&SoftImg->BaseImage, NULL, NULL
+		) == -1 )
 		return -1 ;
 
 	// 正常終了
@@ -149,15 +157,17 @@ static void LoadSoftImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 {
 	int SIHandle ;
 	const wchar_t *FileName ;
+	LOADBASEIMAGE_GPARAM *GParam ;
 	int Addr ;
 	int Result ;
 	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
+	GParam = ( LOADBASEIMAGE_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	FileName = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
-	Result = LoadSoftImage_Static( SIHandle, FileName, TRUE ) ;
+	Result = LoadSoftImage_Static( SIHandle, GParam, FileName, TRUE ) ;
 	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
 	{
 		SoftImg->HandleInfo.ASyncLoadResult = Result ;
@@ -179,6 +189,7 @@ extern int LoadSoftImage_UseGParam(
 )
 {
 	int SIHandle ;
+	LOADBASEIMAGE_GPARAM GParam ;
 
 	CheckActiveState() ;
 
@@ -188,6 +199,8 @@ extern int LoadSoftImage_UseGParam(
 	{
 		return -1 ;
 	}
+
+	InitLoadBaseImageGParam( &GParam, FALSE ) ;
 
 #ifndef DX_NON_ASYNCLOAD
 	if( ASyncLoadFlag )
@@ -200,6 +213,7 @@ extern int LoadSoftImage_UseGParam(
 
 		// パラメータに必要なメモリのサイズを算出
 		Addr = 0 ;
+		AddASyncLoadParamStruct( NULL, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( NULL, &Addr, SIHandle ) ;
 		AddASyncLoadParamString( NULL, &Addr, FullPath ) ;
 
@@ -211,6 +225,7 @@ extern int LoadSoftImage_UseGParam(
 		// 処理に必要な情報をセット
 		AParam->ProcessFunction = LoadSoftImage_ASync ;
 		Addr = 0 ;
+		AddASyncLoadParamStruct( AParam->Data, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( AParam->Data, &Addr, SIHandle ) ;
 		AddASyncLoadParamString( AParam->Data, &Addr, FullPath ) ;
 
@@ -228,7 +243,7 @@ extern int LoadSoftImage_UseGParam(
 	else
 #endif // DX_NON_ASYNCLOAD
 	{
-		if( LoadSoftImage_Static( SIHandle, FileName, FALSE ) < 0 )
+		if( LoadSoftImage_Static( SIHandle, &GParam, FileName, FALSE ) < 0 )
 			goto ERR ;
 	}
 
@@ -293,6 +308,7 @@ extern	int		LoadSoftImage_WCHAR_T( const wchar_t *FileName )
 // LoadARGB8ColorSoftImage の実処理関数
 static int LoadARGB8ColorSoftImage_Static(
 	int SIHandle,
+	LOADBASEIMAGE_GPARAM *GParam,
 	const wchar_t *FileName,
 	int ASyncThread
 )
@@ -312,7 +328,14 @@ static int LoadARGB8ColorSoftImage_Static(
 	}
 
 	// CreateBaseImageToFile でファイルから読み込み
-	if( CreateBaseImageToFile_WCHAR_T( FileName, &SoftImg->BaseImage, FALSE ) == -1 )
+	if( /* CreateBaseImageToFile_WCHAR_T( FileName, &SoftImg->BaseImage, FALSE ) == -1 */
+		CreateGraphImageOrDIBGraph_UseGParam(
+			GParam,
+			FileName,
+			NULL, 0, LOADIMAGE_TYPE_FILE,
+			FALSE, FALSE, FALSE,
+			&SoftImg->BaseImage, NULL, NULL
+		) == -1 )
 		return -1 ;
 
 	// 読み込んだ画像の形式が ARGB8 ではなかったら ARGB8 形式に変換
@@ -357,15 +380,17 @@ static void LoadARGB8ColorSoftImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 {
 	int SIHandle ;
 	const wchar_t *FileName ;
+	LOADBASEIMAGE_GPARAM *GParam ;
 	int Addr ;
 	int Result ;
 	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
+	GParam = ( LOADBASEIMAGE_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	FileName = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
-	Result = LoadARGB8ColorSoftImage_Static( SIHandle, FileName, TRUE ) ;
+	Result = LoadARGB8ColorSoftImage_Static( SIHandle, GParam, FileName, TRUE ) ;
 	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
 	{
 		SoftImg->HandleInfo.ASyncLoadResult = Result ;
@@ -387,6 +412,7 @@ extern int LoadARGB8ColorSoftImage_UseGParam(
 )
 {
 	int SIHandle ;
+	LOADBASEIMAGE_GPARAM GParam ;
 
 	CheckActiveState() ;
 
@@ -396,6 +422,8 @@ extern int LoadARGB8ColorSoftImage_UseGParam(
 	{
 		return -1 ;
 	}
+
+	InitLoadBaseImageGParam( &GParam, FALSE ) ;
 
 #ifndef DX_NON_ASYNCLOAD
 	if( ASyncLoadFlag )
@@ -408,6 +436,7 @@ extern int LoadARGB8ColorSoftImage_UseGParam(
 
 		// パラメータに必要なメモリのサイズを算出
 		Addr = 0 ;
+		AddASyncLoadParamStruct( NULL, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( NULL, &Addr, SIHandle ) ;
 		AddASyncLoadParamString( NULL, &Addr, FullPath ) ;
 
@@ -419,6 +448,7 @@ extern int LoadARGB8ColorSoftImage_UseGParam(
 		// 処理に必要な情報をセット
 		AParam->ProcessFunction = LoadARGB8ColorSoftImage_ASync ;
 		Addr = 0 ;
+		AddASyncLoadParamStruct( AParam->Data, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( AParam->Data, &Addr, SIHandle ) ;
 		AddASyncLoadParamString( AParam->Data, &Addr, FullPath ) ;
 
@@ -436,7 +466,7 @@ extern int LoadARGB8ColorSoftImage_UseGParam(
 	else
 #endif // DX_NON_ASYNCLOAD
 	{
-		if( LoadARGB8ColorSoftImage_Static( SIHandle, FileName, FALSE ) < 0 )
+		if( LoadARGB8ColorSoftImage_Static( SIHandle, &GParam, FileName, FALSE ) < 0 )
 			goto ERR ;
 	}
 
@@ -514,6 +544,7 @@ extern	int		LoadARGB8ColorSoftImage_WCHAR_T( const wchar_t *FileName )
 // LoadXRGB8ColorSoftImage の実処理関数
 static int LoadXRGB8ColorSoftImage_Static(
 	int SIHandle,
+	LOADBASEIMAGE_GPARAM *GParam,
 	const wchar_t *FileName,
 	int ASyncThread
 )
@@ -533,7 +564,14 @@ static int LoadXRGB8ColorSoftImage_Static(
 	}
 
 	// CreateBaseImageToFile でファイルから読み込み
-	if( CreateBaseImageToFile_WCHAR_T( FileName, &SoftImg->BaseImage, FALSE ) == -1 )
+	if( /* CreateBaseImageToFile_WCHAR_T( FileName, &SoftImg->BaseImage, FALSE ) == -1 */
+		CreateGraphImageOrDIBGraph_UseGParam(
+			GParam,
+			FileName,
+			NULL, 0, LOADIMAGE_TYPE_FILE,
+			FALSE, FALSE, FALSE,
+			&SoftImg->BaseImage, NULL, NULL
+		) == -1 )
 		return -1 ;
 
 	// 読み込んだ画像の形式が XRGB8 ではなかったら XRGB8 形式に変換
@@ -578,15 +616,17 @@ static void LoadXRGB8ColorSoftImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 {
 	int SIHandle ;
 	const wchar_t *FileName ;
+	LOADBASEIMAGE_GPARAM *GParam ;
 	int Addr ;
 	int Result ;
 	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
+	GParam = ( LOADBASEIMAGE_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	FileName = GetASyncLoadParamString( AParam->Data, &Addr ) ;
 
-	Result = LoadXRGB8ColorSoftImage_Static( SIHandle, FileName, TRUE ) ;
+	Result = LoadXRGB8ColorSoftImage_Static( SIHandle, GParam, FileName, TRUE ) ;
 	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
 	{
 		SoftImg->HandleInfo.ASyncLoadResult = Result ;
@@ -608,6 +648,7 @@ extern int LoadXRGB8ColorSoftImage_UseGParam(
 )
 {
 	int SIHandle ;
+	LOADBASEIMAGE_GPARAM GParam ;
 
 	CheckActiveState() ;
 
@@ -617,6 +658,8 @@ extern int LoadXRGB8ColorSoftImage_UseGParam(
 	{
 		return -1 ;
 	}
+
+	InitLoadBaseImageGParam( &GParam, FALSE ) ;
 
 #ifndef DX_NON_ASYNCLOAD
 	if( ASyncLoadFlag )
@@ -629,6 +672,7 @@ extern int LoadXRGB8ColorSoftImage_UseGParam(
 
 		// パラメータに必要なメモリのサイズを算出
 		Addr = 0 ;
+		AddASyncLoadParamStruct( NULL, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( NULL, &Addr, SIHandle ) ;
 		AddASyncLoadParamString( NULL, &Addr, FullPath ) ;
 
@@ -640,6 +684,7 @@ extern int LoadXRGB8ColorSoftImage_UseGParam(
 		// 処理に必要な情報をセット
 		AParam->ProcessFunction = LoadXRGB8ColorSoftImage_ASync ;
 		Addr = 0 ;
+		AddASyncLoadParamStruct( AParam->Data, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( AParam->Data, &Addr, SIHandle ) ;
 		AddASyncLoadParamString( AParam->Data, &Addr, FullPath ) ;
 
@@ -657,7 +702,7 @@ extern int LoadXRGB8ColorSoftImage_UseGParam(
 	else
 #endif // DX_NON_ASYNCLOAD
 	{
-		if( LoadXRGB8ColorSoftImage_Static( SIHandle, FileName, FALSE ) < 0 )
+		if( LoadXRGB8ColorSoftImage_Static( SIHandle, &GParam, FileName, FALSE ) < 0 )
 			goto ERR ;
 	}
 
@@ -725,6 +770,7 @@ extern	int		LoadXRGB8ColorSoftImage_WCHAR_T( const wchar_t *FileName )
 // LoadSoftImageToMem の実処理関数
 static int LoadSoftImageToMem_Static(
 	int SIHandle,
+	LOADBASEIMAGE_GPARAM *GParam,
 	const void *FileImage,
 	int FileImageSize,
 	int ASyncThread
@@ -745,7 +791,14 @@ static int LoadSoftImageToMem_Static(
 	}
 
 	// CreateBaseImageToMem でメモリから読み込み
-	if( NS_CreateBaseImageToMem( FileImage, FileImageSize, &SoftImg->BaseImage, FALSE ) == -1 )
+	if( /* NS_CreateBaseImageToMem( FileImage, FileImageSize, &SoftImg->BaseImage, FALSE ) == -1 */
+		CreateGraphImageOrDIBGraph_UseGParam(
+			GParam,
+			NULL,
+			FileImage, FileImageSize, LOADIMAGE_TYPE_MEM,
+			FALSE, FALSE, FALSE,
+			&SoftImg->BaseImage, NULL, NULL
+		) == -1 )
 		return -1 ;
 
 	// 正常終了
@@ -758,6 +811,7 @@ static int LoadSoftImageToMem_Static(
 static void LoadSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 {
 	int SIHandle ;
+	LOADBASEIMAGE_GPARAM *GParam ;
 	const void *FileImage ;
 	int FileImageSize ;
 	int Addr ;
@@ -765,11 +819,12 @@ static void LoadSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
+	GParam = ( LOADBASEIMAGE_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	FileImage = GetASyncLoadParamVoidP( AParam->Data, &Addr ) ;
 	FileImageSize = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
-	Result = LoadSoftImageToMem_Static( SIHandle, FileImage, FileImageSize, TRUE ) ;
+	Result = LoadSoftImageToMem_Static( SIHandle, GParam, FileImage, FileImageSize, TRUE ) ;
 	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
 	{
 		SoftImg->HandleInfo.ASyncLoadResult = Result ;
@@ -793,6 +848,7 @@ extern int LoadSoftImageToMem_UseGParam(
 )
 {
 	int SIHandle ;
+	LOADBASEIMAGE_GPARAM GParam ;
 
 	CheckActiveState() ;
 
@@ -803,6 +859,8 @@ extern int LoadSoftImageToMem_UseGParam(
 		return -1 ;
 	}
 
+	InitLoadBaseImageGParam( &GParam, FALSE ) ;
+
 #ifndef DX_NON_ASYNCLOAD
 	if( ASyncLoadFlag )
 	{
@@ -811,6 +869,7 @@ extern int LoadSoftImageToMem_UseGParam(
 
 		// パラメータに必要なメモリのサイズを算出
 		Addr = 0 ;
+		AddASyncLoadParamStruct( NULL, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( NULL, &Addr, SIHandle ) ;
 		AddASyncLoadParamConstVoidP( NULL, &Addr, FileImage ) ;
 		AddASyncLoadParamInt( NULL, &Addr, FileImageSize ) ;
@@ -823,6 +882,7 @@ extern int LoadSoftImageToMem_UseGParam(
 		// 処理に必要な情報をセット
 		AParam->ProcessFunction = LoadSoftImageToMem_ASync ;
 		Addr = 0 ;
+		AddASyncLoadParamStruct( AParam->Data, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( AParam->Data, &Addr, SIHandle ) ;
 		AddASyncLoadParamConstVoidP( AParam->Data, &Addr, FileImage ) ;
 		AddASyncLoadParamInt( AParam->Data, &Addr, FileImageSize ) ;
@@ -841,7 +901,7 @@ extern int LoadSoftImageToMem_UseGParam(
 	else
 #endif // DX_NON_ASYNCLOAD
 	{
-		if( LoadSoftImageToMem_Static( SIHandle, FileImage, FileImageSize, FALSE ) < 0 )
+		if( LoadSoftImageToMem_Static( SIHandle, &GParam, FileImage, FileImageSize, FALSE ) < 0 )
 			goto ERR ;
 	}
 
@@ -871,6 +931,7 @@ extern	int		NS_LoadSoftImageToMem( const void *FileImage, int FileImageSize )
 // LoadARGB8ColorSoftImageToMem の実処理関数
 static int LoadARGB8ColorSoftImageToMem_Static(
 	int SIHandle,
+	LOADBASEIMAGE_GPARAM *GParam,
 	const void *FileImage,
 	int FileImageSize,
 	int ASyncThread
@@ -891,7 +952,14 @@ static int LoadARGB8ColorSoftImageToMem_Static(
 	}
 
 	// CreateBaseImageToMem でメモリから読み込み
-	if( NS_CreateBaseImageToMem( FileImage, FileImageSize, &SoftImg->BaseImage, FALSE ) == -1 )
+	if( /* NS_CreateBaseImageToMem( FileImage, FileImageSize, &SoftImg->BaseImage, FALSE ) == -1 */
+		CreateGraphImageOrDIBGraph_UseGParam(
+			GParam,
+			NULL,
+			FileImage, FileImageSize, LOADIMAGE_TYPE_MEM,
+			FALSE, FALSE, FALSE,
+			&SoftImg->BaseImage, NULL, NULL
+		) == -1 )
 		return -1 ;
 
 	// 読み込んだ画像の形式が ARGB8 ではなかったら ARGB8 形式に変換
@@ -935,6 +1003,7 @@ static int LoadARGB8ColorSoftImageToMem_Static(
 static void LoadARGB8ColorSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 {
 	int SIHandle ;
+	LOADBASEIMAGE_GPARAM *GParam ;
 	const void *FileImage ;
 	int FileImageSize ;
 	int Addr ;
@@ -942,11 +1011,12 @@ static void LoadARGB8ColorSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
+	GParam = ( LOADBASEIMAGE_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	FileImage = GetASyncLoadParamVoidP( AParam->Data, &Addr ) ;
 	FileImageSize = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
-	Result = LoadARGB8ColorSoftImageToMem_Static( SIHandle, FileImage, FileImageSize, TRUE ) ;
+	Result = LoadARGB8ColorSoftImageToMem_Static( SIHandle, GParam, FileImage, FileImageSize, TRUE ) ;
 	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
 	{
 		SoftImg->HandleInfo.ASyncLoadResult = Result ;
@@ -970,6 +1040,7 @@ extern int LoadARGB8ColorSoftImageToMem_UseGParam(
 )
 {
 	int SIHandle ;
+	LOADBASEIMAGE_GPARAM GParam ;
 
 	CheckActiveState() ;
 
@@ -980,6 +1051,8 @@ extern int LoadARGB8ColorSoftImageToMem_UseGParam(
 		return -1 ;
 	}
 
+	InitLoadBaseImageGParam( &GParam, FALSE ) ;
+
 #ifndef DX_NON_ASYNCLOAD
 	if( ASyncLoadFlag )
 	{
@@ -988,6 +1061,7 @@ extern int LoadARGB8ColorSoftImageToMem_UseGParam(
 
 		// パラメータに必要なメモリのサイズを算出
 		Addr = 0 ;
+		AddASyncLoadParamStruct( NULL, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( NULL, &Addr, SIHandle ) ;
 		AddASyncLoadParamConstVoidP( NULL, &Addr, FileImage ) ;
 		AddASyncLoadParamInt( NULL, &Addr, FileImageSize ) ;
@@ -1000,6 +1074,7 @@ extern int LoadARGB8ColorSoftImageToMem_UseGParam(
 		// 処理に必要な情報をセット
 		AParam->ProcessFunction = LoadARGB8ColorSoftImageToMem_ASync ;
 		Addr = 0 ;
+		AddASyncLoadParamStruct( AParam->Data, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( AParam->Data, &Addr, SIHandle ) ;
 		AddASyncLoadParamConstVoidP( AParam->Data, &Addr, FileImage ) ;
 		AddASyncLoadParamInt( AParam->Data, &Addr, FileImageSize ) ;
@@ -1018,7 +1093,7 @@ extern int LoadARGB8ColorSoftImageToMem_UseGParam(
 	else
 #endif // DX_NON_ASYNCLOAD
 	{
-		if( LoadARGB8ColorSoftImageToMem_Static( SIHandle, FileImage, FileImageSize, FALSE ) < 0 )
+		if( LoadARGB8ColorSoftImageToMem_Static( SIHandle, &GParam, FileImage, FileImageSize, FALSE ) < 0 )
 			goto ERR ;
 	}
 
@@ -1048,6 +1123,7 @@ extern	int		NS_LoadARGB8ColorSoftImageToMem( const void *FileImage, int FileImag
 // LoadXRGB8ColorSoftImageToMem の実処理関数
 static int LoadXRGB8ColorSoftImageToMem_Static(
 	int SIHandle,
+	LOADBASEIMAGE_GPARAM *GParam,
 	const void *FileImage,
 	int FileImageSize,
 	int ASyncThread
@@ -1068,7 +1144,14 @@ static int LoadXRGB8ColorSoftImageToMem_Static(
 	}
 
 	// CreateBaseImageToMem でメモリから読み込み
-	if( NS_CreateBaseImageToMem( FileImage, FileImageSize, &SoftImg->BaseImage, FALSE ) == -1 )
+	if( /* NS_CreateBaseImageToMem( FileImage, FileImageSize, &SoftImg->BaseImage, FALSE ) == -1 */
+		CreateGraphImageOrDIBGraph_UseGParam(
+			GParam,
+			NULL,
+			FileImage, FileImageSize, LOADIMAGE_TYPE_MEM,
+			FALSE, FALSE, FALSE,
+			&SoftImg->BaseImage, NULL, NULL
+		) == -1 )
 		return -1 ;
 
 	// 読み込んだ画像の形式が XRGB8 ではなかったら XRGB8 形式に変換
@@ -1112,6 +1195,7 @@ static int LoadXRGB8ColorSoftImageToMem_Static(
 static void LoadXRGB8ColorSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 {
 	int SIHandle ;
+	LOADBASEIMAGE_GPARAM *GParam ;
 	const void *FileImage ;
 	int FileImageSize ;
 	int Addr ;
@@ -1119,11 +1203,12 @@ static void LoadXRGB8ColorSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	SOFTIMAGE *SoftImg ;
 
 	Addr = 0 ;
+	GParam = ( LOADBASEIMAGE_GPARAM * )GetASyncLoadParamStruct( AParam->Data, &Addr ) ;
 	SIHandle = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 	FileImage = GetASyncLoadParamVoidP( AParam->Data, &Addr ) ;
 	FileImageSize = GetASyncLoadParamInt( AParam->Data, &Addr ) ;
 
-	Result = LoadXRGB8ColorSoftImageToMem_Static( SIHandle, FileImage, FileImageSize, TRUE ) ;
+	Result = LoadXRGB8ColorSoftImageToMem_Static( SIHandle, GParam, FileImage, FileImageSize, TRUE ) ;
 	if( !SFTIMGCHK_ASYNC( SIHandle, SoftImg ) )
 	{
 		SoftImg->HandleInfo.ASyncLoadResult = Result ;
@@ -1147,6 +1232,7 @@ extern int LoadXRGB8ColorSoftImageToMem_UseGParam(
 )
 {
 	int SIHandle ;
+	LOADBASEIMAGE_GPARAM GParam ;
 
 	CheckActiveState() ;
 
@@ -1157,6 +1243,8 @@ extern int LoadXRGB8ColorSoftImageToMem_UseGParam(
 		return -1 ;
 	}
 
+	InitLoadBaseImageGParam( &GParam, FALSE ) ;
+
 #ifndef DX_NON_ASYNCLOAD
 	if( ASyncLoadFlag )
 	{
@@ -1165,6 +1253,7 @@ extern int LoadXRGB8ColorSoftImageToMem_UseGParam(
 
 		// パラメータに必要なメモリのサイズを算出
 		Addr = 0 ;
+		AddASyncLoadParamStruct( NULL, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( NULL, &Addr, SIHandle ) ;
 		AddASyncLoadParamConstVoidP( NULL, &Addr, FileImage ) ;
 		AddASyncLoadParamInt( NULL, &Addr, FileImageSize ) ;
@@ -1177,6 +1266,7 @@ extern int LoadXRGB8ColorSoftImageToMem_UseGParam(
 		// 処理に必要な情報をセット
 		AParam->ProcessFunction = LoadXRGB8ColorSoftImageToMem_ASync ;
 		Addr = 0 ;
+		AddASyncLoadParamStruct( AParam->Data, &Addr, &GParam, sizeof( GParam ) ) ;
 		AddASyncLoadParamInt( AParam->Data, &Addr, SIHandle ) ;
 		AddASyncLoadParamConstVoidP( AParam->Data, &Addr, FileImage ) ;
 		AddASyncLoadParamInt( AParam->Data, &Addr, FileImageSize ) ;
@@ -1195,7 +1285,7 @@ extern int LoadXRGB8ColorSoftImageToMem_UseGParam(
 	else
 #endif // DX_NON_ASYNCLOAD
 	{
-		if( LoadXRGB8ColorSoftImageToMem_Static( SIHandle, FileImage, FileImageSize, FALSE ) < 0 )
+		if( LoadXRGB8ColorSoftImageToMem_Static( SIHandle, &GParam, FileImage, FileImageSize, FALSE ) < 0 )
 			goto ERR ;
 	}
 

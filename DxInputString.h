@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字列入力プログラムヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -233,8 +233,8 @@ extern	int			GetStringPoint2_WCHAR_T(			const wchar_t *String, int Point ) ;
 extern	int			GetStringLength_WCHAR_T(			const wchar_t *String ) ;
 
 #ifndef DX_NON_FONT
-extern	int			DrawObtainsString_WCHAR_T(			int x, int y, int AddY, const wchar_t *String, int StrLen, unsigned int StrColor, unsigned int StrEdgeColor = 0 , int FontHandle = -1 , unsigned int SelectBackColor = 0xffffffff , unsigned int SelectStrColor = 0 , unsigned int SelectStrEdgeColor = 0xffffffff , int SelectStart = -1 , int SelectEnd = -1 , int DrawFlag = TRUE, int *PosX = NULL, int *PosY = NULL ) ;
-extern	int			DrawObtainsString_CharClip_WCHAR_T(	int x, int y, int AddY, const wchar_t *String, int StrLen, unsigned int StrColor, unsigned int StrEdgeColor = 0 , int FontHandle = -1 , unsigned int SelectBackColor = 0xffffffff , unsigned int SelectStrColor = 0 , unsigned int SelectStrEdgeColor = 0xffffffff , int SelectStart = -1 , int SelectEnd = -1 , int DrawFlag = TRUE, int *PosX = NULL, int *PosY = NULL ) ;
+extern	int			DrawObtainsString_WCHAR_T(			int x, int y,                                                   int AddY, const wchar_t *String, int StrLen, unsigned int StrColor, unsigned int StrEdgeColor = 0 , int FontHandle = -1 , unsigned int SelectBackColor = 0xffffffff , unsigned int SelectStrColor = 0 , unsigned int SelectStrEdgeColor = 0xffffffff , int SelectStart = -1 , int SelectEnd = -1 , int DrawFlag = TRUE, int *PosX = NULL, int *PosY = NULL ) ;
+extern	int			DrawObtainsString_CharClip_WCHAR_T(	int x, int y, int EnableExRate, double ExRateX, double ExRateY, int AddY, const wchar_t *String, int StrLen, unsigned int StrColor, unsigned int StrEdgeColor = 0 , int FontHandle = -1 , unsigned int SelectBackColor = 0xffffffff , unsigned int SelectStrColor = 0 , unsigned int SelectStrEdgeColor = 0xffffffff , int SelectStart = -1 , int SelectEnd = -1 , int DrawFlag = TRUE, int *PosX = NULL, int *PosY = NULL ) ;
 #endif // DX_NON_FONT
 
 #ifndef DX_NON_KEYEX
@@ -242,6 +242,7 @@ extern	int			InputStringToCustom_WCHAR_T(		int x, int y, size_t BufLength, wchar
 extern	int			KeyInputString_WCHAR_T(				int x, int y, size_t CharMaxLength, wchar_t *StrBuffer, int CancelValidFlag ) ;
 extern	int			KeyInputSingleCharString_WCHAR_T(	int x, int y, size_t CharMaxLength, wchar_t *StrBuffer, int CancelValidFlag ) ;
 extern	int			GetIMEInputModeStr_WCHAR_T(			wchar_t *GetBuffer ) ;
+extern	int			SetIMEInputString_WCHAR_T(			const wchar_t *String ) ;
 extern	int			SetKeyInputString_WCHAR_T(			const wchar_t *String, int InputHandle ) ;
 extern	int			GetKeyInputString_WCHAR_T(			wchar_t *StrBuffer,    int InputHandle ) ;
 #endif // DX_NON_KEYEX

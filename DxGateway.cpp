@@ -2,7 +2,7 @@
 // 
 // 		ÇcÇwÉâÉCÉuÉâÉä		ì‡ïîÇ∆ÇÃèoì¸ÇËå˚ÉvÉçÉOÉâÉÄÉtÉ@ÉCÉã
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -960,6 +960,14 @@ extern LONGLONG FileRead_size_WithStrLen( const TCHAR *FilePath, size_t FilePath
 	DXFUNC_END
 	return Result ;
 }
+extern LONGLONG FileRead_size_handle( int FileHandle )
+{
+	LONGLONG Result ;
+	DXFUNC_BEGIN
+	Result = NS_FileRead_size_handle( FileHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int FileRead_close( int FileHandle )
 {
 	int Result ;
@@ -1614,6 +1622,14 @@ extern int SetOutApplicationLogValidFlag( int Flag )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetOutApplicationSystemLogValidFlag( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetOutApplicationSystemLogValidFlag( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int SetApplicationLogFileName( const TCHAR *FileName )
 {
 	int Result ;
@@ -2074,6 +2090,14 @@ extern int SetUseUpdateLayerdWindowFlag( int Flag )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetUseMouseEventTransparentWindowFlag( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseMouseEventTransparentWindowFlag( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int SetResourceModule( HMODULE ResourceModule )
 {
 	int Result ;
@@ -2188,6 +2212,30 @@ extern int SetDeleteHandleFlag( int Handle, int *DeleteFlag )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_SetDeleteHandleFlag( Handle, DeleteFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetHandleNum( int HandleType )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetHandleNum( HandleType ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetMaxHandleNum( int HandleType )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetMaxHandleNum( HandleType ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DumpHandleInfo( int HandleType )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DumpHandleInfo( HandleType ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -2901,6 +2949,14 @@ extern int SetMouseDispFlag( int DispFlag )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetMouseDispIgnoreMenuFlag( int IgnoreMenuFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetMouseDispIgnoreMenuFlag( IgnoreMenuFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
 #ifndef DX_NON_INPUT
 extern int GetMousePoint( int *XBuf, int *YBuf )
 {
@@ -2987,11 +3043,11 @@ extern	int	GetTouchInputNum( void )
 	return Result ;
 }
 
-extern	int	GetTouchInput( int InputNo, int *PositionX, int *PositionY, int *ID , int *Device )
+extern	int	GetTouchInput( int InputNo, int *PositionX, int *PositionY, int *ID , int *Device, float *Pressure )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_GetTouchInput( InputNo, PositionX, PositionY, ID , Device ) ;
+	Result = NS_GetTouchInput( InputNo, PositionX, PositionY, ID , Device, Pressure ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -3252,6 +3308,14 @@ extern int SRand( int Seed )
 	return Result ;
 }
 #ifndef DX_NON_MERSENNE_TWISTER
+extern DWORD GetMersenneTwisterRand( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetMersenneTwisterRand() ;
+	DXFUNC_END
+	return Result ;
+}
 extern DWORD_PTR CreateRandHandle( int Seed )
 {
 	DWORD_PTR Result ;
@@ -3284,6 +3348,15 @@ extern int GetRandHandle( DWORD_PTR RandHandle, int RandMax )
 	DXFUNC_END
 	return Result ;
 }
+extern DWORD GetMersenneTwisterRandHandle( DWORD_PTR RandHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetMersenneTwisterRandHandle( RandHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 #endif // DX_NON_MERSENNE_TWISTER
 
 // ÉoÉbÉeÉäÅ[ä÷òA
@@ -3867,6 +3940,14 @@ extern int DrawIMEInputString( int x, int y, int SelectStringNum , int DrawCandi
 	DXFUNC_END
 	return Result ;
 }
+extern int DrawIMEInputExtendString( int x, int y, double ExRateX, double ExRateY, int SelectStringNum , int DrawCandidateList )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawIMEInputExtendString(  x,  y,  ExRateX,  ExRateY,  SelectStringNum ,  DrawCandidateList ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int SetUseIMEFlag( int UseFlag )
 {
 	int Result ;
@@ -4059,6 +4140,24 @@ extern const IMEINPUTDATA *GetIMEInputData( void )
 	return Result ;
 }
 
+extern int SetIMEInputString( const TCHAR *String )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetIMEInputString( String ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int SetIMEInputStringWithStrLen(	const TCHAR *String, size_t StringLength )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetIMEInputStringWithStrLen( String, StringLength ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 extern int SetKeyInputStringColor( ULONGLONG NmlStr, ULONGLONG NmlCur, ULONGLONG IMEStrBack, ULONGLONG IMECur, ULONGLONG IMELine, ULONGLONG IMESelectStr, ULONGLONG IMEModeStr , ULONGLONG NmlStrE, ULONGLONG IMESelectStrE, ULONGLONG IMEModeStrE, ULONGLONG IMESelectWinE, ULONGLONG IMESelectWinF, ULONGLONG SelectStrBackColor , ULONGLONG SelectStrColor , ULONGLONG SelectStrEdgeColor, ULONGLONG IMEStr, ULONGLONG IMEStrE )
 {
 	int Result ;
@@ -4182,6 +4281,14 @@ extern int DrawKeyInputString( int x, int y, int InputHandle , int DrawCandidate
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_DrawKeyInputString( x, y, InputHandle , DrawCandidateList ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawKeyInputExtendString( int x, int y, double ExRateX, double ExRateY, int InputHandle , int DrawCandidateList )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawKeyInputExtendString( x, y, ExRateX, ExRateY, InputHandle , DrawCandidateList ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -4487,6 +4594,22 @@ extern	double GetJoypadDeadZone( int InputType )
 	DXFUNC_END
 	return Result ;
 }
+extern	int SetJoypadDefaultDeadZoneAll( double Zone )
+{
+	double Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetJoypadDefaultDeadZoneAll( Zone ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern	double GetJoypadDefaultDeadZoneAll( void )
+{
+	double Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetJoypadDefaultDeadZoneAll() ;
+	DXFUNC_END
+	return Result ;
+}
 extern	int StartJoypadVibration( int InputType, int Power, int Time, int EffectIndex )
 {
 	int Result ;
@@ -4516,6 +4639,14 @@ extern	int ReSetupJoypad( void )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_ReSetupJoypad( );
+	DXFUNC_END
+	return Result ;
+}
+extern int ReSetupInputSystem( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_ReSetupInputSystem();
 	DXFUNC_END
 	return Result ;
 }
@@ -4750,6 +4881,14 @@ extern int GetVideoMemorySize( int *AllSize, int *FreeSize )
 	DXFUNC_END
 	return Result ;
 }
+extern int GetVideoMemorySizeEx( ULONGLONG *TotalSize, ULONGLONG *UseSize )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetVideoMemorySizeEx( TotalSize, UseSize ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int GetRefreshRate( void )
 {
 	int Result ;
@@ -4926,6 +5065,14 @@ extern int GetFullScreenResolutionMode( int *ResolutionMode, int *UseResolutionM
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetFullScreenResolutionMode( ResolutionMode, UseResolutionMode ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetUseFullScreenResolutionMode( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetUseFullScreenResolutionMode() ;
 	DXFUNC_END
 	return Result ;
 }
@@ -6166,6 +6313,14 @@ extern int DrawPolygonIndexed2D( const VERTEX2D *Vertex, int VertexNum, const un
 	DXFUNC_END
 	return Result ;
 }
+extern int DrawPolygon32bitIndexed2D( const VERTEX2D *Vertex, int VertexNum, const unsigned int *Indices, int PolygonNum, int GrHandle, int TransFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawPolygon32bitIndexed2D( Vertex, VertexNum, Indices, PolygonNum, GrHandle, TransFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int DrawPolygonIndexed3D( const VERTEX3D *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum, int GrHandle, int TransFlag )
 {
 	int Result ;
@@ -6174,11 +6329,27 @@ extern int DrawPolygonIndexed3D( const VERTEX3D *Vertex, int VertexNum, const un
 	DXFUNC_END
 	return Result ;
 }
+extern int DrawPolygon32bitIndexed3D( const VERTEX3D *Vertex, int VertexNum, const unsigned int *Indices, int PolygonNum, int GrHandle, int TransFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawPolygon32bitIndexed3D( Vertex, VertexNum, Indices,  PolygonNum,  GrHandle,  TransFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int DrawPolygonIndexed3DBase( const VERTEX_3D *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST ìô */, int GrHandle, int TransFlag )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_DrawPolygonIndexed3DBase( Vertex, VertexNum, Indices, IndexNum, PrimitiveType,  GrHandle,  TransFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawPolygon32bitIndexed3DBase( const VERTEX_3D *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST ìô */, int GrHandle, int TransFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawPolygon32bitIndexed3DBase( Vertex, VertexNum, Indices, IndexNum, PrimitiveType,  GrHandle,  TransFlag ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -6240,11 +6411,27 @@ extern int DrawPrimitiveIndexed2D( const VERTEX2D *Vertex, int VertexNum, const 
 	DXFUNC_END
 	return Result ;
 }
+extern int DrawPrimitive32bitIndexed2D( const VERTEX2D *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType, int GrHandle, int TransFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawPrimitive32bitIndexed2D( Vertex,  VertexNum, Indices,  IndexNum,  PrimitiveType,  GrHandle,  TransFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int DrawPrimitiveIndexed3D( const VERTEX3D *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType, int GrHandle, int TransFlag )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_DrawPrimitiveIndexed3D( Vertex,  VertexNum, Indices,  IndexNum,  PrimitiveType,  GrHandle,  TransFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawPrimitive32bitIndexed3D( const VERTEX3D *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType, int GrHandle, int TransFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawPrimitive32bitIndexed3D( Vertex,  VertexNum, Indices,  IndexNum,  PrimitiveType,  GrHandle,  TransFlag ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -6537,6 +6724,14 @@ extern int DrawLineSet( const LINEDATA *LineData, int Num )
 	DXFUNC_END
 	return Result ;
 }
+extern int DrawBoxSet( const RECTDATA *RectData, int Num )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawBoxSet( RectData, Num ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int DrawPixel3D( VECTOR Pos, unsigned int Color )
 {
 	int Result ;
@@ -6720,6 +6915,35 @@ extern int DrawFormatVString( int x, int y, unsigned int Color, const TCHAR *For
 	DXFUNC_END
 	return Result ;
 }
+extern int DrawFormatString2( int x, int y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	
+	DXFUNC_BEGIN
+	Result = NS_DrawString( x,  y, String, Color, EdgeColor ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawFormatVString2( int x, int y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	DXFUNC_BEGIN
+	Result = NS_DrawVString( x,  y, String, Color, EdgeColor ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int DrawExtendString( int x, int y, double ExRateX, double ExRateY, const TCHAR *String, unsigned int Color, unsigned int EdgeColor )
 {
 	int Result ;
@@ -6778,6 +7002,35 @@ extern int DrawExtendFormatVString( int x, int y, double ExRateX, double ExRateY
 	va_end( VaList ) ;
 	DXFUNC_BEGIN
 	Result = NS_DrawExtendVString( x,  y, ExRateX, ExRateY, String,  Color ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawExtendFormatString2( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	
+	DXFUNC_BEGIN
+	Result = NS_DrawExtendString( x,  y, ExRateX, ExRateY, String,  Color, EdgeColor ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawExtendFormatVString2( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	DXFUNC_BEGIN
+	Result = NS_DrawExtendVString( x,  y, ExRateX, ExRateY, String,  Color, EdgeColor ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -6907,6 +7160,35 @@ extern int DrawFormatVStringF( float x, float y, unsigned int Color, const TCHAR
 	DXFUNC_END
 	return Result ;
 }
+extern int DrawFormatString2F( float x, float y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	
+	DXFUNC_BEGIN
+	Result = NS_DrawStringF( x,  y, String,  Color, EdgeColor ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawFormatVString2F( float x, float y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	DXFUNC_BEGIN
+	Result = NS_DrawVStringF( x,  y, String,  Color, EdgeColor ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int DrawExtendStringF( float x, float y, double ExRateX, double ExRateY, const TCHAR *String, unsigned int Color, unsigned int EdgeColor )
 {
 	int Result ;
@@ -6965,6 +7247,35 @@ extern int DrawExtendFormatVStringF( float x, float y, double ExRateX, double Ex
 	va_end( VaList ) ;
 	DXFUNC_BEGIN
 	Result = NS_DrawExtendVStringF( x,  y, ExRateX, ExRateY, String,  Color ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawExtendFormatString2F( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	
+	DXFUNC_BEGIN
+	Result = NS_DrawExtendStringF( x,  y, ExRateX, ExRateY, String,  Color, EdgeColor ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawExtendFormatVString2F( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	DXFUNC_BEGIN
+	Result = NS_DrawExtendVStringF( x,  y, ExRateX, ExRateY, String,  Color, EdgeColor ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -7315,6 +7626,34 @@ extern int DrawFormatVStringToHandle( int x, int y, unsigned int Color, int Font
 	DXFUNC_END
 	return Result ;
 }
+extern int DrawFormatString2ToHandle( int x, int y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	DXFUNC_BEGIN
+	Result = NS_DrawStringToHandle( x,  y, String,  Color, EdgeColor, FontHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawFormatVString2ToHandle( int x, int y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	DXFUNC_BEGIN
+	Result = NS_DrawVStringToHandle( x,  y, String,  Color, EdgeColor, FontHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int DrawExtendStringToHandle( int x, int y, double ExRateX, double ExRateY, const TCHAR *String, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag  )
 {
 	int Result ;
@@ -7373,6 +7712,35 @@ extern int DrawExtendFormatVStringToHandle( int x, int y, double ExRateX, double
 
 	DXFUNC_BEGIN
 	Result = NS_DrawExtendVStringToHandle( x, y, ExRateX, ExRateY, String,  Color,  FontHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawExtendFormatString2ToHandle( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	DXFUNC_BEGIN
+	Result = NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String,  Color, EdgeColor,  FontHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawExtendFormatVString2ToHandle( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+
+	DXFUNC_BEGIN
+	Result = NS_DrawExtendVStringToHandle( x, y, ExRateX, ExRateY, String,  Color, EdgeColor,  FontHandle ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -7500,6 +7868,34 @@ extern int DrawFormatVStringFToHandle( float x, float y, unsigned int Color, int
 	DXFUNC_END
 	return Result ;
 }
+extern int DrawFormatString2FToHandle( float x, float y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	DXFUNC_BEGIN
+	Result = NS_DrawStringFToHandle( x,  y, String,  Color,  FontHandle, EdgeColor ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawFormatVString2FToHandle( float x, float y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	DXFUNC_BEGIN
+	Result = NS_DrawVStringFToHandle( x,  y, String,  Color,  FontHandle, EdgeColor ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int DrawExtendStringFToHandle( float x, float y, double ExRateX, double ExRateY, const TCHAR *String, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag  )
 {
 	int Result ;
@@ -7558,6 +7954,35 @@ extern int DrawExtendFormatVStringFToHandle( float x, float y, double ExRateX, d
 
 	DXFUNC_BEGIN
 	Result = NS_DrawExtendVStringFToHandle( x, y, ExRateX, ExRateY, String,  Color,  FontHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawExtendFormatString2FToHandle( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+	DXFUNC_BEGIN
+	Result = NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String,  Color,  FontHandle, EdgeColor ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawExtendFormatVString2FToHandle( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	int Result ;
+	va_list VaList ;
+	TCHAR String[ 2048 ] ;
+
+	va_start( VaList, FormatString ) ;
+	_TVSNPRINTF( String, sizeof( String ) / sizeof( TCHAR ), FormatString, VaList ) ;
+	va_end( VaList ) ;
+
+	DXFUNC_BEGIN
+	Result = NS_DrawExtendVStringFToHandle( x, y, ExRateX, ExRateY, String,  Color,  FontHandle, EdgeColor ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -8450,6 +8875,14 @@ extern	int			CalcPolygonIndexedBinormalAndTangentsToShader( VERTEX3DSHADER *Vert
 	DXFUNC_END
 	return Result ;
 }
+extern	int			CalcPolygon32bitIndexedBinormalAndTangentsToShader( VERTEX3DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int PolygonNum )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_CalcPolygon32bitIndexedBinormalAndTangentsToShader( Vertex, VertexNum, Indices, PolygonNum ) ;
+	DXFUNC_END
+	return Result ;
+}
 
 extern	int			DrawBillboard3DToShader( VECTOR Pos, float cx, float cy, float Size, float Angle, int GrHandle, int TransFlag, int ReverseXFlag, int ReverseYFlag )
 {
@@ -8484,11 +8917,27 @@ extern	int			DrawPolygonIndexed2DToShader( const VERTEX2DSHADER *Vertex, int Ver
 	DXFUNC_END
 	return Result ;
 }
+extern	int			DrawPolygon32bitIndexed2DToShader( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int PolygonNum )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawPolygon32bitIndexed2DToShader( Vertex, VertexNum, Indices, PolygonNum ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern	int			DrawPolygonIndexed3DToShader( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_DrawPolygonIndexed3DToShader( Vertex, VertexNum, Indices, PolygonNum ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern	int			DrawPolygon32bitIndexed3DToShader( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int PolygonNum )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawPolygon32bitIndexed3DToShader( Vertex, VertexNum, Indices, PolygonNum ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -8516,11 +8965,27 @@ extern	int			DrawPrimitiveIndexed2DToShader( const VERTEX2DSHADER *Vertex, int V
 	DXFUNC_END
 	return Result ;
 }
+extern	int			DrawPrimitive32bitIndexed2DToShader( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawPrimitive32bitIndexed2DToShader( Vertex, VertexNum, Indices,  IndexNum,  PrimitiveType ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern	int			DrawPrimitiveIndexed3DToShader( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_DrawPrimitiveIndexed3DToShader( Vertex,  VertexNum, Indices,  IndexNum,  PrimitiveType ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern	int			DrawPrimitive32bitIndexed3DToShader( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawPrimitive32bitIndexed3DToShader( Vertex,  VertexNum, Indices,  IndexNum,  PrimitiveType ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -8636,6 +9101,15 @@ extern	int			SetGraphFilterBltBlendMode( int BlendMode /* DX_BLENDMODE_ALPHA Ç»Ç
 	return Result ;
 }
 
+extern	int			SetGraphBlendScalingFilterMode( int IsBilinearFilter )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetGraphBlendScalingFilterMode( IsBilinearFilter ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 extern	int			GraphFilter( int GrHandle, int FilterType /* DX_BLTFILTER_GAUSS_H ìô */ , ... )
 {
 	int Result ;
@@ -8648,7 +9122,7 @@ extern	int			GraphFilter( int GrHandle, int FilterType /* DX_BLTFILTER_GAUSS_H ì
 
 	NS_GetGraphSize( GrHandle, &W, &H ) ;
 
-	Result = GraphFilter_RectBltBase( FALSE, GrHandle, -1, GrHandle, 0, FilterType, 0, 0, W, H, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( FALSE, GrHandle, -1, GrHandle, 0, FilterType, 0, 0, W, H, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 	DXFUNC_END
 
 	va_end( VaList ) ;
@@ -8667,7 +9141,7 @@ extern	int			GraphFilterBlt( int SrcGrHandle, int DestGrHandle, int FilterType, 
 
 	NS_GetGraphSize( SrcGrHandle, &SrcW, &SrcH ) ;
 
-	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 	DXFUNC_END
 
 	va_end( VaList ) ;
@@ -8682,7 +9156,7 @@ extern	int			GraphFilterRectBlt( int SrcGrHandle, int DestGrHandle, int SrcX1, i
 	va_start( VaList, FilterType ) ;
 
 	DXFUNC_BEGIN
-	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, SrcX1, SrcY1, SrcX2, SrcY2, 0, 0, TRUE, DestX, DestY, VaList ) ;
+	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, SrcX1, SrcY1, SrcX2, SrcY2, 0, 0, FALSE, 0, 0, FALSE, DestX, DestY, VaList ) ;
 	DXFUNC_END
 
 	va_end( VaList ) ;
@@ -8702,7 +9176,7 @@ extern	int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int Bl
 
 	NS_GetGraphSize( GrHandle, &W, &H ) ;
 
-	Result = GraphFilter_RectBltBase( TRUE, GrHandle, BlendGrHandle, GrHandle, BlendRatio, BlendType, 0, 0, W, H, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( TRUE, GrHandle, BlendGrHandle, GrHandle, BlendRatio, BlendType, 0, 0, W, H, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 	DXFUNC_END
 
 	va_end( VaList ) ;
@@ -8721,7 +9195,7 @@ extern	int			GraphBlendBlt( int SrcGrHandle, int BlendGrHandle, int DestGrHandle
 
 	NS_GetGraphSize( SrcGrHandle, &SrcW, &SrcH ) ;
 
-	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 	DXFUNC_END
 
 	va_end( VaList ) ;
@@ -8736,7 +9210,23 @@ extern	int			GraphBlendRectBlt( int SrcGrHandle, int BlendGrHandle, int DestGrHa
 	va_start( VaList, BlendType ) ;
 
 	DXFUNC_BEGIN
-	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, SrcX1, SrcY1, SrcX2, SrcY2, BlendX, BlendY, TRUE, DestX, DestY, VaList ) ;
+	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, SrcX1, SrcY1, SrcX2, SrcY2, BlendX, BlendY, TRUE, 0, 0, FALSE, DestX, DestY, VaList ) ;
+	DXFUNC_END
+
+	va_end( VaList ) ;
+
+	return Result ;
+}
+
+extern	int			GraphBlendRectBlt2( int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX1, int BlendY1, int BlendX2, int BlendY2, int DestX, int DestY, int BlendRatio /* ÉuÉåÉìÉhå¯â ÇÃâeãøìx( 0:ÇOÅì  255:ÇPÇOÇOÅì ) */ , int BlendType /* DX_GRAPH_BLEND_ADD ìô */ , ... )
+{
+	int Result ;
+	va_list VaList ;
+
+	va_start( VaList, BlendType ) ;
+
+	DXFUNC_BEGIN
+	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, SrcX1, SrcY1, SrcX2, SrcY2, BlendX1, BlendY1, TRUE, BlendX2, BlendY2, TRUE, DestX, DestY, VaList ) ;
 	DXFUNC_END
 
 	va_end( VaList ) ;
@@ -9107,6 +9597,22 @@ extern int GetUseBackCulling( void )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetUseBackCulling() ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetUseRightHandClippingProcess( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseRightHandClippingProcess( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetUseRightHandClippingProcess( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetUseRightHandClippingProcess() ;
 	DXFUNC_END
 	return Result ;
 }
@@ -9602,7 +10108,14 @@ extern void *GetDesktopScreenGraphMemImage( int x1, int y1, int x2, int y2, int 
 	DXFUNC_END
 	return Result ;
 }
-
+extern int GetOtherWindowGraph( HWND Window, int x1, int y1, int x2, int y2, int GrHandle, int DestX, int DestY )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetOtherWindowGraph( Window,  x1,  y1,  x2,  y2,  GrHandle,  DestX,  DestY ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int SetMultiThreadFlag( int Flag )
 {
 	int Result ;
@@ -9688,6 +10201,22 @@ extern int SetUseDirect3D11AdapterIndex( int Index )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_SetUseDirect3D11AdapterIndex( Index ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetUseDirect3D11BGRASupport( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseDirect3D11BGRASupport( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetUseDirect3D11BGRASupport( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetUseDirect3D11BGRASupport() ;
 	DXFUNC_END
 	return Result ;
 }
@@ -11688,6 +12217,15 @@ extern	int			SetGlobalAmbientLight( COLOR_F Color )
 	return Result ;
 }
 
+extern	int			SetUseLightAngleAttenuation( int UseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseLightAngleAttenuation( UseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 extern	int			ChangeLightTypeDir( VECTOR Direction )
 {
 	int Result ;
@@ -12174,6 +12712,38 @@ extern int GetCreateGraphInitGraphDelete( void )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetCreateGraphHandle( int GrHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetCreateGraphHandle( GrHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetCreateGraphHandle( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetCreateGraphHandle() ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetCreateDivGraphHandle( const int *HandleArray, int HandleNum )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetCreateDivGraphHandle( HandleArray, HandleNum ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetCreateDivGraphHandle( int *HandleArray )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetCreateDivGraphHandle( HandleArray ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int SetDrawValidGraphCreateFlag( int Flag )
 {
 	int Result ;
@@ -12219,6 +12789,22 @@ extern int GetUseSystemMemGraphCreateFlag( void )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetUseSystemMemGraphCreateFlag(  ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetUseLoadDivGraphSizeCheckFlag( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseLoadDivGraphSizeCheckFlag( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetUseLoadDivGraphSizeCheckFlag( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetUseLoadDivGraphSizeCheckFlag() ;
 	DXFUNC_END
 	return Result ;
 }
@@ -12619,6 +13205,22 @@ extern int GetDrawBlendMode( int *BlendMode, int *BlendParam )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetDrawBlendMode( BlendMode, BlendParam ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetDrawCustomBlendMode( int BlendEnable, int SrcBlendRGB /* DX_BLEND_SRC_COLOR ìô */, int DestBlendRGB /* DX_BLEND_SRC_COLOR ìô */, int BlendOpRGB /* DX_BLENDOP_ADD ìô */, int SrcBlendA /* DX_BLEND_SRC_COLOR ìô */, int DestBlendA /* DX_BLEND_SRC_COLOR ìô */, int BlendOpA /* DX_BLENDOP_ADD ìô */, int BlendParam )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetDrawCustomBlendMode( BlendEnable, SrcBlendRGB, DestBlendRGB, BlendOpRGB, SrcBlendA,  DestBlendA, BlendOpA, BlendParam ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetDrawCustomBlendMode( int *BlendEnable, int *SrcBlendRGB, int *DestBlendRGB, int *BlendOpRGB, int *SrcBlendA, int *DestBlendA, int *BlendOpA, int *BlendParam )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetDrawCustomBlendMode( BlendEnable, SrcBlendRGB, DestBlendRGB, BlendOpRGB, SrcBlendA, DestBlendA, BlendOpA, BlendParam ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -13373,6 +13975,14 @@ extern int ChangeFontWithStrLen( const TCHAR *FontName, size_t FontNameLength, i
 	DXFUNC_END
 	return Result ;
 }
+extern int ChangeFontFromHandle( int FontHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_ChangeFontFromHandle( FontHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int ChangeFontType( int FontType )
 {
 	int Result ;
@@ -14099,6 +14709,22 @@ extern int GetFontUseAdjustSizeFlag( void )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetFontOnlyDrawType( int OnlyType )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetFontOnlyDrawType( OnlyType ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetFontOnlyDrawType( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetFontOnlyDrawType() ;
+	DXFUNC_END
+	return Result ;
+}
 
 extern HANDLE AddFontFile( const TCHAR *FontFilePath )
 {
@@ -14372,6 +14998,31 @@ extern int SetUsePremulAlphaConvertLoad(  int UseFlag )
 	DXFUNC_END
 	return Result ;
 }
+extern int GetUsePremulAlphaConvertLoad( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetUsePremulAlphaConvertLoad() ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetUseConvertNormalFormatLoad( int UseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseConvertNormalFormatLoad( UseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetUseConvertNormalFormatLoad( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetUseConvertNormalFormatLoad() ;
+	DXFUNC_END
+	return Result ;
+}
+
 
 // äÓñ{ÉCÉÅÅ[ÉWÉfÅ[É^ã@î\åˆäJópä÷êî
 
@@ -15761,6 +16412,12 @@ extern int CreateBGRA8ColorData( COLORDATA *ColorDataBuf )
 	Result = NS_CreateBGRA8ColorData( ColorDataBuf ) ;
 	return Result ;
 }
+extern int CreateBGR8ColorData( COLORDATA *ColorDataBuf )
+{
+	int Result ;
+	Result = NS_CreateBGR8ColorData( ColorDataBuf ) ;
+	return Result ;
+}
 extern int CreateARGB4ColorData( COLORDATA * ColorDataBuf )
 {
 	int Result ;
@@ -15965,11 +16622,11 @@ extern int CheckStreamSoundMem( int SoundHandle )
 	DXFUNC_END
 	return Result ;
 }
-extern int StopStreamSoundMem( int SoundHandle )
+extern int StopStreamSoundMem( int SoundHandle, int IsNextLoopEnd )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_StopStreamSoundMem( SoundHandle ) ;
+	Result = NS_StopStreamSoundMem( SoundHandle, IsNextLoopEnd ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -16193,11 +16850,11 @@ extern int PlaySoundMem( int SoundHandle, int PlayType, int TopPositionFlag  )
 	DXFUNC_END
 	return Result ;
 }
-extern int StopSoundMem( int SoundHandle )
+extern int StopSoundMem( int SoundHandle, int IsNextLoopEnd )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_StopSoundMem( SoundHandle ) ;
+	Result = NS_StopSoundMem( SoundHandle, IsNextLoopEnd ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -16882,7 +17539,23 @@ extern int SetEnableASIOFlag( int Flag, int BufferSize, int SamplePerSec )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetUseASIODriverIndex( int Index )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseASIODriverIndex( Index ) ;
+	DXFUNC_END
+	return Result ;
+}
 #endif // DX_NON_ASIO
+extern	int SetEnableMMEwaveOutFlag( int Flag, int BufferSamples, int SamplePerSec )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetEnableMMEwaveOutFlag( Flag, BufferSamples, SamplePerSec ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern	int SetUseOldVolumeCalcFlag( int Flag )
 {
 	int Result ;
@@ -18110,6 +18783,24 @@ extern int MV1SetLoadModelTriangleListUseMaxBoneNum( int UseMaxBoneNum )
 	return Result ;
 }
 
+extern int MV1SetLoadModelTextureLoad( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1SetLoadModelTextureLoad( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int MV1SetLoadModelIgnoreIK( int IgnoreFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1SetLoadModelIgnoreIK( IgnoreFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 extern int MV1SaveModelToMV1File( int MHandle, const TCHAR *FileName, int SaveType, int AnimMHandle, int AnimNameCheck, int Normal8BitFlag, int Position16BitFlag, int Weight8BitFlag, int Anim16BitFlag )
 {
 	int Result ;
@@ -18728,6 +19419,24 @@ extern float MV1GetAttachAnimBlendRateToFrame( int MHandle, int AttachIndex, int
 	float Result ;
 	DXFUNC_BEGIN
 	Result = NS_MV1GetAttachAnimBlendRateToFrame(  MHandle,  AttachIndex,  FrameIndex ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int MV1SetAttachAnimTimeToFrame(	int MHandle, int AttachIndex, int FrameIndex, float Time, int SetChild )
+{
+	float Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1SetAttachAnimTimeToFrame( MHandle, AttachIndex, FrameIndex, Time, SetChild ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern float MV1GetAttachAnimTimeToFrame( int MHandle, int AttachIndex, int FrameIndex )
+{
+	float Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1GetAttachAnimTimeToFrame( MHandle, AttachIndex, FrameIndex ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -20967,6 +21676,51 @@ extern int Live2D_InitModel( void )
 	return Result ;
 }
 
+extern int Live2D_SetUserShader( int TargetShader, int ShaderHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_Live2D_SetUserShader( TargetShader, ShaderHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int Live2D_DrawCallback( void ( *Callback )( int Live2DModelHandle, int TextureIndex, void *UserData ), void *UserData )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_Live2D_DrawCallback( Callback, UserData ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int Live2D_SetUseAutoScaling( int UseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_Live2D_SetUseAutoScaling( UseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int Live2D_SetUseAutoCentering( int UseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_Live2D_SetUseAutoCentering( UseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int Live2D_SetUseReverseYAxis( int UseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_Live2D_SetUseReverseYAxis( UseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 extern int Live2D_Model_Update( int Live2DModelHandle, float DeltaTime )
 {
 	int Result ;
@@ -21030,11 +21784,29 @@ extern int Live2D_Model_StartMotionWithStrLen( int Live2DModelHandle, const TCHA
 	return Result ;
 }
 
+extern int Live2D_Model_GetLastPlayMotionNo( int Live2DModelHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_Live2D_Model_GetLastPlayMotionNo( Live2DModelHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 extern int Live2D_Model_IsMotionFinished( int Live2DModelHandle )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_Live2D_Model_IsMotionFinished( Live2DModelHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern float Live2D_Model_GetMotionPlayTime( int Live2DModelHandle )
+{
+	float Result ;
+	DXFUNC_BEGIN
+	Result = NS_Live2D_Model_GetMotionPlayTime( Live2DModelHandle ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -21341,6 +22113,24 @@ extern const TCHAR *Live2D_Model_GetLipSyncParameterId( int Live2DModelHandle, i
 	const TCHAR* Result ;
 	DXFUNC_BEGIN
 	Result = NS_Live2D_Model_GetLipSyncParameterId( Live2DModelHandle, index ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern float Live2D_Model_GetCanvasWidth( int Live2DModelHandle )
+{
+	float Result ;
+	DXFUNC_BEGIN
+	Result = NS_Live2D_Model_GetCanvasWidth( Live2DModelHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern float Live2D_Model_GetCanvasHeight( int Live2DModelHandle )
+{
+	float Result ;
+	DXFUNC_BEGIN
+	Result = NS_Live2D_Model_GetCanvasHeight( Live2DModelHandle ) ;
 	DXFUNC_END
 	return Result ;
 }

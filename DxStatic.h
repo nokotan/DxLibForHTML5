@@ -2,7 +2,7 @@
 //
 //		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ@“à•”g—pŠÖ˜A—pƒwƒbƒ_ƒtƒ@ƒCƒ‹
 //
-//				Ver 3.23 
+//				Ver 3.24b
 //
 // ----------------------------------------------------------------------------
 
@@ -313,11 +313,13 @@ extern	int			NS_GetRand( int RandMax ) ;												// —”‚ğæ“¾‚·‚é( RandMax :
 extern	int			NS_SRand(	 int Seed ) ;													// —”‚Ì‰Šú’l‚ğİ’è‚·‚é
 
 #ifndef DX_NON_MERSENNE_TWISTER
+extern	DWORD		NS_GetMersenneTwisterRand( void ) ;										// ƒƒ‹ƒZƒ“ƒkEƒcƒCƒXƒ^[ƒAƒ‹ƒSƒŠƒYƒ€‚Å¶¬‚³‚ê‚½—”’l‚ğ–³‰ÁH‚Åæ“¾‚·‚é
 
 extern	DWORD_PTR	NS_CreateRandHandle( int Seed ) ;											// —”ƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( –ß‚è’l@0ˆÈŠO:—”ƒnƒ“ƒhƒ‹@0:ƒGƒ‰[ )
 extern	int			NS_DeleteRandHandle( DWORD_PTR RandHandle ) ;								// —”ƒnƒ“ƒhƒ‹‚ğíœ‚·‚é
 extern	int			NS_SRandHandle( DWORD_PTR RandHandle, int Seed ) ;							// —”ƒnƒ“ƒhƒ‹‚Ì‰Šú’l‚ğÄİ’è‚·‚é
 extern	int			NS_GetRandHandle( DWORD_PTR RandHandle, int RandMax ) ;						// —”ƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä—”‚ğæ“¾‚·‚é( RandMax : •Ô‚Á‚Ä—ˆ‚é’l‚ÌÅ‘å’l )
+extern	DWORD		NS_GetMersenneTwisterRandHandle( DWORD_PTR RandHandle ) ;					// —”ƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Äƒƒ‹ƒZƒ“ƒkEƒcƒCƒXƒ^[ƒAƒ‹ƒSƒŠƒYƒ€‚Å¶¬‚³‚ê‚½—”’l‚ğ–³‰ÁH‚Åæ“¾‚·‚é
 
 #endif // DX_NON_MERSENNE_TWISTER
 
@@ -360,6 +362,7 @@ extern	int			NS_GetPrivateProfileIntDxForMemWithStrLen(    const TCHAR *AppName,
 
 // ƒƒOo—Íİ’èŠÖ”
 extern	int			NS_SetOutApplicationLogValidFlag(			int Flag ) ;																		// ƒƒOo—Í‚ğs‚¤‚©”Û‚©‚ÌƒZƒbƒg
+extern	int			NS_SetOutApplicationSystemLogValidFlag(      int Flag ) ;													// ƒƒOƒtƒ@ƒCƒ‹( Log.txt ) ‚É‚c‚wƒ‰ƒCƒuƒ‰ƒŠ“à•”‚ÌƒƒOo—Í‚ğs‚¤‚©‚Ç‚¤‚©İ’è‚·‚é( TRUE:‚c‚wƒ‰ƒCƒuƒ‰ƒŠ“à•”‚ÌƒƒOo—Í‚ğs‚¤( ƒfƒtƒHƒ‹ƒg )  FALSE:‚c‚wƒ‰ƒCƒuƒ‰ƒŠ“à•”‚ÌƒƒOo—Í‚ğs‚í‚È‚¢ )
 extern	int			NS_SetApplicationLogFileName(      const TCHAR *FileName ) ;				// ƒƒOƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğİ’è‚·‚é( Log.txt ˆÈŠO‚É‚µ‚½‚¢ê‡‚Ég—p )
 extern	int			NS_SetApplicationLogFileNameWithStrLen(      const TCHAR *FileName, size_t FileNameLength ) ;				// ƒƒOƒtƒ@ƒCƒ‹‚Ì–¼‘O‚ğİ’è‚·‚é( Log.txt ˆÈŠO‚É‚µ‚½‚¢ê‡‚Ég—p )
 extern	int			NS_SetApplicationLogSaveDirectory(	          const TCHAR *DirectoryPath ) ;								// ƒƒOƒtƒ@ƒCƒ‹( Log.txt ) ‚ğ•Û‘¶‚·‚éƒfƒBƒŒƒNƒgƒŠƒpƒX‚ğİ’è‚·‚é
@@ -445,6 +448,9 @@ extern	int			NS_SetASyncLoadThreadNum(		int ThreadNum ) ;							// ”ñ“¯Šú“Ç‚İ‚
 // DxHandle.cppŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾
 
 extern	int			NS_SetDeleteHandleFlag(		int Handle, int *DeleteFlag ) ;					// ƒnƒ“ƒhƒ‹‚ªíœ‚³‚ê‚½‚Æ‚«‚É|‚P‚ªİ’è‚³‚ê‚é•Ï”‚ğ“o˜^‚·‚é
+extern	int			NS_GetHandleNum(				int HandleType ) ;							// w’è‚Ìƒ^ƒCƒv‚Ìƒnƒ“ƒhƒ‹‚Ì”‚ğæ“¾‚·‚é
+extern	int			NS_GetMaxHandleNum(			int HandleType ) ;							// w’è‚Ìƒ^ƒCƒv‚Ìƒnƒ“ƒhƒ‹‚ªÅ‘å‚ÅŠô‚Âì¬‚Å‚«‚é‚©‚ğæ“¾‚·‚é
+extern	int			NS_DumpHandleInfo(				int HandleType /* DX_HANDLETYPE_GRAPH“™ */ ) ;			// w’è‚Ìƒ^ƒCƒv‚Ì‘Sƒnƒ“ƒhƒ‹‚Ìî•ñ‚ğƒƒO‚Éo—Í‚·‚é
 
 
 
@@ -561,6 +567,7 @@ extern	int			NS_SetUseFPUPreserveFlag(					int Flag ) ;																		// FPU‚
 extern	int			NS_SetValidMousePointerWindowOutClientAreaMoveFlag( int Flag ) ;																// ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚ªƒEƒCƒ“ƒhƒE‚ÌƒNƒ‰ƒCƒAƒ“ƒgƒGƒŠƒA‚ÌŠO‚É‚¢‚¯‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:‚¢‚¯‚é( ƒfƒtƒHƒ‹ƒgİ’è )  FALSE:‚¢‚¯‚È‚¢ )
 extern	int			NS_SetUseBackBufferTransColorFlag(			int Flag ) ;																		// ƒoƒbƒNƒoƒbƒtƒ@‚Ì“§‰ßF‚Ì•”•ª‚ğ“§‰ß‚³‚¹‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:“§‰ß‚³‚¹‚é  FALSE:“§‰ß‚³‚¹‚È‚¢ )
 extern	int			NS_SetUseUpdateLayerdWindowFlag(			int Flag ) ;																		// UpdateLayerdWindowForBaseImage ‚â UpdateLayerdWindowForSoftImage ‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:g—p‚·‚é  FALSE:g—p‚µ‚È‚¢ )
+extern	int			NS_SetUseMouseEventTransparentWindowFlag(	int Flag ) ;																		// SetUseUpdateLayerdWindowFlag( TRUE ); ‚Ìİ’è‚ÌÛ‚Éƒ}ƒEƒXŠÖŒW‚ÌƒCƒxƒ“ƒg‚ğ”wŒã‚ÌƒEƒBƒ“ƒhƒE‚É“§‰ß‚³‚¹‚é‚©‚ğİ’è‚·‚é( TRUE:“§‰ß‚·‚é   FALSE:“§‰ß‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
 extern	int			NS_SetResourceModule(						HMODULE ResourceModule ) ;															// ƒŠƒ\[ƒX‚ğ“Ç‚İ‚ŞÛ‚Ég—p‚·‚éƒ‚ƒWƒ…[ƒ‹‚ğİ’è‚·‚é( NULL ‚ğw’è‚·‚é‚Æ‰Šúó‘Ô‚É–ß‚è‚Ü‚·AƒfƒtƒHƒ‹ƒg‚Å‚Í NULL )
 extern	int			NS_SetUseDxLibWM_PAINTProcess(				int Flag ) ;																		// WM_PAINT ƒƒbƒZ[ƒW‚ª—ˆ‚½Û‚Éw‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Ì WM_PAINTƒƒbƒZ[ƒW‚ª—ˆ‚½Û‚Ìˆ—x‚ğs‚¤‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( •ÊƒXƒŒƒbƒh‚Å•`‰æˆ—‚ğs‚¤ê‡‚È‚Ç‚Åg—p )
 extern	int			NS_SetWindows10_WM_CHAR_CancelTime(		int MilliSecond ) ;																	// Windows10 ‚Å WM_CHAR ‚Å’ZŠÔ‚É˜A‘±‚µ‚Ä“¯‚¶•¶š‚ª“ü—Í‚³‚ê‚½ê‡‚Ì–³Œøˆµ‚¢‚É‚·‚éŠÔ‚ğİ’è‚·‚é( MilliSecond ‚Ìƒ~ƒŠ•bˆÈ“à‚É˜A‘±‚µ‚Ä“¯‚¶•¶š‚ª“ü—Í‚³‚ê‚½ê‡‚É–³Œø‚É‚·‚éAMilliSecond ‚Ì’l‚ğƒ}ƒCƒiƒX‚É‚·‚é‚ÆƒfƒtƒHƒ‹ƒg‚Ìİ’è‚É–ß‚é )
@@ -658,6 +665,7 @@ extern	int			NS_SetAutoMenuDisplayFlag(		int Flag ) ;																						// ƒt
 
 // ƒ}ƒEƒXŠÖŒWŠÖ”
 extern	int			NS_SetMouseDispFlag(		int DispFlag ) ;												// ƒ}ƒEƒX‚Ì•\¦ƒtƒ‰ƒO‚ÌƒZƒbƒg
+extern	int			NS_SetMouseDispIgnoreMenuFlag(	int IgnoreMenuFlag ) ;										// ƒ}ƒEƒXƒ|ƒCƒ“ƒ^‚Ì•\¦ó‘Ô‚É‚Â‚¢‚Äƒƒjƒ…[‚Ì•\¦ó‘Ô‚ğ–³‹‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:ƒƒjƒ…[‚Ì•\¦ó‘Ô‚ğ–³‹‚·‚é  FALSE:ƒƒjƒ…[‚Ì•\¦ó‘Ô‚ğl—¶‚·‚é( ƒfƒtƒHƒ‹ƒg ) )
 extern	int			NS_GetMousePoint(			int *XBuf, int *YBuf ) ;										// ƒ}ƒEƒX‚ÌˆÊ’u‚ğæ“¾‚·‚é
 extern	int			NS_SetMousePoint(			int PointX, int PointY ) ;										// ƒ}ƒEƒX‚ÌˆÊ’u‚ğƒZƒbƒg‚·‚é
 #ifndef DX_NON_INPUT
@@ -684,7 +692,7 @@ extern	int			NS_GetMouseInputLog2(		int *Button, int *ClickX, int *ClickY, int *
 
 // ƒ^ƒbƒ`ƒpƒlƒ‹“ü—ÍŠÖŒWŠÖ”
 extern	int				NS_GetTouchInputNum( void ) ;															// ƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚é”‚ğæ“¾‚·‚é
-extern	int				NS_GetTouchInput( int InputNo, int *PositionX, int *PositionY, int *ID = NULL , int *Device = NULL ) ;		// ƒ^ƒbƒ`‚Ìî•ñ‚ğæ“¾‚·‚é
+extern	int				NS_GetTouchInput( int InputNo, int *PositionX, int *PositionY, int *ID = NULL , int *Device = NULL, float *Pressure = NULL ) ;		// ƒ^ƒbƒ`‚Ìî•ñ‚ğæ“¾‚·‚é
 
 extern	int				NS_GetTouchInputLogNum( void ) ;														// ƒXƒgƒbƒN‚³‚ê‚Ä‚¢‚éƒ^ƒbƒ`î•ñ‚Ì”‚ğæ“¾‚·‚é
 extern	int				NS_ClearTouchInputLog( void ) ;															// ƒXƒgƒbƒN‚³‚ê‚Ä‚¢‚éƒ^ƒbƒ`î•ñ‚ğƒNƒŠƒA‚·‚é
@@ -845,7 +853,8 @@ extern	int			NS_GetCtrlCodeCmp(		TCHAR Char ) ;									// ƒAƒXƒL[ƒRƒ“ƒgƒ[ƒ‹ƒ
 
 #ifndef DX_NON_KEYEX
 
-extern	int			NS_DrawIMEInputString(				int x, int y, int SelectStringNum , int DrawCandidateList = TRUE ) ;	// ‰æ–Êã‚É“ü—Í’†‚Ì•¶š—ñ‚ğ•`‰æ‚·‚é
+extern	int			NS_DrawIMEInputString(				int x, int y,                                 int SelectStringNum , int DrawCandidateList = TRUE ) ;	// ‰æ–Êã‚É“ü—Í’†‚Ì•¶š—ñ‚ğ•`‰æ‚·‚é
+extern	int			NS_DrawIMEInputExtendString(		int x, int y, double ExRateX, double ExRateY, int SelectStringNum , int DrawCandidateList DEFAULTPARAM( = TRUE ) ) ;	// ‰æ–Êã‚É“ü—Í’†‚Ì•¶š—ñ‚ğ•`‰æ‚·‚é( Šg‘å—¦•t‚« )
 extern	int			NS_SetUseIMEFlag(					int UseFlag ) ;							// ‚h‚l‚d‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg‚·‚é
 extern	int			NS_GetUseIMEFlag(					void ) ;								// ‚h‚l‚d‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚Ìİ’è‚ğæ“¾‚·‚é
 extern	int			NS_SetInputStringMaxLengthIMESync(	int Flag ) ;							// ‚h‚l‚d‚Å“ü—Í‚Å‚«‚éÅ‘å•¶š”‚ğ MakeKeyInput ‚Ìİ’è‚É‡‚í‚¹‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg‚·‚é( TRUE:‚ ‚í‚¹‚é  FALSE:‚ ‚í‚¹‚È‚¢(ƒfƒtƒHƒ‹ƒg) )
@@ -880,6 +889,8 @@ extern	int			NS_KeyInputNumber(				int x, int y, int MaxNum, int MinNum, int Can
 
 extern	int			NS_GetIMEInputModeStr(			TCHAR *GetBuffer ) ;																											// IME‚Ì“ü—Íƒ‚[ƒh•¶š—ñ‚Ìæ“¾
 extern	const IMEINPUTDATA* NS_GetIMEInputData(			void ) ;																														// IME‚Å“ü—Í’†‚Ì•¶š—ñ‚Ìî•ñ‚ğæ“¾‚·‚é
+extern	int			NS_SetIMEInputString(				const TCHAR *String ) ;																											// IME‚Å“ü—Í’†‚Ì•¶š—ñ‚ğ•ÏX‚·‚é( IME‚Å•¶š—ñ‚ğ“ü—Í’†‚Å‚Í‚È‚©‚Á‚½ê‡‚Í‰½‚à‹N‚±‚è‚Ü‚¹‚ñ )
+extern	int			NS_SetIMEInputStringWithStrLen(	const TCHAR *String, size_t StringLength ) ;																					// IME‚Å“ü—Í’†‚Ì•¶š—ñ‚ğ•ÏX‚·‚é( IME‚Å•¶š—ñ‚ğ“ü—Í’†‚Å‚Í‚È‚©‚Á‚½ê‡‚Í‰½‚à‹N‚±‚è‚Ü‚¹‚ñ )
 extern	int			NS_SetKeyInputStringColor(		ULONGLONG NmlStr, ULONGLONG NmlCur, ULONGLONG IMEStrBack, ULONGLONG IMECur, ULONGLONG IMELine, ULONGLONG IMESelectStr, ULONGLONG IMEModeStr , ULONGLONG NmlStrE = 0 , ULONGLONG IMESelectStrE = 0 , ULONGLONG IMEModeStrE = 0 , ULONGLONG IMESelectWinE = ULL_PARAM( 0xffffffffffffffff ) ,	ULONGLONG IMESelectWinF = ULL_PARAM( 0xffffffffffffffff ) , ULONGLONG SelectStrBackColor = ULL_PARAM( 0xffffffffffffffff ) , ULONGLONG SelectStrColor = ULL_PARAM( 0xffffffffffffffff ) , ULONGLONG SelectStrEdgeColor = ULL_PARAM( 0xffffffffffffffff ), ULONGLONG IMEStr = ULL_PARAM( 0xffffffffffffffff ), ULONGLONG IMEStrE = ULL_PARAM( 0xffffffffffffffff ) ) ;	// InputStringŠÖ”g—p‚Ì•¶š‚ÌŠeF‚ğ•ÏX‚·‚é
 extern	int			NS_SetKeyInputStringColor2(	int TargetColor /* DX_KEYINPSTRCOLOR_NORMAL_STR “™ */, unsigned int Color ) ;															// InputStringŠÖ”g—p‚Ì•¶š‚ÌŠeF‚ğ•ÏX‚·‚é
 extern	int			NS_ResetKeyInputStringColor2(	int TargetColor /* DX_KEYINPSTRCOLOR_NORMAL_STR “™ */ ) ;																		// SetKeyInputStringColor2 ‚Åİ’è‚µ‚½F‚ğƒfƒtƒHƒ‹ƒg‚É–ß‚·
@@ -896,6 +907,7 @@ extern	int			NS_CheckKeyInput(				int InputHandle ) ;																											
 extern	int			NS_ReStartKeyInput(			int InputHandle ) ;																												// “ü—Í‚ªŠ®—¹‚µ‚½ƒL[“ü—Í‚ğÄ“x•ÒWó‘Ô‚É–ß‚·
 extern	int			NS_ProcessActKeyInput(			void ) ;																														// ƒL[“ü—Íˆ—ŠÖ”
 extern	int			NS_DrawKeyInputString(			int x, int y, int InputHandle , int DrawCandidateList = TRUE ) ;																								// ƒL[“ü—Í’†ƒf[ƒ^‚Ì•`‰æ
+extern	int			NS_DrawKeyInputExtendString(		int x, int y, double ExRateX, double ExRateY, int InputHandle , int DrawCandidateList DEFAULTPARAM( = TRUE ) ) ;				// ƒL[“ü—Íƒnƒ“ƒhƒ‹‚Ì“ü—Í’†î•ñ‚Ì•`‰æ( Šg‘å—¦w’è•t‚« )
 extern	int			NS_SetKeyInputDrawArea(		int x1, int y1, int x2, int y2, int InputHandle ) ;																				// ƒL[“ü—Íƒnƒ“ƒhƒ‹‚Ì“ü—Í’†•¶š—ñ‚ğ•`‰æ‚·‚éÛ‚Ì•`‰æ”ÍˆÍ‚ğİ’è‚·‚é
 
 extern	int			NS_SetKeyInputSelectArea(		int  SelectStart, int  SelectEnd, int InputHandle ) ;																			// ƒL[“ü—Íƒf[ƒ^‚Ìw’è‚Ì—Ìˆæ‚ğ‘I‘ğó‘Ô‚É‚·‚é( SelectStart ‚Æ SelectEnd ‚É -1 ‚ğw’è‚·‚é‚Æ‘I‘ğó‘Ô‚ª‰ğœ‚³‚ê‚Ü‚· )
@@ -941,6 +953,7 @@ extern	int			NS_FileRead_open_WithStrLen(			const TCHAR *FilePath, size_t FilePa
 extern	int			NS_FileRead_open_mem(			const void *FileImage, size_t FileImageSize ) ;						// ƒƒ‚ƒŠ‚É“WŠJ‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ğŠJ‚­
 extern	LONGLONG	NS_FileRead_size(				const TCHAR *FilePath ) ;										// ƒtƒ@ƒCƒ‹‚ÌƒTƒCƒY‚ğ“¾‚é
 extern	LONGLONG	NS_FileRead_size_WithStrLen(			const TCHAR *FilePath, size_t FilePathLength ) ;				// ƒtƒ@ƒCƒ‹‚ÌƒTƒCƒY‚ğæ“¾‚·‚é
+extern	LONGLONG	NS_FileRead_size_handle(				int FileHandle ) ;												// ƒtƒ@ƒCƒ‹‚ÌƒTƒCƒY‚ğæ“¾‚·‚é( ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹g—p”Å )
 extern	int			NS_FileRead_close(				int FileHandle ) ;												// ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
 extern	LONGLONG	NS_FileRead_tell(				int FileHandle ) ;												// ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ÌŒ»İˆÊ’u‚ğ“¾‚é
 extern	int			NS_FileRead_seek(				int FileHandle , LONGLONG Offset , int Origin ) ;				// ƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ÌˆÊ’u‚ğ•ÏX‚·‚é
@@ -1029,10 +1042,13 @@ extern	int			NS_GetJoypadXInputState(					int InputType, XINPUT_STATE *XInputSta
 extern	int			NS_SetJoypadInputToKeyInput(				int InputType, int PadInput, int KeyInput1, int KeyInput2 = -1 , int KeyInput3 = -1 , int KeyInput4 = -1  ) ; // ƒWƒ‡ƒCƒpƒbƒh‚Ì“ü—Í‚É‘Î‰‚µ‚½ƒL[ƒ{[ƒh‚Ì“ü—Í‚ğİ’è‚·‚é( InputType:İ’è‚ğ•ÏX‚·‚éƒpƒbƒh‚Ì¯•Êq( DX_INPUT_PAD1“™ )@@PadInput:İ’è‚ğ•ÏX‚·‚éƒpƒbƒhƒ{ƒ^ƒ“‚Ì¯•Êq( PAD_INPUT_1 “™ )@@KeyInput1:PadInput ‚ğ‰Ÿ‰º‚µ‚½‚±‚Æ‚É‚·‚éƒL[ƒR[ƒh( KEY_INPUT_A ‚È‚Ç )‚»‚Ì‚P@@KeyInput2:‚»‚Ì‚QA-1‚Åİ’è‚È‚µ@@KeyInput3:‚»‚Ì‚RA-1‚Åİ’è‚È‚µ@@KeyInput4:‚»‚Ì‚SA-1‚Åİ’è‚È‚µ )
 extern	int			NS_SetJoypadDeadZone(						int InputType, double Zone ) ;											// ƒWƒ‡ƒCƒpƒbƒh‚Ì–³Œøƒ][ƒ“‚Ìİ’è‚ğs‚¤( InputType:İ’è‚ğ•ÏX‚·‚éƒpƒbƒh‚Ì¯•Êq( DX_INPUT_PAD1“™ )   Zone:V‚µ‚¢–³Œøƒ][ƒ“( 0.0 ` 1.0 )AƒfƒtƒHƒ‹ƒg’l‚Í 0.35 )
 extern	double		NS_GetJoypadDeadZone(						int InputType ) ;														// ƒWƒ‡ƒCƒpƒbƒh‚Ì–³Œøƒ][ƒ“‚Ìİ’è‚ğæ“¾‚·‚é( InputType:İ’è‚ğ•ÏX‚·‚éƒpƒbƒh‚Ì¯•Êq( DX_INPUT_PAD1“™ )  –ß‚è’l:–³Œøƒ][ƒ“( 0.0 ` 1.0 )
+extern	int			NS_SetJoypadDefaultDeadZoneAll(			double Zone ) ;															// ƒWƒ‡ƒCƒpƒbƒh‚ÌƒfƒtƒHƒ‹ƒg‚Ì–³Œøƒ][ƒ“‚ğİ’è‚·‚é( Zone:V‚µ‚¢–³Œøƒ][ƒ“( 0.0 ` 1.0 )AƒfƒtƒHƒ‹ƒg’l‚Í 0.35 )
+extern	double		NS_GetJoypadDefaultDeadZoneAll(			void ) ;																// ƒWƒ‡ƒCƒpƒbƒh‚ÌƒfƒtƒHƒ‹ƒg‚Ì–³Œøƒ][ƒ“‚ğæ“¾‚·‚é( –ß‚è’l:–³Œøƒ][ƒ“( 0.0 ` 1.0 ) )
 extern	int			NS_StartJoypadVibration(					int InputType, int Power, int Time, int EffectIndex = -1 ) ;			// ƒWƒ‡ƒCƒpƒbƒh‚ÌU“®‚ğŠJn‚·‚é
 extern	int			NS_StopJoypadVibration(					int InputType, int EffectIndex = -1 ) ;									// ƒWƒ‡ƒCƒpƒbƒh‚ÌU“®‚ğ’â~‚·‚é
 extern	int			NS_GetJoypadPOVState(						int InputType, int POVNumber ) ;										// ƒWƒ‡ƒCƒpƒbƒh‚Ì‚o‚n‚u“ü—Í‚Ìó‘Ô‚ğ“¾‚é( –ß‚è’l@w’è‚ÌPOVƒf[ƒ^‚ÌŠp“xA’PˆÊ‚ÍŠp“x‚Ì‚P‚O‚O”{( 90“x‚È‚ç 9000 ) ’†SˆÊ’u‚É‚ ‚éê‡‚Í -1 ‚ª•Ô‚é )
 extern	int			NS_ReSetupJoypad(							void ) ;																// ƒWƒ‡ƒCƒpƒbƒh‚ÌÄƒZƒbƒgƒAƒbƒv‚ğs‚¤( V‚½‚ÉÚ‘±‚³‚ê‚½ƒWƒ‡ƒCƒpƒbƒh‚ª‚ ‚Á‚½‚çŒŸo‚³‚ê‚é )
+extern	int			NS_ReSetupInputSystem(						void ) ;																// “ü—ÍƒVƒXƒeƒ€‚ÌÄƒZƒbƒgƒAƒbƒv‚ğs‚¤
 
 extern	int			NS_SetUseJoypadVibrationFlag(				int Flag ) ;															// ƒWƒ‡ƒCƒpƒbƒh‚ÌU“®‹@”\‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:g—p‚·‚é@@FALSE:g—p‚µ‚È‚¢ )
 
@@ -1226,6 +1242,10 @@ extern	int			NS_SetCreateGraphChannelBitDepth(				int BitDepth ) ;								// ì
 extern	int			NS_GetCreateGraphChannelBitDepth(				void ) ;										// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒN‚Ì‚Pƒ`ƒƒƒ“ƒlƒ‹•Ó‚è‚Ìƒrƒbƒg[“x‚ğæ“¾‚·‚é
 extern	int			NS_SetCreateGraphInitGraphDelete(				int Flag ) ;									// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğ InitGraph() ‚Åíœ‚³‚ê‚é‚©‚ğİ’è‚·‚é( Flag  TRUE:InitGraph‚Åíœ‚³‚ê‚é(ƒfƒtƒHƒ‹ƒg)  FALSE:InitGraph‚Åíœ‚³‚ê‚È‚¢ )
 extern	int			NS_GetCreateGraphInitGraphDelete(				void ) ;										// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğ InitGraph() ‚Åíœ‚³‚ê‚é‚©‚ğæ“¾‚·‚é( Flag  TRUE:InitGraph‚Åíœ‚³‚ê‚é(ƒfƒtƒHƒ‹ƒg)  FALSE:InitGraph‚Åíœ‚³‚ê‚È‚¢ )
+extern	int			NS_SetCreateGraphHandle(						int GrHandle ) ;								// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ìƒnƒ“ƒhƒ‹’l‚ğİ’è‚·‚éA‚OˆÈ‰º‚Ì’l‚ğ“n‚·‚Æİ’è‰ğœ( ‘¶İ‚µ‚È‚¢ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ì’l‚Ìê‡‚Ì‚İ—LŒø )
+extern	int			NS_GetCreateGraphHandle(						void ) ;										// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ìƒnƒ“ƒhƒ‹’l‚ğæ“¾‚·‚é
+extern	int			NS_SetCreateDivGraphHandle(					const int *HandleArray, int HandleNum ) ;		// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ìƒnƒ“ƒhƒ‹’l‚ğİ’è‚·‚éALoadDivGraph “™‚Ì•ªŠ„‰æ‘œ“Ç‚İ‚İ—pAHandleArray ‚É NULL ‚ğ“n‚·‚Æİ’è‰ğœ( ‘¶İ‚µ‚È‚¢ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ì’l‚Ìê‡‚Ì‚İ—LŒø )
+extern	int			NS_GetCreateDivGraphHandle(					int *HandleArray ) ;							// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ìƒnƒ“ƒhƒ‹’l‚ğæ“¾‚·‚éALoadDivGraph “™‚Ì•ªŠ„‰æ‘œ“Ç‚İ‚İ—pA–ß‚è’l‚Í SetCreateDivGraphHandle ‚Ìˆø” HandleNum ‚É“n‚µ‚½’lAHandleArray ‚ğ NULL ‚É‚·‚é‚±‚Æ‚ª‰Â”\
 extern	int			NS_SetDrawValidGraphCreateFlag(				int Flag ) ;									// •`‰æ‰Â”\‚ÈƒOƒ‰ƒtƒBƒbƒN‚ğì¬‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é( TRUE:•`‰æ‰Â”\  FALSE:•`‰æ•s‰Â”\ )
 extern	int			NS_GetDrawValidGraphCreateFlag(				void ) ;										// •`‰æ‰Â”\‚ÈƒOƒ‰ƒtƒBƒbƒN‚ğì¬‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğæ“¾‚·‚é
 extern	int			NS_SetDrawValidFlagOf3DGraph(					int Flag ) ;									// SetDrawValidGraphCreateFlag ‚Ì‹Œ–¼Ì
@@ -1274,6 +1294,8 @@ extern	int			NS_SetUseAlphaImageLoadFlag(					int Flag ) ;									// LoadGraph 
 extern	int			NS_SetUseMaxTextureSize(						int Size ) ;									// g—p‚·‚éƒeƒNƒXƒ`ƒƒ[‚ÌÅ‘åƒTƒCƒY‚ğƒZƒbƒg(0‚ÅƒfƒtƒHƒ‹ƒg)
 extern	int			NS_SetUseGraphBaseDataBackup(					int Flag ) ;									// ‰æ‘œ‚ğì¬‚·‚éÛ‚Ég—p‚µ‚½‰æ‘œƒf[ƒ^‚ÌƒoƒbƒNƒAƒbƒv‚ğ‚µ‚ÄƒfƒoƒCƒXƒƒXƒg‚Ég—p‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚é( TRUE:ƒoƒbƒNƒAƒbƒv‚ğ‚·‚é( ƒfƒtƒHƒ‹ƒg )  FALSE:ƒoƒbƒNƒAƒbƒv‚ğ‚µ‚È‚¢ )
 extern	int			NS_GetUseGraphBaseDataBackup(					void ) ;										// ‰æ‘œ‚ğì¬‚·‚éÛ‚Ég—p‚µ‚½‰æ‘œƒf[ƒ^‚ÌƒoƒbƒNƒAƒbƒv‚ğ‚µ‚ÄƒfƒoƒCƒXƒƒXƒg‚Ég—p‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğæ“¾‚·‚é
+extern	int			NS_SetUseLoadDivGraphSizeCheckFlag(			int Flag ) ;									// LoadDivGraph Œn‚Ì•ªŠ„‰æ‘œ“Ç‚İ‚İŠÖ”‚ÅƒTƒCƒY‚Ìƒ`ƒFƒbƒN‚ğs‚¤‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( Flag:TRUE( ƒ`ƒFƒbƒN‚ğs‚¤(ƒfƒtƒHƒ‹ƒg) )  FALSE:ƒ`ƒFƒbƒN‚ğs‚í‚È‚¢ )
+extern	int			NS_GetUseLoadDivGraphSizeCheckFlag(			void ) ;										// LoadDivGraph Œn‚Ì•ªŠ„‰æ‘œ“Ç‚İ‚İŠÖ”‚ÅƒTƒCƒY‚Ìƒ`ƒFƒbƒN‚ğs‚¤‚©‚Ç‚¤‚©‚Ìİ’è‚ğæ“¾‚·‚é
 
 // ‰æ‘œî•ñŠÖŒWŠÖ”
 extern	const unsigned int* NS_GetFullColorImage(				int GrHandle ) ;																		// w’è‚Ì‰æ‘œ‚Ì‚`‚q‚f‚a‚W‚Ìƒtƒ‹ƒJƒ‰[ƒCƒ[ƒW‚ğæ“¾‚·‚é
@@ -1343,6 +1365,7 @@ extern	int			NS_Paint(			int x, int y, unsigned int FillColor, ULONGLONG Boundar
 
 extern 	int			NS_DrawPixelSet(   const POINTDATA *PointData, int Num ) ;																	// “_‚ÌW‡‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawLineSet(    const LINEDATA *LineData,   int Num ) ;																	// ü‚ÌW‡‚ğ•`‰æ‚·‚é
+extern	int			NS_DrawBoxSet(     const RECTDATA *RectData,   int Num ) ;																	// ‹éŒ`‚ÌW‡‚ğ•`‰æ‚·‚é
 
 extern	int			NS_DrawPixel3D(     VECTOR   Pos,                                                                 unsigned int Color ) ;						// ‚R‚c‚Ì“_‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPixel3DD(    VECTOR_D Pos,                                                                 unsigned int Color ) ;						// ‚R‚c‚Ì“_‚ğ•`‰æ‚·‚é
@@ -1445,8 +1468,11 @@ extern	int			NS_DrawPolygon(                             const VERTEX    *Vertex
 extern	int			NS_DrawPolygon2D(                           const VERTEX2D  *Vertex, int PolygonNum,                                                                                                    int GrHandle, int TransFlag ) ;							// ‚Q‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPolygon3D(                           const VERTEX3D  *Vertex, int PolygonNum,                                                                                                    int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPolygonIndexed2D(                    const VERTEX2D  *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum,                                                      int GrHandle, int TransFlag ) ;							// ‚Q‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p )
+extern	int			NS_DrawPolygon32bitIndexed2D(               const VERTEX2D  *VertexArray, int VertexNum, const unsigned int   *IndexArray, int PolygonNum,                                                      int GrHandle, int TransFlag ) ;							// ‚Q‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p )
 extern	int			NS_DrawPolygonIndexed3D(                    const VERTEX3D  *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum,                                                      int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p )
+extern	int			NS_DrawPolygon32bitIndexed3D(               const VERTEX3D  *VertexArray, int VertexNum, const unsigned int   *IndexArray, int PolygonNum,                                                      int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p )
 extern	int			NS_DrawPolygonIndexed3DBase(                const VERTEX_3D *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum,   int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p )( ‹Œƒo[ƒWƒ‡ƒ“—p )
+extern	int			NS_DrawPolygon32bitIndexed3DBase(           const VERTEX_3D *VertexArray, int VertexNum, const unsigned int   *IndexArray, int IndexNum,   int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p )( ‹Œƒo[ƒWƒ‡ƒ“—p )
 extern	int			NS_DrawPolygon3DBase(                       const VERTEX_3D *Vertex, int VertexNum,                                                int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ‹Œƒo[ƒWƒ‡ƒ“—p )
 #ifndef DX_COMPILE_TYPE_C_LANGUAGE
 extern	int			NS_DrawPolygon3D(                           const VERTEX_3D *Vertex, int PolygonNum,                                                                                                    int GrHandle, int TransFlag ) ;							// ‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ‹Œƒo[ƒWƒ‡ƒ“—p )
@@ -1457,7 +1483,9 @@ extern	int			NS_DrawPolygonBase(                         const VERTEX    *Vertex
 extern	int			NS_DrawPrimitive2D(                         const VERTEX2D  *Vertex, int VertexNum,                                                int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPrimitive3D(                         const VERTEX3D  *Vertex, int VertexNum,                                                int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPrimitiveIndexed2D(                  const VERTEX2D  *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum,   int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é(’¸“_ƒCƒ“ƒfƒbƒNƒXg—p)
+extern	int			NS_DrawPrimitive32bitIndexed2D(             const VERTEX2D  *VertexArray, int VertexNum, const unsigned int   *IndexArray, int IndexNum,   int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é(’¸“_ƒCƒ“ƒfƒbƒNƒXg—p)
 extern	int			NS_DrawPrimitiveIndexed3D(                  const VERTEX3D  *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum,   int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é(’¸“_ƒCƒ“ƒfƒbƒNƒXg—p)
+extern	int			NS_DrawPrimitive32bitIndexed3D(             const VERTEX3D  *VertexArray, int VertexNum, const unsigned int   *IndexArray, int IndexNum,   int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int GrHandle, int TransFlag ) ;							// ‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é(’¸“_ƒCƒ“ƒfƒbƒNƒXg—p)
 
 extern	int			NS_DrawPolygon3D_UseVertexBuffer(           int VertexBufHandle,                                                                                                                                                               int GrHandle, int TransFlag ) ;		// ’¸“_ƒoƒbƒtƒ@‚ğg—p‚µ‚Ä‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPrimitive3D_UseVertexBuffer(         int VertexBufHandle,                     int PrimitiveType  /* DX_PRIMTYPE_TRIANGLELIST “™ */,                                                                                     int GrHandle, int TransFlag ) ;		// ’¸“_ƒoƒbƒtƒ@‚ğg—p‚µ‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
@@ -1479,6 +1507,8 @@ extern	int			NS_SetDrawMode(						int DrawMode ) ;												// •`‰æƒ‚[ƒh‚ğƒZƒ
 extern	int			NS_GetDrawMode(						void ) ;														// •`‰æƒ‚[ƒh‚ğæ“¾‚·‚é
 extern	int			NS_SetDrawBlendMode(					int BlendMode, int BlendParam ) ;								// •`‰æƒuƒŒƒ“ƒhƒ‚[ƒh‚ğƒZƒbƒg‚·‚é
 extern	int			NS_GetDrawBlendMode(					int *BlendMode, int *BlendParam ) ;								// •`‰æƒuƒŒƒ“ƒhƒ‚[ƒh‚ğæ“¾‚·‚é
+extern	int			NS_SetDrawCustomBlendMode(				int BlendEnable, int SrcBlendRGB /* DX_BLEND_SRC_COLOR “™ */, int DestBlendRGB /* DX_BLEND_SRC_COLOR “™ */, int BlendOpRGB /* DX_BLENDOP_ADD “™ */, int SrcBlendA /* DX_BLEND_SRC_COLOR “™ */, int DestBlendA /* DX_BLEND_SRC_COLOR “™ */, int BlendOpA /* DX_BLENDOP_ADD “™ */, int BlendParam ) ;		// ƒJƒXƒ^ƒ€ƒuƒŒƒ“ƒhƒ‚[ƒh‚ğİ’è‚·‚é
+extern	int			NS_GetDrawCustomBlendMode(				int *BlendEnable, int *SrcBlendRGB, int *DestBlendRGB, int *BlendOpRGB, int *SrcBlendA, int *DestBlendA, int *BlendOpA, int *BlendParam ) ;																																								// ƒJƒXƒ^ƒ€ƒuƒŒƒ“ƒhƒ‚[ƒh‚ğæ“¾‚·‚é
 extern	int			NS_SetDrawAlphaTest(					int TestMode, int TestParam ) ;									// •`‰æ‚ÌƒAƒ‹ƒtƒ@ƒeƒXƒg‚Ìİ’è‚ğs‚¤( TestMode:DX_CMP_GREATER“™( -1:ƒfƒtƒHƒ‹ƒg“®ì‚É–ß‚· )  TestParam:•`‰æƒAƒ‹ƒtƒ@’l‚Æ‚Ì”äŠr‚Ég—p‚·‚é’l )
 extern	int			NS_GetDrawAlphaTest(					int *TestMode, int *TestParam ) ;								// •`‰æ‚ÌƒAƒ‹ƒtƒ@ƒeƒXƒg‚Ìİ’è‚ğæ“¾‚·‚é( TestMode:ƒeƒXƒgƒ‚[ƒh( DX_CMP_GREATER“™ -1‚ÅƒfƒtƒHƒ‹ƒg“®ì‚É–ß‚· )  TestParam:•`‰æƒAƒ‹ƒtƒ@’l‚Æ‚Ì”äŠr‚Ég—p‚·‚é’l( 0`255 ) )
 extern	int			NS_SetBlendGraph(						int BlendGraph, int BorderParam, int BorderRange ) ;			// ( SetBlendGraphParam ‚Ì BlendType = DX_BLENDGRAPHTYPE_WIPE ‚Ìˆ—‚ğs‚¤‹ŒŠÖ” )•`‰æˆ—‚É•`‰æ‚·‚é‰æ‘œ‚ÆƒuƒŒƒ“ƒh‚·‚éƒ¿ƒ`ƒƒƒ“ƒlƒ‹•t‚«‰æ‘œ‚ğƒZƒbƒg‚·‚é( BlendGraph ‚ğ -1 ‚ÅƒuƒŒƒ“ƒh‹@”\‚ğ–³Œø )
@@ -1561,6 +1591,8 @@ extern	VECTOR_D	NS_ConvScreenPosToWorldPos_ZLinearD(	VECTOR_D ScreenPos ) ;					
 extern	int			NS_SetUseCullingFlag(					int Flag ) ;													// SetUseBackCulling ‚Ì‹Œ–¼Ì
 extern	int			NS_SetUseBackCulling(					int Flag /* DX_CULLING_LEFT “™ */ ) ;							// ƒ|ƒŠƒSƒ“ƒJƒŠƒ“ƒO‚Ì—LŒøA–³Œø‚ğƒZƒbƒg‚·‚é
 extern	int			NS_GetUseBackCulling(					void ) ;														// ƒ|ƒŠƒSƒ“ƒJƒŠƒ“ƒOƒ‚[ƒh‚ğæ“¾‚·‚é
+extern	int			NS_SetUseRightHandClippingProcess(		int Flag ) ;													// ‰EèÀ•WŒn‚ÌƒNƒŠƒbƒsƒ“ƒOˆ—‚ğs‚¤‚©‚ğİ’è‚·‚é( TRUE:‰EèÀ•WŒn‚ÌƒNƒŠƒbƒsƒ“ƒOˆ—‚ğs‚¤  FALSE:¶èÀ•WŒn‚ÌƒNƒŠƒbƒsƒ“ƒOˆ—‚ğs‚¤( ƒfƒtƒHƒ‹ƒg ) )
+extern	int			NS_GetUseRightHandClippingProcess(		void ) ;														// ‰EèÀ•WŒn‚ÌƒNƒŠƒbƒsƒ“ƒOˆ—‚ğs‚¤‚©‚ğæ“¾‚·‚é( TRUE:‰EèÀ•WŒn‚ÌƒNƒŠƒbƒsƒ“ƒOˆ—‚ğs‚¤  FALSE:¶èÀ•WŒn‚ÌƒNƒŠƒbƒsƒ“ƒOˆ—‚ğs‚¤( ƒfƒtƒHƒ‹ƒg ) )
 
 extern	int			NS_SetTextureAddressMode(				int Mode /* DX_TEXADDRESS_WRAP “™ */ , int Stage = -1 ) ;		// ƒeƒNƒXƒ`ƒƒƒAƒhƒŒƒXƒ‚[ƒh‚ğİ’è‚·‚é
 extern	int			NS_SetTextureAddressModeUV(			int ModeU, int ModeV, int Stage = -1 ) ;						// ƒeƒNƒXƒ`ƒƒƒAƒhƒŒƒXƒ‚[ƒh‚ğİ’è‚·‚é
@@ -1608,11 +1640,13 @@ extern	int				NS_BltRectBackScreenToWindow(					HWND Window, RECT BackScreenRect
 extern	int				NS_SetScreenFlipTargetWindow(					HWND TargetWindow, double ScaleX, double ScaleY ) ;								// ScreenFlip ‚Å‰æ‘œ‚ğ“]‘—‚·‚éæ‚ÌƒEƒCƒ“ƒhƒE‚ğİ’è‚·‚é( NULL ‚ğw’è‚·‚é‚Æİ’è‰ğœ )
 extern	int				NS_GetDesktopScreenGraph(			int x1, int y1, int x2, int y2, int GrHandle, int DestX = 0 , int DestY = 0 ) ;				// ƒfƒXƒNƒgƒbƒv‰æ–Ê‚©‚çw’è—Ìˆæ‚Ì‰æ‘œî•ñ‚ğƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚É“]‘—‚·‚é
 extern	void *			NS_GetDesktopScreenGraphMemImage(	int x1, int y1, int x2, int y2, int *Width, int *Height, int *Stride, int ColorBitDepth = 32 ) ;	// ƒfƒXƒNƒgƒbƒv‰æ–Ê‚©‚çw’è—Ìˆæ‚Ì‰æ‘œ‚Ìƒƒ‚ƒŠƒCƒ[ƒW‚Ìæ“ªƒAƒhƒŒƒX‚ÆƒCƒ[ƒW‚Ì•E‚‚³EƒXƒgƒ‰ƒCƒh‚ğæ“¾‚·‚é( ƒCƒ[ƒW‚ÌƒtƒH[ƒ}ƒbƒg‚Í ColorBitDepth = 32( ƒoƒCƒg‡‚Å B8G8R8X8 ‚Ì 32bitƒJƒ‰[ ) ColorBitDepth = 24( ƒoƒCƒg‡‚Å B8G8R8 ‚Ì 24bitƒJƒ‰[ ) )
+extern	int				NS_GetOtherWindowGraph(				int x1, int y1, int x2, int y2, int GrHandle, int DestX DEFAULTPARAM( = 0 ) , int DestY DEFAULTPARAM( = 0 ) ) ;		// w’è‚ÌƒEƒBƒ“ƒhƒE‚Ìw’è—Ìˆæ‚Ì‰æ‘œî•ñ‚ğƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚É“]‘—‚·‚é
 #endif // WINDOWS_DESKTOP_OS
 extern	int				NS_SetGraphMode(								int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, int RefreshRate = 60 ) ;	// ‰æ–Êƒ‚[ƒh‚ğİ’è‚·‚é
 extern	int				NS_SetUserScreenImage(							void *Image, int PixelFormat /* DX_USER_SCREEN_PIXEL_FORMAT_R5G6B5 “™ */ ) ;	// ‰æ–Ê‚Ìƒƒ‚ƒŠƒCƒ[ƒW‚ğƒZƒbƒg‚·‚é( DxLib_Init ‚Ì‘O‚ÅŒÄ‚Ô•K—v‚ª‚ ‚é( DxLib_Init ‚Ì‘O‚Éˆê“x‚Å‚àŒÄ‚ñ‚Å‚¢‚ê‚ÎADxLib_Init Œã‚Í Image ‚ÌƒAƒhƒŒƒX‚Ì‚İ‚Ì•ÏX–Ú“I‚ÅŒÄ‚Ô‚±‚Æ‚Í‰Â”\ )APixelFormat ‚É DX_USER_SCREEN_PIXEL_FORMAT_R5G6B5 –”‚Í DX_USER_SCREEN_PIXEL_FORMAT_X8R8G8B8 ‚Ì“ñ‚ÂˆÈŠO‚ğw’è‚µ‚½ê‡‚Í‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Ì•`‰æŠÖ”‚ÍˆêØg—p‚Å‚«‚È‚­‚È‚è‚Ü‚· )
 extern	int				NS_SetFullScreenResolutionMode(					int ResolutionMode /* DX_FSRESOLUTIONMODE_NATIVE “™ */ ) ;						// ƒtƒ‹ƒXƒNƒŠ[ƒ“‰ğ‘œ“xƒ‚[ƒh‚ğİ’è‚·‚é
 extern	int				NS_GetFullScreenResolutionMode(				int *ResolutionMode, int *UseResolutionMode ) ;									// ƒtƒ‹ƒXƒNƒŠ[ƒ“‰ğ‘œ“xƒ‚[ƒh‚ğæ“¾‚·‚é( UseResolutionMode ‚ÍÀÛ‚Ég—p‚³‚ê‚Ä‚¢‚é‰ğ‘œ“xƒ‚[ƒh( —á‚¦‚Î DX_FSRESOLUTIONMODE_NATIVE ‚ğw’è‚µ‚Ä‚¢‚Ä‚àƒ‚ƒjƒ^‚ªw’è‚Ì‰ğ‘œ“x‚É‘Î‰‚µ‚Ä‚¢‚È‚¢ê‡‚Í UseResolutionMode ‚ª DX_FSRESOLUTIONMODE_DESKTOP ‚â DX_FSRESOLUTIONMODE_MAXIMUM ‚É‚È‚è‚Ü‚· ) )
+extern	int				NS_GetUseFullScreenResolutionMode(				void ) ;																		// ƒtƒ‹ƒXƒNƒŠ[ƒ“‰ğ‘œ“xƒ‚[ƒh‚ğæ“¾‚·‚é( GetFullScreenResolutionMode ‚Ì UseResolutionMode ‚Åæ“¾‚Å‚«‚é’l‚ğ•Ô‚·ŠÖ” )
 extern	int				NS_SetFullScreenScalingMode(					int ScalingMode /* DX_FSSCALINGMODE_NEAREST “™ */ , int FitScaling = FALSE ) ;	// ƒtƒ‹ƒXƒNƒŠ[ƒ“ƒ‚[ƒh‚Ì‰æ–ÊŠg‘åƒ‚[ƒh‚ğİ’è‚·‚é
 extern	int				NS_SetEmulation320x240(						int Flag ) ;																	// ‚U‚S‚O‚˜‚S‚W‚O‚Ì‰æ–Ê‚Å‚R‚Q‚O‚˜‚Q‚S‚O‚Ì‰æ–Ê‰ğ‘œ“x‚É‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğƒZƒbƒg‚·‚éA‚U‚S‚O‚˜‚S‚W‚OˆÈŠO‚Ì‰ğ‘œ“x‚Å‚Í–³Œø( TRUE:—LŒø  FALSE:–³Œø )
 extern	int				NS_SetZBufferSize(								int ZBufferSizeX, int ZBufferSizeY ) ;											// ‰æ–Ê—p‚Ì‚yƒoƒbƒtƒ@‚ÌƒTƒCƒY‚ğİ’è‚·‚é
@@ -1628,6 +1662,7 @@ extern	int				NS_GetScreenBitDepth(							void ) ;																		// g—pFƒrƒ
 extern	int				NS_GetColorBitDepth(							void ) ;																		// ‰æ–Ê‚ÌFƒrƒbƒg[“x‚ğ“¾‚é
 extern	int				NS_GetChangeDisplayFlag(						void ) ;																		// ‰æ–Êƒ‚[ƒh‚ª•ÏX‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğæ“¾‚·‚é
 extern	int				NS_GetVideoMemorySize(							int *AllSize, int *FreeSize ) ;													// ƒrƒfƒIƒƒ‚ƒŠ‚Ì—e—Ê‚ğ“¾‚é
+extern	int				NS_GetVideoMemorySizeEx(						ULONGLONG *TotalSize, ULONGLONG *UseSize ) ;									// ƒrƒfƒIƒƒ‚ƒŠ‚Ì—e—Ê‚ğ“¾‚é( 64bit”Å )
 extern	int				NS_GetRefreshRate(								void ) ;																		// Œ»İ‚Ì‰æ–Ê‚ÌƒŠƒtƒŒƒbƒVƒ…ƒŒ[ƒg‚ğæ“¾‚·‚é
 extern	int				NS_GetDisplayNum(								void ) ;																		// ƒfƒBƒXƒvƒŒƒC‚Ì”‚ğæ“¾
 extern	int				NS_GetDisplayInfo(								int DisplayIndex, int *DesktopRectX, int *DesktopRectY, int *DesktopSizeX, int *DesktopSizeY, int *IsPrimary ) ;	// ƒfƒBƒXƒvƒŒƒC‚ÌƒfƒXƒNƒgƒbƒvã‚Å‚Ì‹éŒ`ˆÊ’u‚ğæ“¾‚·‚é
@@ -1669,6 +1704,8 @@ extern	int			NS_SetUseDirect3DVersion(						int Version /* DX_DIRECT3D_9 ‚È‚Ç */
 extern	int			NS_GetUseDirect3DVersion(						void ) ;										// g—p‚µ‚Ä‚¢‚é Direct3D ‚Ìƒo[ƒWƒ‡ƒ“‚ğæ“¾‚·‚é( DX_DIRECT3D_9 ‚È‚Ç )
 extern	int			NS_GetUseDirect3D11FeatureLevel(				void ) ;										// g—p‚µ‚Ä‚¢‚é Direct3D11 ‚Ì FeatureLevel ( DX_DIRECT3D_11_FEATURE_LEVEL_9_1 “™ )‚ğæ“¾‚·‚é( –ß‚è’l@-1FƒGƒ‰[@-1ˆÈŠOFFeature Level )
 extern	int			NS_SetUseDirect3D11AdapterIndex(					int Index ) ;									// g—p‚·‚éƒOƒ‰ƒtƒBƒbƒNƒXƒfƒoƒCƒX‚ÌƒAƒ_ƒvƒ^[‚ÌƒCƒ“ƒfƒbƒNƒX‚ğİ’è‚·‚é
+extern	int			NS_SetUseDirect3D11BGRASupport(					int Flag ) ;									// D3D11Device ì¬‚É D3D11_CREATE_DEVICE_BGRA_SUPPORT ‚ğw’è‚·‚é‚©‚Ç‚¤‚©( TRUE:w’è‚·‚é  FALSE:w’è‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
+extern	int			NS_GetUseDirect3D11BGRASupport(					void ) ;									// D3D11Device ì¬‚É D3D11_CREATE_DEVICE_BGRA_SUPPORT ‚ğw’è‚·‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é
 extern	int			NS_SetUseDirectDrawFlag(						int Flag ) ;									// ( “¯Œø‰Ê‚ÌSetUseSoftwareRenderModeFlag ‚ğg—p‚µ‚Ä‰º‚³‚¢ )‚c‚‰‚’‚…‚ƒ‚”‚c‚’‚‚—‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg‚·‚é
 extern	int			NS_SetUseGDIFlag(								int Flag ) ;									// ‚f‚c‚h•`‰æ‚ğ•K—v‚Æ‚·‚é‚©A‚ğ•ÏX‚·‚é
 extern	int			NS_GetUseGDIFlag(								void ) ;										// ‚f‚c‚h•`‰æ‚ğ•K—v‚Æ‚·‚é‚©‚Ìó‘Ô‚ğæ“¾‚·‚é
@@ -1809,16 +1846,21 @@ extern	int			NS_SetUsePixelShader(       int ShaderHandle ) ;										// ƒVƒF[
 
 extern	int			NS_CalcPolygonBinormalAndTangentsToShader(        VERTEX3DSHADER *Vertex, int PolygonNum ) ;													// ƒ|ƒŠƒSƒ“‚Ì’¸“_‚ÌÚü‚Æ]–@ü‚ğ‚t‚uÀ•W‚©‚çŒvZ‚µ‚ÄƒZƒbƒg‚·‚é
 extern	int			NS_CalcPolygonIndexedBinormalAndTangentsToShader( VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum ) ;		// ƒ|ƒŠƒSƒ“‚Ì’¸“_‚ÌÚü‚Æ]–@ü‚ğ‚t‚uÀ•W‚©‚çŒvZ‚µ‚ÄƒZƒbƒg‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
+extern	int			NS_CalcPolygon32bitIndexedBinormalAndTangentsToShader( VERTEX3DSHADER *VertexArray, int VertexNum, const unsigned int   *IndexArray, int PolygonNum ) ;	// ƒ|ƒŠƒSƒ“‚Ì’¸“_‚ÌÚü‚Æ]–@ü‚ğ‚t‚uÀ•W‚©‚çŒvZ‚µ‚ÄƒZƒbƒg‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
 
 extern	int			NS_DrawBillboard3DToShader( VECTOR Pos, float cx, float cy, float Size, float Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE ) ;													// ƒVƒF[ƒ_[‚ğg‚Á‚Äƒrƒ‹ƒ{[ƒh‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPolygon2DToShader(          const VERTEX2DSHADER *Vertex, int PolygonNum ) ;																										// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPolygon3DToShader(          const VERTEX3DSHADER *Vertex, int PolygonNum ) ;																										// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPolygonIndexed2DToShader(   const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum ) ;															// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
+extern	int			NS_DrawPolygon32bitIndexed2DToShader(   const VERTEX2DSHADER *VertexArray, int VertexNum, const unsigned int   *IndexArray, int PolygonNum ) ;															// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
 extern	int			NS_DrawPolygonIndexed3DToShader(   const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum ) ;															// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
+extern	int			NS_DrawPolygon32bitIndexed3DToShader(   const VERTEX3DSHADER *VertexArray, int VertexNum, const unsigned int   *IndexArray, int PolygonNum ) ;															// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
 extern	int			NS_DrawPrimitive2DToShader(        const VERTEX2DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPrimitive3DToShader(        const VERTEX3DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawPrimitiveIndexed2DToShader( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
+extern	int			NS_DrawPrimitive32bitIndexed2DToShader( const VERTEX2DSHADER *VertexArray, int VertexNum, const unsigned int   *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
 extern	int			NS_DrawPrimitiveIndexed3DToShader( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
+extern	int			NS_DrawPrimitive32bitIndexed3DToShader( const VERTEX3DSHADER *VertexArray, int VertexNum, const unsigned int   *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
 extern	int			NS_DrawPolygon3DToShader_UseVertexBuffer(           int VertexBufHandle ) ;																												// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒoƒbƒtƒ@g—p”Å )
 extern	int			NS_DrawPolygonIndexed3DToShader_UseVertexBuffer(    int VertexBufHandle, int IndexBufHandle ) ;																							// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒoƒbƒtƒ@‚ÆƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@g—p”Å )
 extern	int			NS_DrawPrimitive3DToShader_UseVertexBuffer(         int VertexBufHandle,                     int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;										// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒoƒbƒtƒ@g—p”Å )
@@ -1837,6 +1879,7 @@ extern	int			NS_SetShaderConstantBuffer(		int SConstBufHandle, int TargetShader 
 // ƒtƒBƒ‹ƒ^[ŠÖŒWŠÖ”
 #ifndef DX_NON_FILTER
 extern	int			NS_SetGraphFilterBltBlendMode( int BlendMode /* DX_BLENDMODE_ALPHA ‚È‚Ç */ ) ;												// GraphFilterBlt ‚â GraphBlendBlt ‚ÌŒ‹‰Ê‚ğ“]‘—æ‚É“]‘—‚·‚éÛ‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh‚ğİ’è‚·‚é( Œ»ó‚Å‘Î‰‚µ‚Ä‚¢‚é‚Ì‚Í DX_BLENDMODE_NOBLEND ‚Æ DX_BLENDMODE_ALPHA ‚Ì‚İ )
+extern	int			NS_SetGraphBlendScalingFilterMode( int IsBilinearFilter ) ;																	// GraphBlend ‚Å GrHandle ‚Æ BlendGrHandle ‚ÌƒTƒCƒY‚ªˆÙ‚È‚éê‡‚É“K—p‚³‚ê‚éŠg‘åƒtƒBƒ‹ƒ^[ƒ‚[ƒh‚ğİ’è‚·‚é( IsBilinearFilter  TRUE:ƒoƒCƒŠƒjƒAƒtƒBƒ‹ƒ^[(ƒfƒtƒHƒ‹ƒg)  FALSE:ƒjƒAƒŒƒXƒgƒtƒBƒ‹ƒ^[ )
 extern	int			NS_GraphFilter(        int    GrHandle,                                                                                     int FilterType /* DX_GRAPH_FILTER_GAUSS “™ */ , ... ) ;		// ‰æ‘œ‚ÉƒtƒBƒ‹ƒ^[ˆ—‚ğs‚¤
 extern	int			NS_GraphFilterBlt(     int SrcGrHandle, int DestGrHandle,                                                                   int FilterType /* DX_GRAPH_FILTER_GAUSS “™ */ , ... ) ;		// ‰æ‘œ‚ÌƒtƒBƒ‹ƒ^[•t‚«“]‘—‚ğs‚¤
 extern	int			NS_GraphFilterRectBlt( int SrcGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int DestX, int DestY, int FilterType /* DX_GRAPH_FILTER_GAUSS “™ */ , ... ) ;		// ‰æ‘œ‚ÌƒtƒBƒ‹ƒ^[•t‚«“]‘—‚ğs‚¤( ‹éŒ`w’è )
@@ -1851,9 +1894,10 @@ extern	int			NS_GraphFilterRectBlt2( int SrcGrHandle, int DestGrHandle, int SrcX
 //		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_TWO_COLOR, int Threshold = è‡’l( 0 ` 255 ), int LowColor = è‡’l‚æ‚è’l‚ª’á‚©‚Á‚½ƒsƒNƒZƒ‹‚Ì•ÏŠ·Œã‚ÌF’l( GetColor ‚Åæ“¾‚·‚é ), int LowAlpha = è‡’l‚æ‚è’l‚ª’á‚©‚Á‚½ƒsƒNƒZƒ‹‚Ì•ÏŠ·Œã‚Ìƒ¿’l( 0 ` 255 ), int HighColor = è‡’l‚æ‚è’l‚ª‚‚©‚Á‚½ƒsƒNƒZƒ‹‚Ì•ÏŠ·Œã‚ÌF’l( GetColor ‚Åæ“¾‚·‚é ), int HighAlpha = è‡’l‚æ‚è’l‚ª‚‚©‚Á‚½ƒsƒNƒZƒ‹‚Ì•ÏŠ·Œã‚Ìƒ¿’l( 0 ` 255 ) ) ;
 //		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_GRADIENT_MAP, int MapGrHandle = ƒOƒ‰ƒf[ƒVƒ‡ƒ“ƒ}ƒbƒv‚ÌƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹( Œ³‰æ‘œ‚Ì‹P“x‚©‚çƒOƒ‰ƒf[ƒVƒ‡ƒ“ƒ}ƒbƒv‰æ‘œ‚Ì x À•W‚ğZo‚µ‚Ü‚·‚Ì‚Åc•‚Í1dot‚Å‚à‚n‚j ), int Reverse = ƒOƒ‰ƒf[ƒVƒ‡ƒ“ƒ}ƒbƒv¶‰E”½“]ƒtƒ‰ƒO( TRUE : ƒOƒ‰ƒf[ƒVƒ‡ƒ“ƒ}ƒbƒv‚ğ¶‰E”½“]‚µ‚Äg‚¤  FALSE : ¶‰E”½“]‚µ‚È‚¢ ) ) ;
 
-extern	int			NS_GraphBlend(        int    GrHandle, int BlendGrHandle,                                                                                                             int BlendRatio /* ƒuƒŒƒ“ƒhŒø‰Ê‚Ì‰e‹¿“x( 0:‚O“  255:‚P‚O‚O“ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD “™ */ , ... ) ;	// “ñ‚Â‚Ì‰æ‘œ‚ğƒuƒŒƒ“ƒh‚·‚é
-extern	int			NS_GraphBlendBlt(     int SrcGrHandle, int BlendGrHandle, int DestGrHandle,                                                                                           int BlendRatio /* ƒuƒŒƒ“ƒhŒø‰Ê‚Ì‰e‹¿“x( 0:‚O“  255:‚P‚O‚O“ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD “™ */ , ... ) ;	// “ñ‚Â‚Ì‰æ‘œ‚ğƒuƒŒƒ“ƒh‚µ‚ÄŒ‹‰Ê‚ğw’è‚Ì‰æ‘œ‚Éo—Í‚·‚é
-extern	int			NS_GraphBlendRectBlt( int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX, int BlendY, int DestX, int DestY, int BlendRatio /* ƒuƒŒƒ“ƒhŒø‰Ê‚Ì‰e‹¿“x( 0:‚O“  255:‚P‚O‚O“ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD “™ */ , ... ) ;	// “ñ‚Â‚Ì‰æ‘œ‚ğƒuƒŒƒ“ƒh‚µ‚ÄŒ‹‰Ê‚ğw’è‚Ì‰æ‘œ‚Éo—Í‚·‚é( ‹éŒ`w’è )
+extern	int			NS_GraphBlend(         int    GrHandle, int BlendGrHandle,                                                                                                                                         int BlendRatio /* ƒuƒŒƒ“ƒhŒø‰Ê‚Ì‰e‹¿“x( 0:‚O“  255:‚P‚O‚O“ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD “™ */ , ... ) ;	// “ñ‚Â‚Ì‰æ‘œ‚ğƒuƒŒƒ“ƒh‚·‚é
+extern	int			NS_GraphBlendBlt(      int SrcGrHandle, int BlendGrHandle, int DestGrHandle,                                                                                                                       int BlendRatio /* ƒuƒŒƒ“ƒhŒø‰Ê‚Ì‰e‹¿“x( 0:‚O“  255:‚P‚O‚O“ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD “™ */ , ... ) ;	// “ñ‚Â‚Ì‰æ‘œ‚ğƒuƒŒƒ“ƒh‚µ‚ÄŒ‹‰Ê‚ğw’è‚Ì‰æ‘œ‚Éo—Í‚·‚é
+extern	int			NS_GraphBlendRectBlt(  int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX,  int BlendY,                            int DestX, int DestY, int BlendRatio /* ƒuƒŒƒ“ƒhŒø‰Ê‚Ì‰e‹¿“x( 0:‚O“  255:‚P‚O‚O“ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD “™ */ , ... ) ;	// “ñ‚Â‚Ì‰æ‘œ‚ğƒuƒŒƒ“ƒh‚µ‚ÄŒ‹‰Ê‚ğw’è‚Ì‰æ‘œ‚Éo—Í‚·‚é( ‹éŒ`w’è )
+extern	int			NS_GraphBlendRectBlt2( int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX1, int BlendY1, int BlendX2, int BlendY2, int DestX, int DestY, int BlendRatio /* ƒuƒŒƒ“ƒhŒø‰Ê‚Ì‰e‹¿“x( 0:‚O“  255:‚P‚O‚O“ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD “™ */ , ... ) ;	// “ñ‚Â‚Ì‰æ‘œ‚ğƒuƒŒƒ“ƒh‚µ‚ÄŒ‹‰Ê‚ğw’è‚Ì‰æ‘œ‚Éo—Í‚·‚é( ‹éŒ`w’èAƒuƒŒƒ“ƒh‰æ‘œ‚à‹éŒ`w’è )
 //		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_NORMAL ) ;
 //		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_RGBA_SELECT_MIX, int SelectR = ( o—Í‚ÌÔ•ª‚Æ‚È‚é¬•ª DX_RGBA_SELECT_SRC_R “™ ), int SelectG = ( o—Í‚Ì—Î¬•ª‚Æ‚È‚é¬•ª DX_RGBA_SELECT_SRC_R “™ ), int SelectB = ( o—Í‚ÌÂ¬•ª‚Æ‚È‚é¬•ª DX_RGBA_SELECT_SRC_R “™ ), int SelectA = ( o—Í‚Ìƒ¿¬•ª‚Æ‚È‚é¬•ª DX_RGBA_SELECT_SRC_R “™ ) ) ;
 //		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_MULTIPLE ) ;
@@ -1987,6 +2031,7 @@ extern	int			NS_SetMaterialUseVertSpcColor( int UseFlag ) ;																// ‚R
 extern	int			NS_SetMaterialParam(			MATERIALPARAM Material ) ;													// ‚R‚c}Œ`•`‰æ‚Ìƒ‰ƒCƒeƒBƒ“ƒOŒvZ‚Ég—p‚·‚éƒ}ƒeƒŠƒAƒ‹ƒpƒ‰ƒ[ƒ^‚ğİ’è‚·‚é
 extern	int			NS_SetUseSpecular(				int UseFlag ) ;																// ‚R‚c}Œ`•`‰æ‚ÉƒXƒyƒLƒ…ƒ‰‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
 extern	int			NS_SetGlobalAmbientLight(		COLOR_F Color ) ;															// ƒOƒ[ƒoƒ‹ƒAƒ“ƒrƒGƒ“ƒgƒ‰ƒCƒgƒJƒ‰[‚ğİ’è‚·‚é
+extern	int			NS_SetUseLightAngleAttenuation( int UseFlag ) ;																// ‚R‚c•`‰æ‚Ìƒ‰ƒCƒeƒBƒ“ƒOŒvZ‚ÅŠp“xŒ¸Š‚ğs‚¤‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:Šp“xŒ¸Š‚ğs‚¤( ƒfƒtƒHƒ‹ƒg )  FALSE:Šp“xŒ¸Š‚ğs‚í‚È‚¢ )
 
 extern	int			NS_ChangeLightTypeDir(			VECTOR Direction ) ;														// ƒ‰ƒCƒg‚Ìƒ^ƒCƒv‚ğƒfƒBƒŒƒNƒVƒ‡ƒiƒ‹ƒ‰ƒCƒg‚É‚·‚é
 extern	int			NS_ChangeLightTypeSpot(		VECTOR Position, VECTOR Direction, float OutAngle, float InAngle, float Range, float Atten0, float Atten1, float Atten2 ) ;	// ƒ‰ƒCƒg‚Ìƒ^ƒCƒv‚ğƒXƒ|ƒbƒgƒ‰ƒCƒg‚É‚·‚é
@@ -2160,6 +2205,7 @@ extern	int			NS_SetFontChacheToTextureFlag(             int Flag ) ;												
 extern	int			NS_SetFontCacheCharNum(                    int CharNum ) ;																					// ƒtƒHƒ“ƒgƒLƒƒƒbƒVƒ…‚ÅƒLƒƒƒbƒVƒ…‚Å‚«‚é•¶š”‚ğw’è‚·‚é
 extern	int			NS_ChangeFont(                             const TCHAR *FontName, int CharSet = -1 /* DX_CHARSET_SHFTJIS “™ */ ) ;							// ƒtƒHƒ“ƒg‚ğ•ÏX
 extern	int			NS_ChangeFontWithStrLen(                   const TCHAR *FontName, size_t FontNameLength, int CharSet = -1 /* DX_CHARSET_SHFTJIS “™ */ ) ;	// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚Åg—p‚·‚éƒtƒHƒ“ƒg‚ğ•ÏX
+extern	int			NS_ChangeFontFromHandle(					int FontHandle ) ;																				// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚Æ‚µ‚Äg—p‚·‚éƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğ•ÏX‚·‚é
 extern	int			NS_ChangeFontType(                         int FontType ) ;																				// ƒtƒHƒ“ƒgƒ^ƒCƒv‚Ì•ÏX
 extern	const TCHAR *NS_GetFontName(							void ) ;																						// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ÌƒtƒHƒ“ƒg–¼‚ğæ“¾‚·‚é
 // FontCacheStringDraw ‚Í DrawString ‚ğg‚Á‚Ä‚­‚¾‚³‚¢
@@ -2242,6 +2288,8 @@ extern	int			NS_SetFontCacheUsePremulAlphaFlag(         int Flag ) ;												
 extern	int			NS_GetFontCacheUsePremulAlphaFlag(         void ) ;																						// ƒtƒHƒ“ƒgƒLƒƒƒbƒVƒ…‚Æ‚µ‚Ä•Û‘¶‚·‚é‰æ‘œ‚ÌŒ`®‚ğæZÏ‚İƒ¿ƒ`ƒƒƒ“ƒlƒ‹•t‚«‰æ‘œ‚É‚·‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é
 extern	int			NS_SetFontUseAdjustSizeFlag(               int Flag ) ;																					// ƒtƒHƒ“ƒg‚ÌƒTƒCƒY‚ğ•â³‚·‚éˆ—‚ğs‚¤‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( Flag  TRUE:s‚¤( ƒfƒtƒHƒ‹ƒg )  FALSE:s‚í‚È‚¢ )
 extern	int			NS_GetFontUseAdjustSizeFlag(               void ) ;																						// ƒtƒHƒ“ƒg‚ÌƒTƒCƒY‚ğ•â³‚·‚éˆ—‚ğs‚¤‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é
+extern	int			NS_SetFontOnlyDrawType(					int OnlyType ) ;																				// ƒtƒHƒ“ƒg‚Ì•`‰æ‚Å‰‚Ì‚İA–”‚Í–{‘Ì‚Ì‚İ•`‰æ‚ğs‚¤‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( OnlyType  0:’Êí•`‰æ 1:–{‘Ì‚Ì‚İ•`‰æ 2:‰‚Ì‚İ•`‰æ )
+extern	int			NS_GetFontOnlyDrawType(					void ) ;																						// ƒtƒHƒ“ƒg‚Ì•`‰æ‚Å‰‚Ì‚İA–”‚Í–{‘Ì‚Ì‚İ•`‰æ‚ğs‚¤‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( –ß‚è’l  0:’Êí•`‰æ 1:–{‘Ì‚Ì‚İ•`‰æ 2:‰‚Ì‚İ•`‰æ )
 
 extern	HANDLE		NS_AddFontFile( const TCHAR *FontFilePath ) ;																			// w’è‚ÌƒtƒHƒ“ƒgƒtƒ@ƒCƒ‹‚ğƒVƒXƒeƒ€‚É’Ç‰Á‚·‚é( –ß‚è’l  NULL:¸”s  NULLˆÈŠO:ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹( WindowsOS ‚Ì‚à‚Ì‚È‚Ì‚ÅA‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚Æ‚Í•Ê•¨‚Å‚· ) )
 extern	HANDLE		NS_AddFontFileWithStrLen(			const TCHAR *FontFilePath, size_t FontFilePathLength ) ;										// w’è‚ÌƒtƒHƒ“ƒgƒtƒ@ƒCƒ‹‚ğƒVƒXƒeƒ€‚É’Ç‰Á‚·‚é( –ß‚è’l  NULL:¸”s  NULLˆÈŠO:ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹( WindowsOS ‚Ì‚à‚Ì‚È‚Ì‚ÅA‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚Æ‚Í•Ê•¨‚Å‚· ) )
@@ -2262,12 +2310,16 @@ extern	int			NS_DrawVString(                            int x, int y,           
 extern	int			NS_DrawNVString(                           int x, int y,                                              const TCHAR *String, size_t StringLength, unsigned int Color, unsigned int EdgeColor = 0 ) ;							// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ•`‰æ‚·‚é( c‘‚« )
 extern	int			NS_DrawFormatString(                       int x, int y,                                 unsigned int Color, const TCHAR *FormatString, ... ) ;																			// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawFormatVString(                      int x, int y,                                 unsigned int Color, const TCHAR *FormatString, ... ) ;																			// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( c‘‚« )
+extern	int			NS_DrawFormatString2(                      int x, int y,                                 unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... ) ;																	// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )
+extern	int			NS_DrawFormatVString2(                     int x, int y,                                 unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... ) ;																	// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( c‘‚« )
 extern	int			NS_DrawExtendString(                       int x, int y, double ExRateX, double ExRateY,              const TCHAR *String,                      unsigned int Color, unsigned int EdgeColor = 0 ) ;							// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ÌŠg‘å•`‰æ
 extern	int			NS_DrawExtendNString(                      int x, int y, double ExRateX, double ExRateY,              const TCHAR *String, size_t StringLength, unsigned int Color, unsigned int EdgeColor = 0 ) ;							// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ÌŠg‘å•`‰æ
 extern	int			NS_DrawExtendVString(                      int x, int y, double ExRateX, double ExRateY,              const TCHAR *String,                      unsigned int Color, unsigned int EdgeColor = 0 ) ;							// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ÌŠg‘å•`‰æ( c‘‚« )
 extern	int			NS_DrawExtendNVString(                     int x, int y, double ExRateX, double ExRateY,              const TCHAR *String, size_t StringLength, unsigned int Color, unsigned int EdgeColor = 0 ) ;							// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ÌŠg‘å•`‰æ( c‘‚« )
 extern	int			NS_DrawExtendFormatString(                 int x, int y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, ... ) ;																			// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é
 extern	int			NS_DrawExtendFormatVString(                int x, int y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, ... ) ;																			// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( c‘‚« )
+extern	int			NS_DrawExtendFormatString2(                int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... ) ;																	// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )
+extern	int			NS_DrawExtendFormatVString2(               int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... ) ;																	// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( c‘‚« )
 extern	int			NS_DrawRotaString(							int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE , const TCHAR *String       = NULL                           ) ;		// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é
 extern	int			NS_DrawRotaNString(						int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE , const TCHAR *String       = NULL , size_t StringLength = 0 ) ;		// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é
 extern	int			NS_DrawRotaFormatString(					int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE , const TCHAR *FormatString = NULL , ...                     ) ;		// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é
@@ -2281,12 +2333,16 @@ extern	int			NS_DrawVStringF(                           float x, float y,       
 extern	int			NS_DrawNVStringF(                          float x, float y,                                              const TCHAR *String, size_t StringLength, unsigned int Color, unsigned int EdgeColor = 0 ) ;						// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ•`‰æ‚·‚é( c‘‚« )( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawFormatStringF(                      float x, float y,                                 unsigned int Color, const TCHAR *FormatString, ... ) ;																		// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawFormatVStringF(                     float x, float y,                                 unsigned int Color, const TCHAR *FormatString, ... ) ;																		// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( c‘‚« )( À•Ww’è‚ª float ”Å )
+extern	int			NS_DrawFormatString2F(                     float x, float y,                                 unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... ) ;																// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( À•Ww’è‚ª float ”Å )
+extern	int			NS_DrawFormatVString2F(                    float x, float y,                                 unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... ) ;																// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( c‘‚« )( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendStringF(                      float x, float y, double ExRateX, double ExRateY,              const TCHAR *String,                      unsigned int Color, unsigned int EdgeColor = 0 ) ;						// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ÌŠg‘å•`‰æ( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendNStringF(                     float x, float y, double ExRateX, double ExRateY,              const TCHAR *String, size_t StringLength, unsigned int Color, unsigned int EdgeColor = 0 ) ;						// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ÌŠg‘å•`‰æ( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendVStringF(                     float x, float y, double ExRateX, double ExRateY,              const TCHAR *String,                      unsigned int Color, unsigned int EdgeColor = 0 ) ;						// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ÌŠg‘å•`‰æ( c‘‚« )( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendNVStringF(                    float x, float y, double ExRateX, double ExRateY,              const TCHAR *String, size_t StringLength, unsigned int Color, unsigned int EdgeColor = 0 ) ;						// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ÌŠg‘å•`‰æ( c‘‚« )( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendFormatStringF(                float x, float y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, ... ) ;																		// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendFormatVStringF(               float x, float y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, ... ) ;																		// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( c‘‚« )( À•Ww’è‚ª float ”Å )
+extern	int			NS_DrawExtendFormatString2F(               float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... ) ;																// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( À•Ww’è‚ª float ”Å )
+extern	int			NS_DrawExtendFormatVString2F(              float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... ) ;																// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( c‘‚« )( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawRotaStringF(						float x, float y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE , const TCHAR *String       = NULL                           ) ;		// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawRotaNStringF(						float x, float y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE , const TCHAR *String       = NULL , size_t StringLength = 0 ) ;		// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawRotaFormatStringF(					float x, float y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE , const TCHAR *FormatString = NULL , ...                     ) ;		// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
@@ -2325,12 +2381,16 @@ extern	int			NS_DrawVStringToHandle(                    int x, int y, const TCHA
 extern	int			NS_DrawNVStringToHandle(                   int x, int y, const TCHAR *String, size_t StringLength, unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 ) ;																		// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ•`‰æ‚·‚é( c‘‚« )
 extern	int			NS_DrawFormatStringToHandle(               int x, int y, unsigned int Color, int FontHandle, const TCHAR *FormatString, ... ) ;																											// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawFormatVStringToHandle(              int x, int y, unsigned int Color, int FontHandle, const TCHAR *FormatString, ... ) ;																											// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( c‘‚« )
+extern	int			NS_DrawFormatString2ToHandle(              int x, int y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... ) ;																											// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )
+extern	int			NS_DrawFormatVString2ToHandle(             int x, int y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... ) ;																											// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( c‘‚« )
 extern	int			NS_DrawExtendStringToHandle(               int x, int y, double ExRateX, double ExRateY, const TCHAR *String,                      unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE ) ;			// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é
 extern	int			NS_DrawExtendNStringToHandle(              int x, int y, double ExRateX, double ExRateY, const TCHAR *String, size_t StringLength, unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE ) ;			// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é
 extern	int			NS_DrawExtendVStringToHandle(              int x, int y, double ExRateX, double ExRateY, const TCHAR *String,                      unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 ) ;										// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( c‘‚« )
 extern	int			NS_DrawExtendNVStringToHandle(             int x, int y, double ExRateX, double ExRateY, const TCHAR *String, size_t StringLength, unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 ) ;										// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( c‘‚« )
 extern	int			NS_DrawExtendFormatStringToHandle(         int x, int y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, ... ) ;																			// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é
 extern	int			NS_DrawExtendFormatVStringToHandle(        int x, int y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, ... ) ;																			// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( c‘‚« )
+extern	int			NS_DrawExtendFormatString2ToHandle(        int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... ) ;																			// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )
+extern	int			NS_DrawExtendFormatVString2ToHandle(       int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... ) ;																			// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( c‘‚« )
 extern	int			NS_DrawRotaStringToHandle(					int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag, const TCHAR *String                            ) ;		// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é
 extern	int			NS_DrawRotaNStringToHandle(				int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag, const TCHAR *String,       size_t StringLength ) ;		// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é
 extern	int			NS_DrawRotaFormatStringToHandle(			int x, int y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, int FontHandle, unsigned int EdgeColor, int VerticalFlag, const TCHAR *FormatString, ...                 ) ;		// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é
@@ -2344,12 +2404,16 @@ extern	int			NS_DrawVStringFToHandle(                   float x, float y, const 
 extern	int			NS_DrawNVStringFToHandle(                  float x, float y, const TCHAR *String, size_t StringLength, unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 ) ;																	// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ•`‰æ‚·‚é( c‘‚« )( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawFormatStringFToHandle(              float x, float y, unsigned int Color, int FontHandle, const TCHAR *FormatString, ... ) ;																										// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawFormatVStringFToHandle(             float x, float y, unsigned int Color, int FontHandle, const TCHAR *FormatString, ... ) ;																										// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( c‘‚« )( À•Ww’è‚ª float ”Å )
+extern	int			NS_DrawFormatString2FToHandle(             float x, float y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... ) ;																											// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( À•Ww’è‚ª float ”Å )
+extern	int			NS_DrawFormatVString2FToHandle(            float x, float y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... ) ;																											// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( c‘‚« )( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendStringFToHandle(              float x, float y, double ExRateX, double ExRateY, const TCHAR *String,                      unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE ) ;		// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendNStringFToHandle(             float x, float y, double ExRateX, double ExRateY, const TCHAR *String, size_t StringLength, unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE ) ;		// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendVStringFToHandle(             float x, float y, double ExRateX, double ExRateY, const TCHAR *String,                      unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 ) ;									// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( c‘‚« )( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendNVStringFToHandle(            float x, float y, double ExRateX, double ExRateY, const TCHAR *String, size_t StringLength, unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 ) ;									// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( c‘‚« )( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendFormatStringFToHandle(        float x, float y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, ... ) ;																		// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawExtendFormatVStringFToHandle(       float x, float y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, ... ) ;																		// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( c‘‚« )( À•Ww’è‚ª float ”Å )
+extern	int			NS_DrawExtendFormatString2FToHandle(       float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... ) ;																			// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( À•Ww’è‚ª float ”Å )
+extern	int			NS_DrawExtendFormatVString2FToHandle(      float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... ) ;																			// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğŠg‘å•`‰æ‚·‚é( ‰‚ÌFˆø”•t‚« )( c‘‚« )( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawRotaStringFToHandle(				float x, float y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE , const TCHAR *String       = NULL                           ) ;		// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawRotaNStringFToHandle(				float x, float y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE , const TCHAR *String       = NULL , size_t StringLength = 0 ) ;		// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
 extern	int			NS_DrawRotaFormatStringFToHandle(			float x, float y, double ExRateX, double ExRateY, double RotCenterX, double RotCenterY, double RotAngle, unsigned int Color, int FontHandle, unsigned int EdgeColor = 0 , int VerticalFlag = FALSE , const TCHAR *FormatString = NULL , ...                     ) ;		// ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹‚ğg—p‚µ‚Ä‘®w’è•¶š—ñ‚ğ‰ñ“]•`‰æ‚·‚é( À•Ww’è‚ª float ”Å )
@@ -2455,6 +2519,9 @@ extern	int			NS_SetUseFastLoadFlag(            int Flag ) ;														// ‚‘¬
 extern	int			NS_SetGraphDataShavedMode(        int ShavedMode /* DX_SHAVEDMODE_NONE “™ */ ) ;					// ‰æ‘œŒ¸F‚Ì‰æ‘œ—ò‰»ŠÉ˜aˆ—ƒ‚[ƒh‚ğİ’è‚·‚é( ƒfƒtƒHƒ‹ƒg‚Å‚ÍŠÉ˜aˆ—–³‚µ‚Ì DX_SHAVEDMODE_NONE )
 extern	int			NS_GetGraphDataShavedMode(        void ) ;															// ‰æ‘œŒ¸F‚Ì‰æ‘œ—ò‰»ŠÉ˜aˆ—ƒ‚[ƒh‚ğæ“¾‚·‚é
 extern	int			NS_SetUsePremulAlphaConvertLoad(  int UseFlag ) ;													// ‰æ‘œƒtƒ@ƒCƒ‹“Ç‚İ‚İ‚ÉæZÏ‚İƒAƒ‹ƒtƒ@‰æ‘œ‚É•ÏŠ·‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:•ÏŠ·ˆ—‚ğs‚¤  FALSE:•ÏŠ·ˆ—‚ğs‚í‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
+extern	int			NS_GetUsePremulAlphaConvertLoad(    void ) ;															// ‰æ‘œƒtƒ@ƒCƒ‹“Ç‚İ‚İ‚ÉæZÏ‚İƒAƒ‹ƒtƒ@‰æ‘œ‚É•ÏŠ·‚·‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( TRUE:•ÏŠ·ˆ—‚ğs‚¤  FALSE:•ÏŠ·ˆ—‚ğs‚í‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
+extern	int			NS_SetUseConvertNormalFormatLoad(   int UseFlag ) ;													// ‰æ‘œƒtƒ@ƒCƒ‹“Ç‚İ‚İ‚É DX_BASEIMAGE_FORMAT_NORMAL ˆÈŠO‚ÌŒ`®‚ÌƒCƒ[ƒW‚ğ DX_BASEIMAGE_FORMAT_NORMAL Œ`®‚ÌƒCƒ[ƒW‚É•ÏŠ·‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:•ÏŠ·ˆ—‚ğs‚¤  FALSE:•ÏŠ·ˆ—‚ğs‚È‚í‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
+extern	int			NS_GetUseConvertNormalFormatLoad(   void ) ;															// ‰æ‘œƒtƒ@ƒCƒ‹“Ç‚İ‚İ‚É DX_BASEIMAGE_FORMAT_NORMAL ˆÈŠO‚ÌŒ`®‚ÌƒCƒ[ƒW‚ğ DX_BASEIMAGE_FORMAT_NORMAL Œ`®‚ÌƒCƒ[ƒW‚É•ÏŠ·‚·‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( TRUE:•ÏŠ·ˆ—‚ğs‚¤  FALSE:•ÏŠ·ˆ—‚ğs‚È‚í‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
 
 // Šî–{ƒCƒ[ƒWƒf[ƒ^\‘¢‘ÌŠÖŒW
 extern	int			NS_CreateBaseImage(               const TCHAR *FileName, const void *FileImage, int FileImageSize, int DataType /*=LOADIMAGE_TYPE_FILE*/ , BASEIMAGE *BaseImage,  int ReverseFlag ) ;			// ‰æ‘œƒtƒ@ƒCƒ‹á‚µ‚­‚Íƒƒ‚ƒŠã‚É“WŠJ‚³‚ê‚½‰æ‘œƒtƒ@ƒCƒ‹ƒCƒ[ƒW‚©‚çŠî–{ƒCƒ[ƒWƒf[ƒ^‚ğ\’z‚·‚é
@@ -2577,6 +2644,7 @@ extern	int				NS_CreateARGB8ColorData(   COLORDATA *ColorDataBuf ) ;												
 extern	int				NS_CreateRGBA8ColorData(    COLORDATA *ColorDataBuf ) ;																			// ‚q‚f‚a‚`‚WƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
 extern	int				NS_CreateABGR8ColorData(    COLORDATA *ColorDataBuf ) ;																			// ‚`‚a‚f‚q‚WƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
 extern	int				NS_CreateBGRA8ColorData(    COLORDATA *ColorDataBuf ) ;																			// ‚a‚f‚q‚`‚WƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
+extern	int				NS_CreateBGR8ColorData(     COLORDATA *ColorDataBuf ) ;																			// ‚a‚f‚q‚WƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
 extern	int				NS_CreateARGB4ColorData(   COLORDATA *ColorDataBuf ) ;																		// ‚`‚q‚f‚a‚SƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
 extern	int				NS_CreateA1R5G5B5ColorData( COLORDATA *ColorDataBuf ) ;																		// ‚`‚P‚q‚T‚f‚T‚a‚TƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
 extern	int				NS_CreateX1R5G5B5ColorData( COLORDATA *ColorDataBuf ) ;																		// ‚w‚P‚q‚T‚f‚T‚a‚TƒJƒ‰[‚ÌƒJƒ‰[ƒtƒH[ƒ}ƒbƒg‚ğ\’z‚·‚é
@@ -2733,7 +2801,7 @@ extern	int			NS_AddStreamSoundMemToFileWithStrLen(   const TCHAR *WaveFile, size
 extern	int			NS_SetupStreamSoundMem(                 int SoundHandle ) ;																		// ƒXƒgƒŠ[ƒ€Ä¶ƒ^ƒCƒv‚ÌƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ÌÄ¶€”õ‚ğ‚·‚é
 extern	int			NS_PlayStreamSoundMem(                  int SoundHandle, int PlayType = DX_PLAYTYPE_LOOP , int TopPositionFlag = TRUE ) ;			// ƒXƒgƒŠ[ƒ€Ä¶ƒ^ƒCƒv‚ÌƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ÌÄ¶‚ğŠJn‚·‚é
 extern	int			NS_CheckStreamSoundMem(                 int SoundHandle ) ;																		// ƒXƒgƒŠ[ƒ€Ä¶ƒ^ƒCƒv‚ÌƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ÌÄ¶ó‘Ô‚ğæ“¾‚·‚é
-extern	int			NS_StopStreamSoundMem(                  int SoundHandle ) ;																		// ƒXƒgƒŠ[ƒ€Ä¶ƒ^ƒCƒv‚ÌƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ÌÄ¶‚ğ’â~‚·‚é
+extern	int			NS_StopStreamSoundMem(                  int SoundHandle, int IsNextLoopEnd = FALSE ) ;												// ƒXƒgƒŠ[ƒ€Ä¶ƒ^ƒCƒv‚ÌƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ÌÄ¶‚ğ’â~‚·‚é
 extern	int			NS_SetStreamSoundCurrentPosition(       LONGLONG Byte, int SoundHandle ) ;															// ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ÌÄ¶ˆÊ’u‚ğƒoƒCƒg’PˆÊ‚Å•ÏX‚·‚é(Ä¶‚ª~‚Ü‚Á‚Ä‚¢‚é‚Ì‚İ—LŒø)
 extern	LONGLONG	NS_GetStreamSoundCurrentPosition(       int SoundHandle ) ;																		// ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ÌÄ¶ˆÊ’u‚ğƒoƒCƒg’PˆÊ‚Åæ“¾‚·‚é
 extern	int			NS_SetStreamSoundCurrentTime(           LONGLONG Time, int SoundHandle ) ;															// ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ÌÄ¶ˆÊ’u‚ğƒ~ƒŠ•b’PˆÊ‚Åİ’è‚·‚é(ˆ³kŒ`®‚Ìê‡‚Í³‚µ‚­İ’è‚³‚ê‚È‚¢ê‡‚ª‚ ‚é)
@@ -2767,7 +2835,7 @@ extern	int			NS_LoadSoundMemFromSoftSound(           int SoftSoundHandle, int Bu
 extern	int			NS_DeleteSoundMem(                      int SoundHandle, int LogOutFlag = FALSE ) ;												// ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ğíœ‚·‚é
 
 extern	int			NS_PlaySoundMem(                        int SoundHandle, int PlayType, int TopPositionFlag = TRUE ) ;								// ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ğÄ¶‚·‚é
-extern	int			NS_StopSoundMem(                                                                        int SoundHandle ) ;						// ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ÌÄ¶‚ğ’â~‚·‚é
+extern	int			NS_StopSoundMem(                                                                        int SoundHandle, int IsNextLoopEnd = FALSE ) ;	// ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ÌÄ¶‚ğ’â~‚·‚é
 extern	int			NS_CheckSoundMem(                                                                       int SoundHandle ) ;						// ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚ªÄ¶’†‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é
 extern	int			NS_SetPanSoundMem(                      int PanPal,                                     int SoundHandle ) ;						// ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚Ìƒpƒ“‚ğİ’è‚·‚é( 100•ª‚Ì1ƒfƒVƒxƒ‹’PˆÊ 0 ` 10000 )
 extern	int			NS_ChangePanSoundMem(                   int PanPal,                                     int SoundHandle ) ;						// ƒTƒEƒ“ƒhƒnƒ“ƒhƒ‹‚Ìƒpƒ“‚ğİ’è‚·‚é( -255 ` 255 )
@@ -2863,7 +2931,10 @@ extern	int			NS_SetEnableXAudioFlag(                 int Flag ) ;															
 extern	int			NS_SetEnableWASAPIFlag(                 int Flag, int IsExclusive = TRUE , int DevicePeriod = -1 , int SamplePerSec = 44100 ) ;		// ƒTƒEƒ“ƒh‚ÌÄ¶‚ÉWASAPI‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( Flag  TRUE:g—p‚·‚é  FALSE:g—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ), IsExclusive  TRUE:”r‘¼ƒ‚[ƒh‚ğg—p‚·‚é  FALSE:”r‘¼ƒ‚[ƒh‚ğg—p‚µ‚È‚¢, DevicePeriod Ä¶’x‰„ŠÔA100ƒiƒm•b’PˆÊ( 100000 ‚Å 10ƒ~ƒŠ•b )A-1‚ÅƒfƒtƒHƒ‹ƒg’l, SamplePerSec ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg )
 #ifndef DX_NON_ASIO
 extern	int			NS_SetEnableASIOFlag(                   int Flag, int BufferSize = -1 , int SamplePerSec = 44100 ) ;																					// ƒTƒEƒ“ƒh‚ÌÄ¶‚ÉASIO‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( Flag  TRUE:g—p‚·‚é  FALSE:g—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ), BufferSize Ä¶ƒoƒbƒtƒ@‚ÌƒTƒCƒYA¬‚³‚¢‚Ù‚Ç’x‰„‚ª­‚È‚­‚È‚è‚Ü‚·‚ªAˆ—‚ªŠÔ‚É‡‚í‚¸‚ÉƒuƒcƒuƒcƒmƒCƒY‚ª”­¶‚·‚é‰Â”\«‚à‚‚­‚È‚è‚Ü‚·( -1 ‚ÅƒfƒtƒHƒ‹ƒg’l ), SamplePerSec ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg )
+extern	int			NS_SetUseASIODriverIndex(               int Index ) ;																																	// ƒTƒEƒ“ƒh‚ÌÄ¶‚Ég—p‚·‚éASIOƒhƒ‰ƒCƒo[‚Ì”Ô†‚ğİ’è‚·‚é( ƒfƒtƒHƒ‹ƒg‚Å‚Í 0 )
 #endif // DX_NON_ASIO
+extern	int			NS_SetEnableMMEwaveOutFlag(             int Flag, int BufferSamples DEFAULTPARAM( = -1 ) , int SamplePerSec DEFAULTPARAM( = 44100 ) ) ;													// ƒTƒEƒ“ƒh‚ÌÄ¶‚Éƒ}ƒ‹ƒ`ƒƒfƒBƒAAPI‚Ì waveOut ‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( Flag  TRUE:g—p‚·‚é  FALSE:g—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ), BufferSize Ä¶ƒoƒbƒtƒ@‚ÌƒTƒCƒYA¬‚³‚¢‚Ù‚Ç’x‰„‚ª­‚È‚­‚È‚è‚Ü‚·‚ªAˆ—‚ªŠÔ‚É‡‚í‚¸‚ÉƒuƒcƒuƒcƒmƒCƒY‚ª”­¶‚·‚é‰Â”\«‚à‚‚­‚È‚è‚Ü‚·( -1 ‚ÅƒfƒtƒHƒ‹ƒg’l ), SamplePerSec ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg )
+
 extern	int			NS_SetUseOldVolumeCalcFlag(             int Flag ) ;																				// ChangeVolumeSoundMem, ChangeNextPlayVolumeSoundMem, ChangeMovieVolumeToGraph ‚Ì‰¹—ÊŒvZ®‚ğ Ver3.10cˆÈ‘O‚Ì‚à‚Ì‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:Ver3.10cˆÈ‘O‚ÌŒvZ®‚ğg—p  FALSE:3.10dˆÈ~‚ÌŒvZ®‚ğg—p( ƒfƒtƒHƒ‹ƒg ) )
 extern	int			NS_SetSoundCurrentTimeType(             int Type /* DX_SOUNDCURRENTTIME_TYPE_LOW_LEVEL ‚È‚Ç */ ) ;									// GetSoundCurrentTime ‚È‚Ç‚ğg—p‚µ‚½ê‡‚Éæ“¾‚Å‚«‚éÄ¶ŠÔ‚Ìƒ^ƒCƒv‚ğİ’è‚·‚é
 extern	int			NS_GetSoundCurrentTimeType(             void ) ;																					// GetSoundCurrentTime ‚È‚Ç‚ğg—p‚µ‚½ê‡‚Éæ“¾‚Å‚«‚éÄ¶ŠÔ‚Ìƒ^ƒCƒv‚ğæ“¾‚·‚é
@@ -3054,6 +3125,12 @@ extern	int			NS_Live2D_LoadModelWithStrLen(	const TCHAR *FilePath, size_t FilePa
 extern	int			NS_Live2D_DeleteModel( int Live2DModelHandle ) ;															// Live2D ‚Ìƒ‚ƒfƒ‹‚ğíœ‚·‚é
 extern	int			NS_Live2D_InitModel(			void ) ;																	// ‚·‚×‚Ä‚Ì Live2D ‚Ìƒ‚ƒfƒ‹‚ğíœ‚·‚é
 
+extern	int			NS_Live2D_SetUserShader( int TargetShader /* DX_LIVE2D_SHADER_NORMAL_PIXEL “™ */ , int ShaderHandle DEFAULTPARAM( = -1 ) ) ;			// Live2D ‚Ìƒ‚ƒfƒ‹•`‰æ‚Åg—p‚·‚éƒVƒF[ƒ_[‚ğİ’è‚·‚é( ShaderHandle ‚É -1 ‚ğ“n‚·‚Æ‰ğœ )
+extern	int			NS_Live2D_DrawCallback( void ( *Callback )( int Live2DModelHandle, int TextureIndex, void *UserData ), void *UserData ) ;			// Live2D ‚Ìƒ‚ƒfƒ‹•`‰æ‚Ì‘O‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”‚ğİ’è‚·‚é Callback ‚É NULL ‚ğ“n‚·‚Æİ’è‚ğ‰ğœ )
+extern	int			NS_Live2D_SetUseAutoScaling( int UseFlag ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹•`‰æ‚ğ‚·‚éÛ‚ÉA‰æ–ÊƒTƒCƒY‚É‰‚¶‚½ƒXƒP[ƒŠƒ“ƒO‚ğs‚¤‚©‚ğİ’è‚·‚é( UseFlag  TRUE:ƒXƒP[ƒŠƒ“ƒO‚ğs‚¤( ƒfƒtƒHƒ‹ƒg )  FALSE:ƒXƒP[ƒŠƒ“ƒO‚ğs‚í‚È‚¢ )
+extern	int			NS_Live2D_SetUseAutoCentering( int UseFlag ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚ğ‰æ–Ê‚Ì’†S‚É•`‰æ‚·‚é‚©‚ğİ’è‚·‚é( UseFlag   TRUE:‰æ–Ê‚Ì’†S‚É•`‰æ‚·‚é( ƒfƒtƒHƒ‹ƒg )   FALSE:‰æ–Ê‚Ì’†S‚É•`‰æ‚µ‚È‚¢ )
+extern	int			NS_Live2D_SetUseReverseYAxis( int UseFlag ) ;																// Live2D_Model_SetTranslate ‚Åw’è‚·‚é•½sˆÚ“®’l‚Ì y ‚ÌŒü‚«‚ğ”½“]‚·‚é‚©‚ğİ’è‚·‚é( UseFlag   TRUE:”½“]‚·‚é( ƒfƒtƒHƒ‹ƒg )   FALSE:”½“]‚µ‚È‚¢ )
+
 extern	int			NS_Live2D_Model_Update( int Live2DModelHandle, float DeltaTime ) ;											// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìó‘Ô‚ğXV‚·‚é
 extern	int			NS_Live2D_Model_SetTranslate(		int Live2DModelHandle, float x, float y ) ;								// Live2D ‚Ìƒ‚ƒfƒ‹‚ÌˆÊ’u‚ğİ’è‚·‚é
 extern	int			NS_Live2D_Model_SetExtendRate(		int Live2DModelHandle, float ExRateX, float ExRateY ) ;					// Live2D ‚Ìƒ‚ƒfƒ‹‚ÌŠg‘å—¦‚ğİ’è‚·‚é
@@ -3062,7 +3139,9 @@ extern	int			NS_Live2D_Model_Draw(				int Live2DModelHandle ) ;														// 
 
 extern	int			NS_Live2D_Model_StartMotion(				int Live2DModelHandle, const TCHAR *group,						int no ) ;							// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìw’è‚Ìƒ‚[ƒVƒ‡ƒ“‚ğÄ¶‚·‚é
 extern	int			NS_Live2D_Model_StartMotionWithStrLen(		int Live2DModelHandle, const TCHAR *group, size_t GroupLength,	int no ) ;							// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìw’è‚Ìƒ‚[ƒVƒ‡ƒ“‚ğÄ¶‚·‚é
+extern	int			NS_Live2D_Model_GetLastPlayMotionNo(		int Live2DModelHandle ) ;																			// Live2D ‚Ìƒ‚ƒfƒ‹‚ÅÅŒã‚ÉÄ¶‚µ‚½ƒ‚[ƒVƒ‡ƒ“‚ÌƒOƒ‹[ƒv“à‚Ì”Ô†‚ğæ“¾‚·‚é
 extern	int			NS_Live2D_Model_IsMotionFinished(			int Live2DModelHandle ) ;																			// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìƒ‚[ƒVƒ‡ƒ“Ä¶‚ªI—¹‚µ‚Ä‚¢‚é‚©‚ğæ“¾‚·‚é
+extern	float		NS_Live2D_Model_GetMotionPlayTime(			int Live2DModelHandle ) ;																			// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìƒ‚[ƒVƒ‡ƒ“Ä¶ŠÔ‚ğæ“¾‚·‚é
 extern	int			NS_Live2D_Model_SetExpression(				int Live2DModelHandle, const TCHAR *expressionID ) ;												// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìw’è‚Ì•\îƒ‚[ƒVƒ‡ƒ“‚ğƒZƒbƒg‚·‚é
 extern	int			NS_Live2D_Model_SetExpressionWithStrLen(	int Live2DModelHandle, const TCHAR *expressionID, size_t expressionIDLength ) ;						// Live2D ‚Ìƒ‚ƒfƒ‹‚Ìw’è‚Ì•\îƒ‚[ƒVƒ‡ƒ“‚ğƒZƒbƒg‚·‚é
 extern	int			NS_Live2D_Model_HitTest(					int Live2DModelHandle, const TCHAR *hitAreaName,							float x, float y ) ;	// w’è‚ÌÀ•W‚ª Live2D ‚Ìƒ‚ƒfƒ‹‚Ìw’è‚Ì“–‚½‚è”»’è‚Ì‹éŒ`”ÍˆÍ“à‚©”»’è‚·‚é( TRUE:‹éŒ`”ÍˆÍ“à  FALSE:‹éŒ`”ÍˆÍŠO )
@@ -3099,6 +3178,8 @@ extern	int			NS_Live2D_Model_GetEyeBlinkParameterCount(				int Live2DModelHandle
 extern	const TCHAR *NS_Live2D_Model_GetEyeBlinkParameterId(				int Live2DModelHandle, int index ) ;													// Live2D ‚Ìƒ‚ƒfƒ‹‚Ì–Úƒpƒ`‚ÉŠÖ˜A•t‚¯‚ç‚ê‚½ƒpƒ‰ƒ[ƒ^‚ÌID‚ğæ“¾‚·‚é
 extern	int			NS_Live2D_Model_GetLipSyncParameterCount(				int Live2DModelHandle ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚ÌƒŠƒbƒvƒVƒ“ƒN‚ÉŠÖ˜A•t‚¯‚ç‚ê‚½ƒpƒ‰ƒ[ƒ^‚Ì”‚ğæ“¾‚·‚é
 extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHandle, int index ) ;													// Live2D ‚Ìƒ‚ƒfƒ‹‚ÌƒŠƒbƒvƒVƒ“ƒN‚ÉŠÖ˜A•t‚¯‚ç‚ê‚½ƒpƒ‰ƒ[ƒ^‚ÌID‚ğæ“¾‚·‚é
+extern	float		NS_Live2D_Model_GetCanvasWidth(						int Live2DModelHandle ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚ÌƒLƒƒƒ“ƒoƒX‚Ì‰¡•‚ğæ“¾‚·‚é
+extern	float		NS_Live2D_Model_GetCanvasHeight(						int Live2DModelHandle ) ;																// Live2D ‚Ìƒ‚ƒfƒ‹‚ÌƒLƒƒƒ“ƒoƒX‚Ìc•‚ğæ“¾‚·‚é
 
 #endif // DX_NON_LIVE2D_CUBISM4
 
@@ -3164,11 +3245,13 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SRand								SRand
 
 #ifndef DX_NON_MERSENNE_TWISTER
+#define NS_GetMersenneTwisterRand				GetMersenneTwisterRand
 
 #define NS_CreateRandHandle						CreateRandHandle	
 #define NS_DeleteRandHandle						DeleteRandHandle	
 #define NS_SRandHandle							SRandHandle		
 #define NS_GetRandHandle						GetRandHandle		
+#define NS_GetMersenneTwisterRandHandle			GetMersenneTwisterRandHandle
 
 #endif // DX_NON_MERSENNE_TWISTER
 
@@ -3205,6 +3288,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 
 // ƒƒOo—Íİ’èŠÖ”
 #define NS_SetOutApplicationLogValidFlag				SetOutApplicationLogValidFlag
+#define NS_SetOutApplicationSystemLogValidFlag			SetOutApplicationSystemLogValidFlag
 #define NS_SetApplicationLogFileName					SetApplicationLogFileName
 #define NS_SetApplicationLogFileNameWithStrLen			SetApplicationLogFileNameWithStrLen
 #define NS_SetApplicationLogSaveDirectory				SetApplicationLogSaveDirectory
@@ -3285,6 +3369,9 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 // DxHandle.cppŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾
 
 #define NS_SetDeleteHandleFlag					SetDeleteHandleFlag
+#define NS_GetHandleNum							GetHandleNum
+#define NS_GetMaxHandleNum						GetMaxHandleNum
+#define NS_DumpHandleInfo						DumpHandleInfo
 
 
 
@@ -3399,6 +3486,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetValidMousePointerWindowOutClientAreaMoveFlag		SetValidMousePointerWindowOutClientAreaMoveFlag
 #define NS_SetUseBackBufferTransColorFlag		SetUseBackBufferTransColorFlag
 #define NS_SetUseUpdateLayerdWindowFlag			SetUseUpdateLayerdWindowFlag
+#define NS_SetUseMouseEventTransparentWindowFlag SetUseMouseEventTransparentWindowFlag
 #define NS_SetResourceModule					SetResourceModule
 #define NS_SetUseDxLibWM_PAINTProcess			SetUseDxLibWM_PAINTProcess
 #define NS_SetWindows10_WM_CHAR_CancelTime		SetWindows10_WM_CHAR_CancelTime
@@ -3494,6 +3582,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 
 // ƒ}ƒEƒXŠÖŒWŠÖ”
 #define NS_SetMouseDispFlag						SetMouseDispFlag
+#define NS_SetMouseDispIgnoreMenuFlag			SetMouseDispIgnoreMenuFlag
 #ifndef DX_NON_INPUT
 #define NS_GetMousePoint						GetMousePoint
 #define NS_SetMousePoint						SetMousePoint
@@ -3672,6 +3761,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #ifndef DX_NON_KEYEX
 
 #define NS_DrawIMEInputString					DrawIMEInputString
+#define NS_DrawIMEInputExtendString				DrawIMEInputExtendString
 #define NS_SetUseIMEFlag						SetUseIMEFlag
 #define NS_GetUseIMEFlag						GetUseIMEFlag
 #define NS_SetInputStringMaxLengthIMESync		SetInputStringMaxLengthIMESync
@@ -3706,6 +3796,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 
 #define NS_GetIMEInputModeStr					GetIMEInputModeStr
 #define NS_GetIMEInputData						GetIMEInputData
+#define NS_SetIMEInputString					SetIMEInputString
+#define NS_SetIMEInputStringWithStrLen			SetIMEInputStringWithStrLen
 #define NS_SetKeyInputStringColor				SetKeyInputStringColor
 #define NS_SetKeyInputStringColor2				SetKeyInputStringColor2
 #define NS_ResetKeyInputStringColor2			ResetKeyInputStringColor2
@@ -3722,6 +3814,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_ReStartKeyInput						ReStartKeyInput
 #define NS_ProcessActKeyInput					ProcessActKeyInput
 #define NS_DrawKeyInputString					DrawKeyInputString
+#define NS_DrawKeyInputExtendString				DrawKeyInputExtendString
 #define NS_SetKeyInputDrawArea					SetKeyInputDrawArea
 
 #define NS_SetKeyInputSelectArea				SetKeyInputSelectArea
@@ -3763,6 +3856,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_FileRead_open_mem					FileRead_open_mem
 #define NS_FileRead_size						FileRead_size
 #define NS_FileRead_size_WithStrLen				FileRead_size_WithStrLen
+#define NS_FileRead_size_handle					FileRead_size_handle
 #define NS_FileRead_close						FileRead_close
 #define NS_FileRead_tell						FileRead_tell
 #define NS_FileRead_seek						FileRead_seek
@@ -3845,12 +3939,15 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetJoypadInputToKeyInput				SetJoypadInputToKeyInput
 #define NS_SetJoypadDeadZone					SetJoypadDeadZone
 #define NS_GetJoypadDeadZone					GetJoypadDeadZone
+#define NS_SetJoypadDefaultDeadZoneAll			SetJoypadDefaultDeadZoneAll
+#define NS_GetJoypadDefaultDeadZoneAll			GetJoypadDefaultDeadZoneAll
 #define NS_StartJoypadVibration					StartJoypadVibration
 #define NS_StopJoypadVibration					StopJoypadVibration
 #define NS_GetJoypadPOVState					GetJoypadPOVState
 #define NS_GetJoypadName						GetJoypadName
 #define NS_GetJoypadType						GetJoypadType
 #define NS_ReSetupJoypad						ReSetupJoypad
+#define NS_ReSetupInputSystem					ReSetupInputSystem
 
 #define NS_SetKeyboardNotDirectInputFlag		SetKeyboardNotDirectInputFlag
 #define NS_SetUseDirectInputFlag				SetUseDirectInputFlag
@@ -4024,6 +4121,10 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_GetCreateGraphChannelBitDepth		GetCreateGraphChannelBitDepth
 #define NS_SetCreateGraphInitGraphDelete		SetCreateGraphInitGraphDelete
 #define NS_GetCreateGraphInitGraphDelete		GetCreateGraphInitGraphDelete
+#define NS_SetCreateGraphHandle					SetCreateGraphHandle
+#define NS_GetCreateGraphHandle					GetCreateGraphHandle
+#define NS_SetCreateDivGraphHandle				SetCreateDivGraphHandle
+#define NS_GetCreateDivGraphHandle				GetCreateDivGraphHandle
 #define NS_SetDrawValidGraphCreateFlag			SetDrawValidGraphCreateFlag
 #define NS_GetDrawValidGraphCreateFlag			GetDrawValidGraphCreateFlag
 #define NS_SetDrawValidFlagOf3DGraph			SetDrawValidFlagOf3DGraph
@@ -4072,6 +4173,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetUseMaxTextureSize					SetUseMaxTextureSize
 #define NS_SetUseGraphBaseDataBackup			SetUseGraphBaseDataBackup
 #define NS_GetUseGraphBaseDataBackup			GetUseGraphBaseDataBackup
+#define NS_SetUseLoadDivGraphSizeCheckFlag		SetUseLoadDivGraphSizeCheckFlag
+#define NS_GetUseLoadDivGraphSizeCheckFlag		GetUseLoadDivGraphSizeCheckFlag
 
 // ‰æ‘œî•ñŠÖŒWŠÖ”
 #define NS_GetFullColorImage					GetFullColorImage
@@ -4137,6 +4240,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 
 #define NS_DrawPixelSet									DrawPixelSet
 #define NS_DrawLineSet									DrawLineSet
+#define NS_DrawBoxSet									DrawBoxSet
 
 #define NS_DrawPixel3D									DrawPixel3D
 #define NS_DrawPixel3DD									DrawPixel3DD
@@ -4236,8 +4340,11 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawPolygon2D								DrawPolygon2D
 #define NS_DrawPolygon3D								DrawPolygon3D
 #define NS_DrawPolygonIndexed2D							DrawPolygonIndexed2D
+#define NS_DrawPolygon32bitIndexed2D					DrawPolygon32bitIndexed2D
 #define NS_DrawPolygonIndexed3D							DrawPolygonIndexed3D
+#define NS_DrawPolygon32bitIndexed3D					DrawPolygon32bitIndexed3D
 #define NS_DrawPolygonIndexed3DBase						DrawPolygonIndexed3DBase
+#define NS_DrawPolygon32bitIndexed3DBase				DrawPolygon32bitIndexed3DBase
 #define NS_DrawPolygon3DBase							DrawPolygon3DBase
 #define NS_DrawPolygon3D2								DrawPolygon3D2
 
@@ -4245,7 +4352,9 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawPrimitive2D								DrawPrimitive2D
 #define NS_DrawPrimitive3D								DrawPrimitive3D
 #define NS_DrawPrimitiveIndexed2D						DrawPrimitiveIndexed2D
+#define NS_DrawPrimitive32bitIndexed2D					DrawPrimitive32bitIndexed2D
 #define NS_DrawPrimitiveIndexed3D						DrawPrimitiveIndexed3D
+#define NS_DrawPrimitive32bitIndexed3D					DrawPrimitive32bitIndexed3D
 
 #define NS_DrawPolygon3D_UseVertexBuffer				DrawPolygon3D_UseVertexBuffer
 #define NS_DrawPrimitive3D_UseVertexBuffer				DrawPrimitive3D_UseVertexBuffer
@@ -4266,6 +4375,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_GetDrawMode							GetDrawMode
 #define NS_SetDrawBlendMode						SetDrawBlendMode
 #define NS_GetDrawBlendMode						GetDrawBlendMode
+#define NS_SetDrawCustomBlendMode				SetDrawCustomBlendMode
+#define NS_GetDrawCustomBlendMode				GetDrawCustomBlendMode
 #define NS_SetDrawAlphaTest						SetDrawAlphaTest
 #define NS_GetDrawAlphaTest						GetDrawAlphaTest
 #define NS_SetBlendGraph						SetBlendGraph
@@ -4347,6 +4458,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetUseCullingFlag					SetUseCullingFlag
 #define NS_SetUseBackCulling					SetUseBackCulling
 #define NS_GetUseBackCulling					GetUseBackCulling
+#define NS_SetUseRightHandClippingProcess		SetUseRightHandClippingProcess
+#define NS_GetUseRightHandClippingProcess		GetUseRightHandClippingProcess
 
 #define NS_SetTextureAddressMode				SetTextureAddressMode
 #define NS_SetTextureAddressModeUV				SetTextureAddressModeUV
@@ -4391,11 +4504,13 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetScreenFlipTargetWindow			SetScreenFlipTargetWindow
 #define NS_GetDesktopScreenGraph				GetDesktopScreenGraph
 #define NS_GetDesktopScreenGraphMemImage		GetDesktopScreenGraphMemImage
+#define NS_GetOtherWindowGraph					GetOtherWindowGraph
 #endif // WINDOWS_DESKTOP_OS
 #define NS_SetGraphMode							SetGraphMode
 #define NS_SetUserScreenImage					SetUserScreenImage
 #define NS_SetFullScreenResolutionMode			SetFullScreenResolutionMode
 #define NS_GetFullScreenResolutionMode			GetFullScreenResolutionMode
+#define NS_GetUseFullScreenResolutionMode		GetUseFullScreenResolutionMode
 #define NS_SetFullScreenScalingMode				SetFullScreenScalingMode
 #define NS_SetEmulation320x240					SetEmulation320x240
 #define NS_SetZBufferSize						SetZBufferSize
@@ -4411,6 +4526,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_GetColorBitDepth						GetColorBitDepth
 #define NS_GetChangeDisplayFlag					GetChangeDisplayFlag
 #define NS_GetVideoMemorySize					GetVideoMemorySize
+#define NS_GetVideoMemorySizeEx					GetVideoMemorySizeEx
 #define NS_GetRefreshRate						GetRefreshRate
 #define NS_GetDisplayNum						GetDisplayNum
 #define NS_GetDisplayInfo						GetDisplayInfo
@@ -4453,6 +4569,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_GetUseDirect3DVersion				GetUseDirect3DVersion
 #define NS_GetUseDirect3D11FeatureLevel			GetUseDirect3D11FeatureLevel
 #define NS_SetUseDirect3D11AdapterIndex			SetUseDirect3D11AdapterIndex
+#define NS_SetUseDirect3D11BGRASupport			SetUseDirect3D11BGRASupport
+#define NS_GetUseDirect3D11BGRASupport			GetUseDirect3D11BGRASupport
 #define NS_SetUseDirectDrawFlag					SetUseDirectDrawFlag
 #define NS_SetUseGDIFlag						SetUseGDIFlag
 #define NS_GetUseGDIFlag						GetUseGDIFlag
@@ -4591,16 +4709,21 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 
 #define NS_CalcPolygonBinormalAndTangentsToShader				CalcPolygonBinormalAndTangentsToShader
 #define NS_CalcPolygonIndexedBinormalAndTangentsToShader		CalcPolygonIndexedBinormalAndTangentsToShader
+#define NS_CalcPolygon32bitIndexedBinormalAndTangentsToShader	CalcPolygon32bitIndexedBinormalAndTangentsToShader
 
 #define NS_DrawBillboard3DToShader								DrawBillboard3DToShader
 #define NS_DrawPolygon2DToShader								DrawPolygon2DToShader
 #define NS_DrawPolygon3DToShader								DrawPolygon3DToShader
 #define NS_DrawPolygonIndexed2DToShader							DrawPolygonIndexed2DToShader
+#define NS_DrawPolygon32bitIndexed2DToShader					DrawPolygon32bitIndexed2DToShader
 #define NS_DrawPolygonIndexed3DToShader							DrawPolygonIndexed3DToShader
+#define NS_DrawPolygon32bitIndexed3DToShader					DrawPolygon32bitIndexed3DToShader
 #define NS_DrawPrimitive2DToShader								DrawPrimitive2DToShader
 #define NS_DrawPrimitive3DToShader								DrawPrimitive3DToShader
 #define NS_DrawPrimitiveIndexed2DToShader						DrawPrimitiveIndexed2DToShader
+#define NS_DrawPrimitive32bitIndexed2DToShader					DrawPrimitive32bitIndexed2DToShader
 #define NS_DrawPrimitiveIndexed3DToShader						DrawPrimitiveIndexed3DToShader
+#define NS_DrawPrimitive32bitIndexed3DToShader					DrawPrimitive32bitIndexed3DToShader
 #define NS_DrawPolygon3DToShader_UseVertexBuffer				DrawPolygon3DToShader_UseVertexBuffer
 #define NS_DrawPolygonIndexed3DToShader_UseVertexBuffer			DrawPolygonIndexed3DToShader_UseVertexBuffer
 #define NS_DrawPrimitive3DToShader_UseVertexBuffer				DrawPrimitive3DToShader_UseVertexBuffer
@@ -4620,12 +4743,14 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #ifndef DX_NON_FILTER
 
 #define NS_SetGraphFilterBltBlendMode			SetGraphFilterBltBlendMode
+#define NS_SetGraphBlendScalingFilterMode		SetGraphBlendScalingFilterMode
 #define NS_GraphFilter							GraphFilter
 #define NS_GraphFilterBlt						GraphFilterBlt
 #define NS_GraphFilterRectBlt					GraphFilterRectBlt
 #define NS_GraphBlend							GraphBlend
 #define NS_GraphBlendBlt						GraphBlendBlt
 #define NS_GraphBlendRectBlt					GraphBlendRectBlt
+#define NS_GraphBlendRectBlt2					GraphBlendRectBlt2
 
 #endif // DX_NON_FILTER
 
@@ -4745,6 +4870,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetMaterialParam						SetMaterialParam
 #define NS_SetUseSpecular						SetUseSpecular
 #define NS_SetGlobalAmbientLight				SetGlobalAmbientLight
+#define NS_SetUseLightAngleAttenuation			SetUseLightAngleAttenuation
 
 #define NS_ChangeLightTypeDir					ChangeLightTypeDir
 #define NS_ChangeLightTypeSpot					ChangeLightTypeSpot
@@ -4923,6 +5049,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetFontCacheCharNum						SetFontCacheCharNum
 #define NS_ChangeFont								ChangeFont
 #define NS_ChangeFontWithStrLen						ChangeFontWithStrLen
+#define NS_ChangeFontFromHandle						ChangeFontFromHandle
 #define NS_ChangeFontType							ChangeFontType
 #define NS_GetFontName								GetFontName
 
@@ -5005,6 +5132,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_GetFontCacheUsePremulAlphaFlag			GetFontCacheUsePremulAlphaFlag
 #define NS_SetFontUseAdjustSizeFlag					SetFontUseAdjustSizeFlag
 #define NS_GetFontUseAdjustSizeFlag					GetFontUseAdjustSizeFlag
+#define NS_SetFontOnlyDrawType						SetFontOnlyDrawType
+#define NS_GetFontOnlyDrawType						GetFontOnlyDrawType
 
 #define NS_AddFontFile								AddFontFile
 #define NS_AddFontFileWithStrLen					AddFontFileWithStrLen
@@ -5021,12 +5150,16 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawNVString								DrawNVString
 #define NS_DrawFormatString							DrawFormatString
 #define NS_DrawFormatVString						DrawFormatVString
+#define NS_DrawFormatString2						DrawFormatString2
+#define NS_DrawFormatVString2						DrawFormatVString2
 #define NS_DrawExtendString							DrawExtendString
 #define NS_DrawExtendNString						DrawExtendNString
 #define NS_DrawExtendVString						DrawExtendVString
 #define NS_DrawExtendNVString						DrawExtendNVString
 #define NS_DrawExtendFormatString					DrawExtendFormatString
 #define NS_DrawExtendFormatVString					DrawExtendFormatVString
+#define NS_DrawExtendFormatString2					DrawExtendFormatString2
+#define NS_DrawExtendFormatVString2					DrawExtendFormatVString2
 #define NS_DrawRotaString							DrawRotaString
 #define NS_DrawRotaNString							DrawRotaNString
 #define NS_DrawRotaFormatString						DrawRotaFormatString
@@ -5040,12 +5173,16 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawNVStringF							DrawNVStringF
 #define NS_DrawFormatStringF						DrawFormatStringF
 #define NS_DrawFormatVStringF						DrawFormatVStringF
+#define NS_DrawFormatString2F						DrawFormatString2F
+#define NS_DrawFormatVString2F						DrawFormatVString2F
 #define NS_DrawExtendStringF						DrawExtendStringF
 #define NS_DrawExtendNStringF						DrawExtendNStringF
 #define NS_DrawExtendVStringF						DrawExtendVStringF
 #define NS_DrawExtendNVStringF						DrawExtendNVStringF
 #define NS_DrawExtendFormatStringF					DrawExtendFormatStringF
 #define NS_DrawExtendFormatVStringF					DrawExtendFormatVStringF
+#define NS_DrawExtendFormatString2F					DrawExtendFormatString2F
+#define NS_DrawExtendFormatVString2F				DrawExtendFormatVString2F
 #define NS_DrawRotaStringF							DrawRotaStringF
 #define NS_DrawRotaNStringF							DrawRotaNStringF
 #define NS_DrawRotaFormatStringF					DrawRotaFormatStringF
@@ -5084,12 +5221,16 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawNVStringToHandle						DrawNVStringToHandle
 #define NS_DrawFormatStringToHandle					DrawFormatStringToHandle
 #define NS_DrawFormatVStringToHandle				DrawFormatVStringToHandle
+#define NS_DrawFormatString2ToHandle				DrawFormatString2ToHandle
+#define NS_DrawFormatVString2ToHandle				DrawFormatVString2ToHandle
 #define NS_DrawExtendStringToHandle					DrawExtendStringToHandle
 #define NS_DrawExtendNStringToHandle				DrawExtendNStringToHandle
 #define NS_DrawExtendVStringToHandle				DrawExtendVStringToHandle
 #define NS_DrawExtendNVStringToHandle				DrawExtendNVStringToHandle
 #define NS_DrawExtendFormatStringToHandle			DrawExtendFormatStringToHandle
 #define NS_DrawExtendFormatVStringToHandle			DrawExtendFormatVStringToHandle
+#define NS_DrawExtendFormatString2ToHandle			DrawExtendFormatString2ToHandle
+#define NS_DrawExtendFormatVString2ToHandle			DrawExtendFormatVString2ToHandle
 #define NS_DrawRotaStringToHandle					DrawRotaStringToHandle
 #define NS_DrawRotaNStringToHandle					DrawRotaNStringToHandle
 #define NS_DrawRotaFormatStringToHandle				DrawRotaFormatStringToHandle
@@ -5103,12 +5244,16 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_DrawNVStringFToHandle					DrawNVStringFToHandle
 #define NS_DrawFormatStringFToHandle				DrawFormatStringFToHandle
 #define NS_DrawFormatVStringFToHandle				DrawFormatVStringFToHandle
+#define NS_DrawFormatString2FToHandle				DrawFormatString2FToHandle
+#define NS_DrawFormatVString2FToHandle				DrawFormatVString2FToHandle
 #define NS_DrawExtendStringFToHandle				DrawExtendStringFToHandle
 #define NS_DrawExtendNStringFToHandle				DrawExtendNStringFToHandle
 #define NS_DrawExtendVStringFToHandle				DrawExtendVStringFToHandle
 #define NS_DrawExtendNVStringFToHandle				DrawExtendNVStringFToHandle
 #define NS_DrawExtendFormatStringFToHandle			DrawExtendFormatStringFToHandle
 #define NS_DrawExtendFormatVStringFToHandle			DrawExtendFormatVStringFToHandle
+#define NS_DrawExtendFormatString2FToHandle			DrawExtendFormatString2FToHandle
+#define NS_DrawExtendFormatVString2FToHandle		DrawExtendFormatVString2FToHandle
 #define NS_DrawRotaStringFToHandle					DrawRotaStringFToHandle
 #define NS_DrawRotaNStringFToHandle					DrawRotaNStringFToHandle
 #define NS_DrawRotaFormatStringFToHandle			DrawRotaFormatStringFToHandle
@@ -5204,6 +5349,10 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_GetGraphDataShavedMode				GetGraphDataShavedMode
 #define NS_SetGraphDataShavedMode				SetGraphDataShavedMode
 #define NS_SetUsePremulAlphaConvertLoad			SetUsePremulAlphaConvertLoad
+#define NS_GetUsePremulAlphaConvertLoad			GetUsePremulAlphaConvertLoad
+#define NS_SetUseConvertNormalFormatLoad		SetUseConvertNormalFormatLoad
+#define NS_GetUseConvertNormalFormatLoad		GetUseConvertNormalFormatLoad
+
 
 //Šî–{ƒCƒ[ƒWƒf[ƒ^\‘¢‘ÌŠÖŒW
 #define NS_CreateBaseImage						CreateBaseImage
@@ -5319,6 +5468,7 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_CreateRGBA8ColorData					CreateRGBA8ColorData
 #define NS_CreateABGR8ColorData					CreateABGR8ColorData
 #define NS_CreateBGRA8ColorData					CreateBGRA8ColorData
+#define NS_CreateBGR8ColorData					CreateBGR8ColorData
 #define NS_CreateARGB4ColorData					CreateARGB4ColorData
 #define NS_CreateA1R5G5B5ColorData				CreateA1R5G5B5ColorData
 #define NS_CreateX1R5G5B5ColorData				CreateX1R5G5B5ColorData
@@ -5605,7 +5755,10 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_SetEnableWASAPIFlag					SetEnableWASAPIFlag
 #ifndef DX_NON_ASIO
 #define NS_SetEnableASIOFlag					SetEnableASIOFlag
+#define NS_SetUseASIODriverIndex				SetUseASIODriverIndex
 #endif // DX_NON_ASIO
+#define NS_SetEnableMMEwaveOutFlag				SetEnableMMEwaveOutFlag
+
 #define NS_SetUseOldVolumeCalcFlag				SetUseOldVolumeCalcFlag
 #define NS_SetSoundCurrentTimeType				SetSoundCurrentTimeType
 #define NS_GetSoundCurrentTimeType				GetSoundCurrentTimeType
@@ -5790,6 +5943,12 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_Live2D_DeleteModel									Live2D_DeleteModel
 #define NS_Live2D_InitModel										Live2D_InitModel
 
+#define NS_Live2D_SetUserShader									Live2D_SetUserShader
+#define NS_Live2D_DrawCallback									Live2D_DrawCallback
+#define NS_Live2D_SetUseAutoScaling								Live2D_SetUseAutoScaling
+#define NS_Live2D_SetUseAutoCentering							Live2D_SetUseAutoCentering
+#define NS_Live2D_SetUseReverseYAxis							Live2D_SetUseReverseYAxis
+
 #define NS_Live2D_Model_Update									Live2D_Model_Update
 #define NS_Live2D_Model_SetTranslate							Live2D_Model_SetTranslate
 #define NS_Live2D_Model_SetExtendRate							Live2D_Model_SetExtendRate
@@ -5798,7 +5957,9 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 
 #define NS_Live2D_Model_StartMotion								Live2D_Model_StartMotion
 #define NS_Live2D_Model_StartMotionWithStrLen					Live2D_Model_StartMotionWithStrLen
+#define NS_Live2D_Model_GetLastPlayMotionNo						Live2D_Model_GetLastPlayMotionNo
 #define NS_Live2D_Model_IsMotionFinished						Live2D_Model_IsMotionFinished
+#define NS_Live2D_Model_GetMotionPlayTime						Live2D_Model_GetMotionPlayTime
 #define NS_Live2D_Model_SetExpression							Live2D_Model_SetExpression
 #define NS_Live2D_Model_SetExpressionWithStrLen					Live2D_Model_SetExpressionWithStrLen
 #define NS_Live2D_Model_HitTest									Live2D_Model_HitTest
@@ -5835,6 +5996,8 @@ extern	const TCHAR *NS_Live2D_Model_GetLipSyncParameterId(				int Live2DModelHan
 #define NS_Live2D_Model_GetEyeBlinkParameterId					Live2D_Model_GetEyeBlinkParameterId
 #define NS_Live2D_Model_GetLipSyncParameterCount				Live2D_Model_GetLipSyncParameterCount
 #define NS_Live2D_Model_GetLipSyncParameterId					Live2D_Model_GetLipSyncParameterId		
+#define NS_Live2D_Model_GetCanvasWidth							Live2D_Model_GetCanvasWidth
+#define NS_Live2D_Model_GetCanvasHeight							Live2D_Model_GetCanvasHeight
 
 #endif // DX_NON_LIVE2D_CUBISM4
 

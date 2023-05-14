@@ -2,7 +2,7 @@
 //
 //		ＤＸライブラリ　ムービー再生処理用プログラム
 //
-//				Ver 3.23 
+//				Ver 3.24b
 //
 // ----------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ extern int InitializeMovieManage( void )
 		return -1 ;
 
 	// ハンドル管理情報の初期化
-	InitializeHandleManage( DX_HANDLETYPE_MOVIE, sizeof( MOVIEGRAPH ), MAX_MOVIE_NUM, InitializeMovieHandle, TerminateMovieHandle, L"Movie" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_MOVIE, sizeof( MOVIEGRAPH ), MAX_MOVIE_NUM, InitializeMovieHandle, TerminateMovieHandle, NULL, L"Movie" ) ;
 
 	// 環境依存の初期化処理を行う
 	if( InitializeMovieManage_PF() < 0 )
@@ -493,7 +493,7 @@ extern int PauseMovie( int MovieHandle, int SysPause )
 
 		// Vorbis の再生を停止する
 #ifndef DX_NON_SOUND
-		NS_StopSoundMem( Movie->TheoraVorbisHandle ) ;
+		NS_StopSoundMem( Movie->TheoraVorbisHandle, FALSE ) ;
 #endif // DX_NON_SOUND
 
 		// 現在の再生時間分までフレームを進めておく
@@ -592,7 +592,7 @@ extern int SeekMovie( int MovieHandle, int Time )
 #ifndef DX_NON_SOUND
 		if( Movie->PlayFlag )
 		{
-			NS_StopSoundMem( Movie->TheoraVorbisHandle ) ;
+			NS_StopSoundMem( Movie->TheoraVorbisHandle, FALSE ) ;
 		}
 		NS_SetSoundCurrentTime( Time, Movie->TheoraVorbisHandle ) ;
 		if( Movie->PlayFlag )
@@ -862,7 +862,7 @@ extern int SeekMovieToFrame( int MovieHandle, int Frame )
 #ifndef DX_NON_SOUND
 		if( Movie->PlayFlag )
 		{
-			NS_StopSoundMem( Movie->TheoraVorbisHandle ) ;
+			NS_StopSoundMem( Movie->TheoraVorbisHandle, FALSE ) ;
 		}
 		NS_SetSoundCurrentTime( _DTOL( Frame * 1000 / Movie->TheoraFrameRate ), Movie->TheoraVorbisHandle ) ;
 		if( Movie->PlayFlag )

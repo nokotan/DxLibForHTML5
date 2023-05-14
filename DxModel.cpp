@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -379,17 +379,17 @@ MV1_MODEL_MANAGE MV1Man;
 static	void *				MV1SetupWorkBuffer( size_t AllocSize ) ;														// 作業用バッファのセットアップ
 
 static  int					_MV1GetAnimKeyDataIndexFromTime( MV1_ANIM_KEYSET_BASE *AnimKeySetBase, float Time, float &Rate ) ;		// 指定の時間を超える一番小さい番号のキーのインデックスを取得する
-static	int					_MV1AnimSetSyncNowKey( MV1_ANIMSET *AnimSet, bool AboutSetting = false ) ;						// 現在のアニメーション再生時間に各キーの NowKey の値を合わせる
-static	MV1_ANIMSET_BASE	*MV1GetAnimSetBase( int MV1ModelHandle, const wchar_t *Name = NULL, int Index = -1 ) ;				// 名前やインデックスからモデル基本データ内のアニメーションを取得する
+static	int					_MV1AnimSetSyncNowKey( MV1_MODEL *Model, int AttachIndex, MV1_ANIMSET *AnimSet, bool AboutSetting = false ) ;	// 現在のアニメーション再生時間に各キーの NowKey の値を合わせる
+static	MV1_ANIMSET_BASE	*MV1GetAnimSetBase( int MV1ModelHandle, const wchar_t *Name = NULL, int Index = -1 ) ;			// 名前やインデックスからモデル基本データ内のアニメーションを取得する
 static	MV1_ANIMSET			*MV1CreateAnimSet( MV1_ANIMSET_BASE *MV1AnimSetBase ) ;											// アニメーションセット基本データから実行用アニメーションセットを作成する
-static	MV1_ANIM			*MV1GetAnimSetAnim( MV1_ANIMSET *AnimSet, const wchar_t *Name = NULL, int Index = -1 ) ;			// アニメーションセットから特定の名前、若しくはインデックスのアニメーションを得る
+static	MV1_ANIM			*MV1GetAnimSetAnim( MV1_ANIMSET *AnimSet, const wchar_t *Name = NULL, int Index = -1 ) ;		// アニメーションセットから特定の名前、若しくはインデックスのアニメーションを得る
 //static	int					MV1PlayAnimSet( MV1_ANIMSET *AnimSet, int Loop ) ;											// アニメーションを再生する
-static	int					MV1SetAnimSetTime( MV1_ANIMSET *AnimSet, float Time ) ;											// アニメーションを指定の時間に設定する
+static	int					MV1SetAnimSetTime( MV1_MODEL *Model, int AttachIndex, MV1_ANIMSET *AnimSet, float Time ) ;		// アニメーションを指定の時間に設定する
 
 //static	int					MV1AnimSetAddTime( MV1_ANIMSET *AnimSet, float AddTime ) ;									// アニメーションを進める
 //static	int					MV1StopAnimSet( MV1_ANIMSET *AnimSet ) ;													// アニメーションを止める
 //static	int					MV1GetAnimSetState( MV1_ANIMSET *AnimSet ) ;												// アニメーションが再生中かどうかを取得する( TRUE:再生中  FALSE:停止中 )
-static	int					MV1AnimSetSetupParam( MV1_ANIMSET *AnimSet ) ;													// アニメーションの現在の再生経過時間に合わせたパラメータを計算する
+static	int					MV1AnimSetSetupParam( MV1_MODEL *Model, int AttachIndex, MV1_ANIMSET *AnimSet ) ;								// アニメーションの現在の再生経過時間に合わせたパラメータを計算する
 static	void				MV1SetupTransformMatrix( MATRIX_4X4CT_F * RST BlendMatrix, int ValidFlag, VECTOR * RST Translate, VECTOR * RST Scale, int RotateOrder, VECTOR * RST PreRotate, VECTOR * RST Rotate, VECTOR * RST PostRotate, FLOAT4 * RST Quaternion ) ;	// 座標変換情報を使用して座標変換行列を作成する
 static	int					MV1SetupReferenceMeshFrame( MV1_MODEL *Model, MV1_MODEL_BASE *ModelBase, MV1_FRAME *Frame, MV1_MESH *Mesh, MV1_REF_POLYGONLIST *DestBuffer, int VIndexTarget, bool IsTransform, bool IsPositionOnly ) ;	// 参照用メッシュのセットアップを行う
 static	int					MV1RefreshReferenceMeshFrame( MV1_FRAME *Frame, MV1_MESH *Mesh, int IsPositionOnly, MV1_REF_POLYGONLIST *DestBuffer ) ;	// 参照用メッシュのリフレッシュを行う
@@ -1622,7 +1622,7 @@ static void MV1SetupAnimMatrix( MV1_MODEL *Model )
 	for( i = 0 ; i < Model->AnimSetMaxNum ; i ++ )
 	{
 		if( Model->AnimSet[ i ].Use == false || Model->AnimSet[ i ].AnimSet->ParamSetup ) continue ;
-		MV1AnimSetSetupParam( Model->AnimSet[ i ].AnimSet ) ;
+		MV1AnimSetSetupParam( Model, i, Model->AnimSet[ i ].AnimSet ) ;
 	}
 
 	Model->AnimSetupFlag = true ;
@@ -3775,10 +3775,11 @@ static int _MV1GetAnimKeyDataIndexFromTime( MV1_ANIM_KEYSET_BASE *AnimKeySetBase
 }
 
 // 現在のアニメーション再生時間に各キーの NowKey の値を合わせる
-static int _MV1AnimSetSyncNowKey( MV1_ANIMSET *AnimSet, bool AboutSetting )
+static int _MV1AnimSetSyncNowKey( MV1_MODEL *Model, int AttachIndex, MV1_ANIMSET *AnimSet, bool AboutSetting )
 {
 	MV1_ANIM				*Anim ;
 	MV1_ANIM_KEYSET			*KeySet ;
+	MV1_MODEL_ANIM			*MAnim ;
 	int i, j ;
 	float NowTime, NowRate ;
 
@@ -3792,10 +3793,23 @@ static int _MV1AnimSetSyncNowKey( MV1_ANIMSET *AnimSet, bool AboutSetting )
 	Anim = AnimSet->Anim ;
 	for( i = 0 ; i < AnimSet->BaseData->AnimNum ; i ++, Anim ++ )
 	{
+		float UseNowTime = NowTime ;
+		float UseNowRate = NowRate ;
+
+		if( Anim->Frame )
+		{
+			MAnim = &Model->Anim[ AttachIndex + Model->AnimSetMaxNum * Anim->Frame->BaseData->Index ] ;
+			if( MAnim->EnableNowTime )
+			{
+				UseNowTime = MAnim->NowTime ;
+				UseNowRate = UseNowTime / AnimSet->BaseData->MaxTime ;
+			}
+		}
+
 		KeySet = Anim->KeySet ;
 		for( j = 0 ; j < Anim->BaseData->KeySetNum ; j ++, KeySet ++ )
 		{
-			KeySet->NowKey = _MV1GetAnimKeyDataIndexFromTime_inline( KeySet->BaseData, NowTime, NowRate, KeySet->NowKey, AboutSetting ) ;
+			KeySet->NowKey = _MV1GetAnimKeyDataIndexFromTime_inline( KeySet->BaseData, UseNowTime, UseNowRate, KeySet->NowKey, AboutSetting ) ;
 		}
 	}
 
@@ -3907,7 +3921,7 @@ static MV1_ANIM *MV1GetAnimSetAnim( MV1_ANIMSET *AnimSet, const wchar_t *Name, i
 }
 
 // アニメーションを指定の時間まで進める
-static int MV1SetAnimSetTime( MV1_ANIMSET *AnimSet, float Time )
+static int MV1SetAnimSetTime( MV1_MODEL *Model, int AttachIndex, MV1_ANIMSET *AnimSet, float Time )
 {
 	// 指定の時間が範囲を超えていたらクランプする
 	     if( AnimSet->BaseData->MaxTime < Time ) Time = AnimSet->BaseData->MaxTime ;
@@ -3917,7 +3931,7 @@ static int MV1SetAnimSetTime( MV1_ANIMSET *AnimSet, float Time )
 	AnimSet->NowTime = Time ;
 
 	// 大体の位置をセットする
-	_MV1AnimSetSyncNowKey( AnimSet, true ) ;
+	_MV1AnimSetSyncNowKey( Model, AttachIndex, AnimSet, true ) ;
 
 	// ループフラグを倒す
 //	AnimSet->LoopCompFlag = false ;
@@ -3927,8 +3941,9 @@ static int MV1SetAnimSetTime( MV1_ANIMSET *AnimSet, float Time )
 }
 
 // アニメーションの現在の再生経過時間に合わせたパラメータを計算する
-static int MV1AnimSetSetupParam( MV1_ANIMSET *AnimSet )
+static int MV1AnimSetSetupParam( MV1_MODEL *Model, int AttachIndex, MV1_ANIMSET *AnimSet )
 {
+	MV1_MODEL_ANIM               *MAnim ;
 	MV1_ANIM                     *Anim ;
 	MV1_ANIMSET_BASE             *AnimSetBase ;
 	MV1_ANIM_KEYSET_BASE         *KeySetBase ;
@@ -3985,6 +4000,7 @@ MATRIXLINEARBLEND :
 		{
 			MATRIX_4X4CT_F RotMat1, RotMat2 ;
 			MATRIX_4X4CT_F PreRotMat, PostRotMat ;
+			float NowTime = AnimSet->NowTime ;
 
 			// セットアップ情報をリセット
 			Anim->ValidFlag = 0 ;
@@ -3997,6 +4013,12 @@ MATRIXLINEARBLEND :
 			QtRate = -1.0f ;
 			if( Anim->Frame )
 			{
+				MAnim = &Model->Anim[ AttachIndex + Model->AnimSetMaxNum * Anim->Frame->BaseData->Index ] ;
+				if( MAnim->EnableNowTime )
+				{
+					NowTime = MAnim->NowTime ;
+				}
+
 				NextRot    = NowRot    = Anim->Frame->BaseData->Rotate ;
 				NextRotX   = NowRotX   = NowRot.x ;
 				NextRotY   = NowRotY   = NowRot.y ;
@@ -4088,11 +4110,11 @@ MATRIXLINEARBLEND :
 				{
 					if( KeySetBase->TimeType == MV1_ANIMKEY_TIME_TYPE_ONE )
 					{
-						t = ( AnimSet->NowTime - ( KeySetBase->UnitTime * NowKey + KeySetBase->StartTime ) ) / KeySetBase->UnitTime ;
+						t = ( NowTime - ( KeySetBase->UnitTime * NowKey + KeySetBase->StartTime ) ) / KeySetBase->UnitTime ;
 					}
 					else
 					{
-						t = ( AnimSet->NowTime - KeySetBase->KeyTime[ NowKey ] ) / ( KeySetBase->KeyTime[ NowKey + 1 ] - KeySetBase->KeyTime[ NowKey ] ) ;
+						t = ( NowTime - KeySetBase->KeyTime[ NowKey ] ) / ( KeySetBase->KeyTime[ NowKey + 1 ] - KeySetBase->KeyTime[ NowKey ] ) ;
 					}
 					if( t < 0.0f ) t = 0.0f ;
 				}
@@ -4571,6 +4593,8 @@ MATRIXLINEARBLEND :
 		Anim = AnimSet->Anim ;
 		for( i = 0 ; i < AnimSetBase->AnimNum ; i ++, Anim ++ )
 		{
+			float NowTime = AnimSet->NowTime ;
+
 			// セットアップ情報をリセット
 			Anim->ValidFlag = 0 ;
 
@@ -4578,6 +4602,12 @@ MATRIXLINEARBLEND :
 			ValidMatrix = FALSE ;
 			if( Anim->Frame )
 			{
+				MAnim = &Model->Anim[ AttachIndex + Model->AnimSetMaxNum * Anim->Frame->BaseData->Index ] ;
+				if( MAnim->EnableNowTime )
+				{
+					NowTime = MAnim->NowTime ;
+				}
+
 				Translate   = Anim->Frame->BaseData->Translate ;
 				Rotate      = Anim->Frame->BaseData->Rotate ;
 				Scale       = Anim->Frame->BaseData->Scale ;
@@ -4625,11 +4655,11 @@ MATRIXLINEARBLEND :
 				{
 					if( KeySetBase->TimeType == MV1_ANIMKEY_TIME_TYPE_ONE )
 					{
-						t = ( AnimSet->NowTime - ( KeySetBase->UnitTime * NowKey + KeySetBase->StartTime ) ) / KeySetBase->UnitTime ;
+						t = ( NowTime - ( KeySetBase->UnitTime * NowKey + KeySetBase->StartTime ) ) / KeySetBase->UnitTime ;
 					}
 					else
 					{
-						t = ( AnimSet->NowTime -   KeySetBase->KeyTime[ NowKey ]                                                                ) /   ( KeySetBase->KeyTime[ NowKey + 1 ]                                                                -   KeySetBase->KeyTime[ NowKey ]                                                                ) ;
+						t = ( NowTime - KeySetBase->KeyTime[ NowKey ] ) / ( KeySetBase->KeyTime[ NowKey + 1 ] - KeySetBase->KeyTime[ NowKey ] ) ;
 					}
 					if( t < 0.0f ) t = 0.0f ;
 				}
@@ -5771,10 +5801,10 @@ extern int MV1Initialize()
 	}
 
 	// モデル基本データハンドルの初期化
-	InitializeHandleManage( DX_HANDLETYPE_MODEL_BASE, sizeof( MV1_MODEL_BASE ), MAX_MODEL_BASE_NUM, InitializeModelBaseHandle, TerminateModelBaseHandle, L"ModelBase" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_MODEL_BASE, sizeof( MV1_MODEL_BASE ), MAX_MODEL_BASE_NUM, InitializeModelBaseHandle, TerminateModelBaseHandle, NULL, L"ModelBase" ) ;
 
 	// モデルデータハンドルの初期化
-	InitializeHandleManage( DX_HANDLETYPE_MODEL, sizeof( MV1_MODEL ), MAX_MODEL_NUM, InitializeModelHandle, TerminateModelHandle, L"Model" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_MODEL, sizeof( MV1_MODEL ), MAX_MODEL_NUM, InitializeModelHandle, TerminateModelHandle, NULL, L"Model" ) ;
 
 	// 各種変数を初期化
 	MV1Man.ModelBaseNum = 0 ;
@@ -6905,6 +6935,7 @@ extern int MV1CreateCloneModelBase( int SrcMBHandle )
 		Texture->Bmp32AllZeroAlphaToXRGB8Flag = F1Texture->Bmp32AllZeroAlphaToXRGB8Flag ;
 
 		// テクスチャの読み込み
+		Texture->GraphHandle = 0 ;
 		if( __MV1LoadTexture(
 				&F1Texture->ColorImage, &F1Texture->ColorImageSize,
 				&F1Texture->AlphaImage, &F1Texture->AlphaImageSize,
@@ -6924,6 +6955,7 @@ extern int MV1CreateCloneModelBase( int SrcMBHandle )
 				NULL,
 				true,
 				TRUE,
+				FALSE,
 				FALSE ) == -1 )
 		{
 			DXST_LOGFILEFMT_ADDW(( L"MV1 CloneModel Error : Texture LoadError : %s\n", Texture->NameW ) ) ;
@@ -10017,6 +10049,7 @@ extern int __MV1LoadTexture(
 	const MV1_FILE_READ_FUNC *FileReadFunc,
 	bool ValidImageAddr,
 	int NotInitGraphDelete,
+	int NotTextureLoad,
 	int ASyncThread
 	)
 {
@@ -10024,6 +10057,7 @@ extern int __MV1LoadTexture(
 	char TempPath[ 2048 ] ;
 	int i/*, j*/, Result ;
 	void *DataAddr ;
+	int UserGraphHandle = *GraphHandle != 0 ? TRUE : FALSE ;
 
 	// ポインタの初期化
 	if( ValidImageAddr == false )
@@ -10037,7 +10071,10 @@ extern int __MV1LoadTexture(
 		*AlphaImage = NULL ;
 		*ColorImage = NULL ;
 	}
-	*GraphHandle = -1 ;
+	if( UserGraphHandle == FALSE )
+	{
+		*GraphHandle = -1 ;
+	}
 	*DefaultTextureFlag = FALSE ;
 	AlphaBaseImage.GraphData = NULL ;
 	ColorBaseImage.GraphData = NULL ;
@@ -10108,37 +10145,44 @@ extern int __MV1LoadTexture(
 		*ColorImageSize = 0 ;
 		if( ColorFilePath )
 		{
-			if( FileReadFunc )
+			if( NotTextureLoad )
 			{
-#ifdef UNICODE
-				Result = FileReadFunc->Read( ColorFilePath, &DataAddr, ColorImageSize, FileReadFunc->Data ) ;
-#else
-				ConvString( ( const char * )ColorFilePath, -1, WCHAR_T_CHARCODEFORMAT, TempPath, sizeof( TempPath ), CHAR_CHARCODEFORMAT ) ;
-				Result = FileReadFunc->Read( TempPath, &DataAddr, ColorImageSize, FileReadFunc->Data ) ;
-#endif
-				if( Result != -1 )
-				{
-					*ColorImage = DXALLOC( ( size_t )( *ColorImageSize ) ) ;
-					if( *ColorImage == NULL )
-					{
-#ifndef DX_GCC_COMPILE
-						DXST_LOGFILEFMT_ADDW(( L"Load Texture Error : Color Channel Image File : Memory Alloc Error : %s\n", ColorFilePath ) ) ;
-#endif
-						Result = -1 ;
-					}
-					else
-					{
-						_MEMCPY( *ColorImage, DataAddr, ( size_t )( *ColorImageSize ) ) ;
-					}
-					if( FileReadFunc->Release )
-					{
-						FileReadFunc->Release( DataAddr, FileReadFunc->Data ) ;
-					}
-				}
+				Result = -1 ;
 			}
 			else
 			{
-				Result = MV1RLoadFileW( ColorFilePath, ColorImage, ColorImageSize ) ;
+				if( FileReadFunc )
+				{
+#ifdef UNICODE
+					Result = FileReadFunc->Read( ColorFilePath, &DataAddr, ColorImageSize, FileReadFunc->Data ) ;
+#else
+					ConvString( ( const char * )ColorFilePath, -1, WCHAR_T_CHARCODEFORMAT, TempPath, sizeof( TempPath ), CHAR_CHARCODEFORMAT ) ;
+					Result = FileReadFunc->Read( TempPath, &DataAddr, ColorImageSize, FileReadFunc->Data ) ;
+#endif
+					if( Result != -1 )
+					{
+						*ColorImage = DXALLOC( ( size_t )( *ColorImageSize ) ) ;
+						if( *ColorImage == NULL )
+						{
+#ifndef DX_GCC_COMPILE
+							DXST_LOGFILEFMT_ADDW(( L"Load Texture Error : Color Channel Image File : Memory Alloc Error : %s\n", ColorFilePath ) ) ;
+#endif
+							Result = -1 ;
+						}
+						else
+						{
+							_MEMCPY( *ColorImage, DataAddr, ( size_t )( *ColorImageSize ) ) ;
+						}
+						if( FileReadFunc->Release )
+						{
+							FileReadFunc->Release( DataAddr, FileReadFunc->Data ) ;
+						}
+					}
+				}
+				else
+				{
+					Result = MV1RLoadFileW( ColorFilePath, ColorImage, ColorImageSize ) ;
+				}
 			}
 
 			if( Result == -1 )
@@ -10150,7 +10194,8 @@ extern int __MV1LoadTexture(
 // #endif
 				// 拡張子が bmp だったら bin も試す
 				StrLength = ( int )_WCSLEN( ColorFilePath ) ;
-				if( StrLength >= 4 &&
+				if( NotTextureLoad == FALSE &&
+					StrLength >= 4 &&
 					ColorFilePath[ StrLength - 4 ] == '.' &&
 					( ColorFilePath[ StrLength - 3 ] == 'b' || ColorFilePath[ StrLength - 3 ] == 'B' ) &&
 					( ColorFilePath[ StrLength - 2 ] == 'm' || ColorFilePath[ StrLength - 2 ] == 'M' ) &&
@@ -10208,17 +10253,26 @@ extern int __MV1LoadTexture(
 
 				if( Result == -1 )
 				{
-					// 読み込みに失敗した場合はエラー時用テクスチャを充てる
-					*ColorImage = DXALLOC( sizeof( Tga8x8TextureFileImage ) ) ;
-					if( *ColorImage == NULL )
+					if( NotTextureLoad )
 					{
-						DXST_LOGFILEFMT_ADDUTF16LE(( "\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x45\x00\x72\x00\x72\x00\x6f\x00\x72\x00\x20\x00\x3a\x00\x20\x00\xa8\x30\xe9\x30\xfc\x30\xde\x56\x7f\x90\x28\x75\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x00"/*@ L"Load Texture Error : エラー回避用テクスチャを格納する領域の確保に失敗しました" @*/ )) ;
-						goto ERRORLABEL ;
+						*ColorImage = NULL ;
+						*ColorImageSize = 0 ;
+						*DefaultTextureFlag = FALSE ;
 					}
-					_MEMCPY( *ColorImage, Tga8x8TextureFileImage, sizeof( Tga8x8TextureFileImage ) ) ;
-					*ColorImageSize = sizeof( Tga8x8TextureFileImage ) ;
+					else
+					{
+						// 読み込みに失敗した場合はエラー時用テクスチャを充てる
+						*ColorImage = DXALLOC( sizeof( Tga8x8TextureFileImage ) ) ;
+						if( *ColorImage == NULL )
+						{
+							DXST_LOGFILEFMT_ADDUTF16LE(( "\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x45\x00\x72\x00\x72\x00\x6f\x00\x72\x00\x20\x00\x3a\x00\x20\x00\xa8\x30\xe9\x30\xfc\x30\xde\x56\x7f\x90\x28\x75\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x00"/*@ L"Load Texture Error : エラー回避用テクスチャを格納する領域の確保に失敗しました" @*/ )) ;
+							goto ERRORLABEL ;
+						}
+						_MEMCPY( *ColorImage, Tga8x8TextureFileImage, sizeof( Tga8x8TextureFileImage ) ) ;
+						*ColorImageSize = sizeof( Tga8x8TextureFileImage ) ;
 
-					*DefaultTextureFlag = TRUE ;
+						*DefaultTextureFlag = TRUE ;
+					}
 				}
 			}
 		}
@@ -10227,38 +10281,45 @@ extern int __MV1LoadTexture(
 		*AlphaImageSize = 0 ;
 		if( AlphaFilePath )
 		{
-			if( FileReadFunc )
+			if( NotTextureLoad )
 			{
-#ifdef UNICODE
-				Result = FileReadFunc->Read( AlphaFilePath, &DataAddr, AlphaImageSize, FileReadFunc->Data ) ;
-#else
-				ConvString( ( const char * )AlphaFilePath, -1, WCHAR_T_CHARCODEFORMAT, TempPath, sizeof( TempPath ), CHAR_CHARCODEFORMAT ) ;
-				Result = FileReadFunc->Read( TempPath, &DataAddr, AlphaImageSize, FileReadFunc->Data ) ;
-#endif
-
-				if( Result != -1 )
-				{
-					*AlphaImage = DXALLOC( ( size_t )( *AlphaImageSize ) ) ;
-					if( *AlphaImage == NULL )
-					{
-#ifndef DX_GCC_COMPILE
-						DXST_LOGFILEFMT_ADDW(( L"Load Texture Error : Alpha Channel Image : Memory Alloc Error : %s\n", AlphaFilePath ) ) ;
-#endif
-						Result = -1 ;
-					}
-					else
-					{
-						_MEMCPY( *AlphaImage, DataAddr, ( size_t )( *AlphaImageSize ) ) ;
-					}
-					if( FileReadFunc->Release )
-					{
-						FileReadFunc->Release( DataAddr, FileReadFunc->Data ) ;
-					}
-				}
+				Result = -1 ;
 			}
 			else
 			{
-				Result = MV1RLoadFileW( AlphaFilePath, AlphaImage, AlphaImageSize ) ;
+				if( FileReadFunc )
+				{
+#ifdef UNICODE
+					Result = FileReadFunc->Read( AlphaFilePath, &DataAddr, AlphaImageSize, FileReadFunc->Data ) ;
+#else
+					ConvString( ( const char * )AlphaFilePath, -1, WCHAR_T_CHARCODEFORMAT, TempPath, sizeof( TempPath ), CHAR_CHARCODEFORMAT ) ;
+					Result = FileReadFunc->Read( TempPath, &DataAddr, AlphaImageSize, FileReadFunc->Data ) ;
+#endif
+
+					if( Result != -1 )
+					{
+						*AlphaImage = DXALLOC( ( size_t )( *AlphaImageSize ) ) ;
+						if( *AlphaImage == NULL )
+						{
+#ifndef DX_GCC_COMPILE
+							DXST_LOGFILEFMT_ADDW(( L"Load Texture Error : Alpha Channel Image : Memory Alloc Error : %s\n", AlphaFilePath ) ) ;
+#endif
+							Result = -1 ;
+						}
+						else
+						{
+							_MEMCPY( *AlphaImage, DataAddr, ( size_t )( *AlphaImageSize ) ) ;
+						}
+						if( FileReadFunc->Release )
+						{
+							FileReadFunc->Release( DataAddr, FileReadFunc->Data ) ;
+						}
+					}
+				}
+				else
+				{
+					Result = MV1RLoadFileW( AlphaFilePath, AlphaImage, AlphaImageSize ) ;
+				}
 			}
 
 			if( Result == -1 )
@@ -10277,6 +10338,11 @@ extern int __MV1LoadTexture(
 				_MEMCPY( *AlphaImage, Tga8x8TextureFileImage, sizeof( Tga8x8TextureFileImage ) ) ;
 				*AlphaImageSize = sizeof( Tga8x8TextureFileImage ) ;
 			}
+		}
+		else
+		if( NotTextureLoad )
+		{
+			Result = -1 ;
 		}
 		else
 		{
@@ -10335,116 +10401,141 @@ extern int __MV1LoadTexture(
 		}
 	}
 
-	// BASEIMAGE を構築
-	SetBmp32AllZeroAlphaToXRGB8( Bmp32AllZeroAlphaToXRGB8Flag ) ;
-	if( MV1CreateTextureColorBaseImage(
-				&ColorBaseImage,
-				&AlphaBaseImage,
-				*ColorImage, *ColorImageSize,
-				*AlphaImage, *AlphaImageSize,
-				BumpImageFlag, BumpImageNextPixelLength, ReverseFlag ) == -1 )
+	if( NotTextureLoad )
 	{
-		SetBmp32AllZeroAlphaToXRGB8( FALSE ) ;
-		DXST_LOGFILEFMT_ADDUTF16LE(( "\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x45\x00\x72\x00\x72\x00\x6f\x00\x72\x00\x20\x00\x3a\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x28\x75\x6e\x30\x20\x00\x42\x00\x41\x00\x53\x00\x45\x00\x49\x00\x4d\x00\x41\x00\x47\x00\x45\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました\n" @*/ )) ;
-		goto ERRORLABEL ;
-	}
-	SetBmp32AllZeroAlphaToXRGB8( FALSE ) ;
-
-	// ハンドルを得る
-	LOADGRAPH_GPARAM GParam ;
-	Graphics_Image_InitLoadGraphGParam( &GParam ) ;
-	GParam.LoadBaseImageGParam.ConvertPremultipliedAlpha = FALSE ;
-	GParam.CreateGraphGParam.NotUseTransColor = TRUE ;
-	if( ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_DXT1 ||
-		ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_DXT2 ||
-		ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_DXT3 ||
-		ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_DXT4 ||
-		ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_DXT5 ||
-		ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_BC7_UNORM ||
-		ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_BC7_UNORM_SRGB )
-	{
-		GParam.CreateGraphGParam.InitHandleGParam.MipMapCount = ColorBaseImage.MipMapCount ;
+		if( UserGraphHandle == FALSE )
+		{
+			*GraphHandle = 0 ;
+		}
+		*SemiTransFlag = FALSE ;
 	}
 	else
 	{
-		GParam.CreateGraphGParam.InitHandleGParam.MipMapCount = -1 ;
-	}
-	GParam.CreateGraphGParam.InitHandleGParam.NotInitGraphDelete = NotInitGraphDelete ;
-	*GraphHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &ColorBaseImage, *AlphaImage ? &AlphaBaseImage : NULL, TRUE, FALSE, FALSE, ASyncThread ) ;
-	if( *GraphHandle < 0 )
-	{
-		NS_ReleaseBaseImage( &ColorBaseImage ) ;
-		if( AlphaImage ) NS_ReleaseBaseImage( &AlphaBaseImage ) ;
-		goto ERRORLABEL ;
-	}
-
-	// 半透明要素があるかどうかを調べる
-	*SemiTransFlag = FALSE ;
-	if( *AlphaImage ) *SemiTransFlag = TRUE ;
-	if( *SemiTransFlag == FALSE && ColorBaseImage.ColorData.AlphaWidth != 0 )
-	{
-//		int r, g, b, a ;
-
-		// フォーマットが標準フォーマットではなかったらDXTフォーマットで判断する
-		if( ColorBaseImage.ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
+		// BASEIMAGE を構築
+		SetBmp32AllZeroAlphaToXRGB8( Bmp32AllZeroAlphaToXRGB8Flag ) ;
+		if( MV1CreateTextureColorBaseImage(
+					&ColorBaseImage,
+					&AlphaBaseImage,
+					*ColorImage, *ColorImageSize,
+					*AlphaImage, *AlphaImageSize,
+					BumpImageFlag, BumpImageNextPixelLength, ReverseFlag ) == -1 )
 		{
-			//NS_ConvertNormalFormatBaseImage( &ColorBaseImage ) ;
-			switch( ColorBaseImage.ColorData.Format )
+			SetBmp32AllZeroAlphaToXRGB8( FALSE ) ;
+			DXST_LOGFILEFMT_ADDUTF16LE(( "\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x54\x00\x65\x00\x78\x00\x74\x00\x75\x00\x72\x00\x65\x00\x20\x00\x45\x00\x72\x00\x72\x00\x6f\x00\x72\x00\x20\x00\x3a\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\x28\x75\x6e\x30\x20\x00\x42\x00\x41\x00\x53\x00\x45\x00\x49\x00\x4d\x00\x41\x00\x47\x00\x45\x00\x20\x00\x6e\x30\x5c\x4f\x10\x62\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました\n" @*/ )) ;
+			goto ERRORLABEL ;
+		}
+		SetBmp32AllZeroAlphaToXRGB8( FALSE ) ;
+
+		// ハンドルを得る
+		LOADGRAPH_GPARAM GParam ;
+		Graphics_Image_InitLoadGraphGParam( &GParam ) ;
+		GParam.LoadBaseImageGParam.ConvertPremultipliedAlpha = FALSE ;
+		GParam.CreateGraphGParam.NotUseTransColor = TRUE ;
+		if( ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_DXT1 ||
+			ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_DXT2 ||
+			ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_DXT3 ||
+			ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_DXT4 ||
+			ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_DXT5 ||
+			ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_BC7_UNORM ||
+			ColorBaseImage.ColorData.Format == DX_BASEIMAGE_FORMAT_BC7_UNORM_SRGB )
+		{
+			GParam.CreateGraphGParam.InitHandleGParam.MipMapCount = ColorBaseImage.MipMapCount ;
+		}
+		else
+		{
+			GParam.CreateGraphGParam.InitHandleGParam.MipMapCount = -1 ;
+		}
+		GParam.CreateGraphGParam.InitHandleGParam.NotInitGraphDelete = NotInitGraphDelete ;
+		if( UserGraphHandle )
+		{
+			int Result ;
+			Result = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, *GraphHandle, &ColorBaseImage, *AlphaImage ? &AlphaBaseImage : NULL, TRUE, FALSE, FALSE, ASyncThread ) ;
+			if( Result < 0 )
 			{
-			case DX_BASEIMAGE_FORMAT_DXT1 :
-				*SemiTransFlag = FALSE ;
-				break ;
-
-			case DX_BASEIMAGE_FORMAT_DXT2 :
-				*SemiTransFlag = TRUE ;
-				break ;
-
-			case DX_BASEIMAGE_FORMAT_DXT3 :
-				*SemiTransFlag = TRUE ;
-				break ;
-
-			case DX_BASEIMAGE_FORMAT_DXT4 :
-				*SemiTransFlag = TRUE ;
-				break ;
-
-			case DX_BASEIMAGE_FORMAT_DXT5 :
-				*SemiTransFlag = TRUE ;
-				break ;
-
-			case DX_BASEIMAGE_FORMAT_BC7_UNORM :
-				*SemiTransFlag = TRUE ;
-				break ;
-
-			case DX_BASEIMAGE_FORMAT_BC7_UNORM_SRGB :
-				*SemiTransFlag = TRUE ;
-				break ;
+				NS_ReleaseBaseImage( &ColorBaseImage ) ;
+				if( AlphaImage ) NS_ReleaseBaseImage( &AlphaBaseImage ) ;
+				goto ERRORLABEL ;
 			}
 		}
-/*
-		for( i = 0 ; i < ColorBaseImage.Height ; i ++ )
+		else
 		{
-			for( j = 0 ; j < ColorBaseImage.Width ; j ++ )
+			*GraphHandle = Graphics_Image_CreateGraphFromGraphImage_UseGParam( &GParam, FALSE, -1, &ColorBaseImage, *AlphaImage ? &AlphaBaseImage : NULL, TRUE, FALSE, FALSE, ASyncThread ) ;
+			if( *GraphHandle < 0 )
 			{
-				NS_GetPixelBaseImage( &ColorBaseImage, j, i, &r, &g, &b, &a ) ;
-				if( a != 255 )
+				NS_ReleaseBaseImage( &ColorBaseImage ) ;
+				if( AlphaImage ) NS_ReleaseBaseImage( &AlphaBaseImage ) ;
+				goto ERRORLABEL ;
+			}
+		}
+
+		// 半透明要素があるかどうかを調べる
+		*SemiTransFlag = FALSE ;
+		if( *AlphaImage ) *SemiTransFlag = TRUE ;
+		if( *SemiTransFlag == FALSE && ColorBaseImage.ColorData.AlphaWidth != 0 )
+		{
+	//		int r, g, b, a ;
+
+			// フォーマットが標準フォーマットではなかったらDXTフォーマットで判断する
+			if( ColorBaseImage.ColorData.Format != DX_BASEIMAGE_FORMAT_NORMAL )
+			{
+				//NS_ConvertNormalFormatBaseImage( &ColorBaseImage ) ;
+				switch( ColorBaseImage.ColorData.Format )
 				{
+				case DX_BASEIMAGE_FORMAT_DXT1 :
+					*SemiTransFlag = FALSE ;
+					break ;
+
+				case DX_BASEIMAGE_FORMAT_DXT2 :
+					*SemiTransFlag = TRUE ;
+					break ;
+
+				case DX_BASEIMAGE_FORMAT_DXT3 :
+					*SemiTransFlag = TRUE ;
+					break ;
+
+				case DX_BASEIMAGE_FORMAT_DXT4 :
+					*SemiTransFlag = TRUE ;
+					break ;
+
+				case DX_BASEIMAGE_FORMAT_DXT5 :
+					*SemiTransFlag = TRUE ;
+					break ;
+
+				case DX_BASEIMAGE_FORMAT_BC7_UNORM :
+					*SemiTransFlag = TRUE ;
+					break ;
+
+				case DX_BASEIMAGE_FORMAT_BC7_UNORM_SRGB :
 					*SemiTransFlag = TRUE ;
 					break ;
 				}
 			}
-			if( *SemiTransFlag ) break ;
+	/*
+			for( i = 0 ; i < ColorBaseImage.Height ; i ++ )
+			{
+				for( j = 0 ; j < ColorBaseImage.Width ; j ++ )
+				{
+					NS_GetPixelBaseImage( &ColorBaseImage, j, i, &r, &g, &b, &a ) ;
+					if( a != 255 )
+					{
+						*SemiTransFlag = TRUE ;
+						break ;
+					}
+				}
+				if( *SemiTransFlag ) break ;
+			}
+	*/
+			else
+			{
+				// 全ピクセルを調べて半透明要素があるかどうかを調べる
+				*SemiTransFlag = NS_CheckPixelAlphaBaseImage( &ColorBaseImage ) <= 1 ? 0 : 1 ; 
+			}
 		}
-*/
-		else
-		{
-			// 全ピクセルを調べて半透明要素があるかどうかを調べる
-			*SemiTransFlag = NS_CheckPixelAlphaBaseImage( &ColorBaseImage ) <= 1 ? 0 : 1 ; 
-		}
-	}
 
-	// 基本イメージは解放
-	NS_ReleaseBaseImage( &ColorBaseImage ) ;
-	if( *AlphaImage ) NS_ReleaseBaseImage( &AlphaBaseImage ) ;
+		// 基本イメージは解放
+		NS_ReleaseBaseImage( &ColorBaseImage ) ;
+		if( *AlphaImage ) NS_ReleaseBaseImage( &AlphaBaseImage ) ;
+	}
 
 	// 終了
 	return 0 ;
@@ -10485,7 +10576,7 @@ ERRORLABEL :
 			*AlphaImage = NULL ;
 		}
 	}
-	if( *GraphHandle != -1 )
+	if( UserGraphHandle == FALSE && *GraphHandle != -1 )
 	{
 		NS_DeleteGraph( *GraphHandle, FALSE ) ;
 		*GraphHandle = -1 ;
@@ -10518,6 +10609,7 @@ static int _MV1TextureLoadBase(
 	DirW = ModelBase->DirectoryPath ;
 
 	// テクスチャの読み込み
+	GraphHandle = 0 ;
 	Result =  __MV1LoadTexture(
 					&ColorImage, &ColorImageSize,
 					&AlphaImage, &AlphaImageSize,
@@ -10533,6 +10625,7 @@ static int _MV1TextureLoadBase(
 					NULL,
 					false,
 					TRUE,
+					FALSE,
 					ASyncThread
 			) ;
 
@@ -10651,6 +10744,7 @@ static int _MV1TextureLoad(
 	DirW = ModelBase->DirectoryPath ;
 
 	// テクスチャの読み込み
+	GraphHandle = 0 ;
 	Result =  __MV1LoadTexture(
 					&ColorImage, &ColorImageSize,
 					&AlphaImage, &AlphaImageSize,
@@ -10666,6 +10760,7 @@ static int _MV1TextureLoad(
 					NULL,
 					false,
 					TRUE,
+					FALSE,
 					ASyncThread ) ;
 
 	if( Result == -1 )
@@ -12077,6 +12172,7 @@ extern int MV1AddTextureBase(
 		MBTexture->Bmp32AllZeroAlphaToXRGB8Flag = Bmp32AllZeroAlphaToXRGB8Flag ? TRUE : FALSE ;
 
 		// テクスチャの読み込み
+		MBTexture->GraphHandle = 0 ;
 		Result = __MV1LoadTexture(
 				&MBTexture->ColorImage, &MBTexture->ColorImageSize,
 				&MBTexture->AlphaImage, &MBTexture->AlphaImageSize,
@@ -12094,6 +12190,7 @@ extern int MV1AddTextureBase(
 				NULL,
 				false,
 				TRUE,
+				FALSE,
 				ASyncThread ) ;
 
 		if( Result == -1 )
@@ -14440,6 +14537,8 @@ extern void InitMV1LoadModelGParam( MV1LOADMODEL_GPARAM *GParam )
 	GParam->LoadModelToPMD_PMX_AnimationFPSMode				= MV1Man.LoadModelToPMD_PMX_AnimationFPSMode ;
 	GParam->LoadModelToUsePackDraw							= MV1Man.LoadModelToUsePackDraw ;
 	GParam->LoadModelToTriangleListUseMaxBoneNum			= MV1Man.LoadModelToTriangleListUseMaxBoneNum == 0 ? MV1_TRIANGLE_LIST_USE_BONE_MAX_NUM : MV1Man.LoadModelToTriangleListUseMaxBoneNum ;
+	GParam->LoadModelToNotTextureLoad						= MV1Man.LoadModelToNotTextureLoad ;
+	GParam->LoadModelToIgnoreIK								= MV1Man.LoadModelToIgnoreIK ;
 	_MEMCPY( GParam->LoadCalcPhysicsWorldGravity, MV1Man.LoadCalcPhysicsWorldGravity, sizeof( MV1Man.LoadCalcPhysicsWorldGravity ) ) ;
 
 	GParam->AnimFilePathValid = MV1Man.AnimFilePathValid ;
@@ -15324,6 +15423,7 @@ extern int MV1LoadModelToMV1( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 				}
 			}
 
+			Texture->GraphHandle = 0 ;
 			if( __MV1LoadTexture(
 					&Texture->ColorImage, &Texture->ColorImageSize,
 					&Texture->AlphaImage, &Texture->AlphaImageSize,
@@ -15343,6 +15443,7 @@ extern int MV1LoadModelToMV1( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 					LoadParam->FileReadFunc,
 					false,
 					TRUE,
+					LoadParam->GParam.LoadModelToNotTextureLoad,
 					ASyncThread ) == -1 )
 			{
 				DXST_LOGFILEFMT_ADDW(( L"MV1 LoadModel Error : Txture Load Error : %s\n", Texture->NameW ) ) ;
@@ -15354,14 +15455,14 @@ extern int MV1LoadModelToMV1( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 			Texture->AlphaImageFilePathAllocMem = FALSE ;
 
 			// ファイルパスを保存
-			if( Texture->ColorImage == NULL || F1Texture->ColorFilePath == 0 )
+			if( ( Texture->ColorImage == NULL && LoadParam->GParam.LoadModelToNotTextureLoad == FALSE ) || F1Texture->ColorFilePath == 0 )
 			{
 #ifndef UNICODE
 				Texture->ColorFilePathA = NULL ;
 #endif
 				Texture->ColorFilePathW = NULL ;
 			}
-			if( Texture->AlphaImage == NULL || F1Texture->AlphaFilePath == 0 )
+			if( ( Texture->AlphaImage == NULL && LoadParam->GParam.LoadModelToNotTextureLoad == FALSE ) || F1Texture->AlphaFilePath == 0 )
 			{
 #ifndef UNICODE
 				Texture->AlphaFilePathA = NULL ;
@@ -17011,6 +17112,24 @@ extern int NS_MV1SetLoadModelTriangleListUseMaxBoneNum( int UseMaxBoneNum )
 	}
 
 	MV1Man.LoadModelToTriangleListUseMaxBoneNum = UseMaxBoneNum ;
+
+	// 終了
+	return 0 ;
+}
+
+// 読み込むモデルで使用するテクスチャファイルを読み込むかどうかを設定する( TRUE:読み込む(デフォルト) FALSE:読み込まない )
+extern int NS_MV1SetLoadModelTextureLoad( int Flag )
+{
+	MV1Man.LoadModelToNotTextureLoad = Flag ? FALSE : TRUE ;
+
+	// 終了
+	return 0 ;
+}
+
+// 読み込むモデルのIK情報を無視するかどうかを設定する( TRUE:無視する  FALSE:無視しない(デフォルト) )
+extern int NS_MV1SetLoadModelIgnoreIK( int IgnoreFlag )
+{
+	MV1Man.LoadModelToIgnoreIK = IgnoreFlag ;
 
 	// 終了
 	return 0 ;
@@ -21742,6 +21861,8 @@ extern int NS_MV1AttachAnim( int MHandle, int AnimIndex, int AnimSrcMHandle, int
 	{
 		MAnim->Anim = NULL ;
 		MAnim->BlendRate = 1.0f ;
+		MAnim->EnableNowTime = false ;
+		MAnim->NowTime = 0.0f ;
 		MAnim->Use = false ;
 	}
 
@@ -21974,7 +22095,7 @@ extern int NS_MV1AttachAnim( int MHandle, int AnimIndex, int AnimSrcMHandle, int
 	Model->LocalWorldMatrixSetupFlag = false ;
 
 	// アニメーションの時間を初期化する
-	MV1SetAnimSetTime( MAnimSet->AnimSet, 0.0f ) ;
+	MV1SetAnimSetTime( Model, AttachIndex, MAnimSet->AnimSet, 0.0f ) ;
 
 	// アタッチしたインデックスを返す
 	return AttachIndex ;
@@ -23112,7 +23233,7 @@ extern int NS_MV1SetAttachAnimTime( int MHandle, int AttachIndex, float Time )
 	Model->LocalWorldMatrixSetupFlag = false ;
 
 	// アニメーションの時間をセットする
-	MV1SetAnimSetTime( AnimSet, Time ) ;
+	MV1SetAnimSetTime( Model, AttachIndex, AnimSet, Time ) ;
 
 	// 終了
 	return 0 ;
@@ -23290,7 +23411,7 @@ extern int NS_MV1SetAttachAnimBlendRateToFrame( int MHandle, int AttachIndex, in
 	return 0 ;
 }
 
-// アタッチしているアニメーションのブレンド率を設定する( フレーム単位 )
+// アタッチしているアニメーションのブレンド率を取得する( フレーム単位 )
 extern float NS_MV1GetAttachAnimBlendRateToFrame( int MHandle, int AttachIndex, int FrameIndex )
 {
 	MV1_MODEL *Model ;
@@ -23315,6 +23436,138 @@ extern float NS_MV1GetAttachAnimBlendRateToFrame( int MHandle, int AttachIndex, 
 
 	// ブレンドレートを返す
 	return MAnim->BlendRate ;
+}
+
+// アタッチしているアニメーションの再生時間を設定する( フレーム単位 )
+extern int NS_MV1SetAttachAnimTimeToFrame( int MHandle, int AttachIndex, int FrameIndex, float Time, int SetChild )
+{
+	MV1_MODEL *Model ;
+	MV1_MODEL_ANIM *MAnim ;
+	MV1_FRAME *Frame ;
+	bool Change = false ;
+	int i ;
+
+	// 初期化されていなかったらエラー
+	if( MV1Man.Initialize == false ) return -1 ;
+
+	// アドレス取得
+	if( MV1MDLCHK( MHandle, Model ) )
+		return -1 ;
+
+	// 確保しているアタッチインデックス外だった場合は何もせずに終了
+	if( AttachIndex < 0 || AttachIndex >= Model->AnimSetMaxNum ) return -1 ;
+
+	// フレームインデックスが不正だったら何もせずに終了
+	if( FrameIndex < 0 || FrameIndex >= Model->BaseData->FrameNum ) return -1 ;
+	Frame = &Model->Frame[ FrameIndex ] ;
+	MAnim = &Model->Anim[ AttachIndex ] + Model->AnimSetMaxNum * FrameIndex ;
+
+	// アニメーションがアタッチされていなかったら何もせずに終了
+	if( Model->AnimSet[ AttachIndex ].Use == false ) return -1 ;
+
+	// 時間がマイナスかどうかで処理を分岐
+	if( Time < 0.0f )
+	{
+		// 解除処理
+		if( MAnim->EnableNowTime )
+		{
+			Change = true ;
+			MAnim->EnableNowTime = false ;
+		}
+
+		if( SetChild )
+		{
+			MV1_MODEL_ANIM *MAnim2 ;
+
+			MAnim2 = MAnim + Model->AnimSetMaxNum ;
+			for( i = 0 ; i < Frame->BaseData->TotalChildNum ; i ++, MAnim2 += Model->AnimSetMaxNum )
+			{
+				if( MAnim2->EnableNowTime )
+				{
+					Change = true ;
+					MAnim2->EnableNowTime = false ;
+				}
+			}
+		}
+	}
+	else
+	{
+		// 値セット処理
+		if( MAnim->EnableNowTime )
+		{
+			if( MAnim->NowTime != Time )
+			{
+				Change = true ;
+				MAnim->NowTime = Time ;
+			}
+		}
+		else
+		{
+			Change = true ;
+			MAnim->EnableNowTime = true ;
+			MAnim->NowTime = Time ;
+		}
+
+		if( SetChild )
+		{
+			MV1_MODEL_ANIM *MAnim2 ;
+
+			MAnim2 = MAnim + Model->AnimSetMaxNum ;
+			for( i = 0 ; i < Frame->BaseData->TotalChildNum ; i ++, MAnim2 += Model->AnimSetMaxNum )
+			{
+				if( MAnim2->EnableNowTime )
+				{
+					if( MAnim2->NowTime != Time )
+					{
+						Change = true ;
+						MAnim2->NowTime = Time ;
+					}
+				}
+				else
+				{
+					Change = true ;
+					MAnim2->EnableNowTime = true ;
+					MAnim2->NowTime = Time ;
+				}
+			}
+		}
+	}
+
+	if( Change )
+	{
+		// 大体の位置をセットする
+		_MV1AnimSetSyncNowKey( Model, AttachIndex, Model->AnimSet[ AttachIndex ].AnimSet, true ) ;
+	}
+
+	// 正常終了
+	return 0 ;
+}
+
+// アタッチしているアニメーションの再生時間を取得する( フレーム単位 )
+extern float NS_MV1GetAttachAnimTimeToFrame( int MHandle, int AttachIndex, int FrameIndex )
+{
+	MV1_MODEL *Model ;
+	MV1_MODEL_ANIM *MAnim ;
+
+	// 初期化されていなかったらエラー
+	if( MV1Man.Initialize == false ) return -1.0f ;
+
+	// アドレス取得
+	if( MV1MDLCHK( MHandle, Model ) )
+		return -1.0f ;
+
+	// 確保しているアタッチインデックス外だった場合は何もせずに終了
+	if( AttachIndex < 0 || AttachIndex >= Model->AnimSetMaxNum ) return -1.0f ;
+
+	// フレームインデックスが不正だったら何もせずに終了
+	if( FrameIndex < 0 || FrameIndex >= Model->BaseData->FrameNum ) return -1.0f ;
+	MAnim = &Model->Anim[ AttachIndex ] + Model->AnimSetMaxNum * FrameIndex ;
+
+	// アニメーションがアタッチされていなかったら何もせずに終了
+	if( Model->AnimSet[ AttachIndex ].Use == false ) return -1.0f ;
+
+	// 再生時間を返す
+	return MAnim->EnableNowTime ? MAnim->NowTime : Model->AnimSet[ AttachIndex ].AnimSet->NowTime ;
 }
 
 // アタッチしているアニメーションがターゲットとするフレームの数を取得する
@@ -25810,8 +26063,6 @@ extern int NS_MV1SetMaterialDrawAddColorAll( int MHandle, int Red, int Green, in
 // 指定のマテリアルの描画時の加算カラーを設定する
 extern int NS_MV1SetMaterialDrawAddColor( int MHandle, int MaterialIndex, int Red, int Green, int Blue )
 {
-	MV1_MESH *Mesh ;
-	int i ;
 	MV1MATERIALSTART( MHandle, Model, ModelBase, Material, MaterialIndex, -1 ) ;
 
 	if( Material->DrawAddColor.x == Red &&
@@ -26501,7 +26752,7 @@ extern int NS_MV1LoadTexture( const TCHAR *FilePath )
 {
 #ifdef UNICODE
 	return MV1LoadTexture_WCHAR_T(
-		FilePath
+		FilePath, GetASyncLoadFlag()
 	) ;
 #else
 	int Result ;
@@ -26509,7 +26760,7 @@ extern int NS_MV1LoadTexture( const TCHAR *FilePath )
 	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( FilePath, return -1 )
 
 	Result = MV1LoadTexture_WCHAR_T(
-		UseFilePathBuffer
+		UseFilePathBuffer, GetASyncLoadFlag()
 	) ;
 
 	TCHAR_TO_WCHAR_T_STRING_END( FilePath )
@@ -26524,20 +26775,19 @@ extern int NS_MV1LoadTextureWithStrLen( const TCHAR *FilePath, size_t FilePathLe
 	int Result ;
 #ifdef UNICODE
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( FilePath, FilePathLength, return -1 )
-	Result = MV1LoadTexture_WCHAR_T( UseFilePathBuffer ) ;
+	Result = MV1LoadTexture_WCHAR_T( UseFilePathBuffer, GetASyncLoadFlag() ) ;
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( FilePath )
 #else
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( FilePath, FilePathLength, return -1 )
-	Result = MV1LoadTexture_WCHAR_T( UseFilePathBuffer ) ;
+	Result = MV1LoadTexture_WCHAR_T( UseFilePathBuffer, GetASyncLoadFlag() ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( FilePath )
 #endif
 	return Result ;
 }
 
-// ３Ｄモデルに貼り付けるのに向いた画像の読み込み方式で画像を読み込む( 戻り値  -1:エラー  0以上:グラフィックハンドル )
-extern int MV1LoadTexture_WCHAR_T( const wchar_t *FilePath )
+// MV1LoadTexture_WCHAR_T の実処理関数
+extern int MV1LoadTexture_WCHAR_T_Static( int NewGraphHandle, const wchar_t *FilePath, int ASyncThread )
 {
-	int NewGraphHandle ;
 	void *ColorImage, *AlphaImage ;
 	int ColorImageSize, AlphaImageSize ;
 	int SemiTransFlag, DefaultTextureFlag ;
@@ -26561,7 +26811,8 @@ extern int MV1LoadTexture_WCHAR_T( const wchar_t *FilePath )
 			NULL,
 			false,
 			FALSE,
-			FALSE ) == -1 )
+			FALSE,
+			ASyncThread ) == -1 )
 		return -1 ;
 
 	if( ColorImage )
@@ -26576,10 +26827,127 @@ extern int MV1LoadTexture_WCHAR_T( const wchar_t *FilePath )
 		AlphaImage = NULL ;
 	}
 
-	// ハンドルを返す
-	return NewGraphHandle ;
+	// ここに来た場合は成功
+	return 0 ;
 }
 
+#ifndef DX_NON_ASYNCLOAD
+
+// MV1LoadTexture_WCHAR_T の非同期読み込みスレッドから呼ばれる関数
+static void MV1LoadTexture_WCHAR_T_ASync( ASYNCLOADDATA_COMMON *AParam )
+{
+	int NewGraphHandle ;
+	const wchar_t *FilePath ;
+	int Addr ;
+	int Result ;
+	IMAGEDATA *Image ;
+
+	Addr = 0 ;
+	NewGraphHandle = GetASyncLoadParamInt(    AParam->Data, &Addr ) ;
+	FilePath       = GetASyncLoadParamString( AParam->Data, &Addr ) ;
+
+	Result = MV1LoadTexture_WCHAR_T_Static( NewGraphHandle, FilePath, TRUE ) ;
+	if( !GRAPHCHK_ASYNC( NewGraphHandle, Image ) )
+	{
+	 	Image->HandleInfo.ASyncLoadResult = Result ;
+	}
+
+	DecASyncLoadCount( NewGraphHandle ) ;
+	if( Result < 0 )
+	{
+		NS_DeleteGraph( NewGraphHandle, FALSE ) ;
+	}
+}
+#endif // DX_NON_ASYNCLOAD
+
+// ３Ｄモデルに貼り付けるのに向いた画像の読み込み方式で画像を読み込む( 戻り値  -1:エラー  0以上:グラフィックハンドル )
+extern int MV1LoadTexture_WCHAR_T( const wchar_t *FilePath, int ASyncLoadFlag, int ASyncThread )
+{
+	int NewGraphHandle ;
+
+	if( FilePath == NULL )
+	{
+		return -1 ;
+	}
+
+	if( ASyncThread == FALSE )
+	{
+		CheckActiveState() ;
+	}
+	
+	NewGraphHandle = Graphics_Image_AddHandle( -1, ASyncThread ) ;
+	if( NewGraphHandle < 0 )
+	{
+		return -1 ;
+	}
+
+#ifndef DX_NON_ASYNCLOAD
+	if( ASyncThread == FALSE && ASyncLoadFlag )
+	{
+		ASYNCLOADDATA_COMMON *AParam = NULL ;
+		int Addr ;
+		wchar_t FullPath[ 1024 ] ;
+
+		ConvertFullPathW_( FilePath, FullPath, sizeof( FullPath ) ) ;
+
+		// パラメータに必要なメモリのサイズを算出
+		Addr = 0 ;
+		AddASyncLoadParamInt(    NULL, &Addr, NewGraphHandle ) ;
+		AddASyncLoadParamString( NULL, &Addr, FullPath ) ; 
+
+		// メモリの確保
+		AParam = AllocASyncLoadDataMemory( Addr ) ;
+		if( AParam == NULL )
+			goto ERR ;
+
+		// 処理に必要な情報をセット
+		AParam->ProcessFunction = MV1LoadTexture_WCHAR_T_ASync ;
+		Addr = 0 ;
+		AddASyncLoadParamInt(    AParam->Data, &Addr, NewGraphHandle ) ;
+		AddASyncLoadParamString( AParam->Data, &Addr, FullPath ) ;
+
+		// データを追加
+		if( AddASyncLoadData( AParam ) < 0 )
+		{
+			DXFREE( AParam ) ;
+			AParam = NULL ;
+			goto ERR ;
+		}
+
+		// 非同期読み込みカウントをインクリメント
+		IncASyncLoadCount( NewGraphHandle, AParam->Index ) ;
+	}
+	else
+#endif // DX_NON_ASYNCLOAD
+	{
+		if( MV1LoadTexture_WCHAR_T_Static( NewGraphHandle, FilePath, ASyncThread ) < 0 )
+		{
+			goto ERR ;
+		}
+	}
+
+#ifndef DX_NON_ASYNCLOAD
+	if( ASyncThread )
+	{
+		DecASyncLoadCount( NewGraphHandle ) ;
+	}
+#endif // DX_NON_ASYNCLOAD
+
+	// 正常終了
+	return NewGraphHandle ;
+
+ERR :
+#ifndef DX_NON_ASYNCLOAD
+	if( ASyncThread )
+	{
+		DecASyncLoadCount( NewGraphHandle ) ;
+	}
+#endif // DX_NON_ASYNCLOAD
+
+	NS_DeleteGraph( NewGraphHandle, FALSE ) ;
+
+	return -1 ;
+}
 
 
 
