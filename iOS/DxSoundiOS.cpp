@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		iOS用サウンドプログラム
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
@@ -399,6 +399,9 @@ static int SoundReleaseInfo_Process( void )
 	// 破棄すべきサウンドが無い場合は何もせずに終了
 	if( ind == -1 )
 	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &SoundSysData.PF.SoundReleaseCriticalSection ) ;
+
 		return 0 ;
 	}
 
@@ -616,7 +619,7 @@ END :
 // サウンドバッファ再生処理用スレッド
 static void *ALBufferPlayThreadFunction( void *argc )
 {
-	while( SoundSysData.PF.ProcessSoundThreadEndRequest == FALSE )
+	while( SoundSysData.PF.ProcessALBufferThreadEndRequest == FALSE )
 	{
 		// クリティカルセクションの取得
 		CRITICALSECTION_LOCK( &HandleManageArray[ DX_HANDLETYPE_SOUND ].CriticalSection ) ;
@@ -657,7 +660,7 @@ static void *ALBufferPlayThreadFunction( void *argc )
 // ストリームサウンド処理用スレッド
 static void *StreamSoundThreadFunction( void *argc )
 {
-	while( SoundSysData.PF.ProcessALBufferThreadEndRequest == FALSE )
+	while( SoundSysData.PF.ProcessSoundThreadEndRequest == FALSE )
 	{
 		// クリティカルセクションの取得
 		CRITICALSECTION_LOCK( &HandleManageArray[ DX_HANDLETYPE_SOUND ].CriticalSection ) ;
@@ -673,6 +676,9 @@ static void *StreamSoundThreadFunction( void *argc )
 
 		// ３Ｄサウンドを再生しているサウンドハンドルに対する処理を行う
 		ProcessPlay3DSoundMemAll() ;
+
+		// 再生しているサウンドハンドルに対する処理を行う
+		ProcessPlaySoundMemAll() ;
 
 		// クリティカルセクションの解放
 		CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_SOUND ].CriticalSection ) ;

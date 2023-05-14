@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		iOS用システムプログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -877,6 +877,9 @@ extern int NS_ProcessMessage( void )
 	// 通信関係のメッセージ処理を行う
 	NS_ProcessNetMessage( TRUE ) ;
 #endif
+
+	// メモリ関係の周期的処理を行う
+	MemoryProcess() ;
 
 #ifndef DX_NON_SOUND
 	// サウンド関係の周期的処理を行う

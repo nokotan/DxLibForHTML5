@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画処理プログラム( iOS )
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
@@ -357,6 +357,34 @@ DX_IOS_RENDER_BLEND_INFO g_DefaultBlendDescArray[ DX_BLENDMODE_NUM ] =
 	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_ADDITIVE	Spine のブレンドモード Additive 
 	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_DST_COLOR,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_ONE_MINUS_SRC_ALPHA,	GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_MULTIPLY	Spine のブレンドモード Multiply 
 	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ONE_MINUS_SRC_COLOR,	GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_SCREEN	Spine のブレンドモード Screen 用
+
+	{ IOS_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_CUSTOM			カスタムブレンド
+} ;
+
+// ＤＸライブラリのブレンド要素タイプを OpenGL ES の要素タイプに変換するためのテーブル
+static const GLenum DxBlendTypeToGLTable[ DX_BLEND_NUM ] =
+{
+	GL_ZERO,					// DX_BLEND_ZERO
+	GL_ONE,						// DX_BLEND_ONE
+	GL_SRC_COLOR,				// DX_BLEND_SRC_COLOR
+	GL_ONE_MINUS_SRC_COLOR,		// DX_BLEND_INV_SRC_COLOR
+	GL_SRC_ALPHA,				// DX_BLEND_SRC_ALPHA
+	GL_ONE_MINUS_SRC_ALPHA,		// DX_BLEND_INV_SRC_ALPHA
+	GL_DST_COLOR,				// DX_BLEND_DEST_COLOR
+	GL_ONE_MINUS_DST_COLOR,		// DX_BLEND_INV_DEST_COLOR
+	GL_DST_ALPHA,				// DX_BLEND_DEST_ALPHA
+	GL_ONE_MINUS_DST_ALPHA,		// DX_BLEND_INV_DEST_ALPHA
+	GL_SRC_ALPHA_SATURATE,		// DX_BLEND_SRC_ALPHA_SAT
+} ;
+
+// ＤＸライブラリのブレンド処理タイプを OpenGL ES の処理タイプに変換するためのテーブル
+static const GLenum DxBlendOpToGLTable[ DX_BLENDOP_NUM ] =
+{
+	GL_FUNC_ADD,				// DX_BLENDOP_ADD
+	GL_FUNC_SUBTRACT,			// DX_BLENDOP_SUBTRACT
+	GL_FUNC_REVERSE_SUBTRACT,	// DX_BLENDOP_REV_SUBTRACT
+	GL_FUNC_ADD,				// DX_BLENDOP_MIX
+	GL_FUNC_ADD,				// DX_BLENDOP_MAX
 } ;
 
 // 頂点バッファに格納できる頂点の最大数のテーブル
@@ -3026,6 +3054,13 @@ extern int		Graphics_iOS_StretchRect(
 	RECT		DestRectTemp ;
 	RECT		BlendRectTemp ;
 	int			BlendMode ;
+	int			BlendEnable ;
+	int			BlendRGBSrc ;
+	int			BlendRGBDest ;
+	int			BlendRGBOp ;
+	int			BlendASrc ;
+	int			BlendADest ;
+	int			BlendAOp ;
 	int			NotWriteAlphaChannelFlag ;
 
 	if( IOS_CHECKVALID_HARDWARE == FALSE )
@@ -3226,9 +3261,16 @@ extern int		Graphics_iOS_StretchRect(
 		}
 
 		// ブレンドモードを変更
-		BlendMode = GIOS.Device.State.BlendMode ;
+		BlendMode		= GIOS.Device.State.BlendMode ;
+		BlendEnable		= GIOS.Device.State.BlendEnable ;
+		BlendRGBSrc		= GIOS.Device.State.BlendRGBSrc ;
+		BlendRGBDest	= GIOS.Device.State.BlendRGBDest ;
+		BlendRGBOp		= GIOS.Device.State.BlendRGBOp ;
+		BlendASrc		= GIOS.Device.State.BlendASrc ;
+		BlendADest		= GIOS.Device.State.BlendADest ;
+		BlendAOp		= GIOS.Device.State.BlendAOp ;
 		NotWriteAlphaChannelFlag = GIOS.Device.State.NotWriteAlphaChannelFlag ;
-		Graphics_iOS_DeviceState_SetBlendMode( AlphaBlend ? DX_BLENDMODE_ALPHA : DX_BLENDMODE_NOBLEND, FALSE ) ;
+		Graphics_iOS_DeviceState_SetBlendMode( AlphaBlend ? DX_BLENDMODE_ALPHA : DX_BLENDMODE_NOBLEND, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, FALSE ) ;
 
 		// 頂点データのセットアップ
 		Graphics_iOS_DeviceState_SetupShaderVertexData(
@@ -3245,7 +3287,17 @@ extern int		Graphics_iOS_StretchRect(
 	// 設定を元に戻す
 	{
 		// ブレンドモードを変更
-		Graphics_iOS_DeviceState_SetBlendMode( BlendMode, NotWriteAlphaChannelFlag ) ;
+		Graphics_iOS_DeviceState_SetBlendMode(
+			BlendMode,
+			BlendEnable,
+			BlendRGBSrc,
+			BlendRGBDest,
+			BlendRGBOp,
+			BlendASrc,
+			BlendADest,
+			BlendAOp,
+			NotWriteAlphaChannelFlag
+		) ;
 
 		// 今までの設定を復帰する
 		Graphics_iOS_DeviceState_RefreshRenderState() ;
@@ -4058,7 +4110,7 @@ extern	int		Graphics_iOS_Device_Initialize( void )
 //		) ;
 
 		// ブレンドモード設定
-		Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE ) ;
+		Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE, DX_BLEND_ZERO, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ZERO, DX_BLEND_ZERO, DX_BLENDOP_ADD, FALSE ) ;
 
 		// アルファテスト設定を初期化
 		Graphics_iOS_DrawSetting_SetDrawAlphaTest( -1, 0 ) ;
@@ -4132,7 +4184,18 @@ extern	int		Graphics_iOS_Device_ReInitialize( void )
 		GIOS.Device.DrawInfo.VertexNum = 0 ;
 
 		// 描画ブレンドモードの設定
-		Graphics_iOS_DrawSetting_SetDrawBlendMode( GIOS.Device.DrawSetting.BlendMode, GIOS.Device.DrawSetting.AlphaTestValidFlag, GIOS.Device.DrawSetting.AlphaChannelValidFlag ) ;
+		Graphics_iOS_DrawSetting_SetDrawBlendMode(
+			GIOS.Device.DrawSetting.BlendMode,
+			GIOS.Device.DrawSetting.BlendEnable,
+			GIOS.Device.DrawSetting.BlendRGBSrc,
+			GIOS.Device.DrawSetting.BlendRGBDest,
+			GIOS.Device.DrawSetting.BlendRGBOp,
+			GIOS.Device.DrawSetting.BlendASrc,
+			GIOS.Device.DrawSetting.BlendADest,
+			GIOS.Device.DrawSetting.BlendAOp,
+			GIOS.Device.DrawSetting.AlphaTestValidFlag,
+			GIOS.Device.DrawSetting.AlphaChannelValidFlag
+		) ;
 
 		// 描画画像のＲＧＢを無視するかどうかをセットする
 		Graphics_iOS_DrawSetting_SetIgnoreDrawGraphColor( GIOS.Device.DrawSetting.IgnoreGraphColorFlag ) ;
@@ -4359,19 +4422,19 @@ extern int Graphics_iOS_DeviceState_SetSampleFilterMode( GLenum Filter, int Samp
 			{
 				glActiveTexture( g_TextureEnum[ i ] ) ;
 				glBindTexture( GL_TEXTURE_2D, GIOS.Device.State.SetTexture[ i ]->TextureBuffer ) ;
-				if( GIOS.Device.State.SetTexture[ i ]->MagFilter != GIOS.Device.State.TexMagFilter[ i ] )
+				// if( GIOS.Device.State.SetTexture[ i ]->MagFilter != GIOS.Device.State.TexMagFilter[ i ] )
 				{
 					GIOS.Device.State.SetTexture[ i ]->MagFilter = GIOS.Device.State.TexMagFilter[ i ] ;
 					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GIOS.Device.State.SetTexture[ i ]->MagFilter ) ;
 				}
-				if( GIOS.Device.State.SetTexture[ i ]->MinFilter != GIOS.Device.State.TexMinFilter[ i ] )
+				// if( GIOS.Device.State.SetTexture[ i ]->MinFilter != GIOS.Device.State.TexMinFilter[ i ] )
 				{
 					GLenum MinFilterTmp = MinFilter ;
 					if( GIOS.Device.State.SetTexture[ i ]->MipMapCount <= 1 && MinFilter == GL_LINEAR_MIPMAP_LINEAR )
 					{
 						MinFilterTmp = GL_LINEAR ;
 					}
-					if( GIOS.Device.State.SetTexture[ i ]->MinFilter != MinFilterTmp )
+					// if( GIOS.Device.State.SetTexture[ i ]->MinFilter != MinFilterTmp )
 					{
 						GIOS.Device.State.SetTexture[ i ]->MinFilter = MinFilterTmp ;
 						glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GIOS.Device.State.SetTexture[ i ]->MinFilter ) ;
@@ -4405,19 +4468,19 @@ extern int Graphics_iOS_DeviceState_SetSampleFilterMode( GLenum Filter, int Samp
 		{
 			glActiveTexture( g_TextureEnum[ Sampler ] ) ;
 			glBindTexture( GL_TEXTURE_2D, GIOS.Device.State.SetTexture[ Sampler ]->TextureBuffer ) ;
-			if( GIOS.Device.State.SetTexture[ Sampler ]->MagFilter != GIOS.Device.State.TexMagFilter[ Sampler ] )
+			// if( GIOS.Device.State.SetTexture[ Sampler ]->MagFilter != GIOS.Device.State.TexMagFilter[ Sampler ] )
 			{
 				GIOS.Device.State.SetTexture[ Sampler ]->MagFilter = GIOS.Device.State.TexMagFilter[ Sampler ] ;
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GIOS.Device.State.SetTexture[ Sampler ]->MagFilter ) ;
 			}
-			if( GIOS.Device.State.SetTexture[ Sampler ]->MinFilter != GIOS.Device.State.TexMinFilter[ Sampler ] )
+			// if( GIOS.Device.State.SetTexture[ Sampler ]->MinFilter != GIOS.Device.State.TexMinFilter[ Sampler ] )
 			{
 				GLenum MinFilterTmp = MinFilter ;
 				if( GIOS.Device.State.SetTexture[ Sampler ]->MipMapCount <= 1 && MinFilter == GL_LINEAR_MIPMAP_LINEAR )
 				{
 					MinFilterTmp = GL_LINEAR ;
 				}
-				if( GIOS.Device.State.SetTexture[ Sampler ]->MinFilter != MinFilterTmp )
+				// if( GIOS.Device.State.SetTexture[ Sampler ]->MinFilter != MinFilterTmp )
 				{
 					GIOS.Device.State.SetTexture[ Sampler ]->MinFilter = MinFilterTmp ;
 					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GIOS.Device.State.SetTexture[ Sampler ]->MinFilter ) ;
@@ -5902,7 +5965,7 @@ extern int Graphics_iOS_DeviceState_SetToonOutLineSize( float Size )
 }
 
 // 描画ブレンドモードのセット
-extern	int		Graphics_iOS_DeviceState_SetBlendMode( int BlendMode, int NotWriteAlphaChannelFlag )
+extern	int		Graphics_iOS_DeviceState_SetBlendMode( int BlendMode, int BlendEnable, int BlendRGBSrc, int BlendRGBDest, int BlendRGBOp, int BlendASrc, int BlendADest, int BlendAOp, int NotWriteAlphaChannelFlag )
 {
 	DX_IOS_RENDER_BLEND_INFO *BlendInfo ;
 
@@ -5911,7 +5974,14 @@ extern	int		Graphics_iOS_DeviceState_SetBlendMode( int BlendMode, int NotWriteAl
 		return -1 ;
 	}
 
-	if( GIOS.Device.State.BlendMode == BlendMode &&
+	if( GIOS.Device.State.BlendMode		== BlendMode &&
+		GIOS.Device.State.BlendEnable	== BlendEnable &&
+		GIOS.Device.State.BlendRGBSrc	== BlendRGBSrc &&
+		GIOS.Device.State.BlendRGBDest	== BlendRGBDest &&
+		GIOS.Device.State.BlendRGBOp	== BlendRGBOp &&
+		GIOS.Device.State.BlendASrc		== BlendASrc &&
+		GIOS.Device.State.BlendADest	== BlendADest &&
+		GIOS.Device.State.BlendAOp		== BlendAOp &&
 		GIOS.Device.State.NotWriteAlphaChannelFlag == NotWriteAlphaChannelFlag &&
 		GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE )
 	{
@@ -5920,40 +5990,83 @@ extern	int		Graphics_iOS_DeviceState_SetBlendMode( int BlendMode, int NotWriteAl
 
 	DRAWSTOCKINFO
 
-	GIOS.Device.State.BlendMode = BlendMode ;
+	GIOS.Device.State.BlendMode		= BlendMode ;
+	GIOS.Device.State.BlendEnable	= BlendEnable ;
+	GIOS.Device.State.BlendRGBSrc	= BlendRGBSrc ;
+	GIOS.Device.State.BlendRGBDest	= BlendRGBDest ;
+	GIOS.Device.State.BlendRGBOp	= BlendRGBOp ;
+	GIOS.Device.State.BlendASrc		= BlendASrc ;
+	GIOS.Device.State.BlendADest	= BlendADest ;
+	GIOS.Device.State.BlendAOp		= BlendAOp ;
 	GIOS.Device.State.NotWriteAlphaChannelFlag = NotWriteAlphaChannelFlag ;
 
 	BlendInfo = &g_DefaultBlendDescArray[ BlendMode ] ;
 
-	if( BlendInfo->BlendEnable )
+	if( BlendMode == DX_BLENDMODE_CUSTOM )
 	{
-		glEnable( GL_BLEND ) ;
-		if( GIOS.Device.State.NotWriteAlphaChannelFlag )
+		if( BlendEnable )
 		{
-			glBlendEquationSeparate(
-				BlendInfo->ColorBlendFunc,
-				GL_FUNC_ADD
-			) ;
-			glBlendFuncSeparate(
-				BlendInfo->ColorSourceMul, BlendInfo->ColorDestMul,
-				GL_ZERO, GL_ONE
-			) ;
+			glEnable( GL_BLEND ) ;
+			if( NotWriteAlphaChannelFlag )
+			{
+				glBlendEquationSeparate(
+					DxBlendOpToGLTable[ BlendRGBOp ],
+					GL_FUNC_ADD
+				) ;
+				glBlendFuncSeparate(
+					DxBlendTypeToGLTable[ BlendRGBSrc ], DxBlendTypeToGLTable[ BlendRGBDest ],
+					GL_ZERO, GL_ONE
+				) ;
+			}
+			else
+			{
+				glBlendEquationSeparate(
+					DxBlendOpToGLTable[ BlendRGBOp ],
+					DxBlendOpToGLTable[ BlendAOp ]
+				) ;
+				glBlendFuncSeparate(
+					DxBlendTypeToGLTable[ BlendRGBSrc ], DxBlendTypeToGLTable[ BlendRGBDest ],
+					DxBlendTypeToGLTable[ BlendASrc ],   DxBlendTypeToGLTable[ BlendADest ]
+				) ;
+			}
 		}
 		else
 		{
-			glBlendEquationSeparate(
-				BlendInfo->ColorBlendFunc,
-				BlendInfo->AlphaBlendFunc
-			) ;
-			glBlendFuncSeparate(
-				BlendInfo->ColorSourceMul, BlendInfo->ColorDestMul,
-				BlendInfo->AlphaSourceMul, BlendInfo->AlphaDestMul
-			) ;
+			glDisable( GL_BLEND ) ;
 		}
 	}
 	else
 	{
-		glDisable( GL_BLEND ) ;
+		if( BlendInfo->BlendEnable )
+		{
+			glEnable( GL_BLEND ) ;
+			if( GIOS.Device.State.NotWriteAlphaChannelFlag )
+			{
+				glBlendEquationSeparate(
+					BlendInfo->ColorBlendFunc,
+					GL_FUNC_ADD
+				) ;
+				glBlendFuncSeparate(
+					BlendInfo->ColorSourceMul, BlendInfo->ColorDestMul,
+					GL_ZERO, GL_ONE
+				) ;
+			}
+			else
+			{
+				glBlendEquationSeparate(
+					BlendInfo->ColorBlendFunc,
+					BlendInfo->AlphaBlendFunc
+				) ;
+				glBlendFuncSeparate(
+					BlendInfo->ColorSourceMul, BlendInfo->ColorDestMul,
+					BlendInfo->AlphaSourceMul, BlendInfo->AlphaDestMul
+				) ;
+			}
+		}
+		else
+		{
+			glDisable( GL_BLEND ) ;
+		}
 	}
 
 	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag = TRUE ;
@@ -6457,19 +6570,19 @@ extern int Graphics_iOS_DeviceState_SetTexture( int SlotIndex, GRAPHICS_IOS_TEXT
 				Texture->WrapT = GIOS.Device.State.TexAddressModeV[ SlotIndex ] ;
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, Texture->WrapT ) ;
 			}
-			if( Texture->MagFilter != GIOS.Device.State.TexMagFilter[ SlotIndex ] )
+			// if( Texture->MagFilter != GIOS.Device.State.TexMagFilter[ SlotIndex ] )
 			{
 				Texture->MagFilter = GIOS.Device.State.TexMagFilter[ SlotIndex ] ;
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, Texture->MagFilter ) ;
 			}
-			if( Texture->MinFilter != GIOS.Device.State.TexMinFilter[ SlotIndex ] )
+			// if( Texture->MinFilter != GIOS.Device.State.TexMinFilter[ SlotIndex ] )
 			{
 				GLenum MinFilterTmp = GIOS.Device.State.TexMinFilter[ SlotIndex ] ;
 				if( Texture->MipMapCount <= 1 && MinFilterTmp == GL_LINEAR_MIPMAP_LINEAR )
 				{
 					MinFilterTmp = GL_LINEAR ;
 				}
-				if( Texture->MinFilter != MinFilterTmp )
+				// if( Texture->MinFilter != MinFilterTmp )
 				{
 					Texture->MinFilter = MinFilterTmp ;
 					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Texture->MinFilter ) ;
@@ -6487,6 +6600,13 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 {
 	int										IgnoreTextureAlpha ;
 	int										NextBlendMode ;
+	int										NextBlendEnable ;
+	int										NextBlendRGBSrc ;
+	int										NextBlendRGBDest ;
+	int										NextBlendRGBOp ;
+	int										NextBlendASrc ;
+	int										NextBlendADest ;
+	int										NextBlendAOp ;
 	int										UseFloatFactorColor = FALSE ;
 	DX_IOS_SHADER_FLOAT4					FloatFactorColor ;
 	int										AlphaTestRef = 0 ;
@@ -6510,7 +6630,14 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 
 	// ブレンドモードの決定
 	{
-		NextBlendMode = GIOS.Device.DrawSetting.BlendMode ;
+		NextBlendMode		= GIOS.Device.DrawSetting.BlendMode ;
+		NextBlendEnable		= GIOS.Device.DrawSetting.BlendEnable ;
+		NextBlendRGBSrc		= GIOS.Device.DrawSetting.BlendRGBSrc ;
+		NextBlendRGBDest	= GIOS.Device.DrawSetting.BlendRGBDest ;
+		NextBlendRGBOp		= GIOS.Device.DrawSetting.BlendRGBOp ;
+		NextBlendASrc		= GIOS.Device.DrawSetting.BlendASrc ;
+		NextBlendADest		= GIOS.Device.DrawSetting.BlendADest ;
+		NextBlendAOp		= GIOS.Device.DrawSetting.BlendAOp ;
 		switch( GIOS.Device.DrawSetting.BlendMode )
 		{
 		case DX_BLENDMODE_SUB :
@@ -6957,7 +7084,17 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 		Graphics_iOS_DeviceState_SetFactorColor( &FloatFactorColor ) ;
 	}
 
-	Graphics_iOS_DeviceState_SetBlendMode( NextBlendMode, GIOS.Device.DrawSetting.NotWriteAlphaChannelFlag ) ;
+	Graphics_iOS_DeviceState_SetBlendMode(
+		NextBlendMode,
+		NextBlendEnable,
+		NextBlendRGBSrc,
+		NextBlendRGBDest,
+		NextBlendRGBOp,
+		NextBlendASrc,
+		NextBlendADest,
+		NextBlendAOp,
+		GIOS.Device.DrawSetting.NotWriteAlphaChannelFlag
+	) ;
 	Graphics_iOS_DeviceState_SetShader( *UseShader, TRUE ) ;
 
 	// 終了
@@ -6992,10 +7129,17 @@ extern	int		Graphics_iOS_DeviceState_NormalDrawSetup( void )
 // 描画設定関係関数
 
 // 描画ブレンドモードの設定
-extern int Graphics_iOS_DrawSetting_SetDrawBlendMode( int BlendMode, int AlphaTestValidFlag, int AlphaChannelValidFlag )
+extern int Graphics_iOS_DrawSetting_SetDrawBlendMode( int BlendMode, int BlendEnable, int BlendRGBSrc, int BlendRGBDest, int BlendRGBOp, int BlendASrc, int BlendADest, int BlendAOp, int AlphaTestValidFlag, int AlphaChannelValidFlag )
 {
 	if( GIOS.Device.DrawSetting.CancelSettingEqualCheck == FALSE &&
 		GIOS.Device.DrawSetting.BlendMode               == BlendMode &&
+		GIOS.Device.DrawSetting.BlendEnable				== BlendEnable  &&
+		GIOS.Device.DrawSetting.BlendRGBSrc				== BlendRGBSrc  &&
+		GIOS.Device.DrawSetting.BlendRGBDest			== BlendRGBDest &&
+		GIOS.Device.DrawSetting.BlendRGBOp				== BlendRGBOp   &&
+		GIOS.Device.DrawSetting.BlendASrc				== BlendASrc    &&
+		GIOS.Device.DrawSetting.BlendADest				== BlendADest   &&
+		GIOS.Device.DrawSetting.BlendAOp				== BlendAOp     &&
 		GIOS.Device.DrawSetting.AlphaTestValidFlag      == AlphaTestValidFlag &&
 		GIOS.Device.DrawSetting.AlphaChannelValidFlag   == AlphaChannelValidFlag )
 	{
@@ -7006,6 +7150,13 @@ extern int Graphics_iOS_DrawSetting_SetDrawBlendMode( int BlendMode, int AlphaTe
 	DRAWSTOCKINFO
 
 	GIOS.Device.DrawSetting.BlendMode             = BlendMode ;
+	GIOS.Device.DrawSetting.BlendEnable			  = BlendEnable ;
+	GIOS.Device.DrawSetting.BlendRGBSrc			  = BlendRGBSrc ;
+	GIOS.Device.DrawSetting.BlendRGBDest		  = BlendRGBDest ;
+	GIOS.Device.DrawSetting.BlendRGBOp			  = BlendRGBOp ;
+	GIOS.Device.DrawSetting.BlendASrc			  = BlendASrc ;
+	GIOS.Device.DrawSetting.BlendADest			  = BlendADest ; 
+	GIOS.Device.DrawSetting.BlendAOp			  = BlendAOp ;
 	GIOS.Device.DrawSetting.AlphaChannelValidFlag = AlphaChannelValidFlag ;
 	GIOS.Device.DrawSetting.AlphaTestValidFlag    = AlphaTestValidFlag ;
 	GIOS.Device.DrawSetting.DrawPrepAlwaysFlag    = TRUE ;
@@ -7609,10 +7760,28 @@ extern	void	FASTCALL Graphics_iOS_DrawPreparation( int ParamFlag )
 		}
 
 		if( GIOS.Device.DrawSetting.BlendMode             != GSYS.DrawSetting.BlendMode ||
+			GIOS.Device.DrawSetting.BlendEnable           != GSYS.DrawSetting.BlendEnable  ||
+			GIOS.Device.DrawSetting.BlendRGBSrc           != GSYS.DrawSetting.BlendRGBSrc  ||
+			GIOS.Device.DrawSetting.BlendRGBDest          != GSYS.DrawSetting.BlendRGBDest ||
+			GIOS.Device.DrawSetting.BlendRGBOp            != GSYS.DrawSetting.BlendRGBOp   ||
+			GIOS.Device.DrawSetting.BlendASrc             != GSYS.DrawSetting.BlendASrc    ||
+			GIOS.Device.DrawSetting.BlendADest            != GSYS.DrawSetting.BlendADest   ||
+			GIOS.Device.DrawSetting.BlendAOp              != GSYS.DrawSetting.BlendAOp     ||
 			GIOS.Device.DrawSetting.AlphaTestValidFlag    != AlphaTest ||
 			GIOS.Device.DrawSetting.AlphaChannelValidFlag != AlphaChannel               )
 		{
-			Graphics_iOS_DrawSetting_SetDrawBlendMode( GSYS.DrawSetting.BlendMode, AlphaTest, AlphaChannel ) ;
+			Graphics_iOS_DrawSetting_SetDrawBlendMode(
+				GSYS.DrawSetting.BlendMode,
+				GSYS.DrawSetting.BlendEnable,
+				GSYS.DrawSetting.BlendRGBSrc,
+				GSYS.DrawSetting.BlendRGBDest,
+				GSYS.DrawSetting.BlendRGBOp,
+				GSYS.DrawSetting.BlendASrc,
+				GSYS.DrawSetting.BlendADest,
+				GSYS.DrawSetting.BlendAOp,
+				AlphaTest,
+				AlphaChannel
+			) ;
 		}
 
 		if( GIOS.Device.DrawSetting.AlphaTestMode         != GSYS.DrawSetting.AlphaTestMode ||
@@ -15254,6 +15423,183 @@ extern	int		Graphics_Hardware_DrawLineSet_PF( const LINEDATA *LineData, int Num 
 }
 
 
+// ハードウエアアクセラレータ使用版 DrawBoxSet
+extern	int		Graphics_Hardware_DrawBoxSet_PF( const RECTDATA *RectData, int Num )
+{
+	int i ;
+	VERTEX_NOTEX_2D *VectData ;
+	COLORDATA ColorData ;
+	int MaxRed, MaxGreen, MaxBlue ; 
+	unsigned int Color ;
+	int Flag ;
+	DWORD drawz ;
+
+	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	// 描画の準備
+	Flag = DX_IOS_DRAWPREP_DIFFUSERGB ;
+	DX_IOS_DRAWPREP_NOTEX( Flag )
+
+	// Ｚバッファに書き込むＺ値をセットする
+	drawz = *((DWORD *)&GSYS.DrawSetting.DrawZ);
+
+	// ベクトル基本ステータスを取得
+	ColorData = *( ( COLORDATA * )NS_GetDispColorData() ) ;
+	
+	if( ColorData.AlphaMask == 0xff000000 &&
+		ColorData.RedMask   == 0x000000ff &&
+		ColorData.GreenMask == 0x0000ff00 &&
+		ColorData.BlueMask  == 0x00ff0000 )
+	{
+		for( i = 0 ; i < Num ; i ++, RectData ++ )
+		{
+			int x1, y1, x2, y2 ;
+
+			if( RectData->x1 > RectData->x2 )
+			{
+				x1 = RectData->x2 ;
+				x2 = RectData->x1 ;
+			}
+			else
+			{
+				x1 = RectData->x1 ;
+				x2 = RectData->x2 ;
+			}
+
+			if( RectData->y1 > RectData->y2 )
+			{
+				y1 = RectData->y2 ;
+				y2 = RectData->y1 ;
+			}
+			else
+			{
+				y1 = RectData->y1 ;
+				y2 = RectData->y2 ;
+			}
+
+			GETVERTEX_QUAD( VectData ) ;
+
+			Color = ( RectData->color & 0x00ffffff ) | ( RectData->pal << 24 ) ;
+			VectData[0].color = Color ;
+			VectData[1].color = Color ;
+			VectData[2].color = Color ;
+			VectData[3].color = Color ;
+			VectData[4].color = Color ;
+			VectData[5].color = Color ;
+			VectData[0].pos.x = ( float )RectData->x1 ;
+			VectData[0].pos.y = ( float )RectData->y1 ;
+			VectData[1].pos.x = ( float )RectData->x2 ;
+			VectData[1].pos.y = ( float )RectData->y1 ;
+			VectData[2].pos.x = ( float )RectData->x1 ;
+			VectData[2].pos.y = ( float )RectData->y2 ;
+			VectData[3].pos.x = ( float )RectData->x2 ;
+			VectData[3].pos.y = ( float )RectData->y2 ;
+			VectData[4].pos.x = ( float )RectData->x1 ;
+			VectData[4].pos.y = ( float )RectData->y2 ;
+			VectData[5].pos.x = ( float )RectData->x2 ;
+			VectData[5].pos.y = ( float )RectData->y1 ;
+			*((DWORD *)&VectData[0].pos.z) = drawz ;
+			*((DWORD *)&VectData[1].pos.z) = drawz ;
+			*((DWORD *)&VectData[2].pos.z) = drawz ;
+			*((DWORD *)&VectData[3].pos.z) = drawz ;
+			*((DWORD *)&VectData[4].pos.z) = drawz ;
+			*((DWORD *)&VectData[5].pos.z) = drawz ;
+			VectData[0].rhw   = 1.0f ;
+			VectData[1].rhw   = 1.0f ;
+			VectData[2].rhw   = 1.0f ;
+			VectData[3].rhw   = 1.0f ;
+			VectData[4].rhw   = 1.0f ;
+			VectData[5].rhw   = 1.0f ;
+
+			// 頂点の追加
+			ADD4VERTEX_NOTEX
+		}
+	}
+	else
+	{
+		MaxRed		= ( 1 << ColorData.RedWidth	  ) - 1 ; 
+		MaxGreen	= ( 1 << ColorData.GreenWidth ) - 1 ;
+		MaxBlue		= ( 1 << ColorData.BlueWidth  ) - 1 ; 
+
+		for( i = 0 ; i < Num ; i ++, RectData ++ )
+		{
+			int x1, y1, x2, y2 ;
+
+			if( RectData->x1 > RectData->x2 )
+			{
+				x1 = RectData->x2 ;
+				x2 = RectData->x1 ;
+			}
+			else
+			{
+				x1 = RectData->x1 ;
+				x2 = RectData->x2 ;
+			}
+
+			if( RectData->y1 > RectData->y2 )
+			{
+				y1 = RectData->y2 ;
+				y2 = RectData->y1 ;
+			}
+			else
+			{
+				y1 = RectData->y1 ;
+				y2 = RectData->y2 ;
+			}
+
+			GETVERTEX_QUAD( VectData ) ;
+
+			Color = RectData->color ;
+			Color = ( RectData->pal << 24 ) |
+							( ( ( ( ( ( Color & ColorData.RedMask	) >> ColorData.RedLoc	) << 8 ) - 1 ) / MaxRed		)       ) |
+							( ( ( ( ( ( Color & ColorData.GreenMask	) >> ColorData.GreenLoc	) << 8 ) - 1 ) / MaxGreen	) << 8  ) |
+							( ( ( ( ( ( Color & ColorData.BlueMask	) >> ColorData.BlueLoc	) << 8 ) - 1 ) / MaxBlue	) << 16 ) ; 
+			VectData[0].color = Color ;
+			VectData[1].color = Color ;
+			VectData[2].color = Color ;
+			VectData[3].color = Color ;
+			VectData[4].color = Color ;
+			VectData[5].color = Color ;
+			VectData[0].pos.x = ( float )RectData->x1 ;
+			VectData[0].pos.y = ( float )RectData->y1 ;
+			VectData[1].pos.x = ( float )RectData->x2 ;
+			VectData[1].pos.y = ( float )RectData->y1 ;
+			VectData[2].pos.x = ( float )RectData->x1 ;
+			VectData[2].pos.y = ( float )RectData->y2 ;
+			VectData[3].pos.x = ( float )RectData->x2 ;
+			VectData[3].pos.y = ( float )RectData->y2 ;
+			VectData[4].pos.x = ( float )RectData->x1 ;
+			VectData[4].pos.y = ( float )RectData->y2 ;
+			VectData[5].pos.x = ( float )RectData->x2 ;
+			VectData[5].pos.y = ( float )RectData->y1 ;
+			*((DWORD *)&VectData[0].pos.z) = drawz ;
+			*((DWORD *)&VectData[1].pos.z) = drawz ;
+			*((DWORD *)&VectData[2].pos.z) = drawz ;
+			*((DWORD *)&VectData[3].pos.z) = drawz ;
+			*((DWORD *)&VectData[4].pos.z) = drawz ;
+			*((DWORD *)&VectData[5].pos.z) = drawz ;
+			VectData[0].rhw   = 1.0f ;
+			VectData[1].rhw   = 1.0f ;
+			VectData[2].rhw   = 1.0f ;
+			VectData[3].rhw   = 1.0f ;
+			VectData[4].rhw   = 1.0f ;
+			VectData[5].rhw   = 1.0f ;
+
+			// 頂点の追加
+			ADD4VERTEX_NOTEX
+		}
+	}
+
+	// 終了
+	return 0 ;
+}
+
 
 
 
@@ -15430,6 +15776,73 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive_PF( const VERTEX_3D *Vertex, 
 	return 0 ;
 }
 
+extern	int		Graphics_Hardware_Draw32bitIndexedPrimitive_PF( const VERTEX_3D *Vertex, int VertexNum, const DWORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag )
+{
+	int i ;
+	VERTEX_3D *VertP ;
+	unsigned char tmp ;
+	int BackupUse3DVertex ;
+
+	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	if( PrimitiveType < DX_PRIMTYPE_MIN || PrimitiveType > DX_PRIMTYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	if( Graphics_iOS_DrawPrimitive3DPreparation( 0, Image, TransFlag ) < 0 )
+	{
+		return -1 ;
+	}
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX_3D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->b ;
+			VertP->b = VertP->r ;
+			VertP->r = tmp ;
+		}
+	}
+
+	BackupUse3DVertex = GIOS.Device.DrawInfo.Use3DVertex ;
+	GIOS.Device.DrawInfo.Use3DVertex = 1 ;
+	Graphics_iOS_DeviceState_NormalDrawSetup() ;
+	GIOS.Device.DrawInfo.Use3DVertex = BackupUse3DVertex ;
+
+	// Uniform の更新
+	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+
+	// 頂点データのセットアップ
+	Graphics_iOS_DeviceState_SetupShaderVertexData(
+		GIOS.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_3D ].InputInfo,
+		Vertex
+	) ;
+
+	// 描画
+	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_INT, Indices );
+	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX_3D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->b ;
+			VertP->b = VertP->r ;
+			VertP->r = tmp ;
+		}
+	}
+
+	// 終了
+	return 0 ;
+}
+
 extern	int		Graphics_Hardware_DrawPrimitiveLight_PF( const VERTEX3D *Vertex, int VertexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag )
 {
 	int i ;
@@ -15559,6 +15972,81 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_PF( const VERTEX3D *Vert
 
 	// 描画
 	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_SHORT, Indices );
+	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX3D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->dif.b ;
+			VertP->dif.b = VertP->dif.r ;
+			VertP->dif.r = tmp ;
+
+			tmp = VertP->spc.b ;
+			VertP->spc.b = VertP->spc.r ;
+			VertP->spc.r = tmp ;
+		}
+	}
+
+	// 終了
+	return 0 ;
+}
+
+extern	int		Graphics_Hardware_Draw32bitIndexedPrimitiveLight_PF( const VERTEX3D *Vertex, int VertexNum, const DWORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag )
+{
+	int i ;
+	VERTEX3D *VertP ;
+	unsigned char tmp ;
+
+	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	if( PrimitiveType < DX_PRIMTYPE_MIN || PrimitiveType > DX_PRIMTYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	if( Graphics_iOS_DrawPrimitive3DPreparation( DX_IOS_DRAWPREP_LIGHTING | DX_IOS_DRAWPREP_SPECULAR, Image, TransFlag ) < 0 )
+	{
+		return -1 ;
+	}
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX3D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->dif.b ;
+			VertP->dif.b = VertP->dif.r ;
+			VertP->dif.r = tmp ;
+
+			tmp = VertP->spc.b ;
+			VertP->spc.b = VertP->spc.r ;
+			VertP->spc.r = tmp ;
+		}
+	}
+
+	// シェーダーをセット
+	if( Graphics_iOS_Shader_Normal3DDraw_Setup() == FALSE )
+	{
+		return -1 ;
+	}
+
+	// Uniform の更新
+	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+
+	// 頂点データのセットアップ
+	Graphics_iOS_DeviceState_SetupShaderVertexData(
+		GIOS.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_3D_LIGHT ].InputInfo,
+		Vertex
+	) ;
+
+	// 描画
+	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_INT, Indices );
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
@@ -16011,6 +16499,76 @@ extern	int		Graphics_Hardware_DrawIndexedPrimitive2DUser_PF( const VERTEX2D *Ver
 	return 0 ;
 }
 
+extern	int		Graphics_Hardware_Draw32bitIndexedPrimitive2DUser_PF( const VERTEX2D *Vertex, int VertexNum, const DWORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag )
+{
+	int Flag ;
+	int i ;
+	VERTEX2D *VertP ;
+	unsigned char tmp ;
+
+	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	if( PrimitiveType < DX_PRIMTYPE_MIN || PrimitiveType > DX_PRIMTYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	// 描画の準備
+	Flag = TransFlag | DX_IOS_DRAWPREP_TEXADDRESS | DX_IOS_DRAWPREP_CULLING ;
+	if( Image )
+	{
+		DX_IOS_DRAWPREP_TEX( Image->Orig, &Image->Hard.Draw[ 0 ].Tex->PF->Texture, Flag )
+	}
+	else
+	{
+		DX_IOS_DRAWPREP_NOTEX( Flag )
+	}
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX2D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->dif.b ;
+			VertP->dif.b = VertP->dif.r ;
+			VertP->dif.r = tmp ;
+		}
+	}
+
+	// Uniform の更新
+	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+
+	// 頂点データのセットアップ
+	Graphics_iOS_DeviceState_SetupShaderVertexData(
+		GIOS.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_2D ].InputInfo,
+		Vertex
+	) ;
+
+	// 描画
+	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_INT, Indices );
+	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+	if( GSYS.HardInfo.UseVertexColorBGRAFormat == FALSE )
+	{
+		VertP = ( VERTEX2D * )Vertex ;
+		for( i = 0 ; i < VertexNum ; i ++, VertP ++ )
+		{
+			tmp = VertP->dif.b ;
+			VertP->dif.b = VertP->dif.r ;
+			VertP->dif.r = tmp ;
+		}
+	}
+
+	// 終了
+	return 0 ;
+}
 
 
 
@@ -16031,7 +16589,17 @@ extern void Graphics_iOS_DrawPreparationToShader( int ParamFlag, int Is2D )
 	Flag = ParamFlag | DX_IOS_DRAWPREP_SPECULAR | DX_IOS_DRAWPREP_TEXADDRESS | DX_IOS_DRAWPREP_NOBLENDSETTING | DX_IOS_DRAWPREP_CULLING | ( Is2D ? 0 : DX_IOS_DRAWPREP_3D ) ;
 	DX_IOS_DRAWPREP_NOTEX( Flag )
 
-	Graphics_iOS_DeviceState_SetBlendMode( GSYS.DrawSetting.BlendMode, GIOS.Device.DrawSetting.NotWriteAlphaChannelFlag ) ;
+	Graphics_iOS_DeviceState_SetBlendMode(
+		GSYS.DrawSetting.BlendMode,
+		GSYS.DrawSetting.BlendEnable,
+		GSYS.DrawSetting.BlendRGBSrc,
+		GSYS.DrawSetting.BlendRGBDest,
+		GSYS.DrawSetting.BlendRGBOp,
+		GSYS.DrawSetting.BlendASrc,
+		GSYS.DrawSetting.BlendADest,
+		GSYS.DrawSetting.BlendAOp,
+		GIOS.Device.DrawSetting.NotWriteAlphaChannelFlag
+	) ;
 }
 
 // シェーダーを使って２Ｄプリミティブを描画する
@@ -16150,6 +16718,43 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed2DToShader_PF( const VERTEX2DS
 	return 0 ;
 }
 
+// シェーダーを使って２Ｄプリミティブを描画する( 頂点インデックスを使用する )
+extern	int		Graphics_Hardware_DrawPrimitive32bitIndexed2DToShader_PF( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */ )
+{
+	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	if( PrimitiveType < DX_PRIMTYPE_MIN || PrimitiveType > DX_PRIMTYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	// 描画の準備
+	Graphics_iOS_DrawPreparationToShader( 0, TRUE ) ;
+
+	// Uniform の更新
+	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+
+	// 頂点データのセットアップ
+	Graphics_iOS_DeviceState_SetupShaderVertexData(
+		GIOS.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_BLENDTEX_2D ].InputInfo,
+		Vertex
+	) ;
+
+	// 描画
+	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_INT, Indices );
+	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+	// 終了
+	return 0 ;
+}
+
 // シェーダーを使って３Ｄプリミティブを描画する( 頂点インデックスを使用する )
 extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_PF( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */ )
 {
@@ -16185,6 +16790,47 @@ extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_PF( const VERTEX3DS
 
 	// 描画
 	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_SHORT, Indices );
+	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+	// 終了
+	return 0 ;
+}
+
+// シェーダーを使って３Ｄプリミティブを描画する( 頂点インデックスを使用する )
+extern	int		Graphics_Hardware_DrawPrimitive32bitIndexed3DToShader_PF( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned int *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */ )
+{
+	if( IOS_CHECKVALID_HARDWARE == FALSE )
+	{
+		return -1 ;
+	}
+
+	if( PrimitiveType < DX_PRIMTYPE_MIN || PrimitiveType > DX_PRIMTYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	// 描画の準備
+	Graphics_iOS_DrawPreparationToShader( DX_IOS_DRAWPREP_LIGHTING | DX_IOS_DRAWPREP_FOG, FALSE ) ;
+
+	// ３Ｄ行列をハードウエアに反映する
+	if( GSYS.DrawSetting.MatchHardware3DMatrix == FALSE )
+		Graphics_DrawSetting_ApplyLib3DMatrixToHardware() ;
+
+	// Uniform の更新
+	Graphics_iOS_DeviceState_UpdateShaderUniform( GIOS.Device.State.SetShader, 3 ) ;
+
+	// 頂点データのセットアップ
+	Graphics_iOS_DeviceState_SetupShaderVertexData(
+		GIOS.Device.State.SetShader,
+		&g_BaseSimpleVertexShaderInfo[ IOS_VERTEX_INPUTLAYOUT_SHADER_3D ].InputInfo,
+		Vertex
+	) ;
+
+	// 描画
+	glDrawElements( g_DXPrimitiveTypeToGLES2PrimitiveType[ PrimitiveType ], IndexNum, GL_UNSIGNED_INT, Indices );
 	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 	// 終了
@@ -16733,6 +17379,16 @@ extern	int		Graphics_Hardware_SetDrawBlendMode_PF( int BlendMode, int BlendParam
 	return 0 ;
 }
 
+// カスタムブレンドモードを設定する
+extern	int		Graphics_Hardware_SetDrawCustomBlendMode_PF(int BlendEnable, int SrcBlendRGB, int DestBlendRGB, int BlendOpRGB, int SrcBlendA, int DestBlendA, int BlendOpA, int BlendParam)
+{
+	// ディフーズカラーの更新
+	GIOS.Device.DrawInfo.DiffuseColor = GetDiffuseColor();
+
+	// 正常終了
+	return 0;
+}
+
 // 描画時のアルファテストの設定を行う( TestMode:DX_CMP_GREATER等( -1:デフォルト動作に戻す )  TestParam:描画アルファ値との比較に使用する値 )
 extern	int		Graphics_Hardware_SetDrawAlphaTest_PF( int TestMode, int TestParam )
 {
@@ -17133,13 +17789,13 @@ extern	int		Graphics_Hardware_SetGraphicsDeviceLostCallbackFunction_PF( void (* 
 // 通常描画にプログラマブルシェーダーを使用するかどうかを設定する( TRUE:使用する( デフォルト )  FALSE:使用しない )
 extern	int		Graphics_Hardware_SetUseNormalDrawShader_PF( int Flag )
 {
-	return 0 ;
+	return -1 ;
 }
 
 // ビデオメモリの容量を得る
-extern	int		Graphics_Hardware_GetVideoMemorySize_PF( int *AllSize, int *FreeSize )
+extern	int		Graphics_Hardware_GetVideoMemorySizeEx_PF( ULONGLONG *TotalSize, ULONGLONG *UseSize )
 {
-	return 0 ;
+	return -1 ;
 }
 
 // Vista以降の Windows Aero を無効にするかどうかをセットする、TRUE:無効にする  FALSE:有効にする( DxLib_Init の前に呼ぶ必要があります )
@@ -17586,6 +18242,13 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		DWORD DestH ;
         GLuint ViewFrameBuffer ;
 		int BlendMode ;
+		int BlendEnable ;
+		int BlendRGBSrc ;
+		int BlendRGBDest ;
+		int BlendRGBOp ;
+		int BlendASrc ;
+		int BlendADest ;
+		int BlendAOp ;
 		int NotWriteAlphaChannelFlag ;
 		float VertexData[ 4 ][ 4 ] =
 		{
@@ -17619,9 +18282,16 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		DestRect.bottom = DestRect.top  + DestH ;
 
 		// ブレンドモードをブレンド無しに変更
-		BlendMode = GIOS.Device.State.BlendMode ;
+		BlendMode		= GIOS.Device.State.BlendMode ;
+		BlendEnable		= GIOS.Device.State.BlendEnable ;
+		BlendRGBSrc		= GIOS.Device.State.BlendRGBSrc ;
+		BlendRGBDest	= GIOS.Device.State.BlendRGBDest ;
+		BlendRGBOp		= GIOS.Device.State.BlendRGBOp ;
+		BlendASrc		= GIOS.Device.State.BlendASrc ;
+		BlendADest		= GIOS.Device.State.BlendADest ;
+		BlendAOp		= GIOS.Device.State.BlendAOp ;
 		NotWriteAlphaChannelFlag = GIOS.Device.State.NotWriteAlphaChannelFlag ;
-		Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE ) ;
+		Graphics_iOS_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, FALSE ) ;
 
 		// 描画先をフレームバッファに変更( 設定は Graphics_iOS_DeviceState_RefreshRenderState で戻す )
 		glBindFramebuffer( GL_FRAMEBUFFER, ViewFrameBuffer ) ;
@@ -17796,7 +18466,17 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 
 		// ブレンドモードを元に戻す
-		Graphics_iOS_DeviceState_SetBlendMode( BlendMode, NotWriteAlphaChannelFlag ) ;
+		Graphics_iOS_DeviceState_SetBlendMode(
+			BlendMode,
+			BlendEnable,
+			BlendRGBSrc,
+			BlendRGBDest,
+			BlendRGBOp,
+			BlendASrc,
+			BlendADest,
+			BlendAOp,
+			NotWriteAlphaChannelFlag
+		) ;
 	}
 
 	// ＶＳＹＮＣ待ちフラグを立てる
@@ -19315,6 +19995,12 @@ extern	int		Graphics_Hardware_Light_SetEnable_PF( int LightNumber, int EnableSta
 	return Graphics_iOS_DeviceState_SetLightEnable( LightNumber, EnableState ) ;
 }
 
+// ライトの計算で角度減衰を行わないようにするかどうかを設定する
+extern	int		Graphics_Hardware_Light_SetNoAngleAttenuation_PF( int NoAngleAttenuation )
+{
+	// 未実装
+	return 0 ;
+}
 
 
 
