@@ -1,0 +1,19 @@
+name: C/C++ Update
+
+on:
+  schedule:
+    - cron:  '0 15 * * 0'
+
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+        cp -r ci-scripts ci-scripts-temp
+        cd ci-scripts-temp
+        node --version
+        npm install
+        chmod +x AutoUpdate.sh
+        chmod +x FetchDxLibVersion.js
+        chmod +x FetchLatestTag.js
+        ./AutoUpdate.sh
