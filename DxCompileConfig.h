@@ -56,11 +56,11 @@
 
 // ＪＰＥＧ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-#define DX_NON_JPEGREAD
+// #define DX_NON_JPEGREAD
 
 // ＰＮＧ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-#define DX_NON_PNGREAD
+// #define DX_NON_PNGREAD
 
 // ＴＩＦＦ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
@@ -151,13 +151,13 @@
 //#define DX_NON_PRINTF_DX
 
 // 非同期読み込みを無効にする場合は次のコメントを外して下さい
-#define DX_NON_ASYNCLOAD
+//#define DX_NON_ASYNCLOAD
 
 // ファイル保存機能を無効にする場合は次のコメントを外して下さい
 //#define DX_NON_SAVEFUNCTION
 
 // ソフトウェアで扱うイメージを無効にする場合は次のコメントを外して下さい
-#define DX_NON_SOFTIMAGE
+// #define DX_NON_SOFTIMAGE
 
 // フォント描画機能を無効にする場合は次のコメントを外して下さい
 //#define DX_NON_FONT
@@ -172,7 +172,7 @@
 //#define DX_NON_INPUT
 
 // マルチスレッドを使用しない場合は次のコメントを外してください
-#define DX_NON_MULTITHREAD
+//#define DX_NON_MULTITHREAD
 
 // 各ハンドルのエラーチェックを無効にする場合は次のコメントを外してください( 若干高速化される代わりに無効なハンドルを関数に渡すと即不正なメモリアクセスエラーが発生するようになります )
 // #define DX_NON_HANDLE_ERROR_CHECK
@@ -252,9 +252,9 @@
 #define DX_NON_DIRECT3D9
 #endif
 
-#ifdef EMSCRIPTEN
-#define DX_NON_MULTITHREAD
-#endif
+// #ifdef EMSCRIPTEN
+// #define DX_NON_MULTITHREAD
+// #endif
 
 
 
