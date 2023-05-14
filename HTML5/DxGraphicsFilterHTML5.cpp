@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		HTML5用GraphFilter系プログラム
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
@@ -219,9 +219,17 @@ static int HTML5_FilterStretchBlt( GRAPHICS_HTML5_SHADER *UseShader, GRAPHFILTER
 		if( Info->BlendPosEnable )
 		{
 			BlendRect.left   = BlendImage->Hard.Draw[ 0 ].UsePosXF + Info->BlendX             ;
-			BlendRect.right  = BlendImage->Hard.Draw[ 0 ].UsePosXF + Info->BlendX + SrcWidth  ;
 			BlendRect.top    = BlendImage->Hard.Draw[ 0 ].UsePosYF + Info->BlendY             ;
-			BlendRect.bottom = BlendImage->Hard.Draw[ 0 ].UsePosYF + Info->BlendY + SrcHeight ;
+			if( Info->BlendPos2Enable )
+			{
+				BlendRect.right  = BlendImage->Hard.Draw[ 0 ].UsePosXF + Info->BlendX2 ;
+				BlendRect.bottom = BlendImage->Hard.Draw[ 0 ].UsePosYF + Info->BlendY2 ;
+			}
+			else
+			{
+				BlendRect.right  = BlendImage->Hard.Draw[ 0 ].UsePosXF + Info->BlendX + SrcWidth  ;
+				BlendRect.bottom = BlendImage->Hard.Draw[ 0 ].UsePosYF + Info->BlendY + SrcHeight ;
+			}
 		}
 		else
 		{
@@ -1828,7 +1836,7 @@ extern int	GraphBlend_Basic_PF(           GRAPHFILTER_INFO *Info, int IsPMA )
 	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uBlendTex"   ), 1            ) ;
 	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uBlendRatio" ), ParamF4[ 0 ] ) ;
 
-	HTML5_FilterStretchBlt( UseHTML5Shader, Info ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, Info->BlendGraphScalingFilterIsBilinear ) ;
 
 	// 正常終了
 	return 0 ;
@@ -2019,7 +2027,7 @@ USE_BASE_SHADER:
 	UNIFORM_SET_INT1(   Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uBlendTex"   ), 1            ) ;
 	UNIFORM_SET_FLOAT4( Graphics_HTML5_Shader_GetUniformIndex( UseHTML5Shader, "uRGBASelect" ), ParamF4[ 0 ] ) ;
 
-	HTML5_FilterStretchBlt( UseHTML5Shader, Info, FALSE ) ;
+	HTML5_FilterStretchBlt( UseHTML5Shader, Info, Info->BlendGraphScalingFilterIsBilinear ) ;
 
 	if( SrcBlendReverse )
 	{

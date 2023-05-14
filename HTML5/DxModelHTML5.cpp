@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム( HTML5 )
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
@@ -2125,28 +2125,28 @@ static bool MV1_HTML5_SetupMeshDrawMaterialCommon( MV1_MESH *Mesh )
 	case DX_BLENDMODE_MULA :
 	case DX_BLENDMODE_SRCCOLOR :
 	case DX_BLENDMODE_NOBLEND :
-		Graphics_HTML5_DeviceState_SetBlendMode( BlendMode, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+		Graphics_HTML5_DeviceState_SetBlendMode( BlendMode, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		break ;
 
 	case DX_BLENDMODE_ALPHA :
 		if( Frame->Container->UseDrawMulAlphaColor )
 		{
-			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ALPHA, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		else
 		{
-			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ALPHA, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		break ;
 
 	case DX_BLENDMODE_ADD :
 		if( Frame->Container->UseDrawMulAlphaColor )
 		{
-			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ADD, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		else
 		{
-			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ADD, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		break ;
 	}
@@ -2225,28 +2225,28 @@ static void MV1_HTML5_SetupToonOutLineMeshDrawMaterialCommon( MV1_MESH *Mesh, fl
 	case DX_BLENDMODE_MULA :
 	case DX_BLENDMODE_SRCCOLOR :
 	case DX_BLENDMODE_NOBLEND :
-		Graphics_HTML5_DeviceState_SetBlendMode( BlendMode, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+		Graphics_HTML5_DeviceState_SetBlendMode( BlendMode, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		break ;
 
 	case DX_BLENDMODE_ALPHA :
 		if( Frame->Container->UseDrawMulAlphaColor )
 		{
-			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ALPHA, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		else
 		{
-			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ALPHA, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ALPHA, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		break ;
 
 	case DX_BLENDMODE_ADD :
 		if( Frame->Container->UseDrawMulAlphaColor )
 		{
-			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_PMA_ADD, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		else
 		{
-			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
+			Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_ADD, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, GSYS.DrawSetting.NotWriteAlphaChannelFlag ) ;
 		}
 		break ;
 	}
