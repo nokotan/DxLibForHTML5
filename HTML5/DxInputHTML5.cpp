@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		HTML5用入力情報プログラム
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
@@ -32,8 +32,6 @@ namespace DxLib
 
 // マクロ定義------------------------------------------------------------------
 
-#define DEADZONE_D							(0.35)
-#define DEADZONE							(DWORD)( DEADZONE_D * 65536 )
 #define DEADZONE_XINPUT( ZONE )				(short)( 32767 * (ZONE) / 65536)
 #define DEADZONE_XINPUT_TRIGGER( ZONE )		(short)(   255 * (ZONE) / 65536)
 #define VALIDRANGE_XINPUT( ZONE )			( 32767 - DEADZONE_XINPUT(ZONE))
@@ -206,8 +204,8 @@ extern int InitializeInputSystem_PF_Timing0( void )
 	// 無効ゾーンのセット
 	for( i = 0 ; i < MAX_JOYPAD_NUM ; i ++ )
 	{
-		InputSysData.Pad[ i ].DeadZone = DEADZONE ;
-		InputSysData.Pad[ i ].DeadZoneD = DEADZONE_D ;
+		InputSysData.Pad[ i ].DeadZone = InputSysData.PadDefaultDeadZone ;
+		InputSysData.Pad[ i ].DeadZoneD = InputSysData.PadDefaultDeadZoneD ;
 	}
 
 	// キーボードとジョイパッドの入力のデフォルトの対応表を設定する
@@ -521,10 +519,11 @@ extern int GetJoypadType_PF( int InputType )
 extern int GetMouseInput_PF( void )
 {
 	int res = 0 ;
+	int i ;
 
-	if( InputSysData.PF.SourceNum[ HTML5_INPUT_SOURCE_MOUSE ] > 0 )
+	for( i = 0 ; i < InputSysData.PF.SourceNum[ HTML5_INPUT_SOURCE_MOUSE ] ; i ++ )
 	{
-		INPUT_HTML5_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ HTML5_INPUT_SOURCE_MOUSE ][ 0 ] ] ;
+		INPUT_HTML5_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ HTML5_INPUT_SOURCE_MOUSE ][ i ] ] ;
 
 		if( ( Info->ButtonState & 0x01 ) != 0 ) res |= MOUSE_INPUT_1 ;
 		if( ( Info->ButtonState & 0x02 ) != 0 ) res |= MOUSE_INPUT_2 ;
@@ -615,6 +614,9 @@ extern int GetMousePoint_PF( int *XBuf, int *YBuf )
 
 		ScreenX = ( int )Info->AxisX ;
 		ScreenY = ( int )Info->AxisY ;
+
+		ScreenX = ( int )InputSysData.PF.MouseX ;
+		ScreenY = ( int )InputSysData.PF.MouseY ;
 		ConvScreenPositionToDxScreenPosition( ScreenX, ScreenY, XBuf, YBuf ) ;
 	}
 
