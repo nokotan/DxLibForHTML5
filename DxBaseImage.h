@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＢａｓｅＩｍａｇｅプログラムヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -56,6 +56,7 @@ struct LOADBASEIMAGE_GPARAM
 	STREAMDATASHRED			MemStreamDataShred ;					// メモリデータアクセス用関数
 
 	int						ConvertPremultipliedAlpha ;				// 読み込み処理後に乗算済みアルファの画像に変換するかどうかのフラグ( TRUE:変換処理を行う  FALSE:変換処理を行わない )
+	int						ConvertNormalFormat ;					// 読み込み処理後に DX_BASEIMAGE_FORMAT_NORMAL 以外の形式のイメージを DX_BASEIMAGE_FORMAT_NORMAL 形式のイメージに変換するかどうかのフラグ( TRUE:変換処理を行う  FALSE:変換処理を行なわない )
 	int						AlphaTestImageCreateFlag ;				// アルファテストを使用するグラフィックを作成するかどうかのフラグ( TRUE:αテストを使用する  FALSE:αテストは使用しない )
 	DWORD					TransColor ;							// 透過色( AlphaTestImageCreateFlag が TRUE の場合用 )
 } ;
@@ -83,6 +84,8 @@ struct BASEIMAGEMANAGE
 	int						LowLoadFlag ;							// グラフィックの低速読み込みを行うかフラグ
 	int						ImageShavedMode ;						// 減色時の拡散パターン
 	int						ConvertPremultipliedAlpha ;				// 読み込み処理後に乗算済みアルファの画像に変換するかどうかのフラグ( TRUE:変換処理を行う  FALSE:変換処理を行わない )
+	int						ConvertNormalFormat ;					// 読み込み処理後に DX_BASEIMAGE_FORMAT_NORMAL 以外の形式のイメージを DX_BASEIMAGE_FORMAT_NORMAL 形式のイメージに変換するかどうかのフラグ( TRUE:変換処理を行う  FALSE:変換処理を行なわない )
+	int						PlatformLoadFunctionAfterFlag ;			// 環境依存の読み込み関数を後に実行するかどうか( TRUE:後に実行する  FALSE:先に実行する )
 
 	int						AlphaTestImageCreateFlag ;				// アルファテストを使用するグラフィックを作成するかどうかのフラグ( TRUE:αテストを使用する  FALSE:αテストは使用しない )
 	DWORD					TransColor ;							// 透過色( AlphaTestImageCreateFlag が TRUE の場合用 )

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		入力情報プログラムヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -47,6 +47,10 @@ namespace DxLib
 #endif // DX_NON_NAMESPACE
 
 // マクロ定義 --------------------------------------------------------------------
+
+// ジョイパッドのデフォルトデッドゾーン
+#define PAD_DEFAULT_DEADZONE_D		(0.35)
+#define PAD_DEFAULT_DEADZONE		( DWORD )( PAD_DEFAULT_DEADZONE_D * 65536 )
 
 // 保持するマウスのクリック情報
 #define MOUSEINPUT_LOG_NUM			(64)
@@ -95,6 +99,7 @@ struct INPUTVIBRATIONDATA
 	int						Time ;								// エフェクトの長さ
 	int						CompTime ;							// エフェクトを開始してから経過した時間
 	int						BackTime ;							// エフェクトの前回調べた時刻
+	int						PrevSetTime ;						// 前回ステータスをセットした時間
 
 	int						PlayState ;							// 振動の再生状態(ソフトが非アクティブになれば再生停止する為)
 	int						SetPower ;							// 振動の設定パワー
@@ -107,6 +112,7 @@ struct INPUTPADDATA
 {
 	int						GetTime ;							// 取得時間
 	INPUTVIBRATIONDATA		Effect[ DINPUTPAD_MOTOR_NUM ] ;		// モーターの情報
+	int						UserChangeDeadZone ;				// DeadZone の値をユーザーが変更したか
 	DWORD					DeadZone ;							// 無効ゾーン( 65536 = 100% )
 	double					DeadZoneD ;							// 無効ゾーン( 1.0 = 100% )
 	int						Buttons ;							// 有効なボタンの数
@@ -154,6 +160,10 @@ struct INPUTSYSTEMDATA
 
 	int						PadNum ;							// ジョイパッドの数
 	INPUTPADDATA			Pad[ MAX_JOYPAD_NUM ] ;				// パッドデバイス情報
+
+	int						EnablePadDefaultDeadZone ;			// PadDefaultDeadZone と PadDefaultDeadZoneD が有効かどうか( TRUE:有効  FALSE:無効 )
+	DWORD					PadDefaultDeadZone ;				// ジョイパッドのデフォルト無効ゾーン( 65536 = 100% )
+	double					PadDefaultDeadZoneD ;				// ジョイパッドのデフォルト無効ゾーン( 1.0 = 100% )
 
 	int						EndFlag ;
 

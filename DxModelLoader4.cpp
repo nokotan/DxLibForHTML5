@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＰＭＸモデルデータ読み込みプログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -569,8 +569,8 @@ extern int MV1LoadModelToPMX( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 		PmxBone[ i ].Flag_Disp                  = ( BYTE )( ( Flag & 0x0008 ) != 0 ? 1 : 0 ) ;
 		PmxBone[ i ].Flag_EnableControl         = ( BYTE )( ( Flag & 0x0010 ) != 0 ? 1 : 0 ) ;
 		PmxBone[ i ].Flag_IK                    = ( BYTE )( ( Flag & 0x0020 ) != 0 ? 1 : 0 ) ;
-		PmxBone[ i ].Flag_AddRot                = ( BYTE )( ( Flag & 0x0100 ) != 0 ? 1 : 0 ) ;
-		PmxBone[ i ].Flag_AddMov                = ( BYTE )( ( Flag & 0x0200 ) != 0 ? 1 : 0 ) ;
+		PmxBone[ i ].Flag_AddRot	            = ( BYTE )( ( Flag & 0x0100 ) != 0 ? 1 : 0 ) ;
+		PmxBone[ i ].Flag_AddMov		        = ( BYTE )( ( Flag & 0x0200 ) != 0 ? 1 : 0 ) ;
 		PmxBone[ i ].Flag_LockAxis              = ( BYTE )( ( Flag & 0x0400 ) != 0 ? 1 : 0 ) ;
 		PmxBone[ i ].Flag_LocalAxis             = ( BYTE )( ( Flag & 0x0800 ) != 0 ? 1 : 0 ) ;
 		PmxBone[ i ].Flag_AfterPhysicsTransform = ( BYTE )( ( Flag & 0x1000 ) != 0 ? 1 : 0 ) ;
@@ -633,7 +633,7 @@ extern int MV1LoadModelToPMX( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 			READ_MEM_4BYTE( &PmxBone[ i ].IKInfo.RotLimit, Src ) ;
 			Src += 4 ;
 
-			PmxBone[ i ].IKInfo.LinkNum = *( ( int * )Src ) ;
+			PmxBone[ i ].IKInfo.LinkNum = GET_MEM_SIGNED_DWORD( Src ) ;
 			Src += 4 ;
 			if( PmxBone[ i ].IKInfo.LinkNum >= PMX_MAX_IKLINKNUM )
 			{
@@ -660,6 +660,12 @@ extern int MV1LoadModelToPMX( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 					Src += 12 ;
 				}
 			}
+		}
+
+		if( LoadParam->GParam.LoadModelToIgnoreIK == TRUE )
+		{
+			PmxBone[ i ].Flag_IK = 0 ;
+			PmxBone[ i ].IKInfo.LinkNum = 0 ;
 		}
 	}
 
@@ -1094,7 +1100,7 @@ extern int MV1LoadModelToPMX( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 			BoneInfo->Frame = FrameDim[ i ] ;
 			BoneInfo->IsPhysics = FALSE ;
 			BoneInfo->IsIK = FALSE ;
-			BoneInfo->IsAddParent = PmxBone[ i ].Flag_AddMov == 1 || PmxBone[ i ].Flag_AddRot == 1 ? 1 : 0 ;
+			BoneInfo->IsAddParent = LoadParam->GParam.LoadModelToIgnoreIK == FALSE && ( PmxBone[ i ].Flag_AddMov == 1 || PmxBone[ i ].Flag_AddRot == 1 ) ? 1 : 0 ;
 			BoneInfo->IsIKAnim = FALSE ;
 			BoneInfo->IsIKChild = FALSE ;
 			BoneInfo->Translate = FrameDim[ i ]->Translate ;
@@ -1281,95 +1287,98 @@ extern int MV1LoadModelToPMX( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 		}
 	}
 
-	// ＩＫの情報を格納するメモリ領域の確保
-	if( PmxIKNum )
+	if( LoadParam->GParam.LoadModelToIgnoreIK == FALSE )
 	{
-		IKInfoDim = ( PMX_READ_IK_INFO * )DXALLOC( sizeof( PMX_READ_IK_INFO ) * PmxIKNum ) ;
-		if( IKInfoDim == NULL )
+		// ＩＫの情報を格納するメモリ領域の確保
+		if( PmxIKNum )
 		{
-			DXST_LOGFILEFMT_ADDUTF16LE(( "\x50\x00\x4d\x00\x58\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x45\x00\x72\x00\x72\x00\x6f\x00\x72\x00\x20\x00\x3a\x00\x20\x00\xad\x8a\x7f\x30\xbc\x8f\x7f\x30\xe6\x51\x06\x74\x28\x75\x29\xff\x2b\xff\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"PMX Load Error : 読み込み処理用ＩＫ情報を格納するメモリ領域の確保に失敗しました\n" @*/ )) ;
-			goto ENDLABEL ;
-		}
-	}
-
-	// ＩＫデータの追加
-	IKInfo = IKInfoDim ;
-	IKInfoFirst = NULL ;
-	i = 0 ;
-	for( k = 0 ; ( DWORD )k < PmxBoneNum ; k ++ )
-	{
-		if( PmxBone[ k ].Flag_IK == 0 ) continue ;
-
-//		PMX_READ_BONE_INFO *BoneBone ;
-
-		// データをセット
-		IKInfo->Base = &PmxBone[ k ].IKInfo ;
-		IKInfo->Bone = &BoneInfoDim[ k ] ;
-		IKInfo->TargetBone = &BoneInfoDim[ PmxBone[ k ].IKInfo.TargetBoneIndex ] ;
-		IKInfo->TargetBone->IsIK = TRUE ;
-
-		for( j = 0 ; j < IKInfo->Base->LinkNum ; j ++ )
-		{
-//			BoneBone = &BoneInfoDim[ IKInfo->Base->Link[ j ].BoneIndex ] ;
-			BoneInfoDim[ IKInfo->Base->Link[ j ].BoneIndex ].IsIK = TRUE ;
-		}
-
-		// リストに追加
-		if( IKInfoFirst == NULL )
-		{
-			IKInfoFirst = IKInfo ;
-			IKInfo->Prev = NULL ;
-			IKInfo->Next = NULL ;
-		}
-		else
-		{
-			PMX_READ_IK_INFO *IKInfoTemp ;
-
-			for( IKInfoTemp = IKInfoFirst ; IKInfoTemp->Next != NULL && IKInfoTemp->Base->Link[ 0 ].BoneIndex < IKInfo->Base->Link[ 0 ].BoneIndex ; IKInfoTemp = IKInfoTemp->Next ){}
-			if( IKInfoTemp->Next == NULL && IKInfoTemp->Base->Link[ 0 ].BoneIndex < IKInfo->Base->Link[ 0 ].BoneIndex )
+			IKInfoDim = ( PMX_READ_IK_INFO * )DXALLOC( sizeof( PMX_READ_IK_INFO ) * PmxIKNum ) ;
+			if( IKInfoDim == NULL )
 			{
-				IKInfoTemp->Next = IKInfo ;
+				DXST_LOGFILEFMT_ADDUTF16LE(( "\x50\x00\x4d\x00\x58\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x45\x00\x72\x00\x72\x00\x6f\x00\x72\x00\x20\x00\x3a\x00\x20\x00\xad\x8a\x7f\x30\xbc\x8f\x7f\x30\xe6\x51\x06\x74\x28\x75\x29\xff\x2b\xff\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"PMX Load Error : 読み込み処理用ＩＫ情報を格納するメモリ領域の確保に失敗しました\n" @*/ )) ;
+				goto ENDLABEL ;
+			}
+		}
+
+		// ＩＫデータの追加
+		IKInfo = IKInfoDim ;
+		IKInfoFirst = NULL ;
+		i = 0 ;
+		for( k = 0 ; ( DWORD )k < PmxBoneNum ; k ++ )
+		{
+			if( PmxBone[ k ].Flag_IK == 0 ) continue ;
+
+	//		PMX_READ_BONE_INFO *BoneBone ;
+
+			// データをセット
+			IKInfo->Base = &PmxBone[ k ].IKInfo ;
+			IKInfo->Bone = &BoneInfoDim[ k ] ;
+			IKInfo->TargetBone = &BoneInfoDim[ PmxBone[ k ].IKInfo.TargetBoneIndex ] ;
+			IKInfo->TargetBone->IsIK = TRUE ;
+
+			for( j = 0 ; j < IKInfo->Base->LinkNum ; j ++ )
+			{
+	//			BoneBone = &BoneInfoDim[ IKInfo->Base->Link[ j ].BoneIndex ] ;
+				BoneInfoDim[ IKInfo->Base->Link[ j ].BoneIndex ].IsIK = TRUE ;
+			}
+
+			// リストに追加
+			if( IKInfoFirst == NULL )
+			{
+				IKInfoFirst = IKInfo ;
+				IKInfo->Prev = NULL ;
 				IKInfo->Next = NULL ;
-				IKInfo->Prev = IKInfoTemp ;
 			}
 			else
 			{
-				if( IKInfoTemp->Prev == NULL )
+				PMX_READ_IK_INFO *IKInfoTemp ;
+
+				for( IKInfoTemp = IKInfoFirst ; IKInfoTemp->Next != NULL && IKInfoTemp->Base->Link[ 0 ].BoneIndex < IKInfo->Base->Link[ 0 ].BoneIndex ; IKInfoTemp = IKInfoTemp->Next ){}
+				if( IKInfoTemp->Next == NULL && IKInfoTemp->Base->Link[ 0 ].BoneIndex < IKInfo->Base->Link[ 0 ].BoneIndex )
 				{
-					IKInfoTemp->Prev = IKInfo ;
-					IKInfo->Next = IKInfoTemp ;
-					IKInfo->Prev = NULL ;
-					IKInfoFirst = IKInfo ;
+					IKInfoTemp->Next = IKInfo ;
+					IKInfo->Next = NULL ;
+					IKInfo->Prev = IKInfoTemp ;
 				}
 				else
 				{
-					IKInfo->Prev = IKInfoTemp->Prev ;
-					IKInfo->Next = IKInfoTemp ;
-					IKInfoTemp->Prev->Next = IKInfo ;
-					IKInfoTemp->Prev = IKInfo ;
+					if( IKInfoTemp->Prev == NULL )
+					{
+						IKInfoTemp->Prev = IKInfo ;
+						IKInfo->Next = IKInfoTemp ;
+						IKInfo->Prev = NULL ;
+						IKInfoFirst = IKInfo ;
+					}
+					else
+					{
+						IKInfo->Prev = IKInfoTemp->Prev ;
+						IKInfo->Next = IKInfoTemp ;
+						IKInfoTemp->Prev->Next = IKInfo ;
+						IKInfoTemp->Prev = IKInfo ;
+					}
 				}
 			}
+
+			IKInfo ++ ;
 		}
 
-		IKInfo ++ ;
-	}
-
-	// ＩＫの影響を受けるボーンの子でＩＫの影響を受けないボーンに印をつける
-	BoneInfo = BoneInfoDim ;
-	for( i = 0 ; ( DWORD )i < PmxBoneNum ; i ++, BoneInfo ++ )
-	{
-		PMX_READ_BONE_INFO *ParentBone ;
-
-		if( BoneInfo->IsIK || BoneInfo->IsAddParent )
-			continue ;
-
-		if( BoneInfo->Frame->Parent == NULL )
-			continue ;
-
-		ParentBone = ( PMX_READ_BONE_INFO * )BoneInfo->Frame->Parent->UserData ;
-		if( ParentBone->IsIK || ParentBone->IsAddParent )
+		// ＩＫの影響を受けるボーンの子でＩＫの影響を受けないボーンに印をつける
+		BoneInfo = BoneInfoDim ;
+		for( i = 0 ; ( DWORD )i < PmxBoneNum ; i ++, BoneInfo ++ )
 		{
-			BoneInfo->IsIKChild = TRUE ;
+			PMX_READ_BONE_INFO *ParentBone ;
+
+			if( BoneInfo->IsIK || BoneInfo->IsAddParent )
+				continue ;
+
+			if( BoneInfo->Frame->Parent == NULL )
+				continue ;
+
+			ParentBone = ( PMX_READ_BONE_INFO * )BoneInfo->Frame->Parent->UserData ;
+			if( ParentBone->IsIK || ParentBone->IsAddParent )
+			{
+				BoneInfo->IsIKChild = TRUE ;
+			}
 		}
 	}
 

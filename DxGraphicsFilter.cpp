@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		GraphFilter系プログラム
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
@@ -265,6 +265,16 @@ extern int NS_SetGraphFilterBltBlendMode( int BlendMode /* DX_BLENDMODE_ALPHA な
 	return 0 ;
 }
 
+// GraphBlend で GrHandle と BlendGrHandle のサイズが異なる場合に適用される拡大フィルターモードを設定する
+extern int NS_SetGraphBlendScalingFilterMode( int IsBilinearFilter )
+{
+	// フラグを保存
+	GraphFilterSystemData.BlendGraphScalingFilterIsNotBilinear = IsBilinearFilter ? FALSE : TRUE ;
+
+	// 終了
+	return 0 ;
+}
+
 // 画像にフィルター処理を行う
 extern int NS_GraphFilter( int GrHandle, int FilterType /* DX_GRAPH_FILTER_GAUSS_H 等 */ , ... )
 {
@@ -276,7 +286,7 @@ extern int NS_GraphFilter( int GrHandle, int FilterType /* DX_GRAPH_FILTER_GAUSS
 
 	NS_GetGraphSize( GrHandle, &W, &H ) ;
 
-	Result = GraphFilter_RectBltBase( FALSE, GrHandle, -1, GrHandle, 0, FilterType, 0, 0, W, H, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( FALSE, GrHandle, -1, GrHandle, 0, FilterType, 0, 0, W, H, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 
 	va_end( VaList ) ;
 
@@ -294,7 +304,7 @@ extern int NS_GraphFilterBlt( int SrcGrHandle, int DestGrHandle, int FilterType,
 
 	NS_GetGraphSize( SrcGrHandle, &SrcW, &SrcH ) ;
 
-	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 
 	va_end( VaList ) ;
 
@@ -309,7 +319,7 @@ extern int NS_GraphFilterRectBlt( int SrcGrHandle, int DestGrHandle, int SrcX1, 
 
 	va_start( VaList, FilterType ) ;
 
-	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, SrcX1, SrcY1, SrcX2, SrcY2, 0, 0, FALSE, DestX, DestY, VaList ) ;
+	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, SrcX1, SrcY1, SrcX2, SrcY2, 0, 0, FALSE, 0, 0, FALSE, DestX, DestY, VaList ) ;
 
 	va_end( VaList ) ;
 
@@ -327,7 +337,7 @@ extern	int	NS_GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int B
 
 	NS_GetGraphSize( GrHandle, &W, &H ) ;
 
-	Result = GraphFilter_RectBltBase( TRUE, GrHandle, BlendGrHandle, GrHandle, BlendRatio, BlendType, 0, 0, W, H, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( TRUE, GrHandle, BlendGrHandle, GrHandle, BlendRatio, BlendType, 0, 0, W, H, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 
 	va_end( VaList ) ;
 
@@ -345,7 +355,7 @@ extern	int	NS_GraphBlendBlt( int SrcGrHandle, int BlendGrHandle, int DestGrHandl
 
 	NS_GetGraphSize( SrcGrHandle, &SrcW, &SrcH ) ;
 
-	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 
 	va_end( VaList ) ;
 
@@ -360,7 +370,22 @@ extern	int	NS_GraphBlendRectBlt( int SrcGrHandle, int BlendGrHandle, int DestGrH
 
 	va_start( VaList, BlendType ) ;
 
-	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, SrcX1, SrcY1, SrcX2, SrcY2, BlendX, BlendY, TRUE, DestX, DestY, VaList ) ;
+	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, SrcX1, SrcY1, SrcX2, SrcY2, BlendX, BlendY, TRUE, 0, 0, FALSE, DestX, DestY, VaList ) ;
+
+	va_end( VaList ) ;
+
+	return Result ;
+}
+
+// 二つの画像をブレンドして結果を指定の画像に出力する( 矩形指定、ブレンド画像の矩形も指定 )
+extern	int	NS_GraphBlendRectBlt2( int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX1, int BlendY1, int BlendX2, int BlendY2, int DestX, int DestY, int BlendRatio, int BlendType, ... )
+{
+	int Result ;
+	va_list VaList ;
+
+	va_start( VaList, BlendType ) ;
+
+	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, SrcX1, SrcY1, SrcX2, SrcY2, BlendX1, BlendY1, TRUE, BlendX2, BlendY2, TRUE, DestX, DestY, VaList ) ;
 
 	va_end( VaList ) ;
 
@@ -621,6 +646,7 @@ extern int GraphFilter_RectBltBase(
    int SrcX1, int SrcY1,
    int SrcX2, int SrcY2,
    int BlendX, int BlendY, int BlendPosEnable,
+   int BlendX2, int BlendY2, int BlendPos2Enable,
    int DestX, int DestY,
    va_list ParamList )
 {
@@ -831,6 +857,7 @@ extern int GraphFilter_RectBltBase(
 		return 0 ;
 	
 	// 情報のセット
+	Info.BlendGraphScalingFilterIsBilinear = GraphFilterSystemData.BlendGraphScalingFilterIsNotBilinear ? FALSE : TRUE ;
 	Info.BltBlendMode      = SrcGrHandle == DestGrHandle ? DX_BLENDMODE_NOBLEND : GraphFilterSystemData.BltBlendMode ;
 	Info.IsBlend           = IsBlend ;
 	Info.FilterOrBlendType = FilterOrBlendType ;
@@ -843,6 +870,9 @@ extern int GraphFilter_RectBltBase(
 	Info.BlendX            = BlendX ;
 	Info.BlendY            = BlendY ;
 	Info.BlendPosEnable    = BlendPosEnable ;
+	Info.BlendX2           = BlendX2 ;
+	Info.BlendY2           = BlendY2 ;
+	Info.BlendPos2Enable   = BlendPos2Enable ;
 	Info.DestX             = DestX ;
 	Info.DestY             = DestY ;
 
@@ -6253,7 +6283,7 @@ extern int GraphFilter_VaList( int GrHandle, int FilterType /* DX_GRAPH_FILTER_G
 
 	NS_GetGraphSize( GrHandle, &W, &H ) ;
 
-	Result = GraphFilter_RectBltBase( FALSE, GrHandle, -1, GrHandle, 0, FilterType, 0, 0, W, H, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( FALSE, GrHandle, -1, GrHandle, 0, FilterType, 0, 0, W, H, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 
 	return Result ;
 }
@@ -6266,7 +6296,7 @@ extern int GraphFilterBlt_VaList( int SrcGrHandle, int DestGrHandle, int FilterT
 
 	NS_GetGraphSize( SrcGrHandle, &SrcW, &SrcH ) ;
 
-	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 
 	return Result ;
 }
@@ -6276,7 +6306,7 @@ extern int GraphFilterRectBlt_VaList( int SrcGrHandle, int DestGrHandle, int Src
 {
 	int Result ;
 
-	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, SrcX1, SrcY1, SrcX2, SrcY2, 0, 0, FALSE, DestX, DestY, VaList ) ;
+	Result = GraphFilter_RectBltBase( FALSE, SrcGrHandle, -1, DestGrHandle, 0, FilterType, SrcX1, SrcY1, SrcX2, SrcY2, 0, 0, FALSE, 0, 0, FALSE, DestX, DestY, VaList ) ;
 
 	return Result ;
 }
@@ -6289,7 +6319,7 @@ extern int GraphBlend_VaList( int GrHandle, int BlendGrHandle, int BlendRatio /*
 
 	NS_GetGraphSize( GrHandle, &W, &H ) ;
 
-	Result = GraphFilter_RectBltBase( TRUE, GrHandle, BlendGrHandle, GrHandle, BlendRatio, BlendType, 0, 0, W, H, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( TRUE, GrHandle, BlendGrHandle, GrHandle, BlendRatio, BlendType, 0, 0, W, H, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 
 	return Result ;
 }
@@ -6302,7 +6332,7 @@ extern int GraphBlendBlt_VaList( int SrcGrHandle, int BlendGrHandle, int DestGrH
 
 	NS_GetGraphSize( SrcGrHandle, &SrcW, &SrcH ) ;
 
-	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, VaList ) ;
+	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, 0, 0, SrcW, SrcH, 0, 0, FALSE, 0, 0, FALSE, 0, 0, VaList ) ;
 
 	return Result ;
 }
@@ -6312,10 +6342,21 @@ extern int GraphBlendRectBlt_VaList( int SrcGrHandle, int BlendGrHandle, int Des
 {
 	int Result ;
 
-	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, SrcX1, SrcY1, SrcX2, SrcY2, BlendX, BlendY, TRUE, DestX, DestY, VaList ) ;
+	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, SrcX1, SrcY1, SrcX2, SrcY2, BlendX, BlendY, TRUE, 0, 0, FALSE, DestX, DestY, VaList ) ;
 
 	return Result ;
 }
+
+// 二つの画像をブレンドして結果を指定の画像に出力する( 矩形指定、ブレンド画像の矩形も指定 )
+extern	int	GraphBlendRectBlt2_VaList(	int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX1, int BlendY1, int BlendX2,  int BlendY2, int DestX, int DestY, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD 等 */ , va_list VaList )
+{
+	int Result ;
+
+	Result = GraphFilter_RectBltBase( TRUE, SrcGrHandle, BlendGrHandle, DestGrHandle, BlendRatio, BlendType, SrcX1, SrcY1, SrcX2, SrcY2, BlendX1, BlendY1, TRUE, BlendX2, BlendY2, TRUE, DestX, DestY, VaList ) ;
+
+	return Result ;
+}
+
 
 
 

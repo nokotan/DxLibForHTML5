@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＢａｓｅＩｍａｇｅプログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // ----------------------------------------------------------------------------
 
@@ -205,7 +205,7 @@ static	int LoadDxLibBaseImage( STREAMDATA *Stream, BASEIMAGE *BaseImage, int Get
 static	int LoadTargaImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) ;					// ＴＧＡ画像の読みこみ
 #endif
 
-static	int LoadDDSImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) ;						// ＤＤＳ画像の読みこみ
+		int LoadDDSImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) ;						// ＤＤＳ画像の読みこみ
 
 // アルファマスク用のファイルパスを作成する
 static int CreateAlphaMaskFilePath(  const wchar_t *Path, wchar_t *Dest, size_t BufferBytes ) ;
@@ -226,6 +226,7 @@ int ( *DefaultImageLoadFunc[] )( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetF
 	LoadJpegImage ,
 #endif
 #ifndef DX_NON_PNGREAD
+	LoadPngImage_Fast ,
 	LoadPngImage ,
 #endif
 #ifndef DX_NON_TGA
@@ -274,6 +275,7 @@ extern void InitLoadBaseImageGParam( LOADBASEIMAGE_GPARAM *GParam, int GetFormat
 	GParam->FileStreamDataShred			= *GetFileStreamDataShredStruct() ;
 	GParam->MemStreamDataShred			= *GetMemStreamDataShredStruct() ;
 	GParam->ConvertPremultipliedAlpha	= BASEIM.ConvertPremultipliedAlpha ;
+	GParam->ConvertNormalFormat			= BASEIM.ConvertNormalFormat ;
 	GParam->AlphaTestImageCreateFlag	= BASEIM.AlphaTestImageCreateFlag ;
 	GParam->TransColor					= BASEIM.TransColor ;
 }
@@ -863,6 +865,49 @@ extern int SaveBaseImageToDds_WCHAR_T( const wchar_t *FilePath, const BASEIMAGE 
 		}
 	}
 	else
+	// 整数型で1チャンネルのビット数が8の場合は処理を分岐
+	if( BaseImage->ColorData.ChannelBitDepth == 8 )
+	{
+		// フラグをセット
+		DDSHead.dwPfFlags = BI_DDPF_RGB ;
+
+		// タイプに合ったピクセルフォーマットをセットする
+		switch( BaseImage->ColorData.ChannelNum )
+		{
+		case 1 :
+			DDSHead.dwRGBBitCount = 8 ;
+			DDSHead.dwRBitMask        = 0xff ;
+			DDSHead.dwGBitMask        = 0 ;
+			DDSHead.dwBBitMask        = 0 ;
+			DDSHead.dwRGBAlphaBitMask = 0 ;
+			break ;
+
+		case 2 :
+			DDSHead.dwRGBBitCount = 16 ;
+			DDSHead.dwRBitMask        = 0xff00 ;
+			DDSHead.dwGBitMask        = 0x00ff ;
+			DDSHead.dwBBitMask        = 0 ;
+			DDSHead.dwRGBAlphaBitMask = 0 ;
+			break ;
+
+		case 3 :
+			DDSHead.dwRGBBitCount = 24 ;
+			DDSHead.dwRBitMask        = 0xff0000 ;
+			DDSHead.dwGBitMask        = 0x00ff00 ;
+			DDSHead.dwBBitMask        = 0x0000ff ;
+			DDSHead.dwRGBAlphaBitMask = 0 ;
+			break ;
+
+		case 4 :
+			DDSHead.dwRGBBitCount = 32 ;
+			DDSHead.dwRBitMask        = 0x00ff0000 ;
+			DDSHead.dwGBitMask        = 0x0000ff00 ;
+			DDSHead.dwBBitMask        = 0x000000ff ;
+			DDSHead.dwRGBAlphaBitMask = 0xff000000 ;
+			break ;
+		}
+	}
+	else
 	{
 		// 通常型( 整数型タイプの場合 )
 
@@ -1073,15 +1118,15 @@ extern int CreateGraphImageOrDIBGraph_UseGParam(
 			GParam->StreamDataShred2.Seek( fp, 0, SEEK_END ) ;
 			FileBytes = GParam->StreamDataShred2.Tell( fp ) ;
 			GParam->StreamDataShred2.Seek( fp, 0, SEEK_SET ) ;
-			FileImage = DXALLOC( FileBytes ) ;
+			FileImage = DXALLOC( ( size_t )FileBytes ) ;
 			if( FileImage == NULL )
 			{
 				return -1 ;
 			}
-			GParam->StreamDataShred2.Read( FileImage, FileBytes, 1, fp ) ;
+			GParam->StreamDataShred2.Read( FileImage, ( size_t )FileBytes, 1, fp ) ;
 			GParam->StreamDataShred2.Close( fp ) ;
 
-			Src.DataPoint = MemStreamOpen( FileImage, FileBytes ) ;
+			Src.DataPoint = MemStreamOpen( FileImage, ( size_t )FileBytes ) ;
 			if( Src.DataPoint == NULL )
 			{
 				return -1 ;
@@ -1099,6 +1144,12 @@ extern int CreateGraphImageOrDIBGraph_UseGParam(
 		}
 		else
 		{
+			// データがない場合はエラー
+			if( DataImage == NULL )
+			{
+				return -1 ;
+			}
+
 			Src.DataPoint = MemStreamOpen( DataImage, DataImageSize ) ;
 			if( Src.DataPoint == NULL )
 			{
@@ -1113,7 +1164,10 @@ extern int CreateGraphImageOrDIBGraph_UseGParam(
 		if( hr == 0 )
 		{
 //			if( DataImageType != LOADIMAGE_TYPE_FILE )
+			{
 				STCLOSE( &Src ) ;
+				Src.DataPoint = NULL ;
+			}
 			goto END ;
 		}
 	}
@@ -1136,6 +1190,12 @@ END :
 
 			// 反転
 			NS_ReverseGraphImage( &GraphI ) ;
+		}
+
+		// もし ConvertNormalFormatBaseImage フラグが立っていたら変換する
+		if( GParam->ConvertNormalFormat )
+		{
+			NS_ConvertNormalFormatBaseImage( &GraphI, TRUE ) ;
 		}
 
 		// もし乗算済みアルファ画像への変換のフラグが立っていたら変換する
@@ -1189,7 +1249,11 @@ END :
 			else
 			{
 				// αチャンネルが普通に在る場合は普通にコンバート
-				NS_ConvertPremulAlphaBaseImage( &GraphI ) ; 
+				if( NS_ConvertPremulAlphaBaseImage( &GraphI ) < 0 )
+				{
+					DXFREE( GraphI.GraphData ) ;
+					goto ERR ;
+				}
 			}
 		}
 
@@ -1197,6 +1261,7 @@ END :
 		if( BmpFlag != FALSE )
 		{
 #ifndef WINDOWS_DESKTOP_OS
+			DXFREE( GraphI.GraphData ) ;
 			goto ERR ;
 #else
 			// ＢＭＰデータ を欲しかった場合は GraphImage データを ＢＭＰ データに変換する
@@ -1476,17 +1541,20 @@ extern int CreateGraphImageType2_UseGParam( CREATEBASEIMAGETYPE2_GPARAM *GParam,
 		return 0 ;
 	}
 
-	// 環境依存のデフォルト関数を噛ませる
-	for( i = 0 ; DefaultImageLoadFunc_PF[ i ] != NULL ; i ++ )
+	if( BASEIM.PlatformLoadFunctionAfterFlag == FALSE )
 	{
-		STSEEK( Src, 0, STREAM_SEEKTYPE_SET ) ;
-		_MEMSET( Dest, 0, sizeof( BASEIMAGE ) ) ;
-		if( DefaultImageLoadFunc_PF[ i ]( Src, Dest, GParam->GetFormatOnly ) == 0 ) break ;
-	}
-	// 読み込めていたら終了
-	if( DefaultImageLoadFunc_PF[ i ] != NULL )
-	{
-		return 0 ;
+		// 環境依存のデフォルト関数を噛ませる
+		for( i = 0 ; DefaultImageLoadFunc_PF[ i ] != NULL ; i ++ )
+		{
+			STSEEK( Src, 0, STREAM_SEEKTYPE_SET ) ;
+			_MEMSET( Dest, 0, sizeof( BASEIMAGE ) ) ;
+			if( DefaultImageLoadFunc_PF[ i ]( Src, Dest, GParam->GetFormatOnly ) == 0 ) break ;
+		}
+		// 読み込めていたら終了
+		if( DefaultImageLoadFunc_PF[ i ] != NULL )
+		{
+			return 0 ;
+		}
 	}
 
 	// 次にデフォルト関数を噛ませる
@@ -1496,9 +1564,35 @@ extern int CreateGraphImageType2_UseGParam( CREATEBASEIMAGETYPE2_GPARAM *GParam,
 		_MEMSET( Dest, 0, sizeof( BASEIMAGE ) ) ;
 		if( DefaultImageLoadFunc[i]( Src, Dest, GParam->GetFormatOnly ) == 0 ) break ;
 	}
+	// 読み込めていたら終了
+	if( DefaultImageLoadFunc[ i ] != NULL )
+	{
+		return 0 ;
+	}
 
-	// 終了
-	return DefaultImageLoadFunc[i] == NULL ? -1 : 0 ;
+	// 環境依存のデフォルト関数を後から実行する設定ではなかった場合はここで終了
+	if( BASEIM.PlatformLoadFunctionAfterFlag == FALSE )
+	{
+		return -1 ;
+	}
+	else
+	{
+		// 後から環境依存のデフォルト関数を噛ませる
+		for( i = 0 ; DefaultImageLoadFunc_PF[ i ] != NULL ; i ++ )
+		{
+			STSEEK( Src, 0, STREAM_SEEKTYPE_SET ) ;
+			_MEMSET( Dest, 0, sizeof( BASEIMAGE ) ) ;
+			if( DefaultImageLoadFunc_PF[ i ]( Src, Dest, GParam->GetFormatOnly ) == 0 ) break ;
+		}
+		// 読み込めていたら終了
+		if( DefaultImageLoadFunc_PF[ i ] != NULL )
+		{
+			return 0 ;
+		}
+
+		// 終了
+		return DefaultImageLoadFunc_PF[i] == NULL ? -1 : 0 ;
+	}
 }
 
 // 汎用読み込み処理によるグラフィックイメージ構築関数( 0:成功  -1:失敗 )
@@ -3975,7 +4069,7 @@ static	int LoadDxLibBaseImage( STREAMDATA *Stream, BASEIMAGE *BaseImage, int Get
 		{
 			return -1 ;
 		}
-		if( sstr->Read( BaseImage->GraphData, ImageBytes, 1, sp ) <= 0 )
+		if( sstr->Read( BaseImage->GraphData, ( size_t )ImageBytes, 1, sp ) <= 0 )
 		{
 			DXFREE( BaseImage->GraphData ) ;
 			BaseImage->GraphData = NULL ;
@@ -4964,7 +5058,7 @@ static DDSCOLORTABLE _DDSColorTable[] =
 } ;
 
 // ＤＤＳ画像の読みこみ
-static int LoadDDSImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly )
+int LoadDDSImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly )
 {
 	DWORD_PTR       sp ;
 	STREAMDATASHRED *sstr ;
@@ -5117,8 +5211,22 @@ static int LoadDDSImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnl
 				( ( head.dwPfFlags & BI_DDPF_RGB ) == BI_DDPF_RGB ) )
 			{
 				// カラーフォーマットのセット
-				NS_CreateColorData( &BaseImage->ColorData, ( int )head.dwRGBBitCount,
-									head.dwRBitMask, head.dwGBitMask, head.dwBBitMask, head.dwRGBAlphaBitMask, 0, 0, FALSE ) ;
+				if( head.dwRGBBitCount == 8 && head.dwRBitMask == 0xff )
+				{
+					NS_CreateColorData( &BaseImage->ColorData, ( int )head.dwRGBBitCount,
+										head.dwRBitMask, head.dwGBitMask, head.dwBBitMask, head.dwRGBAlphaBitMask, 1, 8, FALSE ) ;
+				}
+				else
+				if( head.dwRGBBitCount == 16 && head.dwRBitMask == 0xff00 && head.dwGBitMask == 0x00ff )
+				{
+					NS_CreateColorData( &BaseImage->ColorData, ( int )head.dwRGBBitCount,
+										head.dwRBitMask, head.dwGBitMask, head.dwBBitMask, head.dwRGBAlphaBitMask, 2, 8, FALSE ) ;
+				}
+				else
+				{
+					NS_CreateColorData( &BaseImage->ColorData, ( int )head.dwRGBBitCount,
+										head.dwRBitMask, head.dwGBitMask, head.dwBBitMask, head.dwRGBAlphaBitMask, 0, 0, FALSE ) ;
+				}
 									
 				formatget = 1 ;
 			}
@@ -5875,13 +5983,23 @@ extern int NS_ConvertNormalFormatBaseImage( BASEIMAGE *BaseImage, int ReleaseOri
 	if( BaseImage->ColorData.Format == DX_BASEIMAGE_FORMAT_NORMAL )
 		return 0 ;
 
+	// 非対応の圧縮形式の場合はエラー
+	if( BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_DXT1 &&
+		BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_DXT2 &&
+		BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_DXT3 &&
+		BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_DXT4 &&
+		BaseImage->ColorData.Format != DX_BASEIMAGE_FORMAT_DXT5 )
+	{
+		return -1 ;
+	}
+
 	// データの数をセット
 	GraphNum = ( DWORD )( BaseImage->GraphDataCount == 0 ? 1 : 6 ) ;
 
 	// 新しいデータを格納するメモリ領域の確保
 	NewPixelByte = 4 ;
-	NewPitch = BaseImage->Width * NewPixelByte ;
-	NewImageSize = NewPitch * BaseImage->Height ;
+	NewPitch = ( BaseImage->Width + 3 ) / 4 * 4 * NewPixelByte ;
+	NewImageSize = ( BaseImage->Height + 3 ) / 4 * 4 * NewPitch ;
 	NewBuffer = DXALLOC( NewImageSize * GraphNum ) ;
 	if( NewBuffer == NULL )
 	{
@@ -5890,8 +6008,8 @@ extern int NS_ConvertNormalFormatBaseImage( BASEIMAGE *BaseImage, int ReleaseOri
 	}
 
 	// フォーマットによって処理を分岐
-	pw = ( DWORD )( BaseImage->Width  / 4 ) ;
-	ph = ( DWORD )( BaseImage->Height / 4 ) ;
+	pw = ( DWORD )( ( BaseImage->Width  + 3 ) / 4 ) ;
+	ph = ( DWORD )( ( BaseImage->Height + 3 ) / 4 ) ;
 	for( k = 0 ; k < GraphNum ; k ++ )
 	{
 		bdstb = ( BYTE * )NewBuffer + NewImageSize * k ;
@@ -8054,12 +8172,6 @@ extern int NS_DrawLineBaseImage( BASEIMAGE *BaseImage, int x1, int y1, int x2, i
 #define DRAWCIRCLEMEMIMG_FILL_ND( DRAW, DESTADDNUM )	\
 {\
 	x2 = Dx + x ; x1 = -Dx + x ; y1 = Dy + y ;\
-	DRAWCIRCLEMEMIMG_FILL_SHRED_ND( DRAW, DESTADDNUM )\
-\
-	x2 = Dy + x ; x1 = -Dy + x ; y1 = Dx + y ;\
-	DRAWCIRCLEMEMIMG_FILL_SHRED_ND( DRAW, DESTADDNUM )\
-\
-	x2 = Dy + x ; x1 = -Dy + x ; y1 = -Dx + y;\
 	DRAWCIRCLEMEMIMG_FILL_SHRED_ND( DRAW, DESTADDNUM )\
 \
 	if( F >= 0 )\
@@ -11767,6 +11879,102 @@ extern int NS_GraphColorMatchBltVer2( void *DestGraphData,       int DestPitch, 
 #endif
 				return 0 ;
 			}
+			else
+			if( DColor.ColorBitDepth == 32 &&
+				DColor.AlphaMask	== 0xff000000 &&
+				DColor.RedMask 		== 0x000000ff &&
+				DColor.GreenMask 	== 0x0000ff00 &&
+				DColor.BlueMask 	== 0x00ff0000 )
+			{
+				if( SColor.AlphaWidth == 0 )
+				{
+					do
+					{
+						w = BltWidth ;
+						do
+						{
+							BYTE *Pal = ( BYTE * )&Palette[ *Src ] ;
+							Dest[ 0 ] = Pal[ 2 ] ;
+							Dest[ 1 ] = Pal[ 1 ] ;
+							Dest[ 2 ] = Pal[ 0 ] ;
+							Dest[ 3 ] = 255 ;
+							Dest += 4 ;
+							Src ++ ;
+						}while( -- w ) ;
+						Dest += DestAddPitch ;
+						Src += SrcAddPitch ;
+					}while( -- BltHeight ) ;
+				}
+				else
+				{
+					do
+					{
+						w = BltWidth ;
+						do
+						{
+							BYTE *Pal = ( BYTE * )&Palette[ *Src ] ;
+							Dest[ 0 ] = Pal[ 2 ] ;
+							Dest[ 1 ] = Pal[ 1 ] ;
+							Dest[ 2 ] = Pal[ 0 ] ;
+							Dest[ 3 ] = Pal[ 3 ] ;
+							Dest += 4 ;
+							Src ++ ;
+						}while( -- w ) ;
+						Dest += DestAddPitch ;
+						Src += SrcAddPitch ;
+					}while( -- BltHeight ) ;
+				}
+
+				return 0 ;
+			}
+			else
+			if( DColor.ColorBitDepth == 32 &&
+				DColor.AlphaMask	== 0xff000000 &&
+				DColor.RedMask 		== 0x00ff0000 &&
+				DColor.GreenMask 	== 0x0000ff00 &&
+				DColor.BlueMask 	== 0x000000ff )
+			{
+				if( SColor.AlphaWidth == 0 )
+				{
+					do
+					{
+						w = BltWidth ;
+						do
+						{
+							BYTE *Pal = ( BYTE * )&Palette[ *Src ] ;
+							Dest[ 0 ] = Pal[ 0 ] ;
+							Dest[ 1 ] = Pal[ 1 ] ;
+							Dest[ 2 ] = Pal[ 2 ] ;
+							Dest[ 3 ] = 255 ;
+							Dest += 4 ;
+							Src ++ ;
+						}while( -- w ) ;
+						Dest += DestAddPitch ;
+						Src += SrcAddPitch ;
+					}while( -- BltHeight ) ;
+				}
+				else
+				{
+					do
+					{
+						w = BltWidth ;
+						do
+						{
+							BYTE *Pal = ( BYTE * )&Palette[ *Src ] ;
+							Dest[ 0 ] = Pal[ 0 ] ;
+							Dest[ 1 ] = Pal[ 1 ] ;
+							Dest[ 2 ] = Pal[ 2 ] ;
+							Dest[ 3 ] = Pal[ 3 ] ;
+							Dest += 4 ;
+							Src ++ ;
+						}while( -- w ) ;
+						Dest += DestAddPitch ;
+						Src += SrcAddPitch ;
+					}while( -- BltHeight ) ;
+				}
+
+				return 0 ;
+			}
 		}
 		else
 		if( TransColorAlphaTestFlag == TRUE &&
@@ -12218,6 +12426,120 @@ extern int NS_GraphColorMatchBltVer2( void *DestGraphData,       int DestPitch, 
 			}
 		}
 		else
+		if( TransColorAlphaTestFlag == FALSE &&
+			SColor.ColorBitDepth == 24 &&
+			SColor.RedMask 		== 0x0000ff &&
+			SColor.GreenMask 	== 0x00ff00 &&
+			SColor.BlueMask 	== 0xff0000 )
+		{
+			BYTE *Dest ;
+			BYTE *Src ;
+			int DestAddPitch, SrcAddPitch ;
+			int w ;
+
+			DestAddPitch = DestPitch - BltWidth * DColor.PixelByte ;
+			SrcAddPitch = SrcPitch - BltWidth * SColor.PixelByte ;
+			
+			Dest = ( BYTE * )DestGraphData + DestPoint.y  * DestPitch + DestPoint.x   * DColor.PixelByte ;
+			Src  = ( BYTE * )SrcGraphData  + SrcRect->top * SrcPitch  + SrcRect->left * SColor.PixelByte ;
+
+			if( DColor.ColorBitDepth == 16 &&
+				DColor.AlphaMask	== 0x00000000 &&
+				DColor.RedMask 		== 0x0000f800 &&
+				DColor.GreenMask 	== 0x000007e0 &&
+				DColor.BlueMask 	== 0x0000001f )
+			{
+				do
+				{
+					w = BltWidth ;
+					do
+					{
+						*((WORD *)Dest) = ( WORD )(
+											((Src[2] >> 3)      ) |
+											((Src[1] >> 2) <<  5) |
+											((Src[0] >> 3) << 11) ) ;
+						Dest += 2 ;
+						Src += 3 ;
+					}while( -- w ) ;
+					Dest += DestAddPitch ;
+					Src += SrcAddPitch ;
+				}while( -- BltHeight ) ;
+				return 0 ;
+			}
+			else
+			if( DColor.ColorBitDepth == 16 &&
+//				DColor.AlphaMask	== 0x00000000 &&
+				DColor.RedMask 		== 0x00007c00 &&
+				DColor.GreenMask 	== 0x000003e0 &&
+				DColor.BlueMask 	== 0x0000001f )
+			{
+				do
+				{
+					w = BltWidth ;
+					do
+					{
+						*((WORD *)Dest) = ( WORD )(
+											((Src[2] >> 3)      ) |
+											((Src[1] >> 3) <<  5) |
+											((Src[0] >> 3) << 10) | 0x8000 )  ;
+						Dest += 2 ;
+						Src += 3 ;
+					}while( -- w ) ;
+					Dest += DestAddPitch ;
+					Src += SrcAddPitch ;
+				}while( -- BltHeight ) ;
+				return 0 ;
+			}
+			else
+			if( DColor.ColorBitDepth == 32 &&
+//				DColor.AlphaMask	== 0x00000000 &&
+				DColor.RedMask 		== 0x00ff0000 &&
+				DColor.GreenMask 	== 0x0000ff00 &&
+				DColor.BlueMask 	== 0x000000ff )
+			{
+				do
+				{
+					w = BltWidth ;
+					do
+					{
+						Dest[ 0 ] = Src[ 2 ] ;
+						Dest[ 1 ] = Src[ 1 ] ;
+						Dest[ 2 ] = Src[ 0 ] ;
+						Dest[ 3 ] = 0xff ;
+						Dest += 4 ;
+						Src += 3 ;
+					}while( -- w ) ;
+					Dest += DestAddPitch ;
+					Src += SrcAddPitch ;
+				}while( -- BltHeight ) ;
+				return 0 ;
+			}
+			else
+			if( DColor.ColorBitDepth == 32 &&
+//				DColor.AlphaMask	== 0x00000000 &&
+				DColor.RedMask 		== 0x000000ff &&
+				DColor.GreenMask 	== 0x0000ff00 &&
+				DColor.BlueMask 	== 0x00ff0000 )
+			{
+				do
+				{
+					w = BltWidth ;
+					do
+					{
+						Dest[ 0 ] = Src[ 0 ] ;
+						Dest[ 1 ] = Src[ 1 ] ;
+						Dest[ 2 ] = Src[ 2 ] ;
+						Dest[ 3 ] = 0xff ;
+						Dest += 4 ;
+						Src += 3 ;
+					}while( -- w ) ;
+					Dest += DestAddPitch ;
+					Src += SrcAddPitch ;
+				}while( -- BltHeight ) ;
+				return 0 ;
+			}
+		}
+		else
 		if( TransColorAlphaTestFlag == TRUE &&
 			SColor.ColorBitDepth == 24 &&
 			SColor.RedMask 		== 0xff0000 &&
@@ -12397,6 +12719,107 @@ extern int NS_GraphColorMatchBltVer2( void *DestGraphData,       int DestPitch, 
 						Alpha = 0xff000000 ;
 						if( SrcColor.dword == TransColor ) Alpha = 0 ;
 						*((DWORD *)Dest) = ( DWORD )( ( Src[ 0 ] << 16 ) | ( Src[ 1 ] << 8 ) | Src[ 2 ] | Alpha ) ;
+						Dest += 4 ;
+						Src  += 3 ;
+					}while( -- w ) ;
+					Dest += DestAddPitch ;
+					Src  += SrcAddPitch ;
+				}while( -- BltHeight ) ;
+
+				return 0 ;
+			}
+		}
+		else
+		if( TransColorAlphaTestFlag == TRUE &&
+			SColor.ColorBitDepth == 24 &&
+			SColor.RedMask 		== 0x0000ff &&
+			SColor.GreenMask 	== 0x00ff00 &&
+			SColor.BlueMask 	== 0xff0000 )
+		{
+			BYTE *Dest ;
+			BYTE *Src ;
+			int DestAddPitch, SrcAddPitch ;
+			int w, Alpha ;
+			union
+			{
+				unsigned int dword ;
+				unsigned char byte[4] ;
+			} SrcColor ;
+
+			DestAddPitch = DestPitch - BltWidth * DColor.PixelByte ;
+			SrcAddPitch = SrcPitch - BltWidth * SColor.PixelByte ;
+			
+			Dest = ( BYTE * )DestGraphData + DestPoint.y  * DestPitch + DestPoint.x   * DColor.PixelByte ;
+			Src  = ( BYTE * )SrcGraphData  + SrcRect->top * SrcPitch  + SrcRect->left * SColor.PixelByte ;
+
+			if( DColor.ColorBitDepth == 16 &&
+				DColor.AlphaMask	== 0x00008000 &&
+				DColor.RedMask 		== 0x00007c00 &&
+				DColor.GreenMask 	== 0x000003e0 &&
+				DColor.BlueMask 	== 0x0000001f )
+			{
+				do
+				{
+					w = BltWidth ;
+					do
+					{
+						SrcColor.dword = ( unsigned int )( ( Src[0] << 16 ) | ( Src[ 1 ] << 8 ) | ( Src[ 2 ] ) ) ;
+						Alpha          = 0x8000 ;
+						if( SrcColor.dword == TransColor ) Alpha = 0 ;
+						*((WORD *)Dest) = ( WORD )(
+											((SrcColor.byte[2] >> 3) << 10) |
+											((SrcColor.byte[1] >> 3) <<  5) |
+											((SrcColor.byte[0] >> 3)      ) |
+											Alpha ) ;
+						Dest += 2 ;
+						Src += 3 ;
+					}while( -- w ) ;
+					Dest += DestAddPitch ;
+					Src += SrcAddPitch ;
+				}while( -- BltHeight ) ;
+				return 0 ;
+			}
+			else
+			if( DColor.ColorBitDepth == 32 &&
+				DColor.AlphaMask	== 0xff000000 &&
+				DColor.RedMask 		== 0x00ff0000 &&
+				DColor.GreenMask 	== 0x0000ff00 &&
+				DColor.BlueMask 	== 0x000000ff )
+			{
+				do
+				{
+					w = BltWidth ;
+					do
+					{
+						SrcColor.dword = ( unsigned int )( ( Src[0] << 16 ) | ( Src[ 1 ] << 8 ) | ( Src[ 2 ] ) ) ;
+						Alpha = 0xff000000 ;
+						if( SrcColor.dword == TransColor ) Alpha = 0 ;
+						*((DWORD *)Dest) = SrcColor.dword | Alpha ;
+						Dest += 4 ;
+						Src += 3 ;
+					}while( -- w ) ;
+					Dest += DestAddPitch ;
+					Src += SrcAddPitch ;
+				}while( -- BltHeight ) ;
+				return 0 ;
+			}
+			else
+			if( DColor.ColorBitDepth == 32 &&
+				DColor.AlphaMask	== 0xff000000 &&
+				DColor.RedMask 		== 0x000000ff &&
+				DColor.GreenMask 	== 0x0000ff00 &&
+				DColor.BlueMask 	== 0x00ff0000 )
+			{
+				do
+				{
+					w = BltWidth ;
+					do
+					{
+						SrcColor.dword = ( unsigned int )( ( Src[0] << 16 ) | ( Src[ 1 ] << 8 ) | ( Src[ 2 ] ) ) ;
+						Dest[ 0 ] = Src[ 0 ] ;
+						Dest[ 1 ] = Src[ 1 ] ;
+						Dest[ 2 ] = Src[ 2 ] ;
+						Dest[ 3 ] = SrcColor.dword == TransColor ? 0 : 0xff ;
 						Dest += 4 ;
 						Src  += 3 ;
 					}while( -- w ) ;
@@ -14715,6 +15138,30 @@ extern	int		NS_GetColor2( unsigned int Color, int *Red, int *Green, int *Blue )
 // 指定のピクセルフォーマットに対応したカラー値を得る
 extern unsigned int NS_GetColor3( const COLORDATA * ColorData, int Red, int Green, int Blue, int Alpha )
 {
+	if( ColorData->ChannelNum == 1 &&
+		ColorData->ChannelBitDepth == 8 )
+	{
+		return ( unsigned int )Red ;
+	}
+	else
+	if( ColorData->ChannelNum == 2 &&
+		ColorData->ChannelBitDepth == 8 )
+	{
+		return ( unsigned int )Red | ( unsigned int )( Green << 8 ) ;
+	}
+	else
+	if( ColorData->ChannelNum == 3 &&
+		ColorData->ChannelBitDepth == 8 )
+	{
+		return ( unsigned int )Red | ( unsigned int )( Green << 8 ) | ( unsigned int )( Blue << 16 ) ;
+	}
+	else
+	if( ColorData->ChannelNum == 4 &&
+		ColorData->ChannelBitDepth == 8 )
+	{
+		return ( unsigned int )Red | ( unsigned int )( Green << 8 ) | ( unsigned int )( Blue << 16 ) | ( unsigned int )( Alpha << 24 ) ;
+	}
+	else
 	// 8ビットカラーの場合はパレットから一番近い色を探す
 	if( ColorData->PixelByte == 1 )
 	{
@@ -15130,6 +15577,41 @@ extern	int NS_CreateBGRA8ColorData( COLORDATA *ColorDataBuf )
 	return 0 ;
 }
 
+// ＢＧＲ８カラーのカラーフォーマットを構築する
+extern	int NS_CreateBGR8ColorData( COLORDATA *ColorDataBuf )
+{
+	ColorDataBuf->Format = DX_BASEIMAGE_FORMAT_NORMAL ;
+	ColorDataBuf->ChannelNum = 0 ;
+	ColorDataBuf->ChannelBitDepth = 0 ;
+	ColorDataBuf->FloatTypeFlag = FALSE ;
+	ColorDataBuf->ColorBitDepth = 24 ;
+	ColorDataBuf->PixelByte = 3 ;
+	ColorDataBuf->MaxPaletteNo = 0 ;
+
+	ColorDataBuf->NoneLoc = 0 ;
+	ColorDataBuf->NoneMask = 0x00000000 ;
+	ColorDataBuf->NoneWidth = 0 ;
+
+	ColorDataBuf->AlphaLoc = 0 ;
+	ColorDataBuf->AlphaMask = 0x00000000 ;
+	ColorDataBuf->AlphaWidth = 0 ;
+
+	ColorDataBuf->RedLoc = 0 ;
+	ColorDataBuf->RedMask = 0x000000ff ;
+	ColorDataBuf->RedWidth = 8 ;
+
+	ColorDataBuf->GreenLoc = 8 ;
+	ColorDataBuf->GreenMask = 0x0000ff00 ;
+	ColorDataBuf->GreenWidth = 8 ;
+
+	ColorDataBuf->BlueLoc = 16  ;
+	ColorDataBuf->BlueMask = 0x00ff0000 ;
+	ColorDataBuf->BlueWidth = 8 ;
+
+	// 終了
+	return 0 ;
+}
+
 // ＡＲＧＢ４カラーのカラー情報を構築する
 extern	int NS_CreateARGB4ColorData( COLORDATA * ColorDataBuf )
 {
@@ -15413,12 +15895,25 @@ extern int NS_CreatePal8ColorData( COLORDATA * ColorDataBuf, int UseAlpha )
 	ColorDataBuf->BlueMask = 0x000000ff ;
 	ColorDataBuf->BlueWidth = 8 ;
 
-	for( i = 0 ; i < 256 ; i ++ )
+	if( UseAlpha )
 	{
-		ColorDataBuf->Palette[i].Red   = ( BYTE )( ( ( i >> 0 ) & 7 ) * 255 / 7 ) ;
-		ColorDataBuf->Palette[i].Green = ( BYTE )( ( ( i >> 3 ) & 7 ) * 255 / 7 ) ;
-		ColorDataBuf->Palette[i].Blue  = ( BYTE )( ( ( i >> 5 ) & 3 ) * 255 / 3 ) ;
-		ColorDataBuf->Palette[i].Alpha = 0 ;
+		for( i = 0 ; i < 256 ; i ++ )
+		{
+			ColorDataBuf->Palette[i].Red   = ( BYTE )( ( ( i >> 0 ) & 7 ) * 255 / 7 ) ;
+			ColorDataBuf->Palette[i].Green = ( BYTE )( ( ( i >> 3 ) & 7 ) * 255 / 7 ) ;
+			ColorDataBuf->Palette[i].Blue  = ( BYTE )( ( ( i >> 5 ) & 3 ) * 255 / 3 ) ;
+			ColorDataBuf->Palette[i].Alpha = 255 ;
+		}
+	}
+	else
+	{
+		for( i = 0 ; i < 256 ; i ++ )
+		{
+			ColorDataBuf->Palette[i].Red   = ( BYTE )( ( ( i >> 0 ) & 7 ) * 255 / 7 ) ;
+			ColorDataBuf->Palette[i].Green = ( BYTE )( ( ( i >> 3 ) & 7 ) * 255 / 7 ) ;
+			ColorDataBuf->Palette[i].Blue  = ( BYTE )( ( ( i >> 5 ) & 3 ) * 255 / 3 ) ;
+			ColorDataBuf->Palette[i].Alpha = 0 ;
+		}
 	}
 
 	// 終了
@@ -15606,6 +16101,27 @@ extern int NS_SetUsePremulAlphaConvertLoad( int UseFlag )
 
 	// 終了
 	return 0 ;
+}
+
+// 画像ファイル読み込み時に乗算済みアルファ画像に変換するかどうかを取得する( TRUE:変換処理を行う  FALSE:変換処理を行わない( デフォルト ) )
+extern int NS_GetUsePremulAlphaConvertLoad( void )
+{
+	return BASEIM.ConvertPremultipliedAlpha ;
+}
+
+// 画像ファイル読み込み時に DX_BASEIMAGE_FORMAT_NORMAL 以外の形式のイメージを DX_BASEIMAGE_FORMAT_NORMAL 形式のイメージに変換するかどうかを設定する( TRUE:変換処理を行う  FALSE:変換処理を行なわない( デフォルト ) )
+extern int NS_SetUseConvertNormalFormatLoad( int UseFlag )
+{
+	BASEIM.ConvertNormalFormat = UseFlag ;
+
+	// 終了
+	return 0 ;
+}
+
+// 画像ファイル読み込み時に DX_BASEIMAGE_FORMAT_NORMAL 以外の形式のイメージを DX_BASEIMAGE_FORMAT_NORMAL 形式のイメージに変換するかどうかを取得する( TRUE:変換処理を行う  FALSE:変換処理を行なわない( デフォルト ) )
+extern int NS_GetUseConvertNormalFormatLoad( void )
+{
+	return BASEIM.ConvertNormalFormat ;
 }
 
 #ifndef DX_NON_NAMESPACE

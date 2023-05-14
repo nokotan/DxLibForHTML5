@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ハンドル管理プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -59,6 +59,7 @@ extern int InitializeHandleManage(
 	int MaxNum,
 	int ( *InitializeFunction )( HANDLEINFO *HandleInfo ),
 	int ( *TerminateFunction )( HANDLEINFO *HandleInfo ),
+	int ( *DumpInfoFunction )( HANDLEINFO *HandleInfo ),
 	const wchar_t *Name
 )
 {
@@ -79,6 +80,7 @@ extern int InitializeHandleManage(
 	HandleManage->MaxNum = MaxNum ;
 	HandleManage->InitializeFunction = InitializeFunction ;
 	HandleManage->TerminateFunction = TerminateFunction ;
+	HandleManage->DumpInfoFunction = DumpInfoFunction ;
 	HandleManage->Name = Name ;
 	ConvString( ( const char * )HandleManage->Name, -1, WCHAR_T_CHARCODEFORMAT, HandleManage->NameUTF16LE, sizeof( HandleManage->NameUTF16LE ), DX_CHARCODEFORMAT_UTF16LE ) ;
 
@@ -937,6 +939,8 @@ extern int SubHandleList( HANDLELIST *List )
 {
 	List->Prev->Next = List->Next ;
 	List->Next->Prev = List->Prev ;
+	List->Prev = NULL ;
+	List->Next = NULL ;
 
 	return 0 ;
 }
@@ -1028,6 +1032,73 @@ extern int NS_SetDeleteHandleFlag( int Handle, int *DeleteFlag )
 		return -1 ;
 
 	HandleInfo->DeleteFlag = DeleteFlag  ;
+
+	// 終了
+	return 0 ;
+}
+
+// 指定のタイプのハンドルの数を取得する
+extern int NS_GetHandleNum(	int HandleType /* DX_HANDLETYPE_GRAPH等 */ )
+{
+	// タイプチェック
+	if( HandleType < 0 || HandleType >= DX_HANDLETYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	// ハンドルの数を返す
+	return HandleManageArray[ HandleType ].Num ;
+}
+
+// 指定のタイプのハンドルが最大で幾つ作成できるかを取得する
+extern int NS_GetMaxHandleNum( int HandleType /* DX_HANDLETYPE_GRAPH等 */ )
+{
+	// タイプチェック
+	if( HandleType < 0 || HandleType >= DX_HANDLETYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	// ハンドルの最大数を返す
+	return HandleManageArray[ HandleType ].MaxNum ;
+}
+
+// 指定のタイプの全ハンドルの情報をログに出力する
+extern int NS_DumpHandleInfo( int HandleType /* DX_HANDLETYPE_GRAPH等 */ )
+{
+	int i ;
+	HANDLEINFO **ppHandleInfo ;
+	HANDLEMANAGE *HandleManage = &HandleManageArray[ HandleType ] ;
+
+	// タイプチェック
+	if( HandleType < 0 || HandleType >= DX_HANDLETYPE_MAX )
+	{
+		return -1 ;
+	}
+
+	if( HandleManage->InitializeFlag == FALSE )
+		return -1 ;
+
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
+
+	ppHandleInfo = &HandleManage->Handle[ HandleManage->AreaMin ] ;
+	for( i = HandleManage->AreaMin ; i <= HandleManage->AreaMax ; i ++, ppHandleInfo ++ )
+	{
+		if( *ppHandleInfo == NULL )
+		{
+			continue ;
+		}
+
+		if( HandleManage->DumpInfoFunction != NULL )
+		{
+			HandleManage->DumpInfoFunction( *ppHandleInfo ) ;
+		}
+	}
+	DXST_LOGFILEFMT_ADDW(( L"Total Count : %d", HandleManage->Num )) ;
+
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 
 	// 終了
 	return 0 ;

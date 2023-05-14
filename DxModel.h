@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -1286,6 +1286,8 @@ struct MV1_MODEL_ANIM
 {
 	bool					Use ;								// この構造体が有効かどうか( true :有効  false:無効 )
 	float					BlendRate ;							// ブレンド率
+	bool					EnableNowTime ;						// NowTime が有効かどうか( true:有効  false:無効 )
+	float					NowTime ;							// このフレームでのアニメーションタイム
 	MV1_ANIM				*Anim ;								// アニメーション情報へのポインタ
 } ;
 
@@ -1427,6 +1429,8 @@ struct MV1_MODEL_MANAGE
 	int						LoadModelToDisablePhysicsNameWordMode ;	// LoadModelToDisablePhysicsNameWord の適用ルール( DX_LOADMODEL_PHYSICS_DISABLENAMEWORD_ALWAYS 等 )
 	int						LoadModelToUsePackDraw ;				// 読み込むモデルを一度に複数の描画に対応させるかどうか( TRUE:対応させる  FALSE:対応させない )
 	int						LoadModelToTriangleListUseMaxBoneNum ;	// 読み込むモデルのひとつのトライアングルリストで使用できる最大ボーン数
+	int						LoadModelToNotTextureLoad ;				// 読み込むモデルのテクスチャを読み込まないかどうか( FALSE:読み込む  TRUE:読み込まない )
+	int						LoadModelToIgnoreIK ;					// 読み込むモデルのIK情報を無視するかどうか( TRUE:無視する  FALSE:無視しない )
 	VECTOR					LoadCalcPhysicsWorldGravity[ MV1_LOADCALC_PHYSICS_GRAVITY_NUM ] ;	// 読み込むモデルの事前計算に使用する重力
 
 	int						AnimFilePathValid ;					// AnimFilePath が有効かどうか( TRUE:有効  FALSE:無効 )
@@ -1499,6 +1503,8 @@ struct MV1LOADMODEL_GPARAM
 	int						LoadModelToPMD_PMX_AnimationFPSMode ;	// PMD, PMX を読み込む際のアニメーションの FPS モード( DX_LOADMODEL_PMD_PMX_ANIMATION_FPSMODE_30 等 )
 	int						LoadModelToUsePackDraw ;				// 読み込むモデルを一度に複数の描画に対応させるかどうか( TRUE:対応させる  FALSE:対応させない )
 	int						LoadModelToTriangleListUseMaxBoneNum ;	// 読み込むモデルのひとつのトライアングルリストで使用できる最大ボーン数
+	int						LoadModelToNotTextureLoad ;				// 読み込むモデルのテクスチャを読み込まないかどうか( FALSE:読み込む  TRUE:読み込まない )
+	int						LoadModelToIgnoreIK ;					// 読み込むモデルのIK情報を無視するかどうか( TRUE:無視する  FALSE:無視しない )
 	VECTOR					LoadCalcPhysicsWorldGravity[ MV1_LOADCALC_PHYSICS_GRAVITY_NUM ] ;	// 読み込むモデルの事前計算に使用する重力
 
 	int						AnimFilePathValid ;					// AnimFilePath が有効かどうか( TRUE:有効  FALSE:無効 )
@@ -1618,6 +1624,7 @@ extern	int				__MV1LoadTexture(
 							  const MV1_FILE_READ_FUNC *FileReadFunc,
 							  bool ValidImageAddr,
 							  int NotInitGraphDelete,
+						      int NotTextureLoad,
 							  int ASyncThread ) ;
 extern	int				MV1CreateTextureColorBaseImage(
 										BASEIMAGE *DestColorBaseImage,
@@ -2214,7 +2221,7 @@ extern	int				MV1SetTextureColorFilePath_WCHAR_T(		int MHandle, int TexIndex, co
 extern	const wchar_t *	MV1GetTextureColorFilePath_WCHAR_T(		int MHandle, int TexIndex ) ;
 extern	int				MV1SetTextureAlphaFilePath_WCHAR_T(		int MHandle, int TexIndex, const wchar_t *FilePath ) ;
 extern	const wchar_t *	MV1GetTextureAlphaFilePath_WCHAR_T(		int MHandle, int TexIndex ) ;
-extern	int				MV1LoadTexture_WCHAR_T(					const wchar_t *FilePath ) ;
+extern	int				MV1LoadTexture_WCHAR_T(					const wchar_t *FilePath, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;
 extern	int				MV1SearchFrame_WCHAR_T(					int MHandle, const wchar_t *FrameName ) ;
 extern	int				MV1SearchFrameChild_WCHAR_T(			int MHandle, int FrameIndex = -1 , const wchar_t *ChildName = NULL ) ;
 extern	const wchar_t *	MV1GetFrameName_WCHAR_T(				int MHandle, int FrameIndex ) ;
@@ -2274,6 +2281,8 @@ extern	int			NS_MV1SetLoadModelAnimFilePath( const TCHAR *FileName ) ;										
 extern	int			NS_MV1SetLoadModelAnimFilePathWithStrLen(				const TCHAR *FileName, size_t FileNameLength ) ;					// 読み込むモデルに適用するアニメーションファイルのパスを設定する、NULLを渡すと設定リセット( 現在は PMD,PMX のみに効果あり )
 extern	int			NS_MV1SetLoadModelUsePackDraw(			int Flag ) ;														// 読み込むモデルを同時複数描画に対応させるかどうかを設定する( TRUE:対応させる  FALSE:対応させない( デフォルト ) )、( 「対応させる」にすると描画が高速になる可能性がある代わりに消費VRAMが増えます )
 extern	int			NS_MV1SetLoadModelTriangleListUseMaxBoneNum( int UseMaxBoneNum ) ;											// 読み込むモデルのひとつのトライアングルリストで使用できる最大ボーン数を設定する( UseMaxBoneNum で指定できる値の範囲は 8 ～ 54、 0 を指定するとデフォルト動作に戻る )
+extern	int			NS_MV1SetLoadModelTextureLoad(							int Flag ) ;														// 読み込むモデルで使用するテクスチャファイルを読み込むかどうかを設定する( TRUE:読み込む(デフォルト) FALSE:読み込まない )
+extern	int			NS_MV1SetLoadModelIgnoreIK(							int IgnoreFlag ) ;													// 読み込むモデルのIK情報を無視するかどうかを設定する( TRUE:無視する  FALSE:無視しない(デフォルト) )
 
 // モデル保存関係
 extern	int			NS_MV1SaveModelToMV1File( int MHandle, const TCHAR *FileName, int SaveType = MV1_SAVETYPE_NORMAL , int AnimMHandle = -1 , int AnimNameCheck = TRUE , int Normal8BitFlag = 1 , int Position16BitFlag = 1 , int Weight8BitFlag = 0 , int Anim16BitFlag = 1 ) ;		// 指定のパスにモデルを保存する( 戻り値  0:成功  -1:メモリ不足  -2:使われていないアニメーションがあった )
@@ -2363,6 +2372,8 @@ extern	int			NS_MV1SetAttachAnimBlendRate( int MHandle, int AttachIndex, float R
 extern	float		NS_MV1GetAttachAnimBlendRate( int MHandle, int AttachIndex ) ;							// アタッチしているアニメーションのブレンド率を取得する
 extern	int			NS_MV1SetAttachAnimBlendRateToFrame( int MHandle, int AttachIndex, int FrameIndex, float Rate, int SetChild ) ;	// アタッチしているアニメーションのブレンド率を設定する( フレーム単位 )
 extern	float		NS_MV1GetAttachAnimBlendRateToFrame( int MHandle, int AttachIndex, int FrameIndex ) ;			// アタッチしているアニメーションのブレンド率を設定する( フレーム単位 )
+extern	int			NS_MV1SetAttachAnimTimeToFrame(		int MHandle, int AttachIndex, int FrameIndex, float Time, int SetChild DEFAULTPARAM( = TRUE ) ) ;	// アタッチしているアニメーションの再生時間を設定する( フレーム単位 )
+extern	float		NS_MV1GetAttachAnimTimeToFrame(		int MHandle, int AttachIndex, int FrameIndex ) ;									// アタッチしているアニメーションの再生時間を取得する( フレーム単位 )
 extern	int			NS_MV1GetAttachAnim( int MHandle, int AttachIndex ) ;									// アタッチしているアニメーションのアニメーションインデックスを取得する
 extern	int			NS_MV1SetAttachAnimUseShapeFlag( int MHandle, int AttachIndex, int UseFlag ) ;			// アタッチしているアニメーションのシェイプを使用するかどうかを設定する( UseFlag  TRUE:使用する( デフォルト )  FALSE:使用しない )
 extern	int			NS_MV1GetAttachAnimUseShapeFlag( int MHandle, int AttachIndex ) ;						// アタッチしているアニメーションのシェイプを使用するかどうかを取得する
@@ -2664,6 +2675,9 @@ extern	MV1_REF_POLYGONLIST	NS_MV1GetReferenceMesh(		int MHandle, int FrameIndex,
 #define NS_MV1SetLoadModelAnimFilePathWithStrLen				MV1SetLoadModelAnimFilePathWithStrLen
 #define NS_MV1SetLoadModelUsePackDraw							MV1SetLoadModelUsePackDraw
 #define NS_MV1SetLoadModelTriangleListUseMaxBoneNum				MV1SetLoadModelTriangleListUseMaxBoneNum
+#define NS_MV1SetLoadModelTextureLoad							MV1SetLoadModelTextureLoad
+#define NS_MV1SetLoadModelIgnoreIK								MV1SetLoadModelIgnoreIK
+
 
 // モデル保存関係
 #define NS_MV1SaveModelToMV1File						MV1SaveModelToMV1File
@@ -2751,6 +2765,8 @@ extern	MV1_REF_POLYGONLIST	NS_MV1GetReferenceMesh(		int MHandle, int FrameIndex,
 #define NS_MV1GetAttachAnimBlendRate					MV1GetAttachAnimBlendRate
 #define NS_MV1SetAttachAnimBlendRateToFrame				MV1SetAttachAnimBlendRateToFrame
 #define NS_MV1GetAttachAnimBlendRateToFrame				MV1GetAttachAnimBlendRateToFrame
+#define NS_MV1SetAttachAnimTimeToFrame					MV1SetAttachAnimTimeToFrame
+#define NS_MV1GetAttachAnimTimeToFrame					MV1GetAttachAnimTimeToFrame
 #define NS_MV1GetAttachAnim								MV1GetAttachAnim
 #define NS_MV1SetAttachAnimUseShapeFlag					MV1SetAttachAnimUseShapeFlag
 #define NS_MV1GetAttachAnimUseShapeFlag					MV1GetAttachAnimUseShapeFlag

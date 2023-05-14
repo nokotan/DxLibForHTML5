@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Windows専用関数プロトタイプ宣言用ヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -120,6 +120,7 @@ extern	int			SetUseFPUPreserveFlag(					int Flag ) ;																		// FPUの精
 extern	int			SetValidMousePointerWindowOutClientAreaMoveFlag( int Flag ) ;																// マウスポインタがウインドウのクライアントエリアの外にいけるかどうかを設定する( TRUE:いける( デフォルト設定 )  FALSE:いけない )
 extern	int			SetUseBackBufferTransColorFlag(			int Flag ) ;																		// バックバッファの透過色の部分を透過させるかどうかを設定する( TRUE:透過させる  FALSE:透過させない( デフォルト ) )
 extern	int			SetUseUpdateLayerdWindowFlag(			int Flag ) ;																		// UpdateLayerdWindowForBaseImage や UpdateLayerdWindowForSoftImage を使用するかどうかを設定する( TRUE:使用する  FALSE:使用しない )
+extern	int			SetUseMouseEventTransparentWindowFlag(	int Flag ) ;																		// SetUseBackBufferTransColorFlag( TRUE ); 又は SetUseUpdateLayerdWindowFlag( TRUE ); を設定の際にマウス関係のイベントを背後のウィンドウに透過させるかを設定する( TRUE:透過する   FALSE:透過しない( デフォルト ) )
 extern	int			SetResourceModule(						HMODULE ResourceModule ) ;															// リソースを読み込む際に使用するモジュールを設定する( NULL を指定すると初期状態に戻ります、デフォルトでは NULL )
 extern	int			SetUseDxLibWM_PAINTProcess(				int Flag ) ;																		// WM_PAINT メッセージが来た際に『ＤＸライブラリの WM_PAINTメッセージが来た際の処理』を行うかどうかを設定する( 別スレッドで描画処理を行う場合などで使用 )
 extern	int			SetWindows10_WM_CHAR_CancelTime(		int MilliSecond ) ;																	// Windows10 で WM_CHAR で短時間に連続して同じ文字が入力された場合の無効扱いにする時間を設定する( MilliSecond のミリ秒以内に連続して同じ文字が入力された場合に無効にする、MilliSecond の値をマイナスにするとデフォルトの設定に戻る )
@@ -325,6 +326,7 @@ extern	int			BltRectBackScreenToWindow(		HWND Window, RECT BackScreenRect, RECT 
 extern	int			SetScreenFlipTargetWindow(		HWND TargetWindow, double ScaleX DEFAULTPARAM( = 1.0 ) , double ScaleY DEFAULTPARAM( = 1.0 ) ) ;					// ScreenFlip で画像を転送する先のウインドウを設定する( NULL を指定すると設定解除 )
 extern	int			GetDesktopScreenGraph(			int x1, int y1, int x2, int y2, int GrHandle, int DestX DEFAULTPARAM( = 0 ) , int DestY DEFAULTPARAM( = 0 ) ) ;		// デスクトップ画面から指定領域の画像情報をグラフィックハンドルに転送する
 extern	void *		GetDesktopScreenGraphMemImage(	int x1, int y1, int x2, int y2, int *Width, int *Height, int *Stride, int ColorBitDepth DEFAULTPARAM( = 32 ) ) ;	// デスクトップ画面から指定領域の画像のメモリイメージの先頭アドレスとイメージの幅・高さ・ストライドを取得する( イメージのフォーマットは ColorBitDepth = 32( バイト順で B8G8R8X8 の 32bitカラー ) ColorBitDepth = 24( バイト順で B8G8R8 の 24bitカラー ) )
+extern	int			GetOtherWindowGraph(			HWND Window, int x1, int y1, int x2, int y2, int GrHandle, int DestX DEFAULTPARAM( = 0 ) , int DestY DEFAULTPARAM( = 0 ) ) ;		// 指定のウィンドウの指定領域の画像情報をグラフィックハンドルに転送する
 
 // その他設定関係関数
 extern	int			SetMultiThreadFlag(								int Flag ) ;									// DirectDraw や Direct3D の協調レベルをマルチスレッド対応にするかどうかをセットする( TRUE:マルチスレッド対応にする  FALSE:マルチスレッド対応にしない( デフォルト ) )
@@ -338,6 +340,8 @@ extern	int			SetUseDirect3DVersion(							int Version /* DX_DIRECT3D_9 など */ )
 extern	int			GetUseDirect3DVersion(							void ) ;										// 使用している Direct3D のバージョンを取得する( DX_DIRECT3D_9 など )
 extern	int			GetUseDirect3D11FeatureLevel(					void ) ;										// 使用している Direct3D11 の FeatureLevel ( DX_DIRECT3D_11_FEATURE_LEVEL_9_1 等 )を取得する( 戻り値　-1：エラー　-1以外：Feature Level )
 extern	int			SetUseDirect3D11AdapterIndex(					int Index ) ;									// 使用するグラフィックスデバイスのアダプターのインデックスを設定する
+extern	int			SetUseDirect3D11BGRASupport(					int Flag ) ;									// D3D11Device 作成時に D3D11_CREATE_DEVICE_BGRA_SUPPORT を指定するかどうかを設定する( TRUE:指定する  FALSE:指定しない( デフォルト ) )
+extern	int			GetUseDirect3D11BGRASupport(					void ) ;										// D3D11Device 作成時に D3D11_CREATE_DEVICE_BGRA_SUPPORT を指定するかどうかを取得する
 extern	int			SetUseDirectDrawFlag(							int Flag ) ;									// ( 同効果のSetUseSoftwareRenderModeFlag を使用して下さい )DirectDrawを使用するかどうかを設定する
 extern	int			SetUseGDIFlag(									int Flag ) ;									// GDI描画を使用するかどうかを設定する
 extern	int			GetUseGDIFlag(									void ) ;										// GDI描画を使用するかどうかを取得する
@@ -480,7 +484,9 @@ extern	int			SetEnableXAudioFlag(                 int Flag ) ;																		
 extern	int			SetEnableWASAPIFlag(                 int Flag, int IsExclusive DEFAULTPARAM( = TRUE ) , int DevicePeriod DEFAULTPARAM( = -1 ) , int SamplePerSec DEFAULTPARAM( = 44100 ) ) ;		// サウンドの再生にWASAPIを使用するかどうかを設定する( Flag  TRUE:使用する  FALSE:使用しない( デフォルト ), IsExclusive  TRUE:排他モードを使用する  FALSE:排他モードを使用しない, DevicePeriod 再生遅延時間、100ナノ秒単位( 100000 で 10ミリ秒 )、-1でデフォルト値, SamplePerSec サンプリングレート )
 #ifndef DX_NON_ASIO
 extern	int			SetEnableASIOFlag(                   int Flag, int BufferSize DEFAULTPARAM( = -1 ) , int SamplePerSec DEFAULTPARAM( = 44100 ) ) ;													// サウンドの再生にASIOを使用するかどうかを設定する( Flag  TRUE:使用する  FALSE:使用しない( デフォルト ), BufferSize 再生バッファのサイズ、小さいほど遅延が少なくなりますが、処理が間に合わずにブツブツノイズが発生する可能性も高くなります( -1 でデフォルト値 ), SamplePerSec サンプリングレート )
+extern	int			SetUseASIODriverIndex(               int Index ) ;																																	// サウンドの再生に使用するASIOドライバーの番号を設定する( デフォルトでは 0 )
 #endif // DX_NON_ASIO
+extern	int			SetEnableMMEwaveOutFlag(             int Flag, int BufferSamples DEFAULTPARAM( = -1 ) , int SamplePerSec DEFAULTPARAM( = 44100 ) ) ;												// サウンドの再生にマルチメディアAPIの waveOut を使用するかどうかを設定する( Flag  TRUE:使用する  FALSE:使用しない( デフォルト ), BufferSamples 再生バッファのサイズ、小さいほど遅延が少なくなりますが、処理が間に合わずにブツブツノイズが発生する可能性も高くなります( -1 でデフォルト値 ), SamplePerSec サンプリングレート )
 
 // 情報取得系関数
 extern	const void*	GetDSoundObj(                        void ) ;	/* 戻り値を IDirectSound * にキャストして下さい */																					// ＤＸライブラリが使用している DirectSound オブジェクトを取得する

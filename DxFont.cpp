@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＤｒａｗ制御プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // ----------------------------------------------------------------------------
 
@@ -595,7 +595,7 @@ static int DrawStringHardware( int xi, int yi, float xf, float yf, int PosIntFla
 			NULL,
 			0,
 			NULL,
-			0
+			FSYS.OnlyDrawType
 		) ;
 		return 0 ;
 	}
@@ -639,7 +639,7 @@ static int DrawExtendStringHardware( int xi, int yi, float xf, float yf, int Pos
 			NULL,
 			0,
 			NULL,
-			0
+			FSYS.OnlyDrawType
 		) ;
 		return 0 ;
 	}
@@ -686,7 +686,7 @@ static int DrawRotaStringHardware( int xi, int yi, float xf, float yf, int PosIn
 			NULL,
 			0,
 			NULL,
-			0
+			FSYS.OnlyDrawType
 		) ;
 		return 0 ;
 	}
@@ -736,7 +736,7 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 		}
 
 		if( NS_GetGraphSize( UseTempScreenHandle[ 0 ], &TempScreenWidth, &TempScreenHeight ) < 0 ||
-			DrawWidth < TempScreenWidth || DrawHeight < TempScreenHeight )
+			DrawWidth > TempScreenWidth || DrawHeight > TempScreenHeight )
 		{
 			SETUP_GRAPHHANDLE_GPARAM GParam ;
 
@@ -795,96 +795,108 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 		}
 		else
 		{
-			NS_SetDrawScreen( UseTempScreenHandle[ 0 ] ) ;
-			NS_SetBackgroundColor( 0, 0, 0, 0 ) ;
-			NS_ClearDrawScreen( NULL ) ;
-			NS_SetDrawBlendMode( DX_BLENDMODE_SRCCOLOR, 255 ) ;
-			FontCacheStringDrawToHandleST(
-				TRUE,
-				0,
-				0,
-				0.0f,
-				0.0f,
-				TRUE, 
-				FALSE,
-				1.0,
-				1.0,
-				FALSE, 0.0f, 0.0f, 0.0,
-				String,
-				Color,
-				NULL,
-				&GSYS.DrawSetting.DrawArea,
-				TRUE,
-				Font,
-				EdgeColor,
-				( int )StringLength,
-				VerticalFlag,
-				NULL,
-				NULL,
-				NULL,
-				0,
-				NULL,
-				2
-			) ;
+			if( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 2 )
+			{
+				NS_SetDrawScreen( UseTempScreenHandle[ 0 ] ) ;
+				NS_SetBackgroundColor( 0, 0, 0, 0 ) ;
+				NS_ClearDrawScreen( NULL ) ;
+				NS_SetDrawBlendMode( DX_BLENDMODE_SRCCOLOR, 255 ) ;
+				FontCacheStringDrawToHandleST(
+					TRUE,
+					0,
+					0,
+					0.0f,
+					0.0f,
+					TRUE, 
+					FALSE,
+					1.0,
+					1.0,
+					FALSE, 0.0f, 0.0f, 0.0,
+					String,
+					Color,
+					NULL,
+					&GSYS.DrawSetting.DrawArea,
+					TRUE,
+					Font,
+					EdgeColor,
+					( int )StringLength,
+					VerticalFlag,
+					NULL,
+					NULL,
+					NULL,
+					0,
+					NULL,
+					2
+				) ;
+			}
 
-			NS_SetDrawScreen( UseTempScreenHandle[ 1 ] ) ;
-			NS_SetBackgroundColor( 0, 0, 0, 0 ) ;
-			NS_ClearDrawScreen( NULL ) ;
-			NS_SetDrawBlendMode( DX_BLENDMODE_SRCCOLOR, 255 ) ;
-			FontCacheStringDrawToHandleST(
-				TRUE,
-				0,
-				0,
-				0.0f,
-				0.0f,
-				TRUE, 
-				FALSE,
-				1.0,
-				1.0,
-				FALSE, 0.0f, 0.0f, 0.0,
-				String,
-				Color,
-				NULL,
-				&GSYS.DrawSetting.DrawArea,
-				TRUE,
-				Font,
-				EdgeColor,
-				( int )StringLength,
-				VerticalFlag,
-				NULL,
-				NULL,
-				NULL,
-				0,
-				NULL,
-				1
-			) ;
+			if( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 1 )
+			{
+				NS_SetDrawScreen( UseTempScreenHandle[ 1 ] ) ;
+				NS_SetBackgroundColor( 0, 0, 0, 0 ) ;
+				NS_ClearDrawScreen( NULL ) ;
+				NS_SetDrawBlendMode( DX_BLENDMODE_SRCCOLOR, 255 ) ;
+				FontCacheStringDrawToHandleST(
+					TRUE,
+					0,
+					0,
+					0.0f,
+					0.0f,
+					TRUE, 
+					FALSE,
+					1.0,
+					1.0,
+					FALSE, 0.0f, 0.0f, 0.0,
+					String,
+					Color,
+					NULL,
+					&GSYS.DrawSetting.DrawArea,
+					TRUE,
+					Font,
+					EdgeColor,
+					( int )StringLength,
+					VerticalFlag,
+					NULL,
+					NULL,
+					NULL,
+					0,
+					NULL,
+					1
+				) ;
+			}
 
 			NS_SetDrawScreen( ScreenDrawSettingInfo.DrawScreen ) ;
 
-			DrawTempScreenHandle[ 0 ] = NS_DerivationGraph( 0, 0, DrawWidth, DrawHeight, UseTempScreenHandle[ 0 ] ) ;
-			DrawTempScreenHandle[ 1 ] = NS_DerivationGraph( 0, 0, DrawWidth, DrawHeight, UseTempScreenHandle[ 1 ] ) ;
+			if( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 2 )
+			{
+				DrawTempScreenHandle[ 0 ] = NS_DerivationGraph( 0, 0, DrawWidth, DrawHeight, UseTempScreenHandle[ 0 ] ) ;
+			}
+			if( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 1 )
+			{
+				DrawTempScreenHandle[ 1 ] = NS_DerivationGraph( 0, 0, DrawWidth, DrawHeight, UseTempScreenHandle[ 1 ] ) ;
+			}
 		}
 
 		// 描画矩形を元に戻す
 		NS_SetDrawArea( ScreenDrawSettingInfo.DrawRect.left, ScreenDrawSettingInfo.DrawRect.top, ScreenDrawSettingInfo.DrawRect.right, ScreenDrawSettingInfo.DrawRect.bottom ) ;
 
-		if( DrawTempScreenHandle[ 0 ] < 0 )
-		{
-//			Result = -1 ;
-		}
-		else
+//		if( DrawTempScreenHandle[ 0 ] < 0 )
+//		{
+////			Result = -1 ;
+//		}
+//		else
 		{
 			NS_SetDrawBlendMode( ScreenDrawSettingInfo.DrawBlendMode, ScreenDrawSettingInfo.DrawBlendParam ) ;
 			if( PosIntFlag )
 			{
-				if( DrawTempScreenHandle[ 0 ] >= 0 )
+				if( DrawTempScreenHandle[ 0 ] >= 0 && ( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 2 ) )
 				{
 					NS_DrawModiGraph(  x1i, y1i, x2i, y2i, x3i, y3i, x4i, y4i, DrawTempScreenHandle[ 0 ], TRUE ) ;
 					NS_DeleteGraph( DrawTempScreenHandle[ 0 ], FALSE ) ;
 					DrawTempScreenHandle[ 0 ] = -1 ;
 				}
 
-				if( DrawTempScreenHandle[ 1 ] >= 0 )
+				if( DrawTempScreenHandle[ 1 ] >= 0 && ( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 1 ) )
 				{
 					NS_DrawModiGraph(  x1i, y1i, x2i, y2i, x3i, y3i, x4i, y4i, DrawTempScreenHandle[ 1 ], TRUE ) ;
 					NS_DeleteGraph( DrawTempScreenHandle[ 1 ], FALSE ) ;
@@ -893,14 +905,14 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 			}
 			else
 			{
-				if( DrawTempScreenHandle[ 0 ] > 0 )
+				if( DrawTempScreenHandle[ 0 ] > 0 && ( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 2 ) )
 				{
 					NS_DrawModiGraphF( x1f, y1f, x2f, y2f, x3f, y3f, x4f, y4f, DrawTempScreenHandle[ 0 ], TRUE ) ;
 					NS_DeleteGraph( DrawTempScreenHandle[ 0 ], FALSE ) ;
 					DrawTempScreenHandle[ 0 ] = -1 ;
 				}
 
-				if( DrawTempScreenHandle[ 1 ] > 0 )
+				if( DrawTempScreenHandle[ 1 ] > 0 && ( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 1 ) )
 				{
 					NS_DrawModiGraphF( x1f, y1f, x2f, y2f, x3f, y3f, x4f, y4f, DrawTempScreenHandle[ 1 ], TRUE ) ;
 					NS_DeleteGraph( DrawTempScreenHandle[ 1 ], FALSE ) ;
@@ -964,7 +976,7 @@ static int SetupSoftwareStringImage(
 		NULL,
 		0,
 		NULL,
-		0
+		FSYS.OnlyDrawType
 	) ;
 
 	// 使用する仮スクリーンの決定
@@ -1042,7 +1054,7 @@ static int SetupSoftwareStringImage(
 		NULL,
 		0,
 		NULL,
-		0
+		FSYS.OnlyDrawType
 	) ;
 
 	// 描画色を白に変更
@@ -1088,7 +1100,7 @@ static int DrawStringSoftware( int x, int y, const wchar_t *String, size_t Strin
 		NULL,
 		0,
 		NULL,
-		0
+		FSYS.OnlyDrawType
 	) ;
 
 	// ブレンドモードによって処理を分岐
@@ -1175,7 +1187,7 @@ static int DrawStringSoftware( int x, int y, const wchar_t *String, size_t Strin
 			NULL,
 			0,
 			NULL,
-			0
+			FSYS.OnlyDrawType
 		) ;
 
 		// 本描画先に描画
@@ -1228,7 +1240,7 @@ NORMALDRAW:
 		NULL,
 		0,
 		NULL,
-		0
+		FSYS.OnlyDrawType
 	) ;
 
 	// 終了
@@ -1406,7 +1418,7 @@ extern int InitFontManage( void )
 	FSYS.InitializeFlag = TRUE ;
 
 	// フォントハンドル管理情報を初期化する
-	InitializeHandleManage( DX_HANDLETYPE_FONT, sizeof( FONTMANAGE ) + sizeof( FONTMANAGE_PF ), MAX_FONT_NUM, InitializeFontHandle, TerminateFontHandle, L"Font" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_FONT, sizeof( FONTMANAGE ) + sizeof( FONTMANAGE_PF ), MAX_FONT_NUM, InitializeFontHandle, TerminateFontHandle, DumpInfoFontHandle, L"Font" ) ;
 
 	// 全角スペースの wchar_t コードを準備
 	{
@@ -1697,6 +1709,7 @@ extern int RefreshFontDrawResourceToHandle( FONTMANAGE *ManageData, int ASyncThr
 		int Use3D, w ;
 		int UsePaletteFlag ;
 		int PaletteBitDepth ;
+		int InitGraphDelete ;
 		SETUP_GRAPHHANDLE_GPARAM GParam ;
 
 		ManageData->TextureCacheLostFlag = FALSE ;
@@ -1734,13 +1747,17 @@ extern int RefreshFontDrawResourceToHandle( FONTMANAGE *ManageData, int ASyncThr
 		Use3D = NS_GetUse3DFlag() ;
 		NS_SetUse3DFlag( TRUE ) ;
 
+		// InitGraph では削除されないグラフィックハンドルにする
+		InitGraphDelete = NS_GetCreateGraphInitGraphDelete() ;
+		NS_SetCreateGraphInitGraphDelete( FALSE ) ;
+
 		// エッジつきの場合は横幅を倍にする
 		w = ( ManageData->FontType & DX_FONTTYPE_EDGE ) != 0 ? ManageData->CacheImageSize.cx * 2 : ManageData->CacheImageSize.cx ;
 		GParam.NotInitGraphDelete = TRUE ;
 		GParam.UseLinearMapTextureFlag = TRUE ;
 		ManageData->TextureCache = Graphics_Image_MakeGraph_UseGParam( &GParam, w, ManageData->CacheImageSize.cy, FALSE, UsePaletteFlag, PaletteBitDepth, FALSE, ASyncThread ) ;
 		ManageData->TextureCacheSub = -1 ;
-		
+
 		// エッジ付きの場合は派生させる
 		if( ( ManageData->FontType & DX_FONTTYPE_EDGE ) != 0 )
 		{
@@ -1754,6 +1771,9 @@ extern int RefreshFontDrawResourceToHandle( FONTMANAGE *ManageData, int ASyncThr
 				ASyncThread
 			) ;
 		}
+
+		// 設定を元に戻す
+		NS_SetCreateGraphInitGraphDelete( InitGraphDelete ) ;
 
 		NS_SetUse3DFlag( Use3D ) ;
 
@@ -1920,10 +1940,14 @@ extern int RefreshDefaultFont( void )
 			int TransRed ;
 			int TransGreen ;
 			int TransBlue ;
+			int InitGraphDelete = NS_GetCreateGraphInitGraphDelete() ;
 
 			// 透過色を紫色に変更
 			NS_GetTransColor( &TransRed, &TransGreen, &TransBlue ) ;
 			NS_SetTransColor( 255,0,255 ) ;
+
+			// InitGraph では削除されないグラフィックハンドルにする
+			NS_SetCreateGraphInitGraphDelete( FALSE ) ;
 
 			// グラフィックハンドルの作成
 			NS_CreateDivGraphFromMem( FSYS.DefaultFontImage, DXA_Decode( DefaultFontImage, NULL ), 128, 16, 8, 8, 16, FSYS.DefaultFontImageGraphHandle[ 0 ], TRUE, FALSE, NULL, 0 ) ;
@@ -1939,6 +1963,9 @@ extern int RefreshDefaultFont( void )
 					NS_SetDeleteHandleFlag( FSYS.DefaultFontImageGraphHandle[ i ][ j ], &FSYS.DefaultFontImageGraphHandle[ i ][ j ] ) ;
 				}
 			}
+
+			// 設定を元に戻す
+			NS_SetCreateGraphInitGraphDelete( InitGraphDelete ) ;
 		}
 #endif // DX_NON_GRAPHICS
 
@@ -3613,6 +3640,8 @@ extern int FontCacheCharImageBltToHandle(
 			int		EdgeSize ;
 			int		DestPitch ;
 			unsigned char ( *EdgePat )[ FONTEDGE_PATTERN_NUM * 2 + 1 ] ;
+			BYTE   *CircleImage ;
+			int     CircleImagePitch ;
 			
 			Width 		= ( int )CharData->SizeX ;
 			Height 		= ( int )CharData->SizeY ;
@@ -3620,6 +3649,9 @@ extern int FontCacheCharImageBltToHandle(
 			Src			= ( BYTE * )ImageBuffer ;
 			EdgeSize	= ManageData->EdgeSize ;
 			EdgePat		= _FontEdgePattern[ EdgeSize - 1 ] ;
+
+			CircleImage = ( BYTE * )ManageData->EdgeCircleImage.GraphData ;
+			CircleImagePitch = ManageData->EdgeCircleImage.Pitch ;
 			
 			if( ManageData->TextureCacheFlag == FALSE )
 			{
@@ -3696,17 +3728,19 @@ extern int FontCacheCharImageBltToHandle(
 									if( dat & 0x80 )
 									{
 										Dest[j] = 1 ;
-										for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+										for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; n ++, l ++ )
 										{
-											for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+											for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; o ++, m ++ )
 											{
-												DestT = Dest + j + m + l * DestPitch ;
+												if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+																
+												DestT = ( Dest + j + m ) + ( l * DestPitch ) ;
 												if( *DestT != 1 ) *DestT = 2 ;
 											}
 										}
 									}
 								}
-								
+									
 								Src  += ImagePitch ;
 								Dest += DestPitch ;
 							}
@@ -3770,10 +3804,12 @@ extern int FontCacheCharImageBltToHandle(
 									if( Src[ j ] != 0 )
 									{
 										Dest[j] = 1 ;
-										for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+										for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n ++ )
 										{
-											for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+											for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o ++ )
 											{
+												if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 												DestT = Dest + j + m + l * DestPitch ;
 												if( *DestT != 1 ) *DestT = 2 ;
 											}
@@ -3866,10 +3902,12 @@ extern int FontCacheCharImageBltToHandle(
 									d = Src[j] - 1 ;
 									Dest[j] |= d ;
 									d <<= 4 ;
-									for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+									for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n ++ )
 									{
-										for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+										for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o ++ )
 										{
+											if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 											DestT = Dest + j + l * DestPitch + m ;
 											if( ( *DestT & 0xf0 ) < d ) *DestT = ( BYTE )( ( *DestT & 0x0f ) | d ) ;
 										}
@@ -4084,10 +4122,12 @@ extern int FontCacheCharImageBltToHandle(
 										if( datB & 0x80 )
 										{
 											DB0 = 1 ;
-											for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+											for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n++ )
 											{
-												for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+												for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o++ )
 												{
+													if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 													pb = dp + ( j + m + adp ) + ( l * DestPitch ) ;
 													if( *pb == 0 ) *pb = 1 ;
 												}
@@ -4109,10 +4149,12 @@ extern int FontCacheCharImageBltToHandle(
 										if( datB & 0x80 )
 										{
 											D0 = 1 ;
-											for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+											for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n ++ )
 											{
-												for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+												for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o ++ )
 												{
+													if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 													p = (WORD *)( dp + (j + m + adp) * 2 + (l * DestPitch) ) ;
 													if( *p == 0 ) *p = 1 ;
 												}
@@ -4342,10 +4384,12 @@ extern int FontCacheCharImageBltToHandle(
 										if( sp[ j ] != 0 )
 										{
 											DB0 = 1 ;
-											for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+											for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n ++ )
 											{
-												for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+												for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o ++ )
 												{
+													if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 													pb = dp + ( j + m + adp ) + ( l * DestPitch ) ;
 													if( *pb == 0 ) *pb = 1 ;
 												}
@@ -4366,10 +4410,12 @@ extern int FontCacheCharImageBltToHandle(
 										if( sp[ j ] != 0 )
 										{
 											D0 = 1 ;
-											for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+											for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n ++ )
 											{
-												for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+												for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o ++ )
 												{
+													if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 													p = (WORD *)( dp + (j + m + adp) * 2 + (l * DestPitch) ) ;
 													if( *p == 0 ) *p = 1 ;
 												}
@@ -4609,10 +4655,12 @@ extern int FontCacheCharImageBltToHandle(
 											if( s > 0 )
 											{
 												DB0 = (BYTE)s ;
-												for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+												for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n ++ )
 												{
-													for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+													for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o ++ )
 													{
+														if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 														pb  = (BYTE *)( dp + (j + m + adp) + (l * DestPitch) ) ;
 														*pb = (BYTE)( ( 0x100 - ( ( 0x10 - *pb ) * ( 0x10 - s ) ) ) >> 4 ) ;
 													}
@@ -4634,10 +4682,12 @@ extern int FontCacheCharImageBltToHandle(
 											if( s > 0 )
 											{
 												D0 = (WORD)s ;
-												for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+												for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n ++ )
 												{
-													for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+													for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o ++ )
 													{
+														if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 														p = (WORD *)( dp + (j + m + adp) * 2 + (l * DestPitch) ) ;
 														*p = (WORD)( ( 0x100 - ( ( 0x10 - *p ) * ( 0x10 - s ) ) ) >> 4 ) ;
 													}
@@ -4941,10 +4991,12 @@ extern int FontCacheCharImageBltToHandle(
 											if( s > 0 )
 											{
 												DB0 = (BYTE)s ;
-												for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+												for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n ++ )
 												{
-													for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+													for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o ++ )
 													{
+														if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 														pb  = (BYTE *)( dp + (j + m + adp) + (l * DestPitch) ) ;
 														*pb = (BYTE)( *pb + ( ( ( 0x40 - *pb ) * s ) >> 6 ) ) ;
 													}
@@ -4966,10 +5018,12 @@ extern int FontCacheCharImageBltToHandle(
 											if( s > 0 )
 											{
 												DD0 = (DWORD)s ;
-												for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+												for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n ++ )
 												{
-													for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+													for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o ++ )
 													{
+														if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 														pd = (DWORD *)( dp + (j + m + adp) * 4 + (l * DestPitch) ) ;
 														*pd = (DWORD)( *pd + ( ( ( 0x40 - *pd ) * s ) >> 6 ) ) ;
 													}
@@ -5257,10 +5311,12 @@ extern int FontCacheCharImageBltToHandle(
 											if( s > 0 )
 											{
 												DB0 = (BYTE)s ;
-												for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+												for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n ++ )
 												{
-													for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+													for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o ++ )
 													{
+														if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 														pb  = (BYTE *)( dp + (j + m + adp) + (l * DestPitch) ) ;
 														*pb = (BYTE)( *pb + ( ( ( 0xff - *pb ) * s ) >> 8 ) ) ;
 													}
@@ -5282,10 +5338,12 @@ extern int FontCacheCharImageBltToHandle(
 											if( s > 0 )
 											{
 												DD0 = (DWORD)s ;
-												for( l = -EdgeSize ; l < EdgeSize + 1 ; l ++ )
+												for( n = 0, l = -EdgeSize ; l < EdgeSize + 1 ; l ++, n ++ )
 												{
-													for( m = -EdgeSize ; m < EdgeSize + 1 ; m ++ )
+													for( o = 0, m = -EdgeSize ; m < EdgeSize + 1 ; m ++, o ++ )
 													{
+														if( CircleImage[ o + CircleImagePitch * n ] == 0 ) continue ;
+
 														pd = (DWORD *)( dp + (j + m + adp) * 4 + (l * DestPitch) ) ;
 														*pd = (DWORD)( *pd + ( ( ( 0xff - *pd ) * s ) >> 8 ) ) ;
 													}
@@ -6427,10 +6485,58 @@ extern int TerminateFontHandle( HANDLEINFO *HandleInfo )
 		ManageData->FontDataFile.FileBuffer = NULL ;
 	}
 
+	// エッジのサイズが一定以上の場合はエッジの円用の画像を削除する
+	if( ManageData->EdgeSize > FONTEDGE_PATTERN_NUM )
+	{
+		NS_ReleaseBaseImage( &ManageData->EdgeCircleImage ) ;
+	}
+
 	// ロストフラグが設定されている場合は TRUE にする
 	if( ManageData->LostFlag != NULL )
 	{
 		*ManageData->LostFlag = TRUE ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// フォントハンドルの情報出力
+extern int DumpInfoFontHandle( HANDLEINFO *HandleInfo )
+{
+	FONTMANAGE * ManageData = ( FONTMANAGE * )HandleInfo ;
+
+	if( ManageData->UseFontDataFile )
+	{
+		DXST_LOGFILEFMT_ADDW(( L"Handle:0x%08x IsFontFile:true  FontName:%s FontType:%s Size:%d Thickness:%d Height:%d", HandleInfo->Handle, ManageData->FontDataFile.Header->Press.FontName, 
+			ManageData->FontType == DX_FONTTYPE_NORMAL ? L"DX_FONTTYPE_NORMAL" :
+			( ManageData->FontType == DX_FONTTYPE_EDGE ? L"DX_FONTTYPE_EDGE" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING ? L"DX_FONTTYPE_ANTIALIASING" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_4X4 ? L"DX_FONTTYPE_ANTIALIASING_4X4" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_8X8 ? L"DX_FONTTYPE_ANTIALIASING_8X8" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_16X16 ? L"DX_FONTTYPE_ANTIALIASING_16X16" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_EDGE ? L"DX_FONTTYPE_ANTIALIASING_EDGE" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_EDGE_4X4 ? L"DX_FONTTYPE_ANTIALIASING_EDGE_4X4" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_EDGE_8X8 ? L"DX_FONTTYPE_ANTIALIASING_EDGE_8X8" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_EDGE_16X16 ? L"DX_FONTTYPE_ANTIALIASING_EDGE_16X16" : L"Null"
+			))))))))),
+			ManageData->FontDataFile.Header->Press.BaseInfo.FontSize, ManageData->FontDataFile.Header->Press.BaseInfo.FontHeight )) ;
+	}
+	else
+	{
+		DXST_LOGFILEFMT_ADDW(( L"Handle:0x%08x IsFontFile:false FontName:%s FontType:%s Size:%d Thickness:%d Height:%d", HandleInfo->Handle, ManageData->FontName,
+			ManageData->FontType == DX_FONTTYPE_NORMAL ? L"DX_FONTTYPE_NORMAL" :
+			( ManageData->FontType == DX_FONTTYPE_EDGE ? L"DX_FONTTYPE_EDGE" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING ? L"DX_FONTTYPE_ANTIALIASING" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_4X4 ? L"DX_FONTTYPE_ANTIALIASING_4X4" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_8X8 ? L"DX_FONTTYPE_ANTIALIASING_8X8" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_16X16 ? L"DX_FONTTYPE_ANTIALIASING_16X16" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_EDGE ? L"DX_FONTTYPE_ANTIALIASING_EDGE" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_EDGE_4X4 ? L"DX_FONTTYPE_ANTIALIASING_EDGE_4X4" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_EDGE_8X8 ? L"DX_FONTTYPE_ANTIALIASING_EDGE_8X8" :
+			( ManageData->FontType == DX_FONTTYPE_ANTIALIASING_EDGE_16X16 ? L"DX_FONTTYPE_ANTIALIASING_EDGE_16X16" : L"Null"
+			))))))))),
+			ManageData->BaseInfo.FontSize, ManageData->BaseInfo.FontThickness, ManageData->BaseInfo.FontHeight )) ;
 	}
 
 	// 終了
@@ -6543,6 +6649,22 @@ static int CreateFontToHandle_Static(
 	else
 	{
 		_WCSCPY_S( ManageData->FontName, sizeof( ManageData->FontName ), FontName ) ;
+	}
+
+	// エッジのサイズが一定以上の場合はエッジの円用の画像を作成する
+	if( EdgeSize > FONTEDGE_PATTERN_NUM )
+	{
+		if( NS_CreatePAL8ColorBaseImage( EdgeSize * 2 + 1, EdgeSize * 2 + 1, &ManageData->EdgeCircleImage, FALSE ) < 0 )
+		{
+			return -1 ;
+		}
+		_MEMSET( ManageData->EdgeCircleImage.ColorData.Palette, 0, sizeof( ManageData->EdgeCircleImage.ColorData.Palette ) ) ;
+		ManageData->EdgeCircleImage.ColorData.Palette[ 1 ].Red   = 255 ;
+		ManageData->EdgeCircleImage.ColorData.Palette[ 1 ].Green = 255 ;
+		ManageData->EdgeCircleImage.ColorData.Palette[ 1 ].Blue  = 255 ;
+		ManageData->EdgeCircleImage.ColorData.Palette[ 1 ].Alpha = 0 ;
+		NS_FillBaseImage( &ManageData->EdgeCircleImage, 0, 0, 0, 0 ) ;
+		NS_DrawCircleBaseImage( &ManageData->EdgeCircleImage, EdgeSize, EdgeSize, EdgeSize, 255, 255, 255, 0, TRUE ) ;
 	}
 
 	// 環境依存処理
@@ -6884,6 +7006,22 @@ static int LoadFontDataFromMemToHandle_UseGParam_Static(
 
 	// ロストフラグへのポインタを NULL にしておく
 	ManageData->LostFlag = NULL ;
+
+	// エッジのサイズが一定以上の場合はエッジの円用の画像を作成する
+	if( EdgeSize > FONTEDGE_PATTERN_NUM )
+	{
+		if( NS_CreatePAL8ColorBaseImage( EdgeSize * 2 + 1, EdgeSize * 2 + 1, &ManageData->EdgeCircleImage, FALSE ) < 0 )
+		{
+			return -1 ;
+		}
+		_MEMSET( ManageData->EdgeCircleImage.ColorData.Palette, 0, sizeof( ManageData->EdgeCircleImage.ColorData.Palette ) ) ;
+		ManageData->EdgeCircleImage.ColorData.Palette[ 1 ].Red   = 255 ;
+		ManageData->EdgeCircleImage.ColorData.Palette[ 1 ].Green = 255 ;
+		ManageData->EdgeCircleImage.ColorData.Palette[ 1 ].Blue  = 255 ;
+		ManageData->EdgeCircleImage.ColorData.Palette[ 1 ].Alpha = 0 ;
+		NS_FillBaseImage( &ManageData->EdgeCircleImage, 0, 0, 0, 0 ) ;
+		NS_DrawCircleBaseImage( &ManageData->EdgeCircleImage, EdgeSize, EdgeSize, EdgeSize, 255, 255, 255, 0, TRUE ) ;
+	}
 
 	// 環境依存処理
 	if( CreateFontToHandle_PF( GParam, ManageData, FALSE ) != 0 )
@@ -7944,6 +8082,16 @@ extern int NS_ChangeFontWithStrLen( const TCHAR *FontName, size_t FontNameLength
 	Result = NS_ChangeFont( UseFontNameBuffer, CharSet ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FontName )
 	return Result ;
+}
+
+// デフォルトフォントハンドルとして使用するフォントハンドルを変更する
+extern int NS_ChangeFontFromHandle( int FontHandle )
+{
+	// フォントハンドルを保存
+	FSYS.UserDefaultFontHandle = FontHandle ;
+
+	// 終了
+	return 0 ;
 }
 
 // フォントタイプの変更
@@ -13567,11 +13715,11 @@ extern int NS_GetDrawStringSizeToHandle( int *SizeX, int *SizeY, int *LineCount,
 	return GetDrawStringSizeToHandle_WCHAR_T( SizeX, SizeY, LineCount, String, 0, StrLen, FontHandle, VerticalFlag ) ;
 #else
 	int Result ;
-	FONTHANDLE_TCHAR_TO_WCHAR_T_STRING_BEGIN( String, -1 )
+	FONTHANDLE_TCHAR_WITH_STRLEN_TO_WCHAR_T_STRING_BEGIN( String, StrLen, -1 )
 
 	Result = GetDrawStringSizeToHandle_WCHAR_T( SizeX, SizeY, LineCount, UseStringBuffer, 0, StrLen, FontHandle, VerticalFlag ) ;
 
-	FONTHANDLE_TCHAR_TO_WCHAR_T_STRING_END
+	FONTHANDLE_TCHAR_WITH_STRLEN_TO_WCHAR_T_STRING_END
 
 	return Result ;
 #endif
@@ -14217,7 +14365,11 @@ extern int GetFontStateToHandle_WCHAR_T( wchar_t *FontName, int *Size, int *Thic
 // デフォルトのフォントのハンドルを得る
 extern int NS_GetDefaultFontHandle( void )
 {
-	return FSYS.DefaultFontHandle ;
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	DEFAULT_FONT_HANDLE_SETUP
+
+	return FontHandle ;
 }
 
 // 指定のフォントがテクスチャキャッシュを使用しているかどうかを得る
@@ -14413,6 +14565,20 @@ extern int NS_GetFontUseAdjustSizeFlag( void )
 	return FSYS.DisableAdjustFontSize == FALSE ? TRUE : FALSE ;
 }
 
+// フォントの描画で縁のみ、又は本体のみ描画を行うかどうかを設定する( OnlyType  0:通常描画 1:本体のみ描画 2:縁のみ描画 )
+extern int NS_SetFontOnlyDrawType( int OnlyType )
+{
+	FSYS.OnlyDrawType = OnlyType ;
+
+	return 0 ;
+}
+
+// フォントの描画で縁のみ、又は本体のみ描画を行うかどうかを取得する( 戻り値  0:通常描画 1:本体のみ描画 2:縁のみ描画 )
+extern int NS_GetFontOnlyDrawType( void )
+{
+	return FSYS.OnlyDrawType ;
+}
+
 // 文字列を描画する
 extern int NS_DrawString( int x, int y, const TCHAR *String, unsigned int Color, unsigned int EdgeColor )
 {
@@ -14490,14 +14656,14 @@ extern int DrawVStringF_WCHAR_T( float x, float y, const wchar_t *String, size_t
 	if( VerticalFlag )\
 	{\
 		x += font->BaseInfo.FontAddHeight / 2;\
-		SETRECT( DrawRect, x, y, x + NS_GetFontSizeToHandle( FontHandle ) + font->BaseInfo.FontAddHeight / 2 + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
+		SETRECT( DrawRect, x, y, x + font->BaseInfo.FontHeight + font->BaseInfo.FontAddHeight / 2 + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 		x -= font->BaseInfo.FontAddHeight / 2;\
 	}\
 	else\
 	{\
 		y -= font->BaseInfo.FontAddHeight / 2 ;\
-		SETRECT( DrawRect, x, y, GSYS.DrawSetting.DrawArea.right, y + NS_GetFontSizeToHandle( FontHandle ) + font->BaseInfo.FontAddHeight / 2 + 3 ) ;\
+		SETRECT( DrawRect, x, y, GSYS.DrawSetting.DrawArea.right, y + font->BaseInfo.FontHeight + font->BaseInfo.FontAddHeight / 2 + 3 ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 		y += font->BaseInfo.FontAddHeight / 2 ;\
 	}\
@@ -14589,14 +14755,14 @@ extern int DrawStringToHandle_WCHAR_T( int x, int y, const wchar_t *String, size
 	if( VerticalFlag )\
 	{\
 		x += ( float )font->BaseInfo.FontAddHeight / 2;\
-		SETRECT( DrawRect, _FTOL( x ), _FTOL( y ), _FTOL( x ) + NS_GetFontSizeToHandle( FontHandle ) + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
+		SETRECT( DrawRect, _FTOL( x ), _FTOL( y ), _FTOL( x ) + font->BaseInfo.FontHeight + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 		x -= ( float )font->BaseInfo.FontAddHeight / 2;\
 	}\
 	else\
 	{\
 		y -= ( float )font->BaseInfo.FontAddHeight / 2 ;\
-		SETRECT( DrawRect, _FTOL( x ), _FTOL( y ), GSYS.DrawSetting.DrawArea.right, _FTOL( y ) + NS_GetFontSizeToHandle( FontHandle ) + 3 ) ;\
+		SETRECT( DrawRect, _FTOL( x ), _FTOL( y ), GSYS.DrawSetting.DrawArea.right, _FTOL( y ) + font->BaseInfo.FontHeight + 3 ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 		y += ( float )font->BaseInfo.FontAddHeight / 2 ;\
 	}\
@@ -14729,6 +14895,14 @@ extern int NS_DrawFormatString( int x, int y, unsigned int Color, const TCHAR *F
 
 	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
 }
+extern int NS_DrawFormatString2( int x, int y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, FALSE ) ;
+}
 
 // 書式指定文字列を描画する
 extern int DrawFormatString_WCHAR_T( int x, int y, unsigned int Color, const wchar_t *FormatString, ... )
@@ -14747,6 +14921,14 @@ extern int NS_DrawFormatStringF( float x, float y, unsigned int Color, const TCH
 
 	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
 }
+extern int NS_DrawFormatString2F( float x, float y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, FALSE ) ;
+}
 
 // 書式指定文字列を描画する
 extern int DrawFormatStringF_WCHAR_T( float x, float y, unsigned int Color, const wchar_t *FormatString, ... )
@@ -14763,7 +14945,15 @@ extern int NS_DrawFormatVString( int x, int y, unsigned int Color, const TCHAR *
 
 	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
 
-	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, 0, TRUE ) ;
+}
+extern int NS_DrawFormatVString2( int x, int y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, TRUE ) ;
 }
 
 // 書式指定文字列を描画する
@@ -14781,7 +14971,15 @@ extern int NS_DrawFormatVStringF( float x, float y, unsigned int Color, const TC
 
 	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
 
-	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, 0, TRUE ) ;
+}
+extern int NS_DrawFormatVString2F( float x, float y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, TRUE ) ;
 }
 
 // 書式指定文字列を描画する
@@ -14799,6 +14997,13 @@ extern int NS_DrawFormatStringToHandle( int x, int y, unsigned int Color, int Fo
 
 	// 描画する
 	return NS_DrawStringToHandle( x, y, String, Color, FontHandle, 0, FALSE ) ;
+}
+extern int NS_DrawFormatString2ToHandle( int x, int y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringToHandle( x, y, String, Color, FontHandle, EdgeColor, FALSE ) ;
 }
 
 // 書式指定文字列を描画する
@@ -14818,6 +15023,13 @@ extern int NS_DrawFormatStringFToHandle( float x, float y, unsigned int Color, i
 	// 描画する
 	return NS_DrawStringFToHandle( x, y, String, Color, FontHandle, 0, FALSE ) ;
 }
+extern int NS_DrawFormatString2FToHandle( float x, float y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringFToHandle( x, y, String, Color, FontHandle, EdgeColor, FALSE ) ;
+}
 
 // 書式指定文字列を描画する
 extern int DrawFormatStringFToHandle_WCHAR_T( float x, float y, unsigned int Color, int FontHandle, const wchar_t *FormatString, ... )
@@ -14836,6 +15048,13 @@ extern int NS_DrawFormatVStringToHandle( int x, int y, unsigned int Color, int F
 	// 描画する
 	return NS_DrawStringToHandle( x, y, String, Color, FontHandle, 0, TRUE ) ;
 }
+extern int NS_DrawFormatVString2ToHandle( int x, int y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringToHandle( x, y, String, Color, FontHandle, EdgeColor, TRUE ) ;
+}
 
 // 書式指定文字列を描画する
 extern int DrawFormatVStringToHandle_WCHAR_T( int x, int y, unsigned int Color, int FontHandle, const wchar_t *FormatString, ... )
@@ -14853,6 +15072,13 @@ extern int NS_DrawFormatVStringFToHandle( float x, float y, unsigned int Color, 
 
 	// 描画する
 	return NS_DrawStringFToHandle( x, y, String, Color, FontHandle, 0, TRUE ) ;
+}
+extern int NS_DrawFormatVString2FToHandle( float x, float y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringFToHandle( x, y, String, Color, FontHandle, EdgeColor, TRUE ) ;
 }
 
 // 書式指定文字列を描画する
@@ -14941,12 +15167,12 @@ extern int DrawExtendVStringF_WCHAR_T( float x, float y, double ExRateX, double 
 #define SETDRAWRECTCODE\
 	if( VerticalFlag )\
 	{\
-		SETRECT( DrawRect, x, y, x + _DTOL( NS_GetFontSizeToHandle( FontHandle ) * ExRateY ) + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
+		SETRECT( DrawRect, x, y, x + _DTOL( font->BaseInfo.FontHeight * ExRateY ) + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 	}\
 	else\
 	{\
-		SETRECT( DrawRect, x, y, GSYS.DrawSetting.DrawArea.right, y + _DTOL( NS_GetFontSizeToHandle( FontHandle ) * ExRateY ) + 3 ) ;\
+		SETRECT( DrawRect, x, y, GSYS.DrawSetting.DrawArea.right, y + _DTOL( font->BaseInfo.FontHeight * ExRateY ) + 3 ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 	}
 
@@ -15035,12 +15261,12 @@ extern int DrawExtendStringToHandle_WCHAR_T( int x, int y, double ExRateX, doubl
 #define SETDRAWRECTCODE\
 	if( VerticalFlag )\
 	{\
-		SETRECT( DrawRect, _FTOL( x ), _FTOL( y ), _FTOL( x ) + _DTOL( NS_GetFontSizeToHandle( FontHandle ) * ExRateY ) + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
+		SETRECT( DrawRect, _FTOL( x ), _FTOL( y ), _FTOL( x ) + _DTOL( font->BaseInfo.FontHeight * ExRateY ) + 3, GSYS.DrawSetting.DrawArea.bottom ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 	}\
 	else\
 	{\
-		SETRECT( DrawRect, _FTOL( x ), _FTOL( y ), GSYS.DrawSetting.DrawArea.right, _FTOL( y ) + _DTOL( NS_GetFontSizeToHandle( FontHandle ) * ExRateY ) + 3 ) ;\
+		SETRECT( DrawRect, _FTOL( x ), _FTOL( y ), GSYS.DrawSetting.DrawArea.right, _FTOL( y ) + _DTOL( font->BaseInfo.FontHeight * ExRateY ) + 3 ) ;\
 		if( DrawRect.left >= GSYS.DrawSetting.DrawArea.right ) return 0 ;\
 	}
 
@@ -15170,6 +15396,14 @@ extern int NS_DrawExtendFormatString( int x, int y, double ExRateX, double ExRat
 
 	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
 }
+extern int NS_DrawExtendFormatString2( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, FALSE ) ;
+}
 
 // 書式指定文字列を拡大描画する
 extern int DrawExtendFormatString_WCHAR_T( int x, int y, double ExRateX, double ExRateY, unsigned int Color, const wchar_t *FormatString, ... )
@@ -15188,6 +15422,14 @@ extern int NS_DrawExtendFormatStringF( float x, float y, double ExRateX, double 
 
 	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
 }
+extern int NS_DrawExtendFormatString2F( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, FALSE ) ;
+}
 
 // 書式指定文字列を拡大描画する
 extern int DrawExtendFormatStringF_WCHAR_T( float x, float y, double ExRateX, double ExRateY, unsigned int Color, const wchar_t *FormatString, ... )
@@ -15204,7 +15446,15 @@ extern int NS_DrawExtendFormatVString( int x, int y, double ExRateX, double ExRa
 
 	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
 
-	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, 0, TRUE ) ;
+}
+extern int NS_DrawExtendFormatVString2( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, TRUE ) ;
 }
 
 // 書式指定文字列を拡大描画する
@@ -15222,7 +15472,15 @@ extern int NS_DrawExtendFormatVStringF( float x, float y, double ExRateX, double
 
 	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
 
-	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, 0, TRUE ) ;
+}
+extern int NS_DrawExtendFormatVString2F( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, ... )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, TRUE ) ;
 }
 
 // 書式指定文字列を拡大描画する
@@ -15240,6 +15498,13 @@ extern int NS_DrawExtendFormatStringToHandle( int x, int y, double ExRateX, doub
 
 	// 描画する
 	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, FALSE ) ;
+}
+extern int NS_DrawExtendFormatString2ToHandle( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, EdgeColor, FALSE ) ;
 }
 
 // 書式指定文字列を拡大描画する
@@ -15259,6 +15524,13 @@ extern int NS_DrawExtendFormatStringFToHandle( float x, float y, double ExRateX,
 	// 描画する
 	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, FALSE ) ;
 }
+extern int NS_DrawExtendFormatString2FToHandle( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, EdgeColor, FALSE ) ;
+}
 
 // 書式指定文字列を拡大描画する
 extern int DrawExtendFormatStringFToHandle_WCHAR_T( float x, float y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const wchar_t *FormatString, ... )
@@ -15277,6 +15549,13 @@ extern int NS_DrawExtendFormatVStringToHandle( int x, int y, double ExRateX, dou
 	// 描画する
 	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, TRUE ) ;
 }
+extern int NS_DrawExtendFormatVString2ToHandle( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, EdgeColor, TRUE ) ;
+}
 
 // 書式指定文字列を拡大描画する
 extern int DrawExtendFormatVStringToHandle_WCHAR_T( int x, int y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const wchar_t *FormatString, ... )
@@ -15294,6 +15573,13 @@ extern int NS_DrawExtendFormatVStringFToHandle( float x, float y, double ExRateX
 
 	// 描画する
 	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, TRUE ) ;
+}
+extern int NS_DrawExtendFormatVString2FToHandle( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, ... )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, EdgeColor, TRUE ) ;
 }
 
 // 書式指定文字列を拡大描画する
@@ -16157,6 +16443,14 @@ extern int DrawFormatString_VaList( int x, int y, unsigned int Color, const TCHA
 
 	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
 }
+extern int DrawFormatString2_VaList( int x, int y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, FALSE ) ;
+}
 
 // デフォルトフォントハンドルを使用して書式指定文字列を描画する( 縦書き )
 extern int DrawFormatVString_VaList( int x, int y, unsigned int Color, const TCHAR *FormatString, va_list VaList )
@@ -16165,7 +16459,15 @@ extern int DrawFormatVString_VaList( int x, int y, unsigned int Color, const TCH
 
 	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
 
-	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, 0, TRUE ) ;
+}
+extern int DrawFormatVString2_VaList( int x, int y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawStringToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, TRUE ) ;
 }
 
 // デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する
@@ -16177,6 +16479,14 @@ extern int DrawExtendFormatString_VaList( int x, int y, double ExRateX, double E
 
 	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
 }
+extern int DrawExtendFormatString2_VaList( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, FALSE ) ;
+}
 
 // デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )
 extern int DrawExtendFormatVString_VaList( int x, int y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, va_list VaList )
@@ -16185,7 +16495,15 @@ extern int DrawExtendFormatVString_VaList( int x, int y, double ExRateX, double 
 
 	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
 
-	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, 0, TRUE ) ;
+}
+extern int DrawExtendFormatVString2_VaList( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, TRUE ) ;
 }
 
 // デフォルトフォントハンドルを使用して書式指定文字列を回転描画する
@@ -16217,6 +16535,14 @@ extern int DrawFormatStringF_VaList( float x, float y, unsigned int Color, const
 
 	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
 }
+extern int DrawFormatString2F_VaList( float x, float y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, FALSE ) ;
+}
 
 // デフォルトフォントハンドルを使用して書式指定文字列を描画する( 縦書き )( 座標指定が float 版 )
 extern int DrawFormatVStringF_VaList( float x, float y, unsigned int Color, const TCHAR *FormatString, va_list VaList )
@@ -16225,7 +16551,15 @@ extern int DrawFormatVStringF_VaList( float x, float y, unsigned int Color, cons
 
 	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
 
-	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, 0, TRUE ) ;
+}
+extern int DrawFormatVString2F_VaList( float x, float y, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawStringFToHandle( x, y, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, TRUE ) ;
 }
 
 // デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する( 座標指定が float 版 )
@@ -16237,6 +16571,14 @@ extern int DrawExtendFormatStringF_VaList( float x, float y, double ExRateX, dou
 
 	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, 0, FALSE ) ;
 }
+extern int DrawExtendFormatString2F_VaList( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, FALSE ) ;
+}
 
 // デフォルトフォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )( 座標指定が float 版 )
 extern int DrawExtendFormatVStringF_VaList( float x, float y, double ExRateX, double ExRateY, unsigned int Color, const TCHAR *FormatString, va_list VaList )
@@ -16245,7 +16587,15 @@ extern int DrawExtendFormatVStringF_VaList( float x, float y, double ExRateX, do
 
 	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
 
-	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, Color, TRUE ) ;
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, 0, TRUE ) ;
+}
+extern int DrawExtendFormatVString2F_VaList( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, const TCHAR *FormatString, va_list VaList )
+{
+	int FontHandle = DX_DEFAULT_FONT_HANDLE ;
+
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, DX_DEFAULT_FONT_HANDLE, EdgeColor, TRUE ) ;
 }
 
 // デフォルトフォントハンドルを使用して書式指定文字列を回転描画する( 座標指定が float 版 )
@@ -16276,6 +16626,13 @@ extern int DrawFormatStringToHandle_VaList( int x, int y, unsigned int Color, in
 	// 描画する
 	return NS_DrawStringToHandle( x, y, String, Color, FontHandle, 0, FALSE ) ;
 }
+extern int DrawFormatString2ToHandle_VaList( int x, int y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringToHandle( x, y, String, Color, FontHandle, EdgeColor, FALSE ) ;
+}
 
 // フォントハンドルを使用して書式指定文字列を描画する( 縦書き )
 extern int DrawFormatVStringToHandle_VaList( int x, int y, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
@@ -16284,6 +16641,13 @@ extern int DrawFormatVStringToHandle_VaList( int x, int y, unsigned int Color, i
 
 	// 描画する
 	return NS_DrawStringToHandle( x, y, String, Color, FontHandle, 0, TRUE ) ;
+}
+extern int DrawFormatVString2ToHandle_VaList( int x, int y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringToHandle( x, y, String, Color, FontHandle, EdgeColor, TRUE ) ;
 }
 
 // フォントハンドルを使用して書式指定文字列を拡大描画する
@@ -16294,6 +16658,13 @@ extern int DrawExtendFormatStringToHandle_VaList( int x, int y, double ExRateX, 
 	// 描画する
 	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, FALSE ) ;
 }
+extern int DrawExtendFormatString2ToHandle_VaList( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, EdgeColor, FALSE ) ;
+}
 
 // フォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )
 extern int DrawExtendFormatVStringToHandle_VaList( int x, int y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
@@ -16302,6 +16673,13 @@ extern int DrawExtendFormatVStringToHandle_VaList( int x, int y, double ExRateX,
 
 	// 描画する
 	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, TRUE ) ;
+}
+extern int DrawExtendFormatVString2ToHandle_VaList( int x, int y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, EdgeColor, TRUE ) ;
 }
 
 // フォントハンドルを使用して書式指定文字列を回転描画する
@@ -16330,6 +16708,13 @@ extern int DrawFormatStringFToHandle_VaList( float x, float y, unsigned int Colo
 	// 描画する
 	return NS_DrawStringFToHandle( x, y, String, Color, FontHandle, 0, FALSE ) ;
 }
+extern int DrawFormatString2FToHandle_VaList( float x, float y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringFToHandle( x, y, String, Color, FontHandle, EdgeColor, FALSE ) ;
+}
 
 // フォントハンドルを使用して書式指定文字列を描画する( 縦書き )( 座標指定が float 版 )
 extern int DrawFormatVStringFToHandle_VaList( float x, float y, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
@@ -16338,6 +16723,13 @@ extern int DrawFormatVStringFToHandle_VaList( float x, float y, unsigned int Col
 
 	// 描画する
 	return NS_DrawStringFToHandle( x, y, String, Color, FontHandle, 0, TRUE ) ;
+}
+extern int DrawFormatVString2FToHandle_VaList( float x, float y, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawStringFToHandle( x, y, String, Color, FontHandle, EdgeColor, TRUE ) ;
 }
 
 // フォントハンドルを使用して書式指定文字列を拡大描画する( 座標指定が float 版 )
@@ -16348,6 +16740,13 @@ extern int DrawExtendFormatStringFToHandle_VaList( float x, float y, double ExRa
 	// 描画する
 	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, FALSE ) ;
 }
+extern int DrawExtendFormatString2FToHandle_VaList( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, EdgeColor, FALSE ) ;
+}
 
 // フォントハンドルを使用して書式指定文字列を拡大描画する( 縦書き )( 座標指定が float 版 )
 extern int DrawExtendFormatVStringFToHandle_VaList( float x, float y, double ExRateX, double ExRateY, unsigned int Color, int FontHandle, const TCHAR *FormatString, va_list VaList )
@@ -16356,6 +16755,13 @@ extern int DrawExtendFormatVStringFToHandle_VaList( float x, float y, double ExR
 
 	// 描画する
 	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, 0, TRUE ) ;
+}
+extern int DrawExtendFormatVString2FToHandle_VaList( float x, float y, double ExRateX, double ExRateY, unsigned int Color, unsigned int EdgeColor, int FontHandle, const TCHAR *FormatString, va_list VaList )
+{
+	TCHAR_FONTHANDLE_FORMATSTRING_VALIST_SETUP( -1 )
+
+	// 描画する
+	return NS_DrawExtendStringFToHandle( x, y, ExRateX, ExRateY, String, Color, FontHandle, EdgeColor, TRUE ) ;
 }
 
 // フォントハンドルを使用して書式指定文字列を回転描画する( 座標指定が float 版 )

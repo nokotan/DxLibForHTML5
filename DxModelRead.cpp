@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ読み込みプログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -6298,6 +6298,7 @@ extern int MV1LoadModelToReadModel(
 						}
 					}
 
+					MBTexture->GraphHandle = 0 ;
 					if( __MV1LoadTexture(
 							&MBTexture->ColorImage, &MBTexture->ColorImageSize,
 							&MBTexture->AlphaImage, &MBTexture->AlphaImageSize,
@@ -6317,6 +6318,7 @@ extern int MV1LoadModelToReadModel(
 							ReadFunc,
 							false,
 							TRUE,
+							GParam->LoadModelToNotTextureLoad,
 							ASyncThread ) == -1 )
 					{
 						DXST_LOGFILEFMT_ADDW(( L"Read Model Convert Error : Texture Load Error : %s\n", Texture->NameW ) ) ;
@@ -6329,14 +6331,14 @@ extern int MV1LoadModelToReadModel(
 				MBTexture->AlphaImageFilePathAllocMem = FALSE ;
 
 				// ファイルパスを保存
-				if( MBTexture->ColorImage )
+				if( MBTexture->ColorImage || GParam->LoadModelToNotTextureLoad )
 				{
 #ifndef UNICODE
 					MBTexture->ColorFilePathA = MV1RGetStringSpace(  MBase, Texture->ColorFileNameA ) ;
 #endif
 					MBTexture->ColorFilePathW = MV1RGetStringSpaceW( MBase, Texture->ColorFileNameW ) ;
 				}
-				if( MBTexture->AlphaImage && Texture->AlphaFileNameW )
+				if( ( MBTexture->AlphaImage || GParam->LoadModelToNotTextureLoad ) && Texture->AlphaFileNameW )
 				{
 #ifndef UNICODE
 					MBTexture->AlphaFilePathA = MV1RGetStringSpace(  MBase, Texture->AlphaFileNameA ) ;

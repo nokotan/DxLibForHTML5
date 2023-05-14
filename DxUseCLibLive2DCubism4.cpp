@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Live2D Cubism4 関係
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -97,6 +97,28 @@ const int VertexOffset = 0;
 const int VertexStep = 2;
 
 const D_CubismMotionQueueEntryHandle InvalidMotionQueueEntryHandleValue = ( D_CubismMotionQueueEntryHandle * )( -1 ) ;
+
+int Live2D_VertexShaderToDxLibShader_Table[ 7 ] =
+{
+	DX_LIVE2D_SHADER_SETUP_MASK_VERTEX,		// D_ShaderNames_SetupMask								= 0,
+	DX_LIVE2D_SHADER_NORMAL_VERTEX,			// D_ShaderNames_Normal									= 1,
+	DX_LIVE2D_SHADER_NORMAL_VERTEX_MASKED,	// D_ShaderNames_NormalMasked							= 2,
+	DX_LIVE2D_SHADER_NORMAL_VERTEX_MASKED,	// D_ShaderNames_NormalMaskedInverted					= 3,
+	DX_LIVE2D_SHADER_NORMAL_VERTEX,			// D_ShaderNames_NormalPremultipliedAlpha				= 4,
+	DX_LIVE2D_SHADER_NORMAL_VERTEX_MASKED,	// D_ShaderNames_NormalMaskedPremultipliedAlpha			= 5,
+	DX_LIVE2D_SHADER_NORMAL_VERTEX_MASKED,	// D_ShaderNames_NormalMaskedInvertedPremultipliedAlpha	= 6,
+} ;
+
+int Live2D_PixelShaderToDxLibShader_Table[ 7 ] =
+{
+	DX_LIVE2D_SHADER_SETUP_MASK_PIXEL,							// D_ShaderNames_SetupMask								= 0,
+	DX_LIVE2D_SHADER_NORMAL_PIXEL,								// D_ShaderNames_Normal									= 1,
+	DX_LIVE2D_SHADER_NORMAL_PIXEL_MASKED,						// D_ShaderNames_NormalMasked							= 2,
+	DX_LIVE2D_SHADER_NORMAL_PIXEL_MASKED_INVERTED,				// D_ShaderNames_NormalMaskedInverted					= 3,
+	DX_LIVE2D_SHADER_NORMAL_PIXEL_PREMULALPHA,					// D_ShaderNames_NormalPremultipliedAlpha				= 4,
+	DX_LIVE2D_SHADER_NORMAL_PIXEL_MASKED_PREMULALPHA,			// D_ShaderNames_NormalMaskedPremultipliedAlpha			= 5,
+	DX_LIVE2D_SHADER_NORMAL_PIXEL_MASKED_INVERTEX_PREMULALPHA,	// D_ShaderNames_NormalMaskedInvertedPremultipliedAlpha	= 6,
+} ;
 
 // 関数プロトタイプ宣言 ----------------------------------------------------------
 
@@ -3380,6 +3402,24 @@ float D_CubismModel::GetCanvasHeight() const
 	return tmpSizeInPixels.Y / tmpPixelsPerUnit;
 }
 
+// キャンバスの情報を取得する
+void D_CubismModel::GetCanvasInfo( D_CubismVector2 *SizeInPixels, D_CubismVector2 *OriginInPixels, float *PixelsPerUnit )
+{
+	if( _model == NULL )
+	{
+		return;
+	}
+
+	D_CubismVector2 tmpSizeInPixels;
+	D_CubismVector2 tmpOriginInPixels;
+	float tmpPixelsPerUnit;
+
+	CALL_csmReadCanvasInfo( ( _model, &tmpSizeInPixels, &tmpOriginInPixels, &tmpPixelsPerUnit ) );
+	if( SizeInPixels   != NULL ) *SizeInPixels   = tmpSizeInPixels ;
+	if( OriginInPixels != NULL ) *OriginInPixels = tmpOriginInPixels ;
+	if( PixelsPerUnit  != NULL ) *PixelsPerUnit  = tmpPixelsPerUnit ;
+}
+
 int D_CubismModel::GetDrawableIndex( D_CubismIdHandle drawableId ) const
 {
 	const int drawableCount = CALL_csmGetDrawableCount( ( _model ) );
@@ -3812,6 +3852,7 @@ void D_CubismMotionQueueEntry::SetLastCheckEventTime( float checkTime )
 
 D_CubismMotionQueueManager::D_CubismMotionQueueManager()
 	: _userTimeSeconds( 0.0f )
+	, _motionPlayTime( 0.0f )
 	, _eventCallback( NULL )
 	, _eventCustomData( NULL )
 {}
@@ -3853,6 +3894,8 @@ D_CubismMotionQueueEntryHandle D_CubismMotionQueueManager::StartMotion( D_ACubis
 	motionQueueEntry->_motion = motion;
 
 	_motions.PushBack( motionQueueEntry, false );
+
+	_motionPlayTime = 0.0f;
 
 	return motionQueueEntry->_motionQueueEntryHandle;
 }
@@ -5369,6 +5412,7 @@ D_CubismMotionQueueEntryHandle D_CubismMotionManager::StartMotionPriority(D_ACub
 bool D_CubismMotionManager::UpdateMotion(D_CubismModel* model, float deltaTimeSeconds)
 {
     _userTimeSeconds += deltaTimeSeconds;
+	_motionPlayTime += deltaTimeSeconds;
 
     const bool updated = D_CubismMotionQueueManager::DoUpdateMotion(model, _userTimeSeconds);
 
@@ -8353,6 +8397,12 @@ void D_CubismRenderer_DxLib::ExecuteDraw( int vertexBuffer, int indexBuffer, int
 		return;    // モデルが参照するテクスチャがバインドされていない場合は描画をスキップする
 	}
 
+	// コールバックが設定されている場合は呼び出し
+	if( LIVE2DSYS.DrawUserCallback != NULL )
+	{
+		LIVE2DSYS.DrawUserCallback( LIVE2DSYS.NowDrawLive2DModelHandle, textureNo, LIVE2DSYS.DrawUserCallbackData ) ;
+	}
+
 	D_CubismConstantBufferDxLib *cb = NULL ;
 	D_CubismConstantBufferDxLib TempConstantBuffer ;
 	if( LIVE2DSYS.EnableConstantBuffer )
@@ -11009,7 +11059,7 @@ void D_LAppModel::DoDraw()
 	( ( D_CubismRenderer_DxLib * )GetRenderer() )->DrawModel() ;
 }
 
-void D_LAppModel::Draw( D_CubismMatrix44& matrix )
+void D_LAppModel::Draw( D_CubismMatrix44& matrix, bool isMultModelMatrix )
 {
 	D_CubismRenderer_DxLib* renderer = ( D_CubismRenderer_DxLib * )GetRenderer();
 
@@ -11019,7 +11069,10 @@ void D_LAppModel::Draw( D_CubismMatrix44& matrix )
 	}
 
 	// 投影行列と乗算 
-	matrix.MultiplyByMatrix( _modelMatrix );
+	if( isMultModelMatrix )
+	{
+		matrix.MultiplyByMatrix( _modelMatrix );
+	}
 
 	renderer->SetMvpMatrix( &matrix );
 

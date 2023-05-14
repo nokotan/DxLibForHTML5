@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＦＢＸモデルデータ読み込みプログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -44,12 +44,12 @@ struct FBX_MODEL
 static int AnalyseFbx( MV1_MODEL_R *RModel, FBX_MODEL *Model ) ;														// FBXファイルの解析( 0:成功  -1:失敗 )
 static int AnalyseFbxNode( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *ParentFrame, FbxNode *pFbxNode ) ;		// ノードの解析( -1:エラー )
 static int GetFbxAnimInfo( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *Frame, MV1_ANIMSET_R *AnimSet, MV1_ANIM_R **Anim, int DataType, FbxAnimCurve *FbxCurve, float TimeScale, bool Reverse = false, bool DeggToRad = false ) ;	// ＦＢＸカーブからアニメーション情報を取得する( -1:エラー )
-static MV1_TEXTURE_R *FbxAddTexture( MV1_MODEL_R *RModel, FbxTexture *_FbxTexture ) ;				// ＦＢＸテクスチャを追加する
+static MV1_TEXTURE_R *FbxAddTexture( MV1_MODEL_R *RModel, FbxTexture *_FbxTexture, int BumpMapFlag = FALSE ) ;				// ＦＢＸテクスチャを追加する
 
 // プログラム -----------------------------------
 
 // ＦＢＸテクスチャを追加する
-static MV1_TEXTURE_R *FbxAddTexture( MV1_MODEL_R *RModel, FbxTexture *_FbxTexture )
+static MV1_TEXTURE_R *FbxAddTexture( MV1_MODEL_R *RModel, FbxTexture *_FbxTexture, int BumpMapFlag )
 {
 	MV1_TEXTURE_R *Texture ;
 	FbxFileTexture *pFbxFileTexture ;
@@ -84,14 +84,14 @@ static MV1_TEXTURE_R *FbxAddTexture( MV1_MODEL_R *RModel, FbxTexture *_FbxTextur
 		// 長さ無しの場合は特別処理
 		if( UTF8Length == 0 && ShiftJISLength == 0 )
 		{
-			Texture = MV1RAddTexture( RModel, "NoName", "", NULL, FALSE, 0.1f, false ) ;
+			Texture = MV1RAddTexture( RModel, "NoName", "", NULL, BumpMapFlag, 0.1f, false ) ;
 		}
 		else
 		{
 			// UTF8 の場合はそのまま渡す
 			if( UTF8Length > ShiftJISLength )
 			{
-				Texture = MV1RAddTexture( RModel, _FbxTexture->GetName(), RelativeFileName, NULL, FALSE, 0.1f, false ) ;
+				Texture = MV1RAddTexture( RModel, _FbxTexture->GetName(), RelativeFileName, NULL, BumpMapFlag, 0.1f, false ) ;
 			}
 			else
 			{
@@ -109,21 +109,21 @@ static MV1_TEXTURE_R *FbxAddTexture( MV1_MODEL_R *RModel, FbxTexture *_FbxTextur
 				UTF8Length = GetStringCharNum( FilePathUTF8, DX_CHARCODEFORMAT_UTF8 ) ;
 				if( UTF8Length < ShiftJISLength )
 				{
-					Texture = MV1RAddTexture( RModel, _FbxTexture->GetName(), RelativeFileName, NULL, FALSE, 0.1f, false ) ;
+					Texture = MV1RAddTexture( RModel, _FbxTexture->GetName(), RelativeFileName, NULL, BumpMapFlag, 0.1f, false ) ;
 				}
 				else
 				{
-					Texture = MV1RAddTexture( RModel, _FbxTexture->GetName(), FilePathUTF8, NULL, FALSE, 0.1f, false, false, true, true ) ;
+					Texture = MV1RAddTexture( RModel, _FbxTexture->GetName(), FilePathUTF8, NULL, BumpMapFlag, 0.1f, false, false, true, true ) ;
 
 					// ShiftJIS としての読み込みに失敗したら UTF8 として読み込んでみる
 					if( Texture == NULL )
 					{
-						Texture = MV1RAddTexture( RModel, _FbxTexture->GetName(), RelativeFileName, NULL, FALSE, 0.1f, false, false, true, true ) ;
+						Texture = MV1RAddTexture( RModel, _FbxTexture->GetName(), RelativeFileName, NULL, BumpMapFlag, 0.1f, false, false, true, true ) ;
 
 						// UTF8 としても失敗した場合は改めて ShiftJIS として読み込む
 						if( Texture == NULL )
 						{
-							Texture = MV1RAddTexture( RModel, _FbxTexture->GetName(), FilePathUTF8, NULL, FALSE, 0.1f, false ) ;
+							Texture = MV1RAddTexture( RModel, _FbxTexture->GetName(), FilePathUTF8, NULL, BumpMapFlag, 0.1f, false ) ;
 						}
 					}
 				}
@@ -1468,7 +1468,87 @@ static int AnalyseFbxNode( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *P
 											}
 										}
 
+										// バンプマップマテリアルプロパティの取得
+										{
+											_FbxProperty = FbxMaterial->FindProperty( FbxSurfaceMaterial::sBump ) ;
+
+											// レイヤードテクスチャの場合とそれ以外で処理を分岐
+											LayeredTexNum = _FbxProperty.GetSrcObjectCount< FbxLayeredTexture >() ;
+											if( LayeredTexNum )
+											{
+												// ２個以上のレイヤーには対応していない
+												if( LayeredTexNum > 1 )
+												{
+													DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x42\x00\x75\x00\x6d\x00\x70\x00\x20\x00\xde\x30\xc6\x30\xea\x30\xa2\x30\xeb\x30\x6f\x30\x11\xff\xec\x30\xa4\x30\xe4\x30\xfc\x30\xe5\x4e\x0a\x4e\x6b\x30\x6f\x30\xfe\x5b\xdc\x5f\x57\x30\x66\x30\x44\x30\x7e\x30\x5b\x30\x93\x30\x0a\x00\x00"/*@ L"Fbx Load : Bump マテリアルは１レイヤー以上には対応していません\n" @*/ )) ;
+													return -1 ;
+												}
+
+												// テクスチャの数だけ繰り返し
+												for( j = 0 ; j < LayeredTexNum ; j ++ )
+												{
+													// テクスチャのアドレスを取得
+													_FbxLayeredTexture = _FbxProperty.GetSrcObject< FbxLayeredTexture >( j ) ;
+
+													// レイヤーの中に含まれているテクスチャの数を取得する
+													NormalTexNum = _FbxLayeredTexture->GetSrcObjectCount< FbxTexture >() ;
+
+													// テクスチャの数だけ繰り返し
+													for( k = 0 ; k < NormalTexNum ; k ++ )
+													{
+														_FbxTexture = _FbxLayeredTexture->GetSrcObject< FbxTexture >( k ) ;
+														if( _FbxTexture == NULL ) continue ;
+
+														// モデルに追加
+														Material->NormalTexs[ Material->NormalTexNum ] = FbxAddTexture( RModel, _FbxTexture, TRUE ) ;
+														if( Material->NormalTexs[ Material->NormalTexNum ] == NULL ) 
+														{
+															DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x42\x00\x75\x00\x6d\x00\x70\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\xfd\x8f\xa0\x52\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : Bump テクスチャオブジェクトの追加に失敗しました\n" @*/ )) ;
+															return -1 ;
+														}
+
+														// 合成方法を取得する
+														_FbxLayeredTexture->GetTextureBlendMode( k, BlendMode ) ;
+														switch( BlendMode )
+														{
+														case FbxLayeredTexture::eTranslucent : Material->NormalTexs[ Material->NormalTexNum ]->BlendType = MV1_LAYERBLEND_TYPE_TRANSLUCENT ; break ;
+														case FbxLayeredTexture::eAdditive :    Material->NormalTexs[ Material->NormalTexNum ]->BlendType = MV1_LAYERBLEND_TYPE_ADDITIVE ;    break ;
+														case FbxLayeredTexture::eModulate :    Material->NormalTexs[ Material->NormalTexNum ]->BlendType = MV1_LAYERBLEND_TYPE_MODULATE ;    break ;
+														case FbxLayeredTexture::eModulate2 :   Material->NormalTexs[ Material->NormalTexNum ]->BlendType = MV1_LAYERBLEND_TYPE_MODULATE2 ;   break ;
+														}
+
+														// テクスチャの数をインクリメント
+														Material->NormalTexNum ++ ;
+													}
+												}
+											}
+											else
+											{
+												// 通常のテクスチャの数を取得
+												Material->NormalTexNum = _FbxProperty.GetSrcObjectCount< FbxTexture >() ;
+
+												// 使用している場合は処理
+												if( Material->NormalTexNum != 0 )
+												{
+													// テクスチャの数だけ繰り返し
+													for( j = 0 ; j < Material->NormalTexNum ; j ++ )
+													{
+														// テクスチャのアドレスを取得
+														_FbxTexture = _FbxProperty.GetSrcObject< FbxTexture >( j ) ;
+
+														// モデルに追加
+														Material->NormalTexs[ j ] = FbxAddTexture( RModel, _FbxTexture, TRUE ) ;
+														if( Material->NormalTexs[ j ] == NULL ) 
+														{
+															DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x42\x00\x75\x00\x6d\x00\x70\x00\x20\x00\xc6\x30\xaf\x30\xb9\x30\xc1\x30\xe3\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\xfd\x8f\xa0\x52\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : Bump テクスチャオブジェクトの追加に失敗しました\n" @*/ )) ;
+															return -1 ;
+														}
+													}
+												}
+											}
+										}
+
 										// 法線マップマテリアルプロパティの取得
+										if( Material->NormalTexNum == 0 )
 										{
 											_FbxProperty = FbxMaterial->FindProperty( FbxSurfaceMaterial::sNormalMap ) ;
 
@@ -1479,7 +1559,7 @@ static int AnalyseFbxNode( MV1_MODEL_R *RModel, FBX_MODEL *Model, MV1_FRAME_R *P
 												// ２個以上のレイヤーには対応していない
 												if( LayeredTexNum > 1 )
 												{
-													DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x42\x00\x75\x00\x6d\x00\x70\x00\x20\x00\xde\x30\xc6\x30\xea\x30\xa2\x30\xeb\x30\x6f\x30\x11\xff\xec\x30\xa4\x30\xe4\x30\xfc\x30\xe5\x4e\x0a\x4e\x6b\x30\x6f\x30\xfe\x5b\xdc\x5f\x57\x30\x66\x30\x44\x30\x7e\x30\x5b\x30\x93\x30\x0a\x00\x00"/*@ L"Fbx Load : Bump マテリアルは１レイヤー以上には対応していません\n" @*/ )) ;
+													DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x4e\x00\x6f\x00\x72\x00\x6d\x00\x61\x00\x6c\x00\x4d\x00\x61\x00\x70\x00\x20\x00\xde\x30\xc6\x30\xea\x30\xa2\x30\xeb\x30\x6f\x30\x11\xff\xec\x30\xa4\x30\xe4\x30\xfc\x30\xe5\x4e\x0a\x4e\x6b\x30\x6f\x30\xfe\x5b\xdc\x5f\x57\x30\x66\x30\x44\x30\x7e\x30\x5b\x30\x93\x30\x0a\x00\x00"/*@ L"Fbx Load : NormalMap マテリアルは１レイヤー以上には対応していません\n" @*/ )) ;
 													return -1 ;
 												}
 
@@ -2204,18 +2284,23 @@ extern int MV1LoadModelToFBX( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 	ConvString( ( const char * )LoadParam->FilePath, -1, WCHAR_T_CHARCODEFORMAT, ( char * )UTF8Buffer, sizeof( UTF8Buffer ), DX_CHARCODEFORMAT_UTF8 ) ;
 	if( FbxModel.pManager->GetIOPluginRegistry()->DetectReaderFileFormat( UTF8Buffer, iFileFormat ) == false )
 	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x46\x00\x42\x00\x58\x00\xd5\x30\xa9\x30\xfc\x30\xde\x30\xc3\x30\xc8\x30\x6e\x30\xc1\x30\xa7\x30\xc3\x30\xaf\x30\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : FBXフォーマットのチェックに失敗しました\n" @*/ )) ;
 		goto FUNCTIONEND ;
 	}
 
 	// 読み込み
 	if( FbxModel.pImporter->Initialize( UTF8Buffer, iFileFormat, FbxModel.pIOSettings ) == false )
 	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x46\x00\x42\x00\x58\x00\x20\x00\x49\x00\x6d\x00\x70\x00\x6f\x00\x72\x00\x74\x00\x65\x00\x72\x00\x20\x00\x6e\x30\x20\x00\x49\x00\x6e\x00\x69\x00\x74\x00\x69\x00\x61\x00\x6c\x00\x69\x00\x7a\x00\x65\x00\x20\x00\x4c\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : FBX Importer の Initialize が失敗しました\n" @*/ )) ;
 		goto FUNCTIONEND ;
 	}
 
 	// ＦＢＸかチェック
 	if( FbxModel.pImporter->IsFBX() == false )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x46\x00\x42\x00\x58\x00\x20\x00\x49\x00\x6d\x00\x70\x00\x6f\x00\x72\x00\x74\x00\x65\x00\x72\x00\x20\x00\x6e\x30\x20\x00\x49\x00\x73\x00\x46\x00\x42\x00\x58\x00\x20\x00\x67\x30\x0e\x30\x46\x00\x42\x00\x58\x00\x20\x00\xd5\x30\xa1\x30\xa4\x30\xeb\x30\x67\x30\x6f\x30\x6a\x30\x44\x30\x0f\x30\x68\x30\x24\x52\x9a\x5b\x55\x30\x8c\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : FBX Importer の IsFBX で『FBX ファイルではない』と判定されました\n" @*/ )) ;
 		goto FUNCTIONEND ;
+	}
 
 	// 読み取り情報の設定
 	FbxModel.pIOSettings->SetBoolProp( IMP_FBX_MATERIAL,		true ) ;
@@ -2242,11 +2327,18 @@ extern int MV1LoadModelToFBX( const MV1_MODEL_LOAD_PARAM *LoadParam, int ASyncTh
 
 	// ノードを手繰る
 	if( AnalyseFbx( &RModel, &FbxModel ) == -1 )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x41\x00\x6e\x00\x61\x00\x6c\x00\x79\x00\x73\x00\x65\x00\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : AnalyseFbx が失敗しました\n" @*/ )) ;
 		goto FUNCTIONEND ;
+	}
 
 	// モデル基データハンドルの作成
 	NewHandle = MV1LoadModelToReadModel( &LoadParam->GParam, &RModel, LoadParam->CurrentDir, LoadParam->FileReadFunc, ASyncThread ) ;
-	if( NewHandle < 0 ) goto FUNCTIONEND ;
+	if( NewHandle < 0 )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x46\x00\x62\x00\x78\x00\x20\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x20\x00\x3a\x00\x20\x00\x4d\x00\x56\x00\x31\x00\x4c\x00\x6f\x00\x61\x00\x64\x00\x4d\x00\x6f\x00\x64\x00\x65\x00\x6c\x00\x54\x00\x6f\x00\x52\x00\x65\x00\x61\x00\x64\x00\x4d\x00\x6f\x00\x64\x00\x65\x00\x6c\x00\x20\x00\x4c\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Fbx Load : MV1LoadModelToReadModel が失敗しました\n" @*/ )) ;
+		goto FUNCTIONEND ;
+	}
 
 	// エラーフラグを倒す
 	ErrorFlag = 0 ;

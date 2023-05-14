@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -50,11 +50,8 @@
 #ifndef DX_NON_PNGREAD
 	#include "png.h"
 //  #include "pngpriv.h"
-#endif
-
-#ifndef DX_NON_MODEL
 	#include "zlib.h"
-#endif // DX_NON_MODEL
+#endif
 
 #ifndef DX_NON_JPEGREAD
 	#ifdef DX_GCC_COMPILE
@@ -876,6 +873,2590 @@ extern int LoadPngImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnl
 	return 0;
 }
 
+
+// ＰＮＧ画像の読みこみ( 高速版 )
+#define READ_4BYTE( x )				( ( ( ( BYTE * )( x ) )[ 0 ] << 24 ) | ( ( ( BYTE * )( x ) )[ 1 ] << 16 ) | ( ( ( BYTE * )( x ) )[ 2 ] << 8 ) | ( ( ( BYTE * )( x ) )[ 3 ]  ) )
+
+#define PAETH_CODE( x )	up = UpP[ x ] ;\
+						\
+						upleft = UpLeftP[ x ] ;\
+						left = LeftP[ x ] ;\
+						\
+						up_upleft  = up - upleft ;\
+						left_upleft = left - upleft ;\
+						\
+						abs_up_upleft = up_upleft  < 0 ? -up_upleft  : up_upleft ;\
+						abs_left_upleft = left_upleft < 0 ? -left_upleft : left_upleft ;\
+						abs_up_upleft_left_upleft = ( up_upleft + left_upleft ) < 0 ? -( up_upleft + left_upleft ) : up_upleft + left_upleft ;\
+						\
+						result = ( abs_up_upleft <= abs_left_upleft && abs_up_upleft <= abs_up_upleft_left_upleft ) ? left : ( abs_left_upleft <= abs_up_upleft_left_upleft ) ? up : upleft ;
+
+#define BYTE_FILTER_CODE	\
+						TmpP = SrcP ;\
+						switch( SrcP[ -1 ] )\
+						{\
+						case 0 :\
+							break ;\
+\
+						case 1 :\
+							TmpP += 1 ;\
+							for( j = 1 ; j < SrcPitch - 1 ; j ++, TmpP += 1 )\
+							{\
+								TmpP[ 0 ] = ( BYTE )( ( int )TmpP[ 0 ] + ( int )( ( TmpP - 1 )[ 0 ] ) ) ;\
+							}\
+							break ;\
+\
+						case 2 :\
+							if( i != 0 )\
+							{\
+								for( j = 0 ; j < SrcPitch - 1 ; j ++, TmpP += 1 )\
+								{\
+									TmpP[ 0 ] = ( BYTE )( ( int )TmpP[ 0 ] + ( int )( ( TmpP - SrcPitch )[ 0 ] ) ) ;\
+								}\
+							}\
+							break ;\
+\
+						case 3 :\
+							if( i == 0 )\
+							{\
+								TmpP += 1 ;\
+								for( j = 1 ; j < SrcPitch - 1 ; j ++, TmpP += 1 )\
+								{\
+									TmpP[ 0 ] = ( BYTE )( ( int )TmpP[ 0 ] + ( int )( ( TmpP - 1 )[ 0 ] ) ) ;\
+								}\
+							}\
+							else\
+							{\
+								TmpP[ 0 ] = ( BYTE )( ( int )TmpP[ 0 ] + ( ( TmpP - SrcPitch )[ 0 ] ) / 2 ) ;\
+\
+								TmpP += 1 ;\
+								for( j = 1 ; j < SrcPitch - 1 ; j ++, TmpP += 1 )\
+								{\
+									TmpP[ 0 ] = ( BYTE )( ( int )TmpP[ 0 ] + ( ( TmpP - 1 )[ 0 ] + ( TmpP - SrcPitch )[ 0 ] ) / 2 ) ;\
+								}\
+							}\
+							break ;\
+\
+						case 4 :\
+						{\
+							if( i == 0 )\
+							{\
+								TmpP += 1 ;\
+								for( j = 1 ; j < SrcPitch - 1 ; j ++, TmpP += 1 )\
+								{\
+									TmpP[ 0 ] = ( BYTE )( ( int )TmpP[ 0 ] + ( int )( ( TmpP - 1 )[ 0 ] ) ) ;\
+								}\
+							}\
+							else\
+							{\
+								int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;\
+\
+								TmpP[ 0 ] = ( BYTE )( ( int )TmpP[ 0 ] + ( TmpP - SrcPitch )[ 0 ] ) ;\
+								TmpP += 1 ;\
+\
+								for( j = 1 ; j < SrcPitch - 1 ; j ++, TmpP += 1 )\
+								{\
+									BYTE *UpP = TmpP - SrcPitch ;\
+									BYTE *UpLeftP = TmpP - SrcPitch - 1 ;\
+									BYTE *LeftP = TmpP - 1 ;\
+\
+									{\
+										PAETH_CODE( 0 )\
+\
+										TmpP[ 0 ] = ( BYTE )( ( int )TmpP[ 0 ] + result ) ;\
+									}\
+								}\
+							}\
+						}\
+						break ;\
+						}
+
+
+
+extern int LoadPngImage_Fast( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly )
+{
+	size_t FileBytes ;
+	BYTE *SrcP = NULL ;
+	BYTE *TmpP = NULL ;
+	BYTE *DestP = NULL ;
+	BYTE *IHDR = NULL ;
+	BYTE *tRNS = NULL ;
+	DWORD tRNSBytes = 0 ;
+	BYTE *IDAT = NULL ;
+	DWORD IDATBytes = 0 ;
+	BYTE *PLTE = NULL ;
+	DWORD PLTEBytes = 0 ;
+	DWORD PLTECount = 0 ;
+	BYTE *FilterImage = NULL ;
+	DWORD FilterImageBytes ;
+	DWORD FilterImagePitch ;
+	DWORD ChunkBytes ;
+	int IsLoop = 1 ;
+	BYTE BitDepth ;
+	DWORD PixelBits ;
+	BYTE ColorType ;
+	BYTE CompressionMethod ;
+	BYTE FilterMethod ;
+	BYTE InterlaceMethod ;
+	z_stream ZStream ;
+	int ZStreamInit = 0 ;
+	int status = Z_OK ;
+	DWORD i ;
+	BYTE tr = 0, tg = 0, tb = 0 ;
+	static BYTE Table1bit[ 2 ] = { 0, 255 } ;
+	static BYTE Table2bit[ 4 ] = { 0, 85, 170, 255 } ;
+	static BYTE Table4bit[ 16 ] = { 0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255 } ;
+
+	// メモリに読み込まれたデータではない場合は処理しない
+	if( GetMemStreamDataShredStruct()->Read != Src->ReadShred.Read )
+	{
+		return -1 ;
+	}
+
+	// メモリの読み込まれたデータのアドレスを取得
+	SrcP = *( ( BYTE ** )Src->DataPoint ) ;
+	FileBytes = *( ( size_t * )( ( BYTE ** )Src->DataPoint + 1 ) ) ;
+
+	// 最初の８バイトでPNGファイルかどうかをチェック
+	if( FileBytes < 8 ||
+		SrcP[ 0 ] != 0x89 || SrcP[ 1 ] != 0x50 || SrcP[ 2 ] != 0x4E || SrcP[ 3 ] != 0x47 ||
+		SrcP[ 4 ] != 0x0D || SrcP[ 5 ] != 0x0A || SrcP[ 6 ] != 0x1A || SrcP[ 7 ] != 0x0A )
+	{
+		return -1 ;
+	}
+
+	// 各チャンクを検出
+	SrcP += 8 ;
+	while( IsLoop )
+	{
+		ChunkBytes = READ_4BYTE( SrcP ) ;
+		switch( *( ( DWORD * )( SrcP + 4 ) ) )
+		{
+		case 0x52444849 :	// IHDR
+			if( IHDR != NULL )
+			{
+				goto ERR ;
+			}
+			IHDR = SrcP + 8 ;
+			break ;
+
+		case 0x54414449 :	// IDAT
+			IDAT = SrcP + 8 ;
+			IDATBytes = ChunkBytes ;
+			break ;
+
+		case 0x45544C50 :	// PLTE
+			if( PLTE != NULL )
+			{
+				return -1 ;
+			}
+			PLTE = SrcP + 8 ;
+			PLTEBytes = ChunkBytes ;
+			break ;
+
+		case 0x534E5274 :	// tRNS
+			tRNS = SrcP + 8 ;
+			tRNSBytes = ChunkBytes ;
+			break ;
+
+		case 0x444E4549 :	// IEND
+			IsLoop = 0 ;
+			break ;
+
+		case 0x74585469 :	// iTXt
+		case 0x74584574 :	// tEXt
+		case 0x7458547A :	// zTXt
+		case 0x454D4974 :	// tIME
+			break ;
+
+		default :
+			break ;
+		}
+
+		SrcP += ChunkBytes + 12 ;
+	}
+
+	// 必須チャンクが無かったらエラー
+	if( IHDR == NULL || IDAT == NULL )
+	{
+		goto ERR ;
+	}
+
+	// ヘッダ読み込み
+	BaseImage->Width  = ( int )READ_4BYTE( IHDR + 0 ) ;
+	BaseImage->Height = ( int )READ_4BYTE( IHDR + 4 ) ;
+	BitDepth = IHDR[ 8 ] ;
+	ColorType = IHDR[ 9 ] ;
+	CompressionMethod = IHDR[ 10 ] ;
+	FilterMethod = IHDR[ 11 ] ;
+	InterlaceMethod = IHDR[ 12 ] ;
+
+	// インターレースには非対応
+	if( InterlaceMethod != 0 )
+	{
+		goto ERR ;
+	}
+
+	// 圧縮方法は Deflate のみ対応
+	if( CompressionMethod != 0 )
+	{
+		goto ERR ;
+	}
+
+	// 標準のフィルター手法のみ対応
+	if( FilterMethod != 0 )
+	{
+		goto ERR ;
+	}
+
+	// 対応しているカラータイプは 2( RGB ) か 6( RGBA ) のみ
+	switch( ColorType )
+	{
+	case 0 :	// GRAY
+		if( BitDepth != 1 && BitDepth != 2 && BitDepth != 4 && BitDepth != 8 && BitDepth != 16 )
+		{
+			goto ERR ;
+		}
+		PixelBits = BitDepth ;
+		if( tRNS != NULL )
+		{
+			NS_CreateARGB8ColorData( &BaseImage->ColorData ) ;
+			if( BitDepth == 16 )
+			{
+				tg = tRNS[ 0 ] ;
+			}
+			else
+			{
+				tg = tRNS[ 1 ] ;
+			}
+		}
+		else
+		{
+			NS_CreateGrayColorData( &BaseImage->ColorData ) ;
+		}
+		break ;
+
+	case 2 :	// RGB
+		if( BitDepth != 8 && BitDepth != 16 )
+		{
+			goto ERR ;
+		}
+
+		if( tRNS != NULL )
+		{
+			PixelBits = BitDepth * 3 ;
+			NS_CreateARGB8ColorData( &BaseImage->ColorData ) ;
+			if( BitDepth == 8 )
+			{
+				tr = tRNS[ 1 ] ;
+				tg = tRNS[ 3 ] ;
+				tb = tRNS[ 5 ] ;
+			}
+			else
+			{
+				tr = tRNS[ 0 ] ;
+				tg = tRNS[ 2 ] ;
+				tb = tRNS[ 4 ] ;
+			}
+		}
+		else
+		{
+			PixelBits = BitDepth * 3 ;
+			NS_CreateFullColorData( &BaseImage->ColorData ) ;
+		}
+		break ;
+
+	case 3 :	// PLT
+		PixelBits = BitDepth ;
+		if( PLTE == NULL )
+		{
+			goto ERR ;
+		}
+		PLTECount = PLTEBytes / 3 ;
+		NS_CreatePal8ColorData( &BaseImage->ColorData, tRNS != NULL ? TRUE : FALSE ) ;
+		BaseImage->ColorData.MaxPaletteNo = ( int )( PLTECount - 1 ) ;
+		for( i = 0 ; i < PLTECount ; i ++ )
+		{
+			BaseImage->ColorData.Palette[ i ].Red   = PLTE[ 0 ] ;
+			BaseImage->ColorData.Palette[ i ].Green = PLTE[ 1 ] ;
+			BaseImage->ColorData.Palette[ i ].Blue  = PLTE[ 2 ] ;
+			PLTE += 3 ;
+		}
+		if( tRNS != NULL )
+		{
+			for( i = 0 ; i < tRNSBytes ; i ++ )
+			{
+				BaseImage->ColorData.Palette[ i ].Alpha = tRNS[ i ] ;
+			}
+			for( ; i < 256 ; i ++ )
+			{
+				BaseImage->ColorData.Palette[ i ].Alpha = 255 ;
+			}
+		}
+		else
+		{
+			for( i = 0 ; i < 256 ; i ++ )
+			{
+				BaseImage->ColorData.Palette[ i ].Alpha = 0 ;
+			}
+		}
+		break ;
+
+	case 4 :	// GRAY + A
+		if( BitDepth != 8 && BitDepth != 16 )
+		{
+			goto ERR ;
+		}
+		PixelBits = BitDepth * 2 ;
+		NS_CreateARGB8ColorData( &BaseImage->ColorData ) ;
+		break ;
+
+	case 6 :	// RGBA
+		if( BitDepth != 8 && BitDepth != 16 )
+		{
+			goto ERR ;
+		}
+		PixelBits = BitDepth * 4 ;
+		NS_CreateARGB8ColorData( &BaseImage->ColorData ) ;
+		break ;
+
+	default :
+		goto ERR ;
+	}
+
+	// ピッチの計算
+	BaseImage->Pitch = BaseImage->Width * BaseImage->ColorData.PixelByte ;
+
+	if( GetFormatOnly == FALSE )
+	{
+		// 画像保存用のバッファを確保
+		BaseImage->GraphData = DXALLOC( BaseImage->Pitch * BaseImage->Height ) ;
+		if( BaseImage->GraphData == NULL )
+		{
+			goto ERR ;
+		}
+
+		// フィルターイメージのバッファを確保
+		FilterImagePitch = ( BaseImage->Width * PixelBits + 7 ) / 8 + 1 ;
+		FilterImageBytes = ( DWORD )( FilterImagePitch * BaseImage->Height ) ;
+		FilterImage = ( BYTE * )DXALLOC( FilterImageBytes ) ;
+		if( FilterImage == NULL )
+		{
+			goto ERR ;
+		}
+
+		// 圧縮データの解凍準備
+		_MEMSET( &ZStream, 0, sizeof( ZStream ) ) ;
+		if( inflateInit( &ZStream ) != Z_OK )
+		{
+			goto ERR ;
+		}
+		ZStreamInit = 1 ;
+		ZStream.next_out = FilterImage ;
+		ZStream.avail_out = FilterImageBytes ;
+
+		// 圧縮データの解凍
+		SrcP = *( ( BYTE ** )Src->DataPoint ) + 8 ;
+		IsLoop = 1 ;
+		while( IsLoop )
+		{
+			ChunkBytes = READ_4BYTE( SrcP ) ;
+			switch( *( ( DWORD * )( SrcP + 4 ) ) )
+			{
+			case 0x54414449 :	// IDAT
+				IDAT = SrcP + 8 ;
+				IDATBytes = ChunkBytes ;
+
+				// IDATデータの解凍
+				ZStream.next_in = IDAT ;
+				ZStream.avail_in = IDATBytes ;
+				status = inflate( &ZStream, Z_NO_FLUSH ) ;
+				if( status != Z_OK && status != Z_STREAM_END )
+				{
+					goto ERR ;
+				}
+				if( status == Z_STREAM_END )
+				{
+					IsLoop = 0 ;
+				}
+				break ;
+
+			case 0x444E4549 :	// IEND
+				IsLoop = 0 ;
+				break ;
+
+			default :
+				break ;
+			}
+
+			SrcP += ChunkBytes + 12 ;
+		}
+
+		// 圧縮データが足りていなかったらエラー
+		if( status != Z_STREAM_END || ZStream.total_out != FilterImageBytes )
+		{
+			goto ERR ;
+		}
+
+		// 解凍処理の後始末
+		inflateEnd( &ZStream ) ;
+		_MEMSET( &ZStream, 0, sizeof( ZStream ) ) ;
+		ZStreamInit = 0 ;
+
+		// フィルターを解除
+		{
+			DWORD Width = ( DWORD )BaseImage->Width ;
+			DWORD Height = ( DWORD )BaseImage->Height ;
+			DWORD DestPitch = ( DWORD )BaseImage->Pitch ;
+			DWORD SrcPitch = FilterImagePitch ;
+			DWORD SrcAddPitch = SrcPitch - Width * PixelBits / 8 ;
+			DWORD DestAddPitch = DestPitch - Width * BaseImage->ColorData.PixelByte ;
+			DWORD i, j ;
+
+			SrcP  = FilterImage + 1 ;
+			DestP = ( BYTE * )BaseImage->GraphData ;
+			switch( ColorType )
+			{
+			case 0 :	// GRAY
+			case 3 :	// PLTE
+				if( tRNS != NULL && ColorType == 0 )
+				{
+					if( BitDepth == 1 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							BYTE_FILTER_CODE
+
+							for( j = 0 ;; )
+							{
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] >> 7 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table1bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 6 ) & 0x1 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table1bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 5 ) & 0x1 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table1bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 4 ) & 0x1 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table1bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 3 ) & 0x1 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table1bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 2 ) & 0x1 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table1bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 1 ) & 0x1 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table1bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] & 0x1 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table1bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								SrcP ++ ;
+							}
+						}
+					}
+					else
+					if( BitDepth == 2 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							BYTE_FILTER_CODE
+
+							for( j = 0 ;; )
+							{
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] >> 6 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table2bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 4 ) & 0x3 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table2bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 2 ) & 0x3 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table2bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] & 0x3 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table2bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								SrcP ++ ;
+							}
+						}
+					}
+					else
+					if( BitDepth == 4 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							BYTE_FILTER_CODE
+
+							for( j = 0 ;; )
+							{
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] >> 4 ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table4bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] & 0xf ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								DestP[ 0 ] = Table4bit[ DestP[ 0 ] ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP += 4 ;
+								j ++ ;
+
+								SrcP ++ ;
+							}
+						}
+					}
+					else
+					if( BitDepth == 8 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							switch( SrcP[ -1 ] )
+							{
+							case 0 :
+								for( j = 0 ; j < Width ; j ++, SrcP += 1, DestP += 4 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								}
+								break ;
+
+							case 1 :
+								DestP[ 0 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+
+								SrcP += 1 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 1, DestP += 4 )
+								{
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								}
+								break ;
+
+							case 2 :
+								if( i == 0 )
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 1, DestP += 4 )
+									{
+										DestP[ 0 ] = SrcP[ 0 ] ;
+										DestP[ 1 ] = DestP[ 0 ] ;
+										DestP[ 2 ] = DestP[ 0 ] ;
+										DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									}
+								}
+								else
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 1, DestP += 4 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+										DestP[ 1 ] = DestP[ 0 ] ;
+										DestP[ 2 ] = DestP[ 0 ] ;
+										DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									}
+								}
+								break ;
+
+							case 3 :
+								if( i == 0 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+
+									SrcP += 1 ;
+									DestP += 4 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 1, DestP += 4 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - 4 )[ 0 ] / 2 ) ;
+										DestP[ 1 ] = DestP[ 0 ] ;
+										DestP[ 2 ] = DestP[ 0 ] ;
+										DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									}
+								}
+								else
+								{
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+
+									SrcP += 1 ;
+									DestP += 4 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 1, DestP += 4 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 4 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+										DestP[ 1 ] = DestP[ 0 ] ;
+										DestP[ 2 ] = DestP[ 0 ] ;
+										DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									}
+								}
+								break ;
+
+							case 4 :
+								if( i == 0 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+
+									SrcP += 1 ;
+									DestP += 4 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 1, DestP += 4 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+										DestP[ 1 ] = DestP[ 0 ] ;
+										DestP[ 2 ] = DestP[ 0 ] ;
+										DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									}
+								}
+								else
+								{
+									int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 0 ] ) ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									SrcP += 1 ;
+									DestP += 4 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 1, DestP += 4 )
+									{
+										BYTE *UpP = DestP - DestPitch ;
+										BYTE *UpLeftP = DestP - DestPitch - 4 ;
+										BYTE *LeftP = DestP - 4 ;
+
+										{
+											PAETH_CODE( 0 )
+
+											DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+											DestP[ 1 ] = DestP[ 0 ] ;
+											DestP[ 2 ] = DestP[ 0 ] ;
+											DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+										}
+									}
+								}
+								break ;
+							}
+						}
+					}
+					else
+					if( BitDepth == 16 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							switch( SrcP[ -1 ] )
+							{
+							case 0 :
+								for( j = 0 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								}
+								break ;
+
+							case 1 :
+								DestP[ 0 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = DestP[ 0 ] ;
+								DestP[ 2 ] = DestP[ 0 ] ;
+								DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+
+								SrcP += 2 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+								{
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+								}
+								break ;
+
+							case 2 :
+								if( i == 0 )
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+									{
+										DestP[ 0 ] = SrcP[ 0 ] ;
+										DestP[ 1 ] = DestP[ 0 ] ;
+										DestP[ 2 ] = DestP[ 0 ] ;
+										DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									}
+								}
+								else
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+										DestP[ 1 ] = DestP[ 0 ] ;
+										DestP[ 2 ] = DestP[ 0 ] ;
+										DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									}
+								}
+								break ;
+
+							case 3 :
+								if( i == 0 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+
+									SrcP += 2 ;
+									DestP += 4 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - 4 )[ 0 ] / 2 ) ;
+										DestP[ 1 ] = DestP[ 0 ] ;
+										DestP[ 2 ] = DestP[ 0 ] ;
+										DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									}
+								}
+								else
+								{
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+
+									SrcP += 2 ;
+									DestP += 4 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 4 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+										DestP[ 1 ] = DestP[ 0 ] ;
+										DestP[ 2 ] = DestP[ 0 ] ;
+										DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									}
+								}
+								break ;
+
+							case 4 :
+								if( i == 0 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+
+									SrcP += 2 ;
+									DestP += 4 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+										DestP[ 1 ] = DestP[ 0 ] ;
+										DestP[ 2 ] = DestP[ 0 ] ;
+										DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									}
+								}
+								else
+								{
+									int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 0 ] ) ;
+									DestP[ 1 ] = DestP[ 0 ] ;
+									DestP[ 2 ] = DestP[ 0 ] ;
+									DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+									SrcP += 2 ;
+									DestP += 4 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+									{
+										BYTE *UpP = DestP - DestPitch ;
+										BYTE *UpLeftP = DestP - DestPitch - 4 ;
+										BYTE *LeftP = DestP - 4 ;
+
+										{
+											PAETH_CODE( 0 )
+
+											DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+											DestP[ 1 ] = DestP[ 0 ] ;
+											DestP[ 2 ] = DestP[ 0 ] ;
+											DestP[ 3 ] = DestP[ 0 ] == tg ? 0 : 255 ;
+										}
+									}
+								}
+							break ;
+							}
+						}
+					}
+				}
+				else
+				{
+					if( BitDepth == 1 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							BYTE_FILTER_CODE
+
+							for( j = 0 ;; )
+							{
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] >> 7 ;
+								DestP ++ ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 6 ) & 0x1 ;
+								DestP ++ ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 5 ) & 0x1 ;
+								DestP ++ ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 4 ) & 0x1 ;
+								DestP ++ ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 3 ) & 0x1 ;
+								DestP ++ ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 2 ) & 0x1 ;
+								DestP ++ ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 1 ) & 0x1 ;
+								DestP ++ ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] & 0x1 ;
+								DestP ++ ;
+								j ++ ;
+
+								SrcP ++ ;
+							}
+						}
+					}
+					else
+					if( BitDepth == 2 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							BYTE_FILTER_CODE
+
+							for( j = 0 ;; )
+							{
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] >> 6 ;
+								DestP ++ ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 4 ) & 0x3 ;
+								DestP ++ ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = ( SrcP[ 0 ] >> 2 ) & 0x3 ;
+								DestP ++ ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] & 0x3 ;
+								DestP ++ ;
+								j ++ ;
+
+								SrcP ++ ;
+							}
+						}
+					}
+					else
+					if( BitDepth == 4 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							BYTE_FILTER_CODE
+
+							for( j = 0 ;; )
+							{
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] >> 4 ;
+								DestP ++ ;
+								j ++ ;
+
+								if( j >= Width ) break ;
+								DestP[ 0 ] = SrcP[ 0 ] & 0xf ;
+								DestP ++ ;
+								j ++ ;
+
+								SrcP ++ ;
+							}
+						}
+					}
+					else
+					if( BitDepth == 8 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							switch( SrcP[ -1 ] )
+							{
+							case 0 :
+								for( j = 0 ; j < Width ; j ++, SrcP += 1, DestP += 1 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+								}
+								break ;
+
+							case 1 :
+								DestP[ 0 ] = SrcP[ 0 ] ;
+
+								SrcP += 1 ;
+								DestP += 1 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 1, DestP += 1 )
+								{
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 1 )[ 0 ] ) ) ;
+								}
+								break ;
+
+							case 2 :
+								if( i == 0 )
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 1, DestP += 1 )
+									{
+										DestP[ 0 ] = SrcP[ 0 ] ;
+									}
+								}
+								else
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 1, DestP += 1 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+									}
+								}
+								break ;
+
+							case 3 :
+								if( i == 0 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+
+									SrcP += 1 ;
+									DestP += 1 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 1, DestP += 1 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - 1 )[ 0 ] / 2 ) ;
+									}
+								}
+								else
+								{
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+
+									SrcP += 1 ;
+									DestP += 1 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 1, DestP += 1 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 1 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									}
+								}
+								break ;
+
+							case 4 :
+								if( i == 0 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+
+									SrcP += 1 ;
+									DestP += 1 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 1, DestP += 1 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 1 )[ 0 ] ) ) ;
+									}
+								}
+								else
+								{
+									int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 0 ] ) ;
+									SrcP += 1 ;
+									DestP += 1 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 1, DestP += 1 )
+									{
+										BYTE *UpP = DestP - DestPitch ;
+										BYTE *UpLeftP = DestP - DestPitch - 1 ;
+										BYTE *LeftP = DestP - 1 ;
+
+										{
+											PAETH_CODE( 0 )
+
+											DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+										}
+									}
+								}
+								break ;
+							}
+						}
+					}
+					else
+					if( BitDepth == 16 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							switch( SrcP[ -1 ] )
+							{
+							case 0 :
+								for( j = 0 ; j < Width ; j ++, SrcP += 2, DestP += 1 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+								}
+								break ;
+
+							case 1 :
+								DestP[ 0 ] = SrcP[ 0 ] ;
+
+								SrcP += 2 ;
+								DestP += 1 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 1 )
+								{
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 1 )[ 0 ] ) ) ;
+								}
+								break ;
+
+							case 2 :
+								if( i == 0 )
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 2, DestP += 1 )
+									{
+										DestP[ 0 ] = SrcP[ 0 ] ;
+									}
+								}
+								else
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 2, DestP += 1 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+									}
+								}
+								break ;
+
+							case 3 :
+								if( i == 0 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+
+									SrcP += 2 ;
+									DestP += 1 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 1 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - 1 )[ 0 ] / 2 ) ;
+									}
+								}
+								else
+								{
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+
+									SrcP += 2 ;
+									DestP += 1 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 1 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 1 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									}
+								}
+								break ;
+
+							case 4 :
+								if( i == 0 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+
+									SrcP += 2 ;
+									DestP += 1 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 1 )
+									{
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 1 )[ 0 ] ) ) ;
+									}
+								}
+								else
+								{
+									int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 0 ] ) ;
+									SrcP += 2 ;
+									DestP += 1 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 1 )
+									{
+										BYTE *UpP = DestP - DestPitch ;
+										BYTE *UpLeftP = DestP - DestPitch - 1 ;
+										BYTE *LeftP = DestP - 1 ;
+
+										{
+											PAETH_CODE( 0 )
+
+											DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+										}
+									}
+								}
+							break ;
+							}
+						}
+					}
+				}
+				break ;
+
+			case 2 :	// RGB
+				if( tRNS != NULL )
+				{
+					if( BitDepth == 8 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							switch( SrcP[ -1 ] )
+							{
+							case 0 :
+								for( j = 0 ; j < Width ; j ++, SrcP += 3, DestP += 4 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 1 ] ;
+									DestP[ 0 ] = SrcP[ 2 ] ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+								}
+								break ;
+
+							case 1 :
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 1 ] ;
+								DestP[ 0 ] = SrcP[ 2 ] ;
+								if( DestP[ 2 ] == tr &&
+									DestP[ 1 ] == tg &&
+									DestP[ 0 ] == tb )
+								{
+									DestP[ 3 ] = 0 ;
+								}
+								else
+								{
+									DestP[ 3 ] = 255 ;
+								}
+
+								SrcP += 3 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 3, DestP += 4 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 2 ] ) ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - 4 )[ 1 ] ) ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+								}
+								break ;
+
+							case 2 :
+								if( i == 0 )
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 3, DestP += 4 )
+									{
+										DestP[ 2 ] = SrcP[ 0 ] ;
+										DestP[ 1 ] = SrcP[ 1 ] ;
+										DestP[ 0 ] = SrcP[ 2 ] ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								else
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 3, DestP += 4 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 2 ] ) ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - DestPitch )[ 1 ] ) ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								break ;
+
+							case 3 :
+								if( i == 0 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 1 ] ;
+									DestP[ 0 ] = SrcP[ 2 ] ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+
+									SrcP += 3 ;
+									DestP += 4 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 3, DestP += 4 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - 4 )[ 2 ] / 2 ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( DestP - 4 )[ 1 ] / 2 ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - 4 )[ 0 ] / 2 ) ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								else
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+
+									SrcP += 3 ;
+									DestP += 4 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 3, DestP += 4 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 4 )[ 2 ] + ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( ( DestP - 4 )[ 1 ] + ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - 4 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								break ;
+
+							case 4 :
+								if( i == 0 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 1 ] ;
+									DestP[ 0 ] = SrcP[ 2 ] ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+
+									SrcP += 3 ;
+									DestP += 4 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 3, DestP += 4 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 2 ] ) ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - 4 )[ 1 ] ) ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								else
+								{
+									int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 2 ] ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( DestP - DestPitch )[ 1 ] ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - DestPitch )[ 0 ] ) ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+									SrcP += 3 ;
+									DestP += 4 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 3, DestP += 4 )
+									{
+										BYTE *UpP = DestP - DestPitch ;
+										BYTE *UpLeftP = DestP - DestPitch - 4 ;
+										BYTE *LeftP = DestP - 4 ;
+										PAETH_CODE( 2 )	DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+										PAETH_CODE( 1 )	DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + result ) ;
+										PAETH_CODE( 0 )	DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + result ) ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								break ;
+							}
+						}
+					}
+					else
+					if( BitDepth == 16 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							switch( SrcP[ -1 ] )
+							{
+							case 0 :
+								for( j = 0 ; j < Width ; j ++, SrcP += 6, DestP += 4 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 2 ] ;
+									DestP[ 0 ] = SrcP[ 4 ] ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+								}
+								break ;
+
+							case 1 :
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 2 ] ;
+								DestP[ 0 ] = SrcP[ 4 ] ;
+								if( DestP[ 2 ] == tr &&
+									DestP[ 1 ] == tg &&
+									DestP[ 0 ] == tb )
+								{
+									DestP[ 3 ] = 0 ;
+								}
+								else
+								{
+									DestP[ 3 ] = 255 ;
+								}
+
+								SrcP += 6 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 6, DestP += 4 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 2 ] ) ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 4 )[ 1 ] ) ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+								}
+								break ;
+
+							case 2 :
+								if( i == 0 )
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 6, DestP += 4 )
+									{
+										DestP[ 2 ] = SrcP[ 0 ] ;
+										DestP[ 1 ] = SrcP[ 2 ] ;
+										DestP[ 0 ] = SrcP[ 4 ] ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								else
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 6, DestP += 4 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 2 ] ) ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - DestPitch )[ 1 ] ) ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								break ;
+
+							case 3 :
+								if( i == 0 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 2 ] ;
+									DestP[ 0 ] = SrcP[ 4 ] ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+
+									SrcP += 6 ;
+									DestP += 4 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 6, DestP += 4 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - 4 )[ 2 ] / 2 ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - 4 )[ 1 ] / 2 ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( DestP - 4 )[ 0 ] / 2 ) ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								else
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+
+									SrcP += 6 ;
+									DestP += 4 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 6, DestP += 4 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 4 )[ 2 ] + ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - 4 )[ 1 ] + ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( ( DestP - 4 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								break ;
+
+							case 4 :
+								if( i == 0 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 2 ] ;
+									DestP[ 0 ] = SrcP[ 4 ] ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+
+									SrcP += 6 ;
+									DestP += 4 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 6, DestP += 4 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 2 ] ) ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 4 )[ 1 ] ) ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								else
+								{
+									int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 2 ] ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - DestPitch )[ 1 ] ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( DestP - DestPitch )[ 0 ] ) ;
+									if( DestP[ 2 ] == tr &&
+										DestP[ 1 ] == tg &&
+										DestP[ 0 ] == tb )
+									{
+										DestP[ 3 ] = 0 ;
+									}
+									else
+									{
+										DestP[ 3 ] = 255 ;
+									}
+									SrcP += 6 ;
+									DestP += 4 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 6, DestP += 4 )
+									{
+										BYTE *UpP = DestP - DestPitch ;
+										BYTE *UpLeftP = DestP - DestPitch - 4 ;
+										BYTE *LeftP = DestP - 4 ;
+										PAETH_CODE( 2 )	DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+										PAETH_CODE( 1 )	DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + result ) ;
+										PAETH_CODE( 0 )	DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + result ) ;
+										if( DestP[ 2 ] == tr &&
+											DestP[ 1 ] == tg &&
+											DestP[ 0 ] == tb )
+										{
+											DestP[ 3 ] = 0 ;
+										}
+										else
+										{
+											DestP[ 3 ] = 255 ;
+										}
+									}
+								}
+								break ;
+							}
+						}
+					}
+				}
+				else
+				{
+					if( BitDepth == 8 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							switch( SrcP[ -1 ] )
+							{
+							case 0 :
+								for( j = 0 ; j < Width ; j ++, SrcP += 3, DestP += 3 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 1 ] ;
+									DestP[ 0 ] = SrcP[ 2 ] ;
+								}
+								break ;
+
+							case 1 :
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 1 ] ;
+								DestP[ 0 ] = SrcP[ 2 ] ;
+
+								SrcP += 3 ;
+								DestP += 3 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 3, DestP += 3 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 3 )[ 2 ] ) ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - 3 )[ 1 ] ) ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 3 )[ 0 ] ) ) ;
+								}
+								break ;
+
+							case 2 :
+								if( i == 0 )
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 3, DestP += 3 )
+									{
+										DestP[ 2 ] = SrcP[ 0 ] ;
+										DestP[ 1 ] = SrcP[ 1 ] ;
+										DestP[ 0 ] = SrcP[ 2 ] ;
+									}
+								}
+								else
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 3, DestP += 3 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 2 ] ) ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - DestPitch )[ 1 ] ) ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+									}
+								}
+								break ;
+
+							case 3 :
+								if( i == 0 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 1 ] ;
+									DestP[ 0 ] = SrcP[ 2 ] ;
+
+									SrcP += 3 ;
+									DestP += 3 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 3, DestP += 3 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - 3 )[ 2 ] / 2 ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( DestP - 3 )[ 1 ] / 2 ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - 3 )[ 0 ] / 2 ) ;
+									}
+								}
+								else
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+
+									SrcP += 3 ;
+									DestP += 3 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 3, DestP += 3 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 3 )[ 2 ] + ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( ( DestP - 3 )[ 1 ] + ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - 3 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									}
+								}
+								break ;
+
+							case 4 :
+								if( i == 0 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 1 ] ;
+									DestP[ 0 ] = SrcP[ 2 ] ;
+
+									SrcP += 3 ;
+									DestP += 3 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 3, DestP += 3 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 3 )[ 2 ] ) ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - 3 )[ 1 ] ) ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 3 )[ 0 ] ) ) ;
+									}
+								}
+								else
+								{
+									int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 2 ] ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( DestP - DestPitch )[ 1 ] ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - DestPitch )[ 0 ] ) ;
+									SrcP += 3 ;
+									DestP += 3 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 3, DestP += 3 )
+									{
+										BYTE *UpP = DestP - DestPitch ;
+										BYTE *UpLeftP = DestP - DestPitch - 3 ;
+										BYTE *LeftP = DestP - 3 ;
+										PAETH_CODE( 2 )	DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+										PAETH_CODE( 1 )	DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + result ) ;
+										PAETH_CODE( 0 )	DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + result ) ;
+									}
+								}
+								break ;
+							}
+						}
+					}
+					else
+					if( BitDepth == 16 )
+					{
+						for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+						{
+							switch( SrcP[ -1 ] )
+							{
+							case 0 :
+								for( j = 0 ; j < Width ; j ++, SrcP += 6, DestP += 3 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 2 ] ;
+									DestP[ 0 ] = SrcP[ 4 ] ;
+								}
+								break ;
+
+							case 1 :
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 2 ] ;
+								DestP[ 0 ] = SrcP[ 4 ] ;
+
+								SrcP += 6 ;
+								DestP += 3 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 6, DestP += 3 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 3 )[ 2 ] ) ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 3 )[ 1 ] ) ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( int )( ( DestP - 3 )[ 0 ] ) ) ;
+								}
+								break ;
+
+							case 2 :
+								if( i == 0 )
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 6, DestP += 3 )
+									{
+										DestP[ 2 ] = SrcP[ 0 ] ;
+										DestP[ 1 ] = SrcP[ 2 ] ;
+										DestP[ 0 ] = SrcP[ 4 ] ;
+									}
+								}
+								else
+								{
+									for( j = 0 ; j < Width ; j ++, SrcP += 6, DestP += 3 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 2 ] ) ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - DestPitch )[ 1 ] ) ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+									}
+								}
+								break ;
+
+							case 3 :
+								if( i == 0 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 2 ] ;
+									DestP[ 0 ] = SrcP[ 4 ] ;
+
+									SrcP += 6 ;
+									DestP += 3 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 6, DestP += 3 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - 3 )[ 2 ] / 2 ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - 3 )[ 1 ] / 2 ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( DestP - 3 )[ 0 ] / 2 ) ;
+									}
+								}
+								else
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+
+									SrcP += 6 ;
+									DestP += 3 ;
+									for( j = 1 ; j < Width ; j ++, SrcP += 6, DestP += 3 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 3 )[ 2 ] + ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - 3 )[ 1 ] + ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( ( DestP - 3 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									}
+								}
+								break ;
+
+							case 4 :
+								if( i == 0 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 2 ] ;
+									DestP[ 0 ] = SrcP[ 4 ] ;
+
+									SrcP += 6 ;
+									DestP += 3 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 6, DestP += 3 )
+									{
+										DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 3 )[ 2 ] ) ) ;
+										DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 3 )[ 1 ] ) ) ;
+										DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( int )( ( DestP - 3 )[ 0 ] ) ) ;
+									}
+								}
+								else
+								{
+									int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 2 ] ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - DestPitch )[ 1 ] ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( DestP - DestPitch )[ 0 ] ) ;
+									SrcP += 6 ;
+									DestP += 3 ;
+
+									for( j = 1 ; j < Width ; j ++, SrcP += 6, DestP += 3 )
+									{
+										BYTE *UpP = DestP - DestPitch ;
+										BYTE *UpLeftP = DestP - DestPitch - 3 ;
+										BYTE *LeftP = DestP - 3 ;
+										PAETH_CODE( 2 )	DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+										PAETH_CODE( 1 )	DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + result ) ;
+										PAETH_CODE( 0 )	DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + result ) ;
+									}
+								}
+								break ;
+							}
+						}
+					}
+				}
+				break ;
+
+			case 4 :	// GRAY + A
+				if( BitDepth == 8 )
+				{
+					for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+					{
+						switch( SrcP[ -1 ] )
+						{
+						case 0 :
+							for( j = 0 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+							{
+								DestP[ 0 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 0 ] ;
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 3 ] = SrcP[ 1 ] ;
+							}
+							break ;
+
+						case 1 :
+							DestP[ 0 ] = SrcP[ 0 ] ;
+							DestP[ 1 ] = SrcP[ 0 ] ;
+							DestP[ 2 ] = SrcP[ 0 ] ;
+							DestP[ 3 ] = SrcP[ 1 ] ;
+
+							SrcP += 2 ;
+							DestP += 4 ;
+
+							for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+							{
+								DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - 4 )[ 3 ] ) ) ;
+							}
+							break ;
+
+						case 2 :
+							if( i == 0 )
+							{
+								for( j = 0 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 0 ] ;
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 3 ] = SrcP[ 1 ] ;
+								}
+							}
+							else
+							{
+								for( j = 0 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+								{
+									DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - DestPitch )[ 3 ] ) ) ;
+								}
+							}
+							break ;
+
+						case 3 :
+							if( i == 0 )
+							{
+								DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = SrcP[ 0 ] ;
+								DestP[ 3 ] = SrcP[ 1 ] ;
+
+								SrcP += 2 ;
+								DestP += 4 ;
+								for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+								{
+									DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - 4 )[ 0 ] / 2 ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( DestP - 4 )[ 3 ] / 2 ) ;
+								}
+							}
+							else
+							{
+								DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( ( DestP - DestPitch )[ 3 ] ) / 2 ) ;
+
+								SrcP += 2 ;
+								DestP += 4 ;
+								for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+								{
+									DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 4 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( ( DestP - 4 )[ 3 ] + ( DestP - DestPitch )[ 3 ] ) / 2 ) ;
+								}
+							}
+							break ;
+
+						case 4 :
+							if( i == 0 )
+							{
+								DestP[ 0 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 0 ] ;
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 3 ] = SrcP[ 1 ] ;
+
+								SrcP += 2 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+								{
+									DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - 4 )[ 3 ] ) ) ;
+								}
+							}
+							else
+							{
+								int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+								DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 0 ] ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( DestP - DestPitch )[ 3 ] ) ;
+								SrcP += 2 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 2, DestP += 4 )
+								{
+									BYTE *UpP = DestP - DestPitch ;
+									BYTE *UpLeftP = DestP - DestPitch - 4 ;
+									BYTE *LeftP = DestP - 4 ;
+									{
+										PAETH_CODE( 0 )
+
+										DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+									}
+									{
+										PAETH_CODE( 3 )
+
+										DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 1 ] + result ) ;
+									}
+								}
+							}
+							break ;
+						}
+					}
+				}
+				else
+				if( BitDepth == 16 )
+				{
+					for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+					{
+						switch( SrcP[ -1 ] )
+						{
+						case 0 :
+							for( j = 0 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+							{
+								DestP[ 0 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 0 ] ;
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 3 ] = SrcP[ 2 ] ;
+							}
+							break ;
+
+						case 1 :
+							DestP[ 0 ] = SrcP[ 0 ] ;
+							DestP[ 1 ] = SrcP[ 0 ] ;
+							DestP[ 2 ] = SrcP[ 0 ] ;
+							DestP[ 3 ] = SrcP[ 2 ] ;
+
+							SrcP += 4 ;
+							DestP += 4 ;
+
+							for( j = 1 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+							{
+								DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 4 )[ 3 ] ) ) ;
+							}
+							break ;
+
+						case 2 :
+							if( i == 0 )
+							{
+								for( j = 0 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									DestP[ 0 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 0 ] ;
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 3 ] = SrcP[ 2 ] ;
+								}
+							}
+							else
+							{
+								for( j = 0 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - DestPitch )[ 3 ] ) ) ;
+								}
+							}
+							break ;
+
+						case 3 :
+							if( i == 0 )
+							{
+								DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = SrcP[ 0 ] ;
+								DestP[ 3 ] = SrcP[ 2 ] ;
+
+								SrcP += 4 ;
+								DestP += 4 ;
+								for( j = 1 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - 4 )[ 0 ] / 2 ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - 4 )[ 3 ] / 2 ) ;
+								}
+							}
+							else
+							{
+								DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - DestPitch )[ 3 ] ) / 2 ) ;
+
+								SrcP += 4 ;
+								DestP += 4 ;
+								for( j = 1 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 4 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - 4 )[ 3 ] + ( DestP - DestPitch )[ 3 ] ) / 2 ) ;
+								}
+							}
+							break ;
+
+						case 4 :
+							if( i == 0 )
+							{
+								DestP[ 0 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 0 ] ;
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 3 ] = SrcP[ 2 ] ;
+
+								SrcP += 4 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 4 )[ 3 ] ) ) ;
+								}
+							}
+							else
+							{
+								int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+								DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 0 ] ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - DestPitch )[ 3 ] ) ;
+								SrcP += 4 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									BYTE *UpP = DestP - DestPitch ;
+									BYTE *UpLeftP = DestP - DestPitch - 4 ;
+									BYTE *LeftP = DestP - 4 ;
+									{
+										PAETH_CODE( 0 )
+
+										DestP[ 2 ] = DestP[ 1 ] = DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+									}
+									{
+										PAETH_CODE( 3 )
+
+										DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 2 ] + result ) ;
+									}
+								}
+							}
+							break ;
+						}
+					}
+				}
+				break ;
+
+			case 6 :	// RGBA
+				if( BitDepth == 8 )
+				{
+					for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+					{
+						switch( SrcP[ -1 ] )
+						{
+						case 0 :
+							for( j = 0 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+							{
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 1 ] ;
+								DestP[ 0 ] = SrcP[ 2 ] ;
+								DestP[ 3 ] = SrcP[ 3 ] ;
+							}
+							break ;
+
+						case 1 :
+							DestP[ 2 ] = SrcP[ 0 ] ;
+							DestP[ 1 ] = SrcP[ 1 ] ;
+							DestP[ 0 ] = SrcP[ 2 ] ;
+							DestP[ 3 ] = SrcP[ 3 ] ;
+
+							SrcP += 4 ;
+							DestP += 4 ;
+
+							for( j = 1 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+							{
+								DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 2 ] ) ) ;
+								DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - 4 )[ 1 ] ) ) ;
+								DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 3 ] + ( int )( ( DestP - 4 )[ 3 ] ) ) ;
+							}
+							break ;
+
+						case 2 :
+							if( i == 0 )
+							{
+								for( j = 0 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 1 ] ;
+									DestP[ 0 ] = SrcP[ 2 ] ;
+									DestP[ 3 ] = SrcP[ 3 ] ;
+								}
+							}
+							else
+							{
+								for( j = 0 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 2 ] ) ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - DestPitch )[ 1 ] ) ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 3 ] + ( int )( ( DestP - DestPitch )[ 3 ] ) ) ;
+								}
+							}
+							break ;
+
+						case 3 :
+							if( i == 0 )
+							{
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 1 ] ;
+								DestP[ 0 ] = SrcP[ 2 ] ;
+								DestP[ 3 ] = SrcP[ 3 ] ;
+
+								SrcP += 4 ;
+								DestP += 4 ;
+								for( j = 1 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 4 )[ 2 ] ) / 2 ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( ( DestP - 4 )[ 1 ] ) / 2 ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - 4 )[ 0 ] ) / 2 ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 3 ] + ( ( DestP - 4 )[ 3 ] ) / 2 ) ;
+								}
+							}
+							else
+							{
+								DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+								DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+								DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 3 ] + ( ( DestP - DestPitch )[ 3 ] ) / 2 ) ;
+
+								SrcP += 4 ;
+								DestP += 4 ;
+								for( j = 1 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 4 )[ 2 ] + ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( ( DestP - 4 )[ 1 ] + ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - 4 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 3 ] + ( ( DestP - 4 )[ 3 ] + ( DestP - DestPitch )[ 3 ] ) / 2 ) ;
+								}
+							}
+							break ;
+
+						case 4 :
+							if( i == 0 )
+							{
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 1 ] ;
+								DestP[ 0 ] = SrcP[ 2 ] ;
+								DestP[ 3 ] = SrcP[ 3 ] ;
+
+								SrcP += 4 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 2 ] ) ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( int )( ( DestP - 4 )[ 1 ] ) ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 3 ] + ( int )( ( DestP - 4 )[ 3 ] ) ) ;
+								}
+							}
+							else
+							{
+								int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+								DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 2 ] ) ;
+								DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + ( DestP - DestPitch )[ 1 ] ) ;
+								DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - DestPitch )[ 0 ] ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 3 ] + ( DestP - DestPitch )[ 3 ] ) ;
+								SrcP += 4 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 4, DestP += 4 )
+								{
+									BYTE *UpP = DestP - DestPitch ;
+									BYTE *UpLeftP = DestP - DestPitch - 4 ;
+									BYTE *LeftP = DestP - 4 ;
+									PAETH_CODE( 2 )	DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+									PAETH_CODE( 1 )	DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 1 ] + result ) ;
+									PAETH_CODE( 0 )	DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 2 ] + result ) ;
+									PAETH_CODE( 3 )	DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 3 ] + result ) ;
+								}
+							}
+							break ;
+						}
+					}
+				}
+				else
+				if( BitDepth == 16 )
+				{
+					for( i = 0 ; i < Height ; i ++, SrcP += SrcAddPitch, DestP += DestAddPitch )
+					{
+						switch( SrcP[ -1 ] )
+						{
+						case 0 :
+							for( j = 0 ; j < Width ; j ++, SrcP += 8, DestP += 4 )
+							{
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 2 ] ;
+								DestP[ 0 ] = SrcP[ 4 ] ;
+								DestP[ 3 ] = SrcP[ 6 ] ;
+							}
+							break ;
+
+						case 1 :
+							DestP[ 2 ] = SrcP[ 0 ] ;
+							DestP[ 1 ] = SrcP[ 2 ] ;
+							DestP[ 0 ] = SrcP[ 4 ] ;
+							DestP[ 3 ] = SrcP[ 6 ] ;
+
+							SrcP += 8 ;
+							DestP += 4 ;
+
+							for( j = 1 ; j < Width ; j ++, SrcP += 8, DestP += 4 )
+							{
+								DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 2 ] ) ) ;
+								DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 4 )[ 1 ] ) ) ;
+								DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 6 ] + ( int )( ( DestP - 4 )[ 3 ] ) ) ;
+							}
+							break ;
+
+						case 2 :
+							if( i == 0 )
+							{
+								for( j = 0 ; j < Width ; j ++, SrcP += 8, DestP += 4 )
+								{
+									DestP[ 2 ] = SrcP[ 0 ] ;
+									DestP[ 1 ] = SrcP[ 2 ] ;
+									DestP[ 0 ] = SrcP[ 4 ] ;
+									DestP[ 3 ] = SrcP[ 6 ] ;
+								}
+							}
+							else
+							{
+								for( j = 0 ; j < Width ; j ++, SrcP += 8, DestP += 4 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - DestPitch )[ 2 ] ) ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - DestPitch )[ 1 ] ) ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( int )( ( DestP - DestPitch )[ 0 ] ) ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 6 ] + ( int )( ( DestP - DestPitch )[ 3 ] ) ) ;
+								}
+							}
+							break ;
+
+						case 3 :
+							if( i == 0 )
+							{
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 2 ] ;
+								DestP[ 0 ] = SrcP[ 4 ] ;
+								DestP[ 3 ] = SrcP[ 6 ] ;
+
+								SrcP += 8 ;
+								DestP += 4 ;
+								for( j = 1 ; j < Width ; j ++, SrcP += 8, DestP += 4 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - 4 )[ 2 ] / 2 ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - 4 )[ 1 ] / 2 ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( DestP - 4 )[ 0 ] / 2 ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 6 ] + ( DestP - 4 )[ 3 ] / 2 ) ;
+								}
+							}
+							else
+							{
+								DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+								DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+								DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 6 ] + ( ( DestP - DestPitch )[ 3 ] ) / 2 ) ;
+
+								SrcP += 8 ;
+								DestP += 4 ;
+								for( j = 1 ; j < Width ; j ++, SrcP += 8, DestP += 4 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( ( DestP - 4 )[ 2 ] + ( DestP - DestPitch )[ 2 ] ) / 2 ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( ( DestP - 4 )[ 1 ] + ( DestP - DestPitch )[ 1 ] ) / 2 ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( ( DestP - 4 )[ 0 ] + ( DestP - DestPitch )[ 0 ] ) / 2 ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 6 ] + ( ( DestP - 4 )[ 3 ] + ( DestP - DestPitch )[ 3 ] ) / 2 ) ;
+								}
+							}
+							break ;
+
+						case 4 :
+							if( i == 0 )
+							{
+								DestP[ 2 ] = SrcP[ 0 ] ;
+								DestP[ 1 ] = SrcP[ 2 ] ;
+								DestP[ 0 ] = SrcP[ 4 ] ;
+								DestP[ 3 ] = SrcP[ 6 ] ;
+
+								SrcP += 8 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 8, DestP += 4 )
+								{
+									DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( int )( ( DestP - 4 )[ 2 ] ) ) ;
+									DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( int )( ( DestP - 4 )[ 1 ] ) ) ;
+									DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( int )( ( DestP - 4 )[ 0 ] ) ) ;
+									DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 6 ] + ( int )( ( DestP - 4 )[ 3 ] ) ) ;
+								}
+							}
+							else
+							{
+								int left, up, upleft, abs_up_upleft, abs_left_upleft, left_upleft, up_upleft, abs_up_upleft_left_upleft, result ;
+
+								DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + ( DestP - DestPitch )[ 2 ] ) ;
+								DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + ( DestP - DestPitch )[ 1 ] ) ;
+								DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + ( DestP - DestPitch )[ 0 ] ) ;
+								DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 6 ] + ( DestP - DestPitch )[ 3 ] ) ;
+								SrcP += 8 ;
+								DestP += 4 ;
+
+								for( j = 1 ; j < Width ; j ++, SrcP += 8, DestP += 4 )
+								{
+									BYTE *UpP = DestP - DestPitch ;
+									BYTE *UpLeftP = DestP - DestPitch - 4 ;
+									BYTE *LeftP = DestP - 4 ;
+									PAETH_CODE( 2 )	DestP[ 2 ] = ( BYTE )( ( int )SrcP[ 0 ] + result ) ;
+									PAETH_CODE( 1 )	DestP[ 1 ] = ( BYTE )( ( int )SrcP[ 2 ] + result ) ;
+									PAETH_CODE( 0 )	DestP[ 0 ] = ( BYTE )( ( int )SrcP[ 4 ] + result ) ;
+									PAETH_CODE( 3 )	DestP[ 3 ] = ( BYTE )( ( int )SrcP[ 6 ] + result ) ;
+								}
+							}
+							break ;
+						}
+					}
+				}
+				break ;
+			}
+		}
+
+		if( FilterImage != NULL )
+		{
+			DXFREE( FilterImage ) ;
+			FilterImage = NULL ;
+		}
+	}
+
+	return 0 ;
+
+ERR :
+	if( ZStreamInit )
+	{
+		inflateEnd( &ZStream ) ;
+		_MEMSET( &ZStream, 0, sizeof( ZStream ) ) ;
+		ZStreamInit = 0 ;
+	}
+
+	if( FilterImage != NULL )
+	{
+		DXFREE( FilterImage ) ;
+		FilterImage = NULL ;
+	}
+
+	if( BaseImage->GraphData != NULL )
+	{
+		DXFREE( BaseImage->GraphData ) ;
+		BaseImage->GraphData = NULL ;
+	}
+
+	return -1 ;
+}
+#undef PAETH_CODE
+#undef READ_4BYTE
+
+
 #ifndef DX_NON_SAVEFUNCTION
 
 static void png_general_flush( png_structp /* png_ptr */ )
@@ -905,7 +3486,7 @@ extern int SaveBaseImageToPngBase( const char *pFilePathW, const char *pFilePath
 	DWORD_PTR fp ;
 	png_structp png_ptr;
 	png_infop   info_ptr;
-	png_bytepp  buffer;
+	png_bytepp  buffer = NULL ;
 	png_bytep   sample;
 	int r, g, b, a, i, j;
 	
@@ -1047,7 +3628,6 @@ ERR:
 #ifndef DX_NON_JPEGREAD
 
 // (殆ど jdatasrc.c の流用)
-#include "jinclude.h"
 #include "jpeglib.h"
 #include "jerror.h"
 
@@ -1169,11 +3749,11 @@ jpeg_general_src (j_decompress_ptr cinfo, STREAMDATA *Data )
 		/* first time for this JPEG object? */
 		cinfo->src = (struct jpeg_source_mgr *)
 						(*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
-						SIZEOF(my_source_general_mgr));
+						sizeof(my_source_general_mgr));
 		src = (my_src_general_ptr) cinfo->src;
 		src->buffer = (JOCTET *)
 					(*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
-					INPUT_BUF_SIZE * SIZEOF(JOCTET));
+					INPUT_BUF_SIZE * sizeof(JOCTET));
 	}
 
 	// 関数ポインタなどをセットする
@@ -1216,7 +3796,7 @@ extern int LoadJpegImageBase( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetForm
 	unsigned char *pImg ;
 	unsigned int OutPitch ;
 	unsigned char Check ;
-	unsigned int PixelByte ;
+	unsigned int PixelByte = 0 ;
 
 	// 先頭の１バイトが 0xFF ではなかったらJPEGファイルではない
 	STREAD( &Check, 1, 1, Src ) ;
@@ -1323,30 +3903,36 @@ extern int LoadJpegImageBase( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetForm
 			(void) jpeg_read_scanlines(&cinfo, buffer, 1);
 
 			// データを出力データに変換して、またはそのまま転送
-			for( i = 0 ; i < InPitch ; )
+			switch( cinfo.output_components )
 			{
-				switch( cinfo.output_components )
+			case 1 :	// グレースケール
+				for( i = 0 ; i < InPitch ; )
 				{
-				case 1 :	// グレースケール
 					*pImg = *( buffer[0] + i ) ; pImg ++ ;
 					i ++ ;
-					break ;
+				}
+				break ;
 
-				case 3 :	// RGB
+			case 3 :	// RGB
+				for( i = 0 ; i < InPitch ; )
+				{
 					*pImg = *( buffer[0] + i + 2 ) ; pImg ++ ;
 					*pImg = *( buffer[0] + i + 1 ) ; pImg ++ ;
 					*pImg = *( buffer[0] + i     ) ; pImg ++ ;
 					i += 3 ;
-					break ;
+				}
+				break ;
 
-				case 4 :	// CMYK?
+			case 4 :	// CMYK?
+				for( i = 0 ; i < InPitch ; )
+				{
 					pImg[ 0 ] = ( unsigned char )( *( buffer[0] + i + 2 ) * *( buffer[0] + i + 3 ) / 255 ) ;
 					pImg[ 1 ] = ( unsigned char )( *( buffer[0] + i + 1 ) * *( buffer[0] + i + 3 ) / 255 ) ;
 					pImg[ 2 ] = ( unsigned char )( *( buffer[0] + i + 0 ) * *( buffer[0] + i + 3 ) / 255 ) ;
 					pImg += 3 ;
 					i += 4 ;
-					break ;
 				}
+				break ;
 			}
 		}
 
@@ -1411,7 +3997,7 @@ init_destination_general (j_compress_ptr cinfo)
   /* Allocate the output buffer --- it will be released when done with image */
   dest->buffer = (JOCTET *)
       (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
-				  OUTPUT_BUF_SIZE * SIZEOF(JOCTET));
+				  OUTPUT_BUF_SIZE * sizeof(JOCTET));
 
   dest->pub.next_output_byte = dest->buffer;
   dest->pub.free_in_buffer = OUTPUT_BUF_SIZE;
@@ -1456,7 +4042,7 @@ jpeg_general_dest (j_compress_ptr cinfo, DWORD_PTR outfile)
   if (cinfo->dest == NULL) {	/* first time for this JPEG object? */
     cinfo->dest = (struct jpeg_destination_mgr *)
       (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
-				  SIZEOF(my_destination_mgr));
+				  sizeof(my_destination_mgr));
   }
 
   dest = (my_dest_ptr) cinfo->dest;

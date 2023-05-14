@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		通信関連プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -268,7 +268,7 @@ extern 	int InitializeNetWork( HWND WindowHandle )
 	ErrorNetLogTabAdd() ;
 
 	// ハンドル管理情報の初期化
-	InitializeHandleManage( DX_HANDLETYPE_NETWORK, sizeof( SOCKETDATA ), MAX_SOCKET_NUM, InitializeNetworkHandle, TerminateNetworkHandle, L"Network" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_NETWORK, sizeof( SOCKETDATA ), MAX_SOCKET_NUM, InitializeNetworkHandle, TerminateNetworkHandle, NULL, L"Network" ) ;
 
 	// WinSockets初期化
 	if( WinAPIData.WinSockFunc.WSAStartupFunc( MAKEWORD( 2 , 2 ), &wsaData ) != 0 ) 
