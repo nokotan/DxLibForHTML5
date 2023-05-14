@@ -967,6 +967,9 @@ static EM_BOOL onMouseWheel(int eventType, const EmscriptenWheelEvent *wheelEven
 		InputSysData.PF.InputInfo[ InputNo ].AxisX			= wheelEvent->mouse.targetX ;
 		InputSysData.PF.InputInfo[ InputNo ].AxisY			= wheelEvent->mouse.targetY ;
 		InputSysData.PF.InputInfo[ InputNo ].Wheel			= wheelEvent->deltaX ;
+
+		InputSysData.PF.MouseX = InputSysData.PF.InputInfo[ InputNo ].AxisX ;
+		InputSysData.PF.MouseY = InputSysData.PF.InputInfo[ InputNo ].AxisY ;
 	
 		InputSysData.MouseMoveZ  += InputSysData.PF.InputInfo[ InputNo ].Wheel ;
 
