@@ -8,7 +8,7 @@ export DevelopBranch="update_to_${DxLibVersion}"
 
 export WorkingBranch=work_on_original
 
-source ./Utils.sh
+source ./Util.sh
 
 #
 # Support Functions
@@ -49,10 +49,10 @@ function do_init() {
 }
 
 function check_update_required() {
-    local GitHubVersion=$(node ./FetchLatestTag.js)
+    local GitHubVersion=$(bash ./FetchLatestTag.sh)
 
     if [ $? -ne 0 ]; then
-        err_exit "FetchLatestTag.js failed!"
+        err_exit "FetchLatestTag.sh failed!"
     fi
 
     warn "DxLibVersion: ${DxLibVersion}, GitHubVersion: ${GitHubVersion}"
@@ -68,9 +68,9 @@ function check_update_required() {
 function do_update() {
     download_and_unzip_dxlib
 
-    bash ./UpdateFromCommon.sh
-    bash ./UpdateFromAndroid.sh
-    bash ./UpdateFromiOS.sh
+    source ./UpdateFromCommon.sh
+    source ./UpdateFromAndroid.sh
+    source ./UpdateFromiOS.sh
 }
 
 function post_update() {
@@ -84,9 +84,8 @@ function post_update() {
 # Main Logic
 #
 
-do_init
-
 if check_update_required; then
+    do_init
     do_update
     post_update
 fi
