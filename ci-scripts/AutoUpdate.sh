@@ -2,7 +2,7 @@
 
 LANG="ja_JP.SJIS"
 
-DxLibVersion=$(./FetchDxLibVersion.js)
+DxLibVersion=$(node ./FetchDxLibVersion.js)
 OriginalBranch=original
 DevelopBranch="update_to_${DxLibVersion}"
 
@@ -44,8 +44,8 @@ function err_exit() {
 #
 
 function git_init_user() {
-    git config --global user.name "DxLib Update Bot"
-    git config --global user.mail "kamenokonokotan@gmail.com"
+    git config user.name "DxLib Update Bot"
+    git config user.mail "kamenokonokotan@gmail.com"
 }
 
 function download_and_unzip_dxlib() {
@@ -72,7 +72,7 @@ function create_patch_commit_of_common_part() {
     git switch ${WorkingBranch} --force
 
     # Commit1: cherry-pick preparation
-    sed -i .tmp "s/extern/extern DXLIBAPI/" ../DxLib.h
+    sed -i.tmp -e "s/extern/extern DXLIBAPI/" ../DxLib.h
     rm ../DxLib.h.tmp
 
     git stage ../DxLib.h
@@ -80,7 +80,7 @@ function create_patch_commit_of_common_part() {
 
     # Commit2: cherry-picked commit
     cp DxLibMake/* ..
-    sed -i .tmp "s/extern/extern DXLIBAPI/" ../DxLib.h
+    sed -i.tmp -e "s/extern/extern DXLIBAPI/" ../DxLib.h
     rm ../DxLib.h.tmp
 
     find .. -maxdepth 1 -type f | xargs -I{} git stage {}
@@ -93,7 +93,7 @@ function apply_to_develop_branch() {
     info "### apply_to_develop_branch"
 
     git switch ${DevelopBranch} --force
-    git cherry-pick $1
+    git cherry-pick $1 --allow-empty
 
     if [ $? -ne 0 ]; then
         err_exit "Git cherry-pick failed!"
@@ -122,7 +122,7 @@ function create_patch_commit_of_android_part() {
     mkdir ../HTML5 || true
 
     # Commit1: cherry-pick preparation
-    ./CopyFromAndroid.js
+    node ./CopyFromAndroid.js
 
     if [ $? -ne 0 ]; then
         err_exit "CopyFromAndroid.js failed!"
@@ -134,7 +134,7 @@ function create_patch_commit_of_android_part() {
 
     # Commit2: cherry-picked commit
     cp DxLibMake/Android/* ../Android
-    ./CopyFromAndroid.js
+    node ./CopyFromAndroid.js
 
     if [ $? -ne 0 ]; then
         err_exit "CopyFromAndroid.js failed!"
@@ -153,7 +153,7 @@ function create_patch_commit_of_ios_part() {
     git switch ${WorkingBranch} --force
 
     # Commit1: cherry-pick preparation
-    ./CopyFromiOS.js
+    node ./CopyFromiOS.js
 
     if [ $? -ne 0 ]; then
         err_exit "CopyFromiOS.js failed!"
@@ -165,7 +165,7 @@ function create_patch_commit_of_ios_part() {
 
     # Commit2: cherry-picked commit
     cp DxLibMake/iOS/* ../iOS
-    ./CopyFromiOS.js
+    node ./CopyFromiOS.js
 
     if [ $? -ne 0 ]; then
         err_exit "CopyFromiOS.js failed!"
@@ -195,20 +195,6 @@ function update_original_branch_of_platform_dependent_part() {
     info "### update_original_branch_of_platform_dependent_part done"
 }
 
-function create_pull_request() {
-    curl \
-        -X POST \
-        -H "Authorization: token ${GITHUB_TOKEN}" \
-        -H "Content-Type: application/json" \
-        -d "{
-                \"title\":\"update to ${DxLibVersion}\",
-                \"head\":\"${DevelopBranch}\",
-                \"base\":\"develop\",
-                \"body\":\"automated update to ${DxLibVersion}\"
-            }" \
-        https://api.github.com/repos/nokotan/DxLibForHTML5/pulls
-}
-
 
 
 #
@@ -226,15 +212,15 @@ function do_init() {
     git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     git fetch
 
-    git switch ${OriginalBranch} --force
+    git switch ${OriginalBranch}   
     git switch -c ${WorkingBranch}
 
-    git switch develop --force
+    git switch develop   
     git switch -c ${DevelopBranch}
 }
 
 function check_update_required() {
-    local GitHubVersion=$(./FetchLatestTag.js)
+    local GitHubVersion=$(node ./FetchLatestTag.js)
 
     if [ $? -ne 0 ]; then
         err_exit "FetchLatestTag.js failed!"
