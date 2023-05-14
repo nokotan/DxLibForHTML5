@@ -54,6 +54,7 @@ jobs:
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
           asset_path: DxLibForHTML5.zip
+          asset_name: DxLibForHTML5.zip
           asset_content_type: application/zip
 
       - name: Upload Release Asset (zip)
@@ -64,4 +65,5 @@ jobs:
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
           asset_path: DxLibForHTML5.tgz
+          asset_name: DxLibForHTML5.tgz
           asset_content_type: application/zip

@@ -23,3 +23,7 @@ async function Main()
 }
 
 Main();
+
+module.exports = {
+    FetchVersion
+};
