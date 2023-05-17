@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		サウンドプログラムヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -225,6 +225,7 @@ struct STREAMPLAYDATA
 	BYTE						LoopPositionValidFlag ;									// ループ位置が有効フラグ
 	BYTE						AllPlayFlag ;											// 全体を通して一度でも最後でも再生したかフラグ
 	ULONGLONG					LoopAfterCompPlayWaveLength ;							// ループ後の CompPlayWaveLength に加算する値
+	int							IsNextLoopEndStop ;										// 次回のループ終了時に音を止める指定かのフラグ
 	
 	DWORD						EndOffset ;												// 終了オフセット
 	DWORD						EndStartOffset ;										// 終了処理開始オフセット
@@ -252,6 +253,9 @@ struct SOUND
 	int							Is3DSound ;												// ３Ｄサウンドかどうか( TRUE:３Ｄサウンド  FALSE:非３Ｄサウンド )
 	int							AddPlay3DSoundList ;									// Play3DSoundList がリストに追加されているかどうか( TRUE:追加されている  FALSE:追加されていない )
 	HANDLELIST					Play3DSoundList ;										// 再生中の３Ｄサウンドのリスト処理用構造体
+
+	int							AddPlaySoundList ;										// PlaySoundList がリストに追加されているかどうか( TRUE:追加されている  FALSE:追加されていない )
+	HANDLELIST					PlaySoundList ;											// 再生中のサウンドのリスト処理用構造体
 
 	int							PlayFinishDeleteFlag ;									// サウンドの再生が終了したら削除するかどうか( TRUE:削除する  FALSE:削除しない )
 	HANDLELIST					PlayFinishDeleteSoundList ;								// サウンドの再生が終了したら削除するサウンドのリスト処理用構造体
@@ -388,6 +392,10 @@ struct SOUNDSYSTEMDATA
 	SIMPLELIST					PlaySoundBufferListLast ;				// 再生中サウンドバッファリストの終端
 	DX_CRITICAL_SECTION			PlaySoundBufferListCriticalSection ;	// 再生中サウンドバッファリストアクセス時用クリティカルセクション
 
+	HANDLELIST					PlaySoundListFirst ;			// 再生中のサウンドハンドルリストの先頭
+	HANDLELIST					PlaySoundListLast ;				// 再生中のサウンドハンドルリストの終端
+	DX_CRITICAL_SECTION			PlaySoundListCriticalSection ;	// 再生中のサウンドハンドルリストアクセス時用クリティカルセクション
+
 	HANDLELIST					StreamSoundListFirst ;			// ストリームサウンドハンドルリストの先頭
 	HANDLELIST					StreamSoundListLast ;			// ストリームサウンドハンドルリストの終端
 	DX_CRITICAL_SECTION			StreamSoundListCriticalSection ;// ストリームサウンドハンドルリストアクセス時用クリティカルセクション
@@ -429,6 +437,7 @@ struct SOUNDSYSTEMDATA
 	int							SelfMixingScalingSampleCount ;	// 自前ミキシングでスケーリングを行うカウンタ
 
 	int							EnableSelfMixingFlag ;			// 自前ミキシングを行うかどうか
+	int							EnableChangeLoopFlag ;			// 再生途中の Loopフラグの変更に対応しているかどうか
 	int							EnableSoundCaptureFlag ;		// サウンドキャプチャを前提とした動作をする
 #ifndef DX_NON_SAVEFUNCTION
 	int							SoundCaptureFlag ;				// サウンドキャプチャを実行している最中かどうかのフラグ(TRUE:最中 FASLE:違う)
@@ -534,6 +543,7 @@ extern	void	InitLoadSoundGParam( LOADSOUND_GPARAM *GParam ) ;														// LO
 
 extern	int		InitializeSoundHandle( HANDLEINFO *HandleInfo ) ;														// サウンドハンドルの初期化
 extern	int		TerminateSoundHandle( HANDLEINFO *HandleInfo ) ;														// サウンドハンドルの後始末
+extern	int		DumpInfoSoundHandle( HANDLEINFO *HandleInfo ) ;															// サウンドハンドルの情報出力
 
 extern	int		LoadSoundMemBase_UseGParam(              LOADSOUND_GPARAM *GParam, const wchar_t *WaveName, int BufferNum, int UnionHandle, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;																		// LoadSoundMemBase のグローバル変数にアクセスしないバージョン
 extern	int		LoadSoundMemByMemImageBase_UseGParam(    LOADSOUND_GPARAM *GParam, int CreateSoundHandle, int SoundHandle, const void *FileImageBuffer, size_t ImageSize, int BufferNum, int UnionHandle = -1, int ASyncLoadFlag = FALSE, int ASyncThread = FALSE ) ;	// LoadSoundMemByMemImageBase のグローバル変数にアクセスしないバージョン
@@ -559,6 +569,7 @@ extern	int		SetStreamSoundCurrentPosition_UseGParam( LONGLONG Byte, int SoundHan
 extern	int		Refresh3DSoundParamAll() ;																				// 再生中のすべての３Ｄサウンドのパラメータを更新する
 
 extern	int		ProcessPlayFinishDeleteSoundMemAll( void ) ;															// 再生が終了したらサウンドハンドルを削除するサウンドの処理を行う
+extern	int		ProcessPlaySoundMemAll( void ) ;																		// サウンドを再生しているサウンドハンドルに対する処理を行う
 extern	int		ProcessPlay3DSoundMemAll( void ) ;																		// ３Ｄサウンドを再生しているサウンドハンドルに対する処理を行う
 
 extern	int		ProcessSoundSystem( void ) ;																			// サウンドシステムで周期的に行う処理用の関数

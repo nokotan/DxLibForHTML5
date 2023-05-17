@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＰＭＤモデルデータ読み込みプログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -1411,7 +1411,7 @@ PHYSICSDATAREADEND :
 					DisablePhysicsFlag,
 					BoneInfoDim,
 					PmdBoneNum,
-					IKInfoFirst,
+					LoadParam->GParam.LoadModelToIgnoreIK ? NULL : IKInfoFirst,
 	#ifndef DX_NON_BULLET_PHYSICS
 					ValidPhysics && LoadParam->GParam.LoadModelToUsePhysicsMode == DX_LOADMODEL_PHYSICS_LOADCALC ? &MLPhysicsInfo : NULL,
 	#endif
@@ -2630,14 +2630,14 @@ static int _MV1LoadModelToVMD_PMD(
 						// すべてのフレームの現在のフレームでのパラメータを算出する
 						for( j = 0 ; j < PmdBoneNum ; j ++ )
 						{
-							if( PmdBoneInfo[ j ].IsIK == FALSE )
+							if( PmdBoneInfo[ j ].IsIK == FALSE && PmdIKInfoFirst != NULL )
 							{
 								MV1LoadModelToPMD_SetupOneBoneMatrixFormAnimKey( &PmdBoneInfo[ j ], TimeNo, LoopNo, MaxTime, TimeDivLoopCount == 0 ? FALSE : ValidNextRate, NextRate ) ;
 							}
 						}
 
 						// 行列の計算
-						MV1LoadModelToPMD_SetupMatrix( PmdBoneInfo, PmdBoneNum, FALSE, TRUE ) ;
+						MV1LoadModelToPMD_SetupMatrix( PmdBoneInfo, PmdBoneNum, FALSE, PmdIKInfoFirst != NULL ? TRUE : FALSE ) ;
 					}
 					else
 					{
@@ -2690,14 +2690,14 @@ static int _MV1LoadModelToVMD_PMD(
 					BoneInfo = PmdBoneInfo ;
 					for( j = 0 ; j < PmdBoneNum ; j ++, BoneInfo ++ )
 					{
-						if( BoneInfo->IsIK )
+						if( BoneInfo->IsIK && PmdIKInfoFirst != NULL )
 						{
 							BoneInfo->KeyPosTime[ TimeNo ] = ( float )TimeNo / 2.0f ;
 							BoneInfo->KeyRotTime[ TimeNo ] = ( float )TimeNo / 2.0f ;
 						}
 					}
 
-					if( ValidNextRate || FPS60 || ( FPS60 == false && TimeNo % 2 == 0 ) )
+					if( ( ValidNextRate || FPS60 || ( FPS60 == false && TimeNo % 2 == 0 ) ) && PmdIKInfoFirst != NULL )
 					{
 						// ＩＫに関わっているボーン又はＩＫの影響しないＩＫボーンの子ボーンのキーを保存
 						BoneInfo = PmdBoneInfo ;
@@ -3125,7 +3125,7 @@ static int _MV1LoadModelToVMD_PMD(
 #ifndef DX_NON_BULLET_PHYSICS
 				if( MLPhysicsInfo && BoneInfo->IsPhysics == TRUE && CheckDisablePhysicsAnim_PMDPhysicsInfo( MLPhysicsInfo, BoneInfo->PhysicsIndex ) == false ) continue ;
 #endif
-				if( BoneInfo->IsIKChild ) continue ;
+				if( BoneInfo->IsIKChild && PmdIKInfoFirst != NULL ) continue ;
 
 				if( BoneInfo->Anim == NULL ) continue ;
 

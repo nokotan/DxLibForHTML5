@@ -2,7 +2,7 @@
 //
 //		ＤＸライブラリ　コンパイルコンフィグヘッダファイル
 //
-//				Ver 3.23 
+//				Ver 3.24b
 //
 // ----------------------------------------------------------------------------
 
@@ -56,11 +56,11 @@
 
 // ＪＰＥＧ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-#define DX_NON_JPEGREAD
+// #define DX_NON_JPEGREAD
 
 // ＰＮＧ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-#define DX_NON_PNGREAD
+// #define DX_NON_PNGREAD
 
 // ＴＩＦＦ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
@@ -151,13 +151,13 @@
 //#define DX_NON_PRINTF_DX
 
 // 非同期読み込みを無効にする場合は次のコメントを外して下さい
-#define DX_NON_ASYNCLOAD
+//#define DX_NON_ASYNCLOAD
 
 // ファイル保存機能を無効にする場合は次のコメントを外して下さい
 //#define DX_NON_SAVEFUNCTION
 
 // ソフトウェアで扱うイメージを無効にする場合は次のコメントを外して下さい
-#define DX_NON_SOFTIMAGE
+// #define DX_NON_SOFTIMAGE
 
 // フォント描画機能を無効にする場合は次のコメントを外して下さい
 //#define DX_NON_FONT
@@ -172,7 +172,7 @@
 //#define DX_NON_INPUT
 
 // マルチスレッドを使用しない場合は次のコメントを外してください
-#define DX_NON_MULTITHREAD
+//#define DX_NON_MULTITHREAD
 
 // 各ハンドルのエラーチェックを無効にする場合は次のコメントを外してください( 若干高速化される代わりに無効なハンドルを関数に渡すと即不正なメモリアクセスエラーが発生するようになります )
 // #define DX_NON_HANDLE_ERROR_CHECK
@@ -191,6 +191,9 @@
 
 // Live2D Cubism 4 関連の機能を使用しない場合は次のコメントを外してください
 #define DX_NON_LIVE2D_CUBISM4
+
+// ウィンドウを作成しない場合は次のコメントを外してください
+//#define DX_NON_WINDOW
 
 #ifndef __cplusplus
 	#ifndef DX_COMPILE_TYPE_C_LANGUAGE
@@ -249,9 +252,9 @@
 #define DX_NON_DIRECT3D9
 #endif
 
-#ifdef EMSCRIPTEN
-#define DX_NON_MULTITHREAD
-#endif
+// #ifdef EMSCRIPTEN
+// #define DX_NON_MULTITHREAD
+// #endif
 
 
 
@@ -272,7 +275,23 @@
 #define DX_NON_OPUS
 #define DX_NON_MODEL
 #define DX_NON_SHADERCODE_BINARY
+#define DX_NON_INPUTSTRING
 #endif
+
+#ifdef DX_NON_WINDOW
+	#ifndef DX_NON_GRAPHICS
+		#define DX_NON_GRAPHICS
+	#endif
+	#ifndef DX_NON_SOUND
+		#define DX_NON_SOUND
+	#endif
+	#ifndef DX_NON_INPUT
+		#define DX_NON_INPUT
+	#endif
+	#ifndef DX_NON_NETWORK
+		#define DX_NON_NETWORK
+	#endif
+#endif // DX_NON_WINDOW
 
 #ifdef DX_NON_GRAPHICS
 	#ifndef DX_NON_FONT

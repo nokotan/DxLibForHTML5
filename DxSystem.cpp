@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		システムプログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -1209,6 +1209,12 @@ extern int NS_GetRand( int RandMax )
 	return Result ;
 }
 
+// メルセンヌ・ツイスターアルゴリズムで生成された乱数値を無加工で取得する
+extern DWORD NS_GetMersenneTwisterRand( void )
+{
+	return randMT() ;
+}
+
 // 乱数ハンドルを作成する( 戻り値　0以外:乱数ハンドル　0:エラー )
 extern DWORD_PTR NS_CreateRandHandle( int Seed )
 {
@@ -1275,6 +1281,12 @@ extern int NS_GetRandHandle( DWORD_PTR RandHandle, int RandMax )
 	Result = ( int )( ( ( LONGLONG )randMTData( ( MERSENNE_TWISTER_DATA * )RandHandle ) * RandMaxLL ) >> 32 ) ;
 
 	return Result ;
+}
+
+// 乱数ハンドルを使用してメルセンヌ・ツイスターアルゴリズムで生成された乱数値を無加工で取得する
+extern DWORD NS_GetMersenneTwisterRandHandle( DWORD_PTR RandHandle )
+{
+	return randMTData( ( MERSENNE_TWISTER_DATA * )RandHandle ) ;
 }
 
 #else // DX_NON_MERSENNE_TWISTER

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		HTML5用入力情報プログラムヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -76,6 +76,15 @@ struct INPUT_HTML5_DEVICE_INFO
 	float					Wheel ;
 	float					VScroll ;
 	float					HScroll ;
+	float					Pressure ;
+	float					Size ;
+	float					TouchMajor ;
+	float					TouchMinor ;
+	float					ToolMajor ;
+	float					ToolMinor ;
+	float					Orientation ;
+	float					Tilt ;
+	float					Distance ;
 } ;
 
 // 入力システム用環境依存データ構造体型
@@ -89,6 +98,8 @@ struct INPUTSYSTEMDATA_PF
 	int							GamePadSourceNum ;											// ゲームパッドの数
 	int							GamePadSourceNoToInputInfoTable[ HTML5_DEVICE_MAX_NUM ] ;	// ゲームパッドのナンバーと InputInfoTable の対応テーブル 
 	TOUCHINPUTDATA				TouchInputData ;
+	float						MouseX ;													// マウスカーソルのX座標
+	float						MouseY ;													// マウスカーソルのY座標
 } ;
 
 // 内部大域変数宣言 --------------------------------------------------------------

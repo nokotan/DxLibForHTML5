@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android専用関数プロトタイプ宣言用ヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -27,6 +27,15 @@ namespace DxLib
 
 // アプリで使用している NativeActivity を取得する
 extern const ANativeActivity *GetNativeActivity( void ) ;
+
+// アプリの ANativeWindow を取得する
+extern const ANativeWindow *GetNativeWindow( void ) ;
+
+// アプリの入力イベントをフックするコールバック関数を登録する 
+// CallbackFunction : 入力イベント発生時に呼ばれるコールバック関数、NULL を渡すと設定解除
+// InputEvent : 発生した入力イベントの AInputEvent
+// Data : コールバック関数に渡すアドレス、不要な場合は NULL
+extern int SetAndroidInputEventFookFunction( int32_t ( *CallbackFunction )( AInputEvent *InputEvent, void *Data ), void *Data ) ;
 
 // Android の APIレベルを取得する
 extern int GetAndroidAPILevel( void ) ;
@@ -61,6 +70,12 @@ extern int GetAndroidDisplayResolution( int *SizeX, int *SizeY ) ;
 
 // ディスプレイを本体設定に従って時間経過でスリープ状態になることを許可するかどうかを設定する( Flag  TRUE = スリープ状態になることを許可しない  FALSE = スリープ状態を許可する( デフォルト ) )
 extern int SetKeepScreenOnFlag( int Flag ) ;
+
+// ディスプレイカットアウト領域の数を取得する
+extern int GetDisplayCutoutRectCount( void ) ;
+
+// ディスプレイカットアウト領域の矩形を取得する( 引数の No はカットアウト領域の番号 )
+extern RECT GetDisplayCutoutRect( int No ) ;
 
 // 加速度センサーのベクトル値を取得する
 extern VECTOR GetAccelerometerVector( void ) ;

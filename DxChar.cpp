@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字コード関係プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // ----------------------------------------------------------------------------
 
@@ -1926,6 +1926,11 @@ __inline void ConvString_DestCode_SHIFTJIS( BYTE *&DestStr, DWORD &DestCode, siz
 		DestSize += 2 ;
 	}
 	else
+	if( CharCode == 0 && DestCode != 0 )
+	{
+		// 変換元の文字コードが変換先の文字フォーマットに存在しなかった場合は何もしない
+	}
+	else
 	{
 		if( DestStr != NULL )
 		{
@@ -3170,6 +3175,12 @@ extern int ConvString( const char *Src, int SrcStrLength, int SrcCharCodeFormat,
 			SrcStr += UseSrcBytes ;
 
 			DestCode = ConvCharCode_inline( SrcCode, SrcCharCodeFormat, DestCharCodeFormat ) ;
+
+			// 変換元の文字コードが変換先の文字フォーマットに存在しなかった場合は何もせず次のループに移行
+			if( DestCode == 0 && SrcCode != 0 )
+			{
+				continue ;
+			}
 
 			WriteBytes = PutCharCode_BufferBytes_inline( DestCode, DestCharCodeFormat, ( char * )DestStr, BufferBytes - DestSize ) ;
 			if( WriteBytes == 0 || ( DestStr != NULL && BufferBytes - DestSize < WriteBytes + NulWriteBytes ) )
@@ -4715,7 +4726,7 @@ extern const char *CL_strchr( int CharCodeFormat, const char *Str, DWORD CharCod
 	switch( GetCharCodeFormatUnitSize_inline( CharCodeFormat ) )
 	{
 	case 1 :
-		for( i = 0 ; ( ( BYTE * )Str )[ i ] != 0 ; i ++ )
+		for( i = 0 ; ( ( BYTE * )Str )[ i ] != 0 ; )
 		{
 			StrCharCode = GetCharCode_inline( ( const char * )&( ( BYTE * )Str )[ i ], CharCodeFormat, &CodeBytes, j ) ;
 			if( StrCharCode == CharCode )
@@ -4723,15 +4734,19 @@ extern const char *CL_strchr( int CharCodeFormat, const char *Str, DWORD CharCod
 				return ( const char * )&( ( BYTE * )Str )[ i ] ;
 			}
 
-			if( CodeBytes > 1 )
+			if( CodeBytes == 0 )
 			{
 				i ++ ;
+			}
+			else
+			{
+				i += CodeBytes;
 			}
 		}
 		return NULL ;
 
 	case 2 :
-		for( i = 0 ; ( ( WORD * )Str )[ i ] != 0 ; i ++ )
+		for( i = 0 ; ( ( WORD * )Str )[ i ] != 0 ; )
 		{
 			StrCharCode = GetCharCode_inline( ( const char * )&( ( WORD * )Str )[ i ], CharCodeFormat, &CodeBytes, j ) ;
 			if( StrCharCode == CharCode )
@@ -4739,20 +4754,33 @@ extern const char *CL_strchr( int CharCodeFormat, const char *Str, DWORD CharCod
 				return ( const char * )&( ( WORD * )Str )[ i ] ;
 			}
 
-			if( CodeBytes > 2 )
+			if( CodeBytes <= 2 )
 			{
 				i ++ ;
+			}
+			else
+			{
+				i += CodeBytes / 2 ;
 			}
 		}
 		return NULL ;
 
 	case 4 :
-		for( i = 0 ; ( ( DWORD * )Str )[ i ] != 0 ; i ++ )
+		for( i = 0 ; ( ( DWORD * )Str )[ i ] != 0 ; )
 		{
 			StrCharCode = GetCharCode_inline( ( const char * )&( ( DWORD * )Str )[ i ], CharCodeFormat, &CodeBytes, j ) ;
 			if( StrCharCode == CharCode )
 			{
 				return ( const char * )&( ( DWORD * )Str )[ i ] ;
+			}
+
+			if( CodeBytes <= 4 )
+			{
+				i ++ ;
+			}
+			else
+			{
+				i += CodeBytes / 4 ;
 			}
 		}
 		return NULL ;
@@ -4828,7 +4856,7 @@ extern const char *CL_strrchr( int CharCodeFormat, const char *Str, DWORD CharCo
 	switch( GetCharCodeFormatUnitSize_inline( CharCodeFormat ) )
 	{
 	case 1 :
-		for( i = 0 ; ( ( BYTE * )Str )[ i ] != 0 ; i ++ )
+		for( i = 0 ; ( ( BYTE * )Str )[ i ] != 0 ; )
 		{
 			StrCharCode = GetCharCode_inline( ( const char * )&( ( BYTE * )Str )[ i ], CharCodeFormat, &CodeBytes, j ) ;
 			if( StrCharCode == CharCode )
@@ -4836,15 +4864,19 @@ extern const char *CL_strrchr( int CharCodeFormat, const char *Str, DWORD CharCo
 				lastp = ( const char * )&( ( BYTE * )Str )[ i ] ;
 			}
 
-			if( CodeBytes > 1 )
+			if( CodeBytes == 0 )
 			{
 				i ++ ;
+			}
+			else
+			{
+				i += CodeBytes;
 			}
 		}
 		break ;
 
 	case 2 :
-		for( i = 0 ; ( ( WORD * )Str )[ i ] != 0 ; i ++ )
+		for( i = 0 ; ( ( WORD * )Str )[ i ] != 0 ; )
 		{
 			StrCharCode = GetCharCode_inline( ( const char * )&( ( WORD * )Str )[ i ], CharCodeFormat, &CodeBytes, j ) ;
 			if( StrCharCode == CharCode )
@@ -4852,20 +4884,33 @@ extern const char *CL_strrchr( int CharCodeFormat, const char *Str, DWORD CharCo
 				lastp = ( const char * )&( ( WORD * )Str )[ i ] ;
 			}
 
-			if( CodeBytes > 2 )
+			if( CodeBytes <= 2 )
 			{
 				i ++ ;
+			}
+			else
+			{
+				i += CodeBytes / 2 ;
 			}
 		}
 		break ;
 
 	case 4 :
-		for( i = 0 ; ( ( DWORD * )Str )[ i ] != 0 ; i ++ )
+		for( i = 0 ; ( ( DWORD * )Str )[ i ] != 0 ; )
 		{
 			StrCharCode = GetCharCode_inline( ( const char * )&( ( DWORD * )Str )[ i ], CharCodeFormat, &CodeBytes, j ) ;
 			if( StrCharCode == CharCode )
 			{
 				lastp = ( const char * )&( ( DWORD * )Str )[ i ] ;
+			}
+
+			if( CodeBytes <= 4 )
+			{
+				i ++ ;
+			}
+			else
+			{
+				i += CodeBytes / 4 ;
 			}
 		}
 		break ;

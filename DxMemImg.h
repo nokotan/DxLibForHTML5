@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		メモリイメージ制御用ヘッダファイル
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -3538,6 +3538,7 @@ extern	void	DrawLineMemImg(     MEMIMG *DestImg, int x1, int y1, int x2, int y2,
 extern	void	DrawLineBoxMemImg(  MEMIMG *DestImg, int x1, int y1, int x2, int y2, unsigned int Color ) ;																// イメージに枠だけのボックスを描画する
 extern 	void	DrawPixelSetMemImg( MEMIMG *DestImg, const POINTDATA *PointData, int Num ) ;																			// イメージに点の集合を描画する
 extern	void	DrawLineSetMemImg(  MEMIMG *DestImg, const LINEDATA *LineData,   int Num ) ;																			// イメージに線の集合を描画する
+extern	void	DrawBoxSetMemImg(   MEMIMG *DestImg, const RECTDATA *RectData,   int Num ) ;																			// イメージに矩形の集合を描画する
 extern	void	DrawCircleMemImg(   MEMIMG *DestImg, int x, int y, int r,            unsigned int Color, int FillFlag, int Rx_One_Minus = FALSE, int Ry_One_Minus = FALSE ) ;	// イメージに円を描画する
 extern	void	DrawOvalMemImg(     MEMIMG *DestImg, int x, int y, int rx, int ry,   unsigned int Color, int FillFlag, int Rx_One_Minus = FALSE, int Ry_One_Minus = FALSE ) ;	// イメージに楕円を描画する
 

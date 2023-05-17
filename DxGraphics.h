@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		•`‰æƒvƒƒOƒ‰ƒ€ƒwƒbƒ_ƒtƒ@ƒCƒ‹
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -312,6 +312,11 @@ typedef struct tagSCREENDRAWSETTINGINFO
 	double					ProjDotAspect ;
 	MATRIX_D				ProjMatrix ;
 	RECT					DrawRect ;
+	int						TexAddressModeU[ USE_TEXTURESTAGE_NUM ] ;
+	int						TexAddressModeV[ USE_TEXTURESTAGE_NUM ] ;
+	int						TexAddressModeW[ USE_TEXTURESTAGE_NUM ] ;
+	int						MaxAnisotropy ;
+	int						CullMode ;
 } SCREENDRAWSETTINGINFO ;
 
 // Graphics_Draw_DrawSimpleTriangleGraphF, Graphics_Draw_DrawSimpleQuadrangleGraphF —p\‘¢‘Ì
@@ -677,6 +682,9 @@ struct SETUP_GRAPHHANDLE_GPARAM
 	int						NotUsePaletteGraphFlag ;				// ƒpƒŒƒbƒg‰æ‘œ‚ªg—p‚Å‚«‚éê‡‚àƒpƒŒƒbƒg‰æ‘œ‚ğg—p‚µ‚È‚¢‚©‚Ç‚¤‚©( TRUE:g—p‚µ‚È‚¢  FALSE:g—p‚·‚é )
 	int						NotInitGraphDelete ;					// InitGraph ‚Åíœ‚µ‚È‚¢‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO( TRUE:InitGraph‚Å‚Ííœ‚µ‚È‚¢  FALSE:InitGraph‚Åíœ‚·‚é )
 	int						NotInitGraphDeleteUser ;				// InitGraph ‚Åíœ‚µ‚È‚¢‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒOAƒ†[ƒU[—p( TRUE:InitGraph‚Å‚Ííœ‚µ‚È‚¢  FALSE:InitGraph‚Åíœ‚·‚é )
+	int						CreateGraphHandle ;						// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Æ‚µ‚Äg—p‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹’l
+	int *					CreateDivGraphHandle ;					// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Æ‚µ‚Äg—p‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹’lA•ªŠ„‰æ‘œ—p
+	int						CreateDivGraphHandleNum ;				// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Æ‚µ‚Äg—p‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹’lA•ªŠ„‰æ‘œ—p‚Ìƒnƒ“ƒhƒ‹”
 
 	void *					UserPlatformTexture ;					// ƒ†[ƒU[w’è‚ÌŠÂ‹«ˆË‘¶ƒeƒNƒXƒ`ƒƒƒIƒuƒWƒFƒNƒg‚ÌƒAƒhƒŒƒX
 } ;
@@ -774,6 +782,7 @@ struct GRAPHICSSYS_LIGHTATA
 	float					MaterialTypeParam[ MATERIAL_TYPEPARAM_MAX_NUM ] ;	// ƒ‰ƒCƒgŒvZ—pƒ}ƒeƒŠƒAƒ‹‚Ìƒ^ƒCƒv•Êƒpƒ‰ƒ[ƒ^( DX_MATERIAL_TYPE_MAT_SPEC_LUMINANCE_TWO_COLOR ‚È‚Ç‚Åg—p )
 	int						MaterialNotUseVertexDiffuseColor ;		// ƒ‰ƒCƒgŒvZ‚É’¸“_‚ÌƒfƒBƒtƒ…[ƒYƒJƒ‰[‚ğg—p‚µ‚È‚¢‚©‚Ç‚¤‚©
 	int						MaterialNotUseVertexSpecularColor;		// ƒ‰ƒCƒgŒvZ‚É’¸“_‚ÌƒXƒyƒLƒ…ƒ‰ƒJƒ‰[‚ğg—p‚µ‚È‚¢‚©‚Ç‚¤‚©
+	int						NoLightAngleAttenuation ;				// ƒ‰ƒCƒgŒvZ‚ÅŠp“xŒ¸Š‚ğs‚í‚È‚¢‚©‚Ç‚¤‚©
 	LIGHT_HANDLE			*Data[ MAX_LIGHT_NUM ] ;				// ƒ‰ƒCƒgî•ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	int						Num ;									// ƒ‰ƒCƒg‚Ì”
 	int						Area ;									// —LŒø‚Èƒ‰ƒCƒg‚ª‚ ‚é”ÍˆÍ
@@ -832,6 +841,7 @@ struct GRAPHICSSYS_DRAWSETTINGDATA
 
 	int						FillMode ;								// ƒtƒBƒ‹ƒ‚[ƒh( DX_FILL_SOLID ‚È‚Ç )
 	int						CullMode ;								// ƒJƒŠƒ“ƒOƒ‚[ƒh( DX_CULLING_LEFT ‚È‚Ç )
+	int						UseRightHandClippingProcess ;			// ‰EèÀ•WŒn‚ÌƒNƒŠƒbƒsƒ“ƒOˆ—‚ğs‚¤‚©‚Ç‚¤‚©( TRUE:‰EèÀ•WŒn  FALSE:¶èÀ•WŒn )
 
 	int						TexAddressModeU[ USE_TEXTURESTAGE_NUM ] ;	// ƒeƒNƒXƒ`ƒƒƒAƒhƒŒƒXƒ‚[ƒh‚t
 	int						TexAddressModeV[ USE_TEXTURESTAGE_NUM ] ;	// ƒeƒNƒXƒ`ƒƒƒAƒhƒŒƒXƒ‚[ƒh‚u
@@ -853,6 +863,13 @@ struct GRAPHICSSYS_DRAWSETTINGDATA
 
 	int						BlendMode ;								// ƒuƒŒƒ“ƒhƒ‚[ƒh
 	int						BlendParam ;							// ƒuƒŒƒ“ƒhƒpƒ‰ƒ[ƒ^
+	int						BlendEnable ;							// ƒuƒŒƒ“ƒhˆ—‚ğs‚¤‚©‚Ç‚¤‚©( DX_BLENDMODE_CUSTOM —p )
+	int						BlendRGBSrc ;							// RGB‚Ìƒ\[ƒXƒuƒŒƒ“ƒh( DX_BLENDMODE_CUSTOM —p )
+	int						BlendRGBDest ;							// RGB‚ÌƒfƒXƒgƒuƒŒƒ“ƒh( DX_BLENDMODE_CUSTOM —p )
+	int						BlendRGBOp ;							// RGB‚ÌƒuƒŒƒ“ƒhˆ—( DX_BLENDMODE_CUSTOM —p )
+	int						BlendASrc ;								// A‚Ìƒ\[ƒXƒuƒŒƒ“ƒh( DX_BLENDMODE_CUSTOM —p )
+	int						BlendADest ;							// A‚ÌƒfƒXƒgƒuƒŒƒ“ƒh( DX_BLENDMODE_CUSTOM —p )
+	int						BlendAOp ;								// A‚ÌƒuƒŒƒ“ƒhˆ—( DX_BLENDMODE_CUSTOM —p )
 
 	int						AADrawInfoValid ;						// BeginAADraw ‚ªÀs‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©( TRUE:Às‚³‚ê‚Ä‚¢‚é  FALSE:Às‚³‚ê‚Ä‚¢‚È‚¢ )
 	int						AADrawOldBlendMode ;					// BeginAADraw ‚Å•Û‘¶‚·‚éŒ³‚ÌƒuƒŒƒ“ƒhƒ‚[ƒh
@@ -988,6 +1005,9 @@ struct GRAPHICSSYS_CREATEIMAGEDATA
 	int						BlendImageFlag ;						// ƒuƒŒƒ“ƒhˆ——p‰æ‘œì¬w’èƒtƒ‰ƒO
 	int						NotUseManagedTextureFlag ;				// ƒ}ƒl[ƒWƒhƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚È‚¢‚©Aƒtƒ‰ƒO( 1:g—p‚µ‚È‚¢  0:g—p‚·‚é )
 	int						NotInitGraphDeleteUserFlag ;			// InitGraph ‚ğÀs‚µ‚Ä‚àíœ‚³‚ê‚È‚¢‰æ‘œ‚ğì¬‚·‚é‚©‚Ìƒtƒ‰ƒOAƒ†[ƒU[—p( 1:InitGraph‚Åíœ‚³‚ê‚È‚¢  0:InitGraph‚Åíœ‚³‚ê‚é )
+	int						CreateGraphHandle ;						// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Æ‚µ‚Äg—p‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹’l
+	int *					CreateDivGraphHandle ;					// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Æ‚µ‚Äg—p‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹’lA•ªŠ„‰æ‘œ—p
+	int						CreateDivGraphHandleNum ;				// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Æ‚µ‚Äg—p‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹’lA•ªŠ„‰æ‘œ—p‚Ìƒnƒ“ƒhƒ‹”
 	int						PlatformTextureFormat ;					// ŠÂ‹«ˆË‘¶‚ÌƒeƒNƒXƒ`ƒƒƒtƒH[ƒ}ƒbƒg‚ğ’¼Úw’è‚·‚é‚½‚ß‚Ég—p‚·‚é‚½‚ß‚Ì•Ï”( DX_TEXTUREFORMAT_DIRECT3D9_R8G8B8 ‚È‚Ç )
 
 	int						DrawValidFlag ;							// •`‰æ‰Â”\‰æ‘œì¬w’èƒtƒ‰ƒO( ƒeƒNƒXƒ`ƒƒƒT[ƒtƒFƒX‚Ì‚İ )
@@ -1010,6 +1030,7 @@ struct GRAPHICSSYS_CREATEIMAGEDATA
 	int						UserMaxTextureSize ;					// ƒ†[ƒU[w’è‚ÌƒeƒNƒXƒ`ƒƒÅ‘åƒTƒCƒY
 	int						NotUseAlphaImageLoadFlag ;				// _a ‚ª•t‚¢‚½ƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹—p‚Ì‰æ‘œƒtƒ@ƒCƒ‹‚ğ’Ç‰Á‚Å“Ç‚İ‚Şˆ—‚ğs‚í‚È‚¢‚©‚Ç‚¤‚©( TRUE:s‚í‚È‚¢  FALSE:s‚¤ )
 	int						NotUsePaletteGraphFlag ;				// ƒpƒŒƒbƒg‰æ‘œ‚ªg—p‚Å‚«‚éê‡‚àƒpƒŒƒbƒg‰æ‘œ‚ğg—p‚µ‚È‚¢‚©‚Ç‚¤‚©( TRUE:g—p‚µ‚È‚¢  FALSE:g—p‚·‚é )
+	int						NotUseLoadDivGraphSizeCheck ;			// LoadDivGraphŒn‚ÌŠÖ”‚ÅƒTƒCƒYƒ`ƒFƒbƒN‚ğs‚í‚È‚¢‚©‚Ç‚¤‚©( TRUE:s‚í‚È‚¢  FALSE:s‚¤ )
 } ;
 
 // ƒfƒBƒXƒvƒŒƒCˆê‚Â‚ ‚½‚è‚Ìî•ñ
@@ -1236,7 +1257,7 @@ extern	int		Graphics_Screen_SubBackbufferPosConvScreenPos( int BackBufferPosX, i
 extern	int		Graphics_Screen_SetZBufferMode( int ZBufferSizeX, int ZBufferSizeY, int ZBufferBitDepth ) ;	// ƒƒCƒ“‰æ–Ê‚Ì‚yƒoƒbƒtƒ@‚Ìİ’è‚ğ•ÏX‚·‚é
 extern	int		Graphics_Screen_SetupUseZBuffer( void ) ;													// İ’è‚ÉŠî‚Ã‚¢‚Äg—p‚·‚é‚yƒoƒbƒtƒ@‚ğƒZƒbƒg‚·‚é
 extern	void	Graphics_Screen_SetMainScreenSize( int SizeX, int SizeY ) ;									// ƒƒCƒ“‰æ–Ê‚ÌƒTƒCƒY’l‚ğ•ÏX‚·‚é
-extern	int		Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, int ChangeWindowFlag, int RefreshRate ) ;				// ‰æ–Êƒ‚[ƒh‚Ì•ÏX‚Q
+extern	int		Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, int ChangeWindowFlag, int RefreshRate, int AlwaysRunFlag ) ;				// ‰æ–Êƒ‚[ƒh‚Ì•ÏX‚Q
 extern	int		Graphics_Screen_LockDrawScreen( RECT *LockRect, BASEIMAGE *BaseImage, int TargetScreen/* = -1*/, int TargetScreenSurface/* = -1*/, int TargetScreenMipLevel, int ReadOnly/* = TRUE*/, int TargetScreenTextureNo/* = 0*/ ) ;	// •`‰ææƒoƒbƒtƒ@‚ğƒƒbƒN‚·‚é
 extern	int		Graphics_Screen_UnlockDrawScreen( void ) ;													// •`‰ææƒoƒbƒtƒ@‚ğƒAƒ“ƒƒbƒN‚·‚é
 extern	int		Graphics_Screen_FlipBase( void ) ;															// ScreenFlip ‚Ìƒx[ƒXŠÖ”
@@ -1255,11 +1276,12 @@ extern	COLORDATA *Graphics_Screen_UserScreenPixelFormatColorData( int PixelForma
 extern	int		Graphics_Image_SetupFormatDesc( IMAGEFORMATDESC *Format, SETUP_GRAPHHANDLE_GPARAM *GParam, int Width, int Height, int AlphaValidFlag, int UsePaletteFlag, int PaletteBitDepth, int BaseFormat, int MipMapCount ) ; // ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚É‰æ‘œƒf[ƒ^‚ğ“]‘—‚·‚é‚½‚ß‚ÌŠÖ”
 extern	int		Graphics_Image_DeleteDeviceLostDelete( void ) ;						// ƒfƒoƒCƒXƒƒXƒg”­¶‚Éíœ‚·‚éƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚éƒOƒ‰ƒtƒBƒbƒN‚ğíœ‚·‚é
 extern	int		Graphics_Image_CheckMultiSampleDrawValid( int GrHandle ) ;			// ‚l‚r‚`‚`‚ğg—p‚·‚é•`‰æ‰Â”\‰æ‘œ‚©‚Ç‚¤‚©‚ğ’²‚×‚é( TRUE:MSAA‰æ‘œ  FALSE:MSAA‰æ‘œ‚Å‚Í‚È‚¢ )
-extern	int		Graphics_Image_AddHandle( int ASyncThread ) ;																			// V‚µ‚¢ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğŠm•Û‚·‚é
+extern	int		Graphics_Image_AddHandle( int GrHandle, int ASyncThread ) ;																	// V‚µ‚¢ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğŠm•Û‚·‚é
 extern	int		Graphics_Image_SetupHandle_UseGParam( SETUP_GRAPHHANDLE_GPARAM *GParam, int GrHandle, int Width, int Height, int TextureFlag, int AlphaValidFlag, int UsePaletteFlag, int PaletteBitDepth, int BaseFormat/* = DX_BASEIMAGE_FORMAT_NORMAL*/, int MipMapCount, int ASyncThread ) ;							// SetupGraphHandle ‚ÌƒOƒ[ƒoƒ‹•Ï”‚ÉƒAƒNƒZƒX‚µ‚È‚¢ƒo[ƒWƒ‡ƒ“
 extern	int		Graphics_Image_ListUpTexSize( int Size, short *SizeList, int NotDivFlag, int Pow2Flag, int MaxTextureSize, int IsDXT ) ;	// w’è‚ÌƒeƒNƒXƒ`ƒƒ[ƒTƒCƒY‚ğãè‚­•ªŠ„‚·‚é
 extern	int		Graphics_Image_InitializeHandle( HANDLEINFO *HandleInfo ) ;																// ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ì‰Šú‰»
 extern	int		Graphics_Image_TerminateHandle( HANDLEINFO *HandleInfo ) ;																// ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ÌŒãn––
+extern	int		Graphics_Image_DumpInfoHandle( HANDLEINFO *HandleInfo ) ;																// ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ìî•ño—Í
 extern	int		Graphics_Image_InitializeDerivationHandle( int GrHandle, int IsFloat, int SrcXI, float SrcXF, int SrcYI, float SrcYF, int WidthI, float WidthF, int HeightI, float HeightF, int SrcGrHandle, int ASyncThread = FALSE ) ;			// w’è•”•ª‚¾‚¯‚ğ”²‚«o‚µ‚½ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğ‰Šú‰»‚·‚é
 extern	int		Graphics_Image_InitializeDrawInfo( int GrHandle, int IsFloat, int ASyncThread = FALSE ) ;			// ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ì•`‰æî•ñ‚ğ‰Šú‰»‚·‚é
 extern	int		Graphics_Image_IsValidHandle( int GrHandle ) ;															// ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ª—LŒø‚©‚Ç‚¤‚©‚ğ’²‚×‚é( TRUE:—LŒø  FALSE:–³Œø )
@@ -1570,6 +1592,7 @@ extern	int		Graphics_Hardware_SetRenderTargetToShader_PF( int TargetIndex, int D
 extern	int		Graphics_Hardware_SetBackgroundColor_PF( int Red, int Green, int Blue, int Alpha ) ;					// ƒƒCƒ“ƒEƒCƒ“ƒhƒE‚Ì”wŒiF‚ğİ’è‚·‚é( Red,Green,Blue:‚»‚ê‚¼‚ê ‚O`‚Q‚T‚T )
 extern	int		Graphics_Hardware_SetDrawBrightToOneParam_PF( DWORD Bright ) ;											// SetDrawBright ‚Ìˆø”‚ªˆê‚Â”Å
 extern	int		Graphics_Hardware_SetDrawBlendMode_PF( int BlendMode, int BlendParam ) ;								// •`‰æƒuƒŒƒ“ƒhƒ‚[ƒh‚ğƒZƒbƒg‚·‚é
+extern	int		Graphics_Hardware_SetDrawCustomBlendMode_PF( int BlendEnable, int SrcBlendRGB, int DestBlendRGB, int BlendOpRGB, int SrcBlendA, int DestBlendA, int BlendOpA, int BlendParam ) ; // ƒJƒXƒ^ƒ€ƒuƒŒƒ“ƒhƒ‚[ƒh‚ğİ’è‚·‚é
 extern	int		Graphics_Hardware_SetDrawAlphaTest_PF( int TestMode, int TestParam ) ;									// •`‰æ‚ÌƒAƒ‹ƒtƒ@ƒeƒXƒg‚Ìİ’è‚ğs‚¤( TestMode:DX_CMP_GREATER“™( -1:ƒfƒtƒHƒ‹ƒg“®ì‚É–ß‚· )  TestParam:•`‰æƒAƒ‹ƒtƒ@’l‚Æ‚Ì”äŠr‚Ég—p‚·‚é’l )
 extern	int		Graphics_Hardware_SetDrawMode_PF( int DrawMode ) ;														// •`‰æƒ‚[ƒh‚ğƒZƒbƒg‚·‚é
 extern	int		Graphics_Hardware_SetDrawBright_PF( int RedBright, int GreenBright, int BlueBright ) ;					// •`‰æ‹P“x‚ğƒZƒbƒg
@@ -1611,7 +1634,7 @@ extern	int		Graphics_Hardware_SetUsePixelLighting_PF( int Flag ) ;									// ƒs
 extern	int		Graphics_Hardware_SetGraphicsDeviceRestoreCallbackFunction_PF( void (* Callback )( void *Data ), void *CallbackData ) ;			// ƒOƒ‰ƒtƒBƒbƒNƒXƒfƒoƒCƒX‚ªƒƒXƒg‚©‚ç•œ‹A‚µ‚½Û‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”‚ğİ’è‚·‚é
 extern	int		Graphics_Hardware_SetGraphicsDeviceLostCallbackFunction_PF( void (* Callback )( void *Data ), void *CallbackData ) ;			// ƒOƒ‰ƒtƒBƒbƒNƒXƒfƒoƒCƒX‚ªƒƒXƒg‚©‚ç•œ‹A‚·‚é‘O‚ÉŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”‚ğİ’è‚·‚é
 extern	int		Graphics_Hardware_SetUseNormalDrawShader_PF( int Flag ) ;								// ’Êí•`‰æ‚ÉƒvƒƒOƒ‰ƒ}ƒuƒ‹ƒVƒF[ƒ_[‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:g—p‚·‚é( ƒfƒtƒHƒ‹ƒg )  FALSE:g—p‚µ‚È‚¢ )
-extern	int		Graphics_Hardware_GetVideoMemorySize_PF( int *AllSize, int *FreeSize ) ;				// ƒrƒfƒIƒƒ‚ƒŠ‚Ì—e—Ê‚ğ“¾‚é
+extern	int		Graphics_Hardware_GetVideoMemorySizeEx_PF( ULONGLONG *TotalSize, ULONGLONG *UseSize ) ;	// ƒrƒfƒIƒƒ‚ƒŠ‚Ì—e—Ê‚ğ“¾‚é( 64bit”Å )
 extern	int		Graphics_SetAeroDisableFlag_PF( int Flag ) ;											// VistaˆÈ~‚Ì Windows Aero ‚ğ–³Œø‚É‚·‚é‚©‚Ç‚¤‚©‚ğƒZƒbƒg‚·‚éATRUE:–³Œø‚É‚·‚é  FALSE:—LŒø‚É‚·‚é( DxLib_Init ‚Ì‘O‚ÉŒÄ‚Ô•K—v‚ª‚ ‚è‚Ü‚· )
 
 
@@ -1748,7 +1771,7 @@ extern	int		Graphics_Hardware_Light_SetUse_PF( int Flag ) ;															// ƒ‰ƒ
 extern	int		Graphics_Hardware_Light_GlobalAmbient_PF( COLOR_F *Color ) ;											// ƒOƒ[ƒoƒ‹ƒAƒ“ƒrƒGƒ“ƒgƒ‰ƒCƒgƒJƒ‰[‚ğİ’è‚·‚é
 extern	int		Graphics_Hardware_Light_SetState_PF( int LightNumber, LIGHTPARAM *LightParam ) ;						// ƒ‰ƒCƒgƒpƒ‰ƒ[ƒ^‚ğƒZƒbƒg
 extern	int		Graphics_Hardware_Light_SetEnable_PF( int LightNumber, int EnableState ) ;								// ƒ‰ƒCƒg‚Ì—LŒøA–³Œø‚ğ•ÏX
-
+extern	int		Graphics_Hardware_Light_SetNoAngleAttenuation_PF( int NoAngleAttenuation ) ;							// ƒ‰ƒCƒg‚ÌŒvZ‚ÅŠp“xŒ¸Š‚ğs‚í‚È‚¢‚æ‚¤‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
 
 
 
@@ -1847,23 +1870,29 @@ extern	int		Graphics_Hardware_DrawPixel_PF(            int x,  int y,           
 extern	int		Graphics_Hardware_DrawPixel3D_PF(          VECTOR Pos,                                                                     unsigned int Color, int DrawFlag = TRUE, RECT *DrawArea = NULL ) ;					// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawPixel3D
 extern	int		Graphics_Hardware_DrawPixelSet_PF(         const POINTDATA *PointData, int Num ) ;																				// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawPixelSet
 extern	int		Graphics_Hardware_DrawLineSet_PF(          const LINEDATA  *LineData,  int Num ) ;																				// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawLineSet
+extern	int		Graphics_Hardware_DrawBoxSet_PF(           const RECTDATA  *RectData,  int Num ) ;																				// ƒn[ƒhƒEƒGƒAƒAƒNƒZƒ‰ƒŒ[ƒ^g—p”Å DrawBoxSet
 
-extern	int		Graphics_Hardware_DrawPrimitive_PF(                             const VERTEX_3D *Vertex, int VertexNum,                                    int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
-extern	int		Graphics_Hardware_DrawIndexedPrimitive_PF(                      const VERTEX_3D *Vertex, int VertexNum, const WORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
-extern	int		Graphics_Hardware_DrawPrimitiveLight_PF(                        const VERTEX3D  *Vertex, int VertexNum,                                    int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
-extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_PF(                 const VERTEX3D  *Vertex, int VertexNum, const WORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
-extern	int		Graphics_Hardware_DrawPrimitiveLight_UseVertexBuffer_PF(        VERTEXBUFFERHANDLEDATA *VertexBuffer,                                      int PrimitiveType,                 int StartVertex, int UseVertexNum, IMAGEDATA *Image, int TransFlag ) ;
-extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_UseVertexBuffer_PF( VERTEXBUFFERHANDLEDATA *VertexBuffer, INDEXBUFFERHANDLEDATA *IndexBuffer,  int PrimitiveType, int BaseVertex, int StartVertex, int UseVertexNum, int StartIndex, int UseIndexNum, IMAGEDATA *Image, int TransFlag ) ;
-extern	int		Graphics_Hardware_DrawPrimitive2D_PF(                                 VERTEX_2D *Vertex, int VertexNum,                                    int PrimitiveType, IMAGEDATA *Image, int TransFlag, int BillboardFlag, int Is3D, int ReverseXFlag, int ReverseYFlag, int TextureNo, int IsShadowMap ) ;
-extern	int		Graphics_Hardware_DrawPrimitive2DUser_PF(                       const VERTEX2D  *Vertex, int VertexNum,                                    int PrimitiveType, IMAGEDATA *Image, int TransFlag, int Is3D, int ReverseXFlag, int ReverseYFlag, int TextureNo ) ;
-extern	int		Graphics_Hardware_DrawIndexedPrimitive2DUser_PF(                const VERTEX2D  *Vertex, int VertexNum, const WORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
+extern	int		Graphics_Hardware_DrawPrimitive_PF(                             const VERTEX_3D *Vertex, int VertexNum,                                     int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
+extern	int		Graphics_Hardware_DrawIndexedPrimitive_PF(                      const VERTEX_3D *Vertex, int VertexNum, const WORD  *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
+extern	int		Graphics_Hardware_Draw32bitIndexedPrimitive_PF(                 const VERTEX_3D *Vertex, int VertexNum, const DWORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
+extern	int		Graphics_Hardware_DrawPrimitiveLight_PF(                        const VERTEX3D  *Vertex, int VertexNum,                                     int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
+extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_PF(                 const VERTEX3D  *Vertex, int VertexNum, const WORD  *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
+extern	int		Graphics_Hardware_Draw32bitIndexedPrimitiveLight_PF(            const VERTEX3D  *Vertex, int VertexNum, const DWORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
+extern	int		Graphics_Hardware_DrawPrimitiveLight_UseVertexBuffer_PF(        VERTEXBUFFERHANDLEDATA *VertexBuffer,                                       int PrimitiveType,                 int StartVertex, int UseVertexNum, IMAGEDATA *Image, int TransFlag ) ;
+extern	int		Graphics_Hardware_DrawIndexedPrimitiveLight_UseVertexBuffer_PF( VERTEXBUFFERHANDLEDATA *VertexBuffer, INDEXBUFFERHANDLEDATA *IndexBuffer,   int PrimitiveType, int BaseVertex, int StartVertex, int UseVertexNum, int StartIndex, int UseIndexNum, IMAGEDATA *Image, int TransFlag ) ;
+extern	int		Graphics_Hardware_DrawPrimitive2D_PF(                                 VERTEX_2D *Vertex, int VertexNum,                                     int PrimitiveType, IMAGEDATA *Image, int TransFlag, int BillboardFlag, int Is3D, int ReverseXFlag, int ReverseYFlag, int TextureNo, int IsShadowMap ) ;
+extern	int		Graphics_Hardware_DrawPrimitive2DUser_PF(                       const VERTEX2D  *Vertex, int VertexNum,                                     int PrimitiveType, IMAGEDATA *Image, int TransFlag, int Is3D, int ReverseXFlag, int ReverseYFlag, int TextureNo ) ;
+extern	int		Graphics_Hardware_DrawIndexedPrimitive2DUser_PF(                const VERTEX2D  *Vertex, int VertexNum, const WORD  *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
+extern	int		Graphics_Hardware_Draw32bitIndexedPrimitive2DUser_PF(           const VERTEX2D  *Vertex, int VertexNum, const DWORD *Indices, int IndexNum, int PrimitiveType, IMAGEDATA *Image, int TransFlag ) ;
 
-extern	int		Graphics_Hardware_DrawPolygon3DToShader_PF(          const VERTEX3DSHADER *Vertex, int PolygonNum ) ;																										// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é
-extern	int		Graphics_Hardware_DrawPolygonIndexed3DToShader_PF(   const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum ) ;														// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
-extern	int		Graphics_Hardware_DrawPrimitive2DToShader_PF(        const VERTEX2DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
-extern	int		Graphics_Hardware_DrawPrimitive3DToShader_PF(        const VERTEX3DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
-extern	int		Graphics_Hardware_DrawPrimitiveIndexed2DToShader_PF( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
-extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_PF( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
+extern	int		Graphics_Hardware_DrawPolygon3DToShader_PF(               const VERTEX3DSHADER *Vertex, int PolygonNum ) ;																										// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é
+extern	int		Graphics_Hardware_DrawPolygonIndexed3DToShader_PF(        const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int PolygonNum ) ;														// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒ|ƒŠƒSƒ“‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
+extern	int		Graphics_Hardware_DrawPrimitive2DToShader_PF(             const VERTEX2DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
+extern	int		Graphics_Hardware_DrawPrimitive3DToShader_PF(             const VERTEX3DSHADER *Vertex, int VertexNum,                                              int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é
+extern	int		Graphics_Hardware_DrawPrimitiveIndexed2DToShader_PF(      const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
+extern	int		Graphics_Hardware_DrawPrimitive32bitIndexed2DToShader_PF( const VERTEX2DSHADER *Vertex, int VertexNum, const unsigned int   *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚Q‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
+extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_PF(      const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned short *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
+extern	int		Graphics_Hardware_DrawPrimitive32bitIndexed3DToShader_PF( const VERTEX3DSHADER *Vertex, int VertexNum, const unsigned int   *Indices, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */ ) ;		// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒCƒ“ƒfƒbƒNƒX‚ğg—p‚·‚é )
 
 extern	int		Graphics_Hardware_DrawPrimitive3DToShader_UseVertexBuffer2_PF(        int VertexBufHandle,                     int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int StartVertex, int UseVertexNum ) ;	// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒoƒbƒtƒ@g—p”Å )
 extern	int		Graphics_Hardware_DrawPrimitiveIndexed3DToShader_UseVertexBuffer2_PF( int VertexBufHandle, int IndexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST “™ */, int BaseVertex, int StartVertex, int UseVertexNum, int StartIndex, int UseIndexNum ) ;	// ƒVƒF[ƒ_[‚ğg‚Á‚Ä‚R‚cƒvƒŠƒ~ƒeƒBƒu‚ğ•`‰æ‚·‚é( ’¸“_ƒoƒbƒtƒ@‚ÆƒCƒ“ƒfƒbƒNƒXƒoƒbƒtƒ@g—p”Å )

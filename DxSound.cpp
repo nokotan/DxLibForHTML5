@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＳｏｕｎｄ制御プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -182,18 +182,19 @@ extern int InitializeSoundSystem( void )
 	}
 
 	// サウンドハンドル管理情報初期化
-	InitializeHandleManage( DX_HANDLETYPE_SOUND, sizeof( SOUND ), MAX_SOUND_NUM, InitializeSoundHandle, TerminateSoundHandle, L"Sound" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_SOUND, sizeof( SOUND ), MAX_SOUND_NUM, InitializeSoundHandle, TerminateSoundHandle, DumpInfoSoundHandle, L"Sound" ) ;
 
 	// ソフトウエアで扱う波形データハンドル管理情報初期化
-	InitializeHandleManage( DX_HANDLETYPE_SOFTSOUND, sizeof( SOFTSOUND ), MAX_SOFTSOUND_NUM, InitializeSoftSoundHandle, TerminateSoftSoundHandle, L"SoftSound" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_SOFTSOUND, sizeof( SOFTSOUND ), MAX_SOFTSOUND_NUM, InitializeSoftSoundHandle, TerminateSoftSoundHandle, NULL, L"SoftSound" ) ;
 
 	// ＭＩＤＩハンドル管理情報初期化
-	InitializeHandleManage( DX_HANDLETYPE_MUSIC, sizeof( MIDIHANDLEDATA ), MAX_MUSIC_NUM, InitializeMidiHandle, TerminateMidiHandle, L"Music" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_MUSIC, sizeof( MIDIHANDLEDATA ), MAX_MUSIC_NUM, InitializeMidiHandle, TerminateMidiHandle, NULL, L"Music" ) ;
 
 	// クリティカルセクションの初期化
 	CriticalSection_Initialize( &SoundSysData._3DSoundListCriticalSection ) ;
 	CriticalSection_Initialize( &SoundSysData.Play3DSoundListCriticalSection ) ;
 	CriticalSection_Initialize( &SoundSysData.PlaySoundBufferListCriticalSection ) ;
+	CriticalSection_Initialize( &SoundSysData.PlaySoundListCriticalSection ) ;
 	CriticalSection_Initialize( &SoundSysData.StreamSoundListCriticalSection ) ;
 
 	// ハンドルリストを初期化
@@ -201,6 +202,7 @@ extern int InitializeSoundSystem( void )
 	InitializeHandleList( &SoundSysData.StreamSoundListFirst,			&SoundSysData.StreamSoundListLast ) ;
 	InitializeHandleList( &SoundSysData.SoftSoundPlayerListFirst,		&SoundSysData.SoftSoundPlayerListLast ) ;
 	InitializeHandleList( &SoundSysData.PlayFinishDeleteSoundListFirst, &SoundSysData.PlayFinishDeleteSoundListLast ) ;
+	InitializeHandleList( &SoundSysData.PlaySoundListFirst,				&SoundSysData.PlaySoundListLast ) ;
 	InitializeHandleList( &SoundSysData.Play3DSoundListFirst,			&SoundSysData.Play3DSoundListLast ) ;
 
 	// シンプルリストを初期化
@@ -358,6 +360,7 @@ extern int TerminateSoundSystem( void )
 	{
 		CriticalSection_Delete( &SoundSysData._3DSoundListCriticalSection ) ;
 		CriticalSection_Delete( &SoundSysData.Play3DSoundListCriticalSection ) ;
+		CriticalSection_Delete( &SoundSysData.PlaySoundListCriticalSection ) ;
 		CriticalSection_Delete( &SoundSysData.StreamSoundListCriticalSection ) ;
 	}
 
@@ -494,11 +497,11 @@ extern int TerminateSoundHandle( HANDLEINFO *HandleInfo )
 	// 音の再生を止める
 	if( Sound->Type == DX_SOUNDTYPE_STREAMSTYLE )
 	{
-		NS_StopStreamSoundMem( HandleInfo->Handle ) ;
+		NS_StopStreamSoundMem( HandleInfo->Handle, FALSE ) ;
 	}
 	else
 	{
-		if( Sound->Buffer[0].Valid ) NS_StopSoundMem( HandleInfo->Handle ) ;
+		if( Sound->Buffer[0].Valid ) NS_StopSoundMem( HandleInfo->Handle, FALSE ) ;
 	}
 
 	if( Sound->Is3DSound != FALSE )
@@ -512,20 +515,32 @@ extern int TerminateSoundHandle( HANDLEINFO *HandleInfo )
 		// クリティカルセクションの解放
 		CriticalSection_Unlock( &SoundSysData._3DSoundListCriticalSection ) ;
 
-		// 再生中リストに追加されていたら外す
+		// クリティカルセクションの取得
+		CRITICALSECTION_LOCK( &SoundSysData.Play3DSoundListCriticalSection ) ;
+
+		// 再生中３Ｄサウンドリストに追加されていたら外す
 		if( Sound->AddPlay3DSoundList )
 		{
 			Sound->AddPlay3DSoundList = FALSE ;
-
-			// クリティカルセクションの取得
-			CRITICALSECTION_LOCK( &SoundSysData.Play3DSoundListCriticalSection ) ;
-
 			SubHandleList( &Sound->Play3DSoundList ) ;
-
-			// クリティカルセクションの解放
-			CriticalSection_Unlock( &SoundSysData.Play3DSoundListCriticalSection ) ;
 		}
+
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &SoundSysData.Play3DSoundListCriticalSection ) ;
 	}
+
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &SoundSysData.PlaySoundListCriticalSection ) ;
+
+	// 再生中サウンドリストに追加されていたら外す
+	if( Sound->AddPlaySoundList )
+	{
+		Sound->AddPlaySoundList = FALSE ;
+		SubHandleList( &Sound->PlaySoundList ) ;
+	}
+
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &SoundSysData.PlaySoundListCriticalSection ) ;
 
 	// 再生が終了したら削除する設定になっていたら、再生が終了したら削除するサウンドのリストから外す
 	if( Sound->PlayFinishDeleteFlag )
@@ -625,6 +640,23 @@ extern int TerminateSoundHandle( HANDLEINFO *HandleInfo )
 	return 0 ;
 }
 
+// サウンドハンドルの情報出力
+extern int DumpInfoSoundHandle( HANDLEINFO *HandleInfo )
+{
+	SOUND *Sound = ( SOUND * )HandleInfo ;
+
+	if( Sound->Type == DX_SOUNDTYPE_STREAMSTYLE )
+	{
+		DXST_LOGFILEFMT_ADDW(( L"Handle:0x%08x Type:Stream SamplePerSec:%d BitsPerSample:%d Channels:%d", HandleInfo->Handle, Sound->BufferFormat.nSamplesPerSec, Sound->BufferFormat.wBitsPerSample, Sound->BufferFormat.nChannels )) ;
+	}
+	else
+	{
+		DXST_LOGFILEFMT_ADDW(( L"Handle:0x%08x Type:Normal SamplePerSec:%d BitsPerSample:%d Channels:%d Samples:%d", HandleInfo->Handle, Sound->BufferFormat.nSamplesPerSec, Sound->BufferFormat.wBitsPerSample, Sound->BufferFormat.nChannels, Sound->Normal.WaveSize / Sound->BufferFormat.nBlockAlign )) ;
+	}
+
+	// 終了
+	return 0 ;
+}
 
 // 使用可能なサウンドバッファを取得する(-1:サウンドバッファの使用権を得られなかった)
 static int GetSoundBuffer( int SoundHandle, SOUND * Sound, SOUNDBUFFER **BufferP, bool BufferGet )
@@ -655,7 +687,7 @@ static int GetSoundBuffer( int SoundHandle, SOUND * Sound, SOUNDBUFFER **BufferP
 		
 		// 使用権を持っているのが自分ではない場合は再生をストップする
 		if( SoundHandle != Sound->Stream.BufferUseSoundHandle )
-			NS_StopStreamSoundMem( Sound->Stream.BufferUseSoundHandle ) ;
+			NS_StopStreamSoundMem( Sound->Stream.BufferUseSoundHandle, FALSE ) ;
 
 		// 使用権を得る
 		Sound->Stream.BufferUseSoundHandle = SoundHandle ;
@@ -680,7 +712,7 @@ static int GetSoundBuffer( int SoundHandle, SOUND * Sound, SOUNDBUFFER **BufferP
 
 		// 使用権を持っているのが自分ではない場合は再生をストップする
 		if( SoundHandle != UniSound->Stream.BufferUseSoundHandle )
-			NS_StopStreamSoundMem( UniSound->Stream.BufferUseSoundHandle ) ;
+			NS_StopStreamSoundMem( UniSound->Stream.BufferUseSoundHandle, FALSE ) ;
 
 		// 使用権を得る
 		UniSound->Stream.BufferUseSoundHandle = SoundHandle ;
@@ -1497,7 +1529,7 @@ static	int	_PlaySetupStreamSoundMem( int SoundHandle, SOUND * Sound, int PlayTyp
 		return 1 ;
 
 	// 再生中の場合は止める
-	NS_StopStreamSoundMem( SoundHandle ) ;
+	NS_StopStreamSoundMem( SoundHandle, FALSE ) ;
 
 	// 再生タイプが違ったら分岐
 	if( Sound->PlayType != PlayType )
@@ -1533,6 +1565,9 @@ static	int	_PlaySetupStreamSoundMem( int SoundHandle, SOUND * Sound, int PlayTyp
 
 	// 再生タイプを保存
 	Sound->PlayType = PlayType ;
+
+	// ループ終了時に音の再生を止めるフラグを倒す
+	Sound->Stream.IsNextLoopEndStop = FALSE ;
 
 	// 再生準備
 	NS_SetupStreamSoundMem( SoundHandle ) ;
@@ -1713,19 +1748,31 @@ extern int NS_PlayStreamSoundMem( int SoundHandle , int PlayType, int TopPositio
 	// ３Ｄサウンドの場合は再生中の３Ｄサウンドリストに追加する
 	if( Sound->Is3DSound != FALSE )
 	{
+		// クリティカルセクションの取得
+		CRITICALSECTION_LOCK( &SoundSysData.Play3DSoundListCriticalSection ) ;
+
 		if( Sound->AddPlay3DSoundList == FALSE )
 		{
 			Sound->AddPlay3DSoundList = TRUE ;
-
-			// クリティカルセクションの取得
-			CRITICALSECTION_LOCK( &SoundSysData.Play3DSoundListCriticalSection ) ;
-
 			AddHandleList( &SoundSysData.Play3DSoundListFirst, &Sound->Play3DSoundList, SoundHandle, Sound ) ;
-
-			// クリティカルセクションの解放
-			CriticalSection_Unlock( &SoundSysData.Play3DSoundListCriticalSection ) ;
 		}
+
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &SoundSysData.Play3DSoundListCriticalSection ) ;
 	}
+
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &SoundSysData.PlaySoundListCriticalSection ) ;
+
+	// 再生中のサウンドリストに追加する
+	if( Sound->AddPlaySoundList == FALSE )
+	{
+		Sound->AddPlaySoundList = TRUE ;
+		AddHandleList( &SoundSysData.PlaySoundListFirst, &Sound->PlaySoundList, SoundHandle, Sound ) ;
+	}
+
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &SoundSysData.PlaySoundListCriticalSection ) ;
 
 	// クリティカルセクションの解放
 	CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_SOUND ].CriticalSection ) ;
@@ -1778,7 +1825,7 @@ extern int NS_CheckStreamSoundMem( int SoundHandle )
 
 
 // ストリーム風サウンドデータの再生終了
-extern int NS_StopStreamSoundMem( int SoundHandle )
+extern int NS_StopStreamSoundMem( int SoundHandle, int IsNextLoopEnd )
 {
 	SOUND *Sound, *UniSound = NULL ;
 	int IsPlay ;
@@ -1812,6 +1859,24 @@ extern int NS_StopStreamSoundMem( int SoundHandle )
 	// ハンドルの使用権が無い場合は少なくとも再生中ではない
 	if( GetSoundBuffer( SoundHandle, Sound, &SBuffer, false ) == -1 )
 	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_SOUND ].CriticalSection ) ;
+
+		return 0 ;
+	}
+
+	// 次回ループ終了時に音を止める指定の場合は、フラグを立てて終了する
+	if( IsNextLoopEnd == TRUE )
+	{
+		// フラグを立てる
+		Sound->Stream.IsNextLoopEndStop = TRUE ;
+
+		// 再生タイプが DX_PLAYTYPE_LOOP だった場合は DX_PLAYTYPE_BACK に変更する
+		if( Sound->PlayType == DX_PLAYTYPE_LOOP )
+		{
+			Sound->PlayType = DX_PLAYTYPE_BACK ;
+		}
+
 		// クリティカルセクションの解放
 		CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_SOUND ].CriticalSection ) ;
 
@@ -1855,6 +1920,13 @@ extern int SetStreamSoundCurrentPosition_UseGParam( LONGLONG Byte, int SoundHand
 //	int i, pos ;
 //	int datasize ;
 //	WAVEFORMATEX *wf ;
+	int IsPlay = FALSE ;
+	int PlayType = 0 ;
+
+	IsPlay = NS_CheckStreamSoundMem( SoundHandle ) ;
+
+	// 再生中だった場合は一度止める
+	NS_StopStreamSoundMem( SoundHandle, FALSE ) ;
 
 	if( SoundSysData.InitializeFlag == FALSE )
 	{
@@ -1879,6 +1951,8 @@ extern int SetStreamSoundCurrentPosition_UseGParam( LONGLONG Byte, int SoundHand
 		if( SOUNDHCHK( SoundHandle, sd ) )
 			goto ERR ;
 	}
+
+	PlayType = sd->PlayType ;
 
 	if( Byte / sd->BufferFormat.nBlockAlign > sd->Stream.TotalSample )
 		goto ERR ;
@@ -1914,12 +1988,24 @@ extern int SetStreamSoundCurrentPosition_UseGParam( LONGLONG Byte, int SoundHand
 	// クリティカルセクションの解放
 	CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_SOUND ].CriticalSection ) ;
 
+	// 再生中だった場合は再生する
+	if( IsPlay )
+	{
+		NS_PlayStreamSoundMem( SoundHandle, PlayType, FALSE ) ;
+	}
+
 	// 終了
 	return 0 ;
 
 ERR :
 	// クリティカルセクションの解放
 	CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_SOUND ].CriticalSection ) ;
+
+	// 再生中だった場合は再生する
+	if( IsPlay )
+	{
+		NS_PlayStreamSoundMem( SoundHandle, PlayType, FALSE ) ;
+	}
 
 	return -1 ;
 }
@@ -2255,7 +2341,7 @@ int StreamSoundNextData( SOUND * Sound, SOUNDBUFFERLOCKDATA *LockData, int Curre
 	Sound->Stream.FileLoopCount ++ ;
 
 	// 無限ループかどうかで処理を分岐
-	if( Sound->Stream.File[Sound->Stream.FileActive].LoopNum == -1 )
+	if( Sound->Stream.IsNextLoopEndStop == FALSE && Sound->Stream.File[Sound->Stream.FileActive].LoopNum == -1 )
 	{
 		WAVEFORMATEX *wfmt = &Sound->BufferFormat ;
 
@@ -2283,7 +2369,7 @@ int StreamSoundNextData( SOUND * Sound, SOUNDBUFFERLOCKDATA *LockData, int Curre
 	else
 	{
 		// ループ回数が規定値にきていたら次のデータへ
-		if( Sound->Stream.FileLoopCount > Sound->Stream.File[Sound->Stream.FileActive].LoopNum  )
+		if( Sound->Stream.IsNextLoopEndStop == TRUE || Sound->Stream.FileLoopCount > Sound->Stream.File[Sound->Stream.FileActive].LoopNum )
 		{
 			// ループ再生指定でループする条件が揃った場合、既にループ位置をセットしてある場合は一度ループするまで待つ
 			if( Sound->Stream.FileNum - 1 == Sound->Stream.FileActive &&
@@ -2740,7 +2826,7 @@ extern int PauseSoundMemAll( int PauseFlag )
 	{
 		// 停止する場合
 
-		for( List = HandleManageArray[ DX_HANDLETYPE_SOUND ].ListFirst.Next ; List->Next != NULL ; List = List->Next )
+		for( List = SoundSysData.PlaySoundListFirst.Next ; List->Next != NULL ; List = List->Next )
 		{
 			Sound = ( SOUND * )List->Data ;
 
@@ -2794,7 +2880,7 @@ extern int PauseSoundMemAll( int PauseFlag )
 	{
 		// 再開する場合
 
-		for( List = HandleManageArray[ DX_HANDLETYPE_SOUND ].ListFirst.Next ; List->Next != NULL ; List = List->Next )
+		for( List = SoundSysData.PlaySoundListFirst.Next ; List->Next != NULL ; List = List->Next )
 		{
 			Sound = ( SOUND * )List->Data ;
 
@@ -2938,6 +3024,40 @@ LOOPSTART:
 			goto LOOPSTART ;
 		}
 	}
+
+	// 終了
+	return 0 ;
+}
+
+// サウンドを再生しているサウンドハンドルに対する処理を行う
+extern int ProcessPlaySoundMemAll( void )
+{
+	HANDLELIST *List ;
+	SOUND *Sound ;
+
+	if( CheckSoundSystem_Initialize_PF() == FALSE )
+	{
+		return -1 ;
+	}
+
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &SoundSysData.PlaySoundListCriticalSection ) ;
+
+LOOPSTART:
+
+	for( List = SoundSysData.PlaySoundListFirst.Next ; List->Next != NULL ; List = List->Next )
+	{
+		if( NS_CheckSoundMem( List->Handle ) == FALSE )
+		{
+			Sound = ( SOUND * )List->Data ;
+			Sound->AddPlaySoundList = FALSE ;
+			SubHandleList( &Sound->PlaySoundList ) ;
+			goto LOOPSTART ;
+		}
+	}
+
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &SoundSysData.PlaySoundListCriticalSection ) ;
 
 	// 終了
 	return 0 ;
@@ -3430,7 +3550,8 @@ extern void InitLoadSoundGParam( LOADSOUND_GPARAM *GParam )
 	// ループ位置の指定がある場合はストリームサウンドとして読み込む
 	if( GParam->CreateSoundDataType == DX_SOUNDDATATYPE_MEMNOPRESS &&
 		( GParam->CreateSoundLoopStartTimePosition   != GParam->CreateSoundLoopEndTimePosition ||
-		  GParam->CreateSoundLoopStartSamplePosition != GParam->CreateSoundLoopEndSamplePosition ) )
+		  GParam->CreateSoundLoopStartSamplePosition != GParam->CreateSoundLoopEndSamplePosition ) &&
+		GParam->CreateSoundIgnoreLoopAreaInfo == FALSE )
 	{
 		GParam->CreateSoundDataType = DX_SOUNDDATATYPE_MEMPRESS ;
 	}
@@ -4044,7 +4165,8 @@ static int LoadSoundMemBase_Static(
 	
 	// ループ範囲情報テキストファイルの読み込み
 	if( ( GParam->CreateSoundLoopStartTimePosition   == GParam->CreateSoundLoopEndTimePosition   ) &&
-		( GParam->CreateSoundLoopStartSamplePosition == GParam->CreateSoundLoopEndSamplePosition ) )
+		( GParam->CreateSoundLoopStartSamplePosition == GParam->CreateSoundLoopEndSamplePosition ) &&
+		GParam->CreateSoundIgnoreLoopAreaInfo == FALSE )
 	{
 		int LoopStartPos ;
 		int LoopEndPos ;
@@ -4126,7 +4248,7 @@ static int LoadSoundMemBase_Static(
 	// ループ位置の指定がある場合はループ位置を設定する
 	if( SetLoopAreaCancel == FALSE )
 	{
-		if( GParam->CreateSoundLoopStartTimePosition != GParam->CreateSoundLoopEndTimePosition )
+		if( GParam->CreateSoundLoopStartTimePosition != GParam->CreateSoundLoopEndTimePosition && GParam->CreateSoundIgnoreLoopAreaInfo == FALSE )
 		{
 			SetLoopAreaTimePosSoundMem_UseGParam( 
 				GParam->CreateSoundLoopStartTimePosition,
@@ -4136,7 +4258,7 @@ static int LoadSoundMemBase_Static(
 			) ;
 		}
 		else
-		if( GParam->CreateSoundLoopStartSamplePosition != GParam->CreateSoundLoopEndSamplePosition )
+		if( GParam->CreateSoundLoopStartSamplePosition != GParam->CreateSoundLoopEndSamplePosition && GParam->CreateSoundIgnoreLoopAreaInfo == FALSE )
 		{
 			SetLoopAreaSamplePosSoundMem_UseGParam( 
 				GParam->CreateSoundLoopStartSamplePosition,
@@ -4737,7 +4859,7 @@ STREAM_TYPE :
 
 	// ループ位置の指定がある場合はループ位置を設定する
 	{
-		if( GParam->CreateSoundLoopStartTimePosition != GParam->CreateSoundLoopEndTimePosition )
+		if( GParam->CreateSoundLoopStartTimePosition != GParam->CreateSoundLoopEndTimePosition && GParam->CreateSoundIgnoreLoopAreaInfo == FALSE )
 		{
 			SetLoopAreaTimePosSoundMem_UseGParam( 
 				GParam->CreateSoundLoopStartTimePosition,
@@ -4747,7 +4869,7 @@ STREAM_TYPE :
 			) ;
 		}
 		else
-		if( GParam->CreateSoundLoopStartSamplePosition != GParam->CreateSoundLoopEndSamplePosition )
+		if( GParam->CreateSoundLoopStartSamplePosition != GParam->CreateSoundLoopEndSamplePosition && GParam->CreateSoundIgnoreLoopAreaInfo == FALSE )
 		{
 			SetLoopAreaSamplePosSoundMem_UseGParam( 
 				GParam->CreateSoundLoopStartSamplePosition,
@@ -5175,19 +5297,31 @@ extern int NS_PlaySoundMem( int SoundHandle , int PlayType, int TopPositionFlag 
 	// ３Ｄサウンドの場合は再生中の３Ｄサウンドリストに追加する
 	if( Sound->Is3DSound != FALSE )
 	{
+		// クリティカルセクションの取得
+		CRITICALSECTION_LOCK( &SoundSysData.Play3DSoundListCriticalSection ) ;
+
 		if( Sound->AddPlay3DSoundList == FALSE )
 		{
 			Sound->AddPlay3DSoundList = TRUE ;
-
-			// クリティカルセクションの取得
-			CRITICALSECTION_LOCK( &SoundSysData.Play3DSoundListCriticalSection ) ;
-
 			AddHandleList( &SoundSysData.Play3DSoundListFirst, &Sound->Play3DSoundList, SoundHandle, Sound ) ;
-
-			// クリティカルセクションの解放
-			CriticalSection_Unlock( &SoundSysData.Play3DSoundListCriticalSection ) ;
 		}
+
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &SoundSysData.Play3DSoundListCriticalSection ) ;
 	}
+
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &SoundSysData.PlaySoundListCriticalSection ) ;
+
+	// 再生中のサウンドリストに追加する
+	if( Sound->AddPlaySoundList == FALSE )
+	{
+		Sound->AddPlaySoundList = TRUE ;
+		AddHandleList( &SoundSysData.PlaySoundListFirst, &Sound->PlaySoundList, SoundHandle, Sound ) ;
+	}
+
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &SoundSysData.PlaySoundListCriticalSection ) ;
 
 	// 再生ステータスによっては再生終了を待つ
 	if( PlayType == DX_PLAYTYPE_NORMAL )
@@ -5325,7 +5459,7 @@ END :
 
 
 // メモリに読み込んだWAVEデータの再生を止める
-extern int NS_StopSoundMem( int SoundHandle )
+extern int NS_StopSoundMem( int SoundHandle, int IsNextLoopEnd )
 {
 	SOUND * Sound ;
 	int IsPlay ;
@@ -5343,24 +5477,64 @@ extern int NS_StopSoundMem( int SoundHandle )
 	// サウンドタイプがストリーム風サウンドだった場合はそっちに処理を移す
 	if( Sound->Type == DX_SOUNDTYPE_STREAMSTYLE )
 	{
-		return NS_StopStreamSoundMem( SoundHandle ) ;
+		return NS_StopStreamSoundMem( SoundHandle, IsNextLoopEnd ) ;
 	}
 
-	// 再生停止
-	for( i = 0 ; i < Sound->ValidBufferNum ; i ++ )
+	// ループ終了時に止める指定の場合はループフラグを倒す( セルフミキシングの場合のみ )
+	if( IsNextLoopEnd )
 	{
-		Sound->BufferPlayStateBackupFlagValid[ i ] = FALSE ;
-		Sound->BufferPlayStateBackupFlag[ i ] = FALSE ;
-
-		IsPlay = SoundBuffer_CheckPlay( &Sound->Buffer[ i ] ) ;
-		if( IsPlay == -1 )
+		if( SoundSysData.EnableSoundCaptureFlag || SoundSysData.EnableSelfMixingFlag || SoundSysData.EnableChangeLoopFlag )
 		{
-			return -1 ;
+			for( i = 0 ; i < Sound->ValidBufferNum ; i ++ )
+			{
+				IsPlay = SoundBuffer_CheckPlay( &Sound->Buffer[ i ] ) ;
+				if( IsPlay == -1 )
+				{
+					return -1 ;
+				}
+
+				if( IsPlay )
+				{
+					Sound->Buffer[ i ].Loop = FALSE ;
+				}
+			}
 		}
-
-		if( IsPlay )
+		else
 		{
-			SoundBuffer_Stop( &Sound->Buffer[ i ], TRUE ) ;
+			for( i = 0 ; i < Sound->ValidBufferNum ; i ++ )
+			{
+				IsPlay = SoundBuffer_CheckPlay( &Sound->Buffer[ i ] ) ;
+				if( IsPlay == -1 )
+				{
+					return -1 ;
+				}
+
+				if( IsPlay )
+				{
+					SoundBuffer_Stop( &Sound->Buffer[ i ] ) ;
+					SoundBuffer_Play( &Sound->Buffer[ i ], FALSE ) ;
+				}
+			}
+		}
+	}
+	else
+	{
+		// 再生停止
+		for( i = 0 ; i < Sound->ValidBufferNum ; i ++ )
+		{
+			Sound->BufferPlayStateBackupFlagValid[ i ] = FALSE ;
+			Sound->BufferPlayStateBackupFlag[ i ] = FALSE ;
+
+			IsPlay = SoundBuffer_CheckPlay( &Sound->Buffer[ i ] ) ;
+			if( IsPlay == -1 )
+			{
+				return -1 ;
+			}
+
+			if( IsPlay )
+			{
+				SoundBuffer_Stop( &Sound->Buffer[ i ], TRUE ) ;
+			}
 		}
 	}
 
@@ -5395,7 +5569,10 @@ extern int NS_CheckSoundMem( int SoundHandle )
 		// システム側で止めている場合は止める前の状態を返す
 		if( Sound->BufferPlayStateBackupFlagValid[ i ] )
 		{
-			return Sound->BufferPlayStateBackupFlag[ i ] ? 1 : 0 ;
+			if( Sound->BufferPlayStateBackupFlag[ i ] )
+			{
+				return 1 ;
+			}
 		}
 		else
 		{
@@ -10960,7 +11137,7 @@ extern int NS_StopSoundFile( void )
 	}
 	if( SoundSysData.PlayWavSoundHandle == -1 ) return 0 ;
 
-	return NS_StopSoundMem( SoundSysData.PlayWavSoundHandle ) ;
+	return NS_StopSoundMem( SoundSysData.PlayWavSoundHandle, FALSE ) ;
 }
 
 // WAVEファイルの音量をセットする
@@ -12445,12 +12622,23 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 			BufferF = ( float * )SoundSysData.SelfMixingBuffer ;
 			if( SoundSysData.SelfMixingFormatIsFloat )
 			{
-				for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+				if( SoundSysData.SelfMixingFormat.nChannels == 1 )
 				{
-					*( ( float * )Buffer0 ) = BufferF[ 0 ] ;
-					*( ( float * )Buffer1 ) = BufferF[ 1 ] ;
-					Buffer0 += Stride ;
-					Buffer1 += Stride ;
+					for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+					{
+						*( ( float * )Buffer0 ) = ( BufferF[ 0 ] + BufferF[ 1 ] ) * 0.5f ;
+						Buffer0 += Stride ;
+					}
+				}
+				else
+				{
+					for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+					{
+						*( ( float * )Buffer0 ) = BufferF[ 0 ] ;
+						*( ( float * )Buffer1 ) = BufferF[ 1 ] ;
+						Buffer0 += Stride ;
+						Buffer1 += Stride ;
+					}
 				}
 			}
 			else
@@ -12458,53 +12646,101 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
  				switch( SoundSysData.SelfMixingFormatValidBitsPerSample )
  				{
  				case 16:
-					for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+					if( SoundSysData.SelfMixingFormat.nChannels == 1 )
 					{
-						*( ( short * )Buffer0 ) = ( short )_FTOL( BufferF[ 0 ] ) ;
-						*( ( short * )Buffer1 ) = ( short )_FTOL( BufferF[ 1 ] ) ;
-						Buffer0 += Stride ;
-						Buffer1 += Stride ;
+						for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+						{
+							*( ( short * )Buffer0 ) = ( short )_FTOL( ( BufferF[ 0 ] + BufferF[ 1 ] ) * 0.5f ) ;
+							Buffer0 += Stride ;
+						}
+					}
+					else
+					{
+						for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+						{
+							*( ( short * )Buffer0 ) = ( short )_FTOL( BufferF[ 0 ] ) ;
+							*( ( short * )Buffer1 ) = ( short )_FTOL( BufferF[ 1 ] ) ;
+							Buffer0 += Stride ;
+							Buffer1 += Stride ;
+						}
 					}
  					break ;
  
  				case 24:
  					if( SoundSysData.SelfMixingFormat.wBitsPerSample == 32 )
  					{
-						for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+						if( SoundSysData.SelfMixingFormat.nChannels == 1 )
 						{
-							*( ( int * )Buffer0 ) = ( ( short )_FTOL( BufferF[ 0 ] ) << 8 ) & 0xffffff ;
-							*( ( int * )Buffer1 ) = ( ( short )_FTOL( BufferF[ 1 ] ) << 8 ) & 0xffffff ;
-							Buffer0 += Stride ;
-							Buffer1 += Stride ;
+							for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+							{
+								*( ( int * )Buffer0 ) = ( ( short )_FTOL( ( BufferF[ 0 ] + BufferF[ 1 ] ) * 0.5f ) << 8 ) & 0xffffff ;
+								Buffer0 += Stride ;
+							}
+						}
+						else
+						{
+							for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+							{
+								*( ( int * )Buffer0 ) = ( ( short )_FTOL( BufferF[ 0 ] ) << 8 ) & 0xffffff ;
+								*( ( int * )Buffer1 ) = ( ( short )_FTOL( BufferF[ 1 ] ) << 8 ) & 0xffffff ;
+								Buffer0 += Stride ;
+								Buffer1 += Stride ;
+							}
 						}
  					}
  					else
  					{
-						for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+						if( SoundSysData.SelfMixingFormat.nChannels == 1 )
 						{
-			 				DWORD Dest0D ;
-			 				DWORD Dest1D ;
-			 				Dest0D = ( DWORD )_FTOL( BufferF[ 0 ] ) ;
-			 				Dest1D = ( DWORD )_FTOL( BufferF[ 1 ] ) ;
-			 				Buffer0[ 0 ] = ( BYTE )Dest0D ;
-			 				Buffer0[ 1 ] = ( BYTE )( Dest0D >> 8  ) ;
-			 				Buffer0[ 2 ] = ( BYTE )( Dest0D >> 16 ) ;
-			 				Buffer1[ 0 ] = ( BYTE )Dest1D ;
-			 				Buffer1[ 1 ] = ( BYTE )( Dest1D >> 8  ) ;
-			 				Buffer1[ 2 ] = ( BYTE )( Dest1D >> 16 ) ;
-							Buffer0 += Stride ;
-							Buffer1 += Stride ;
+							for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+							{
+			 					DWORD Dest0D ;
+			 					Dest0D = ( DWORD )_FTOL( ( BufferF[ 0 ] + BufferF[ 1 ] ) * 0.5f ) ;
+			 					Buffer0[ 0 ] = ( BYTE )Dest0D ;
+			 					Buffer0[ 1 ] = ( BYTE )( Dest0D >> 8  ) ;
+			 					Buffer0[ 2 ] = ( BYTE )( Dest0D >> 16 ) ;
+								Buffer0 += Stride ;
+							}
+						}
+						else
+						{
+							for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+							{
+			 					DWORD Dest0D ;
+			 					DWORD Dest1D ;
+			 					Dest0D = ( DWORD )_FTOL( BufferF[ 0 ] ) ;
+			 					Dest1D = ( DWORD )_FTOL( BufferF[ 1 ] ) ;
+			 					Buffer0[ 0 ] = ( BYTE )Dest0D ;
+			 					Buffer0[ 1 ] = ( BYTE )( Dest0D >> 8  ) ;
+			 					Buffer0[ 2 ] = ( BYTE )( Dest0D >> 16 ) ;
+			 					Buffer1[ 0 ] = ( BYTE )Dest1D ;
+			 					Buffer1[ 1 ] = ( BYTE )( Dest1D >> 8  ) ;
+			 					Buffer1[ 2 ] = ( BYTE )( Dest1D >> 16 ) ;
+								Buffer0 += Stride ;
+								Buffer1 += Stride ;
+							}
 						}
  					}
  					break ;
  
  				case 32:
-					for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+					if( SoundSysData.SelfMixingFormat.nChannels == 1 )
 					{
-						*( ( int * )Buffer0 ) = ( short )_FTOL( BufferF[ 0 ] ) << 16 ;
-						*( ( int * )Buffer1 ) = ( short )_FTOL( BufferF[ 1 ] ) << 16 ;
-						Buffer0 += Stride ;
-						Buffer1 += Stride ;
+						for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+						{
+							*( ( int * )Buffer0 ) = ( short )_FTOL( ( BufferF[ 0 ] + BufferF[ 1 ] ) * 0.5f ) << 16 ;
+							Buffer0 += Stride ;
+						}
+					}
+					else
+					{
+						for( i = 0 ; i < SampleNum ; i ++, BufferF += 2 )
+						{
+							*( ( int * )Buffer0 ) = ( short )_FTOL( BufferF[ 0 ] ) << 16 ;
+							*( ( int * )Buffer1 ) = ( short )_FTOL( BufferF[ 1 ] ) << 16 ;
+							Buffer0 += Stride ;
+							Buffer1 += Stride ;
+						}
 					}
  					break ;
  				}
@@ -12594,12 +12830,23 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
 			BufferI = ( int * )SoundSysData.SelfMixingBuffer ;
 			if( SoundSysData.SelfMixingFormatIsFloat )
 			{
-				for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+				if( SoundSysData.SelfMixingFormat.nChannels == 1 )
 				{
-					*( ( float * )Buffer0 ) = BufferI[ 0 ] * ( 1.0f / 32768.0f ) ;
-					*( ( float * )Buffer1 ) = BufferI[ 1 ] * ( 1.0f / 32768.0f ) ;
-					Buffer0 += Stride ;
-					Buffer1 += Stride ;
+					for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+					{
+						*( ( float * )Buffer0 ) = ( ( BufferI[ 0 ] + BufferI[ 1 ] ) >> 1 ) * ( 1.0f / 32768.0f ) ;
+						Buffer0 += Stride ;
+					}
+				}
+				else
+				{
+					for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+					{
+						*( ( float * )Buffer0 ) = BufferI[ 0 ] * ( 1.0f / 32768.0f ) ;
+						*( ( float * )Buffer1 ) = BufferI[ 1 ] * ( 1.0f / 32768.0f ) ;
+						Buffer0 += Stride ;
+						Buffer1 += Stride ;
+					}
 				}
 			}
 			else
@@ -12607,53 +12854,101 @@ extern int WriteSelfMixingSample( BYTE *Buffer0, BYTE *Buffer1, DWORD Stride, DW
  				switch( SoundSysData.SelfMixingFormatValidBitsPerSample )
  				{
  				case 16:
-					for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+					if( SoundSysData.SelfMixingFormat.nChannels == 1 )
 					{
-						*( ( short * )Buffer0 ) = ( short )BufferI[ 0 ] ;
-						*( ( short * )Buffer1 ) = ( short )BufferI[ 1 ] ;
-						Buffer0 += Stride ;
-						Buffer1 += Stride ;
+						for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+						{
+							*( ( short * )Buffer0 ) = ( short )( ( BufferI[ 0 ] + BufferI[ 1 ] ) >> 1 ) ;
+							Buffer0 += Stride ;
+						}
+					}
+					else
+					{
+						for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+						{
+							*( ( short * )Buffer0 ) = ( short )BufferI[ 0 ] ;
+							*( ( short * )Buffer1 ) = ( short )BufferI[ 1 ] ;
+							Buffer0 += Stride ;
+							Buffer1 += Stride ;
+						}
 					}
  					break ;
  
  				case 24:
  					if( SoundSysData.SelfMixingFormat.wBitsPerSample == 32 )
  					{
-						for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+						if( SoundSysData.SelfMixingFormat.nChannels == 1 )
 						{
-							*( ( int * )Buffer0 ) = ( ( short )BufferI[ 0 ] << 8 ) & 0xffffff ;
-							*( ( int * )Buffer1 ) = ( ( short )BufferI[ 1 ] << 8 ) & 0xffffff ;
-							Buffer0 += Stride ;
-							Buffer1 += Stride ;
+							for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+							{
+								*( ( int * )Buffer0 ) = ( ( short )( ( BufferI[ 0 ] + BufferI[ 1 ] ) >> 1 ) << 8 ) & 0xffffff ;
+								Buffer0 += Stride ;
+							}
+						}
+						else
+						{
+							for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+							{
+								*( ( int * )Buffer0 ) = ( ( short )BufferI[ 0 ] << 8 ) & 0xffffff ;
+								*( ( int * )Buffer1 ) = ( ( short )BufferI[ 1 ] << 8 ) & 0xffffff ;
+								Buffer0 += Stride ;
+								Buffer1 += Stride ;
+							}
 						}
  					}
  					else
  					{
-						for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+						if( SoundSysData.SelfMixingFormat.nChannels == 1 )
 						{
-			 				DWORD Dest0D ;
-			 				DWORD Dest1D ;
-			 				Dest0D = ( DWORD )BufferI[ 0 ] ;
-			 				Dest1D = ( DWORD )BufferI[ 1 ] ;
-			 				Buffer0[ 0 ] = ( BYTE )0 ;
-			 				Buffer0[ 1 ] = ( BYTE )Dest0D ;
-			 				Buffer0[ 2 ] = ( BYTE )( Dest0D >> 8 ) ;
-			 				Buffer1[ 0 ] = ( BYTE )0 ;
-			 				Buffer1[ 1 ] = ( BYTE )Dest1D ;
-			 				Buffer1[ 2 ] = ( BYTE )( Dest1D >> 8 ) ;
-							Buffer0 += Stride ;
-							Buffer1 += Stride ;
+							for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+							{
+			 					DWORD Dest0D ;
+			 					Dest0D = ( DWORD )( ( BufferI[ 0 ] + BufferI[ 1 ] ) >> 1 ) ;
+			 					Buffer0[ 0 ] = ( BYTE )0 ;
+			 					Buffer0[ 1 ] = ( BYTE )Dest0D ;
+			 					Buffer0[ 2 ] = ( BYTE )( Dest0D >> 8 ) ;
+								Buffer0 += Stride ;
+							}
+						}
+						else
+						{
+							for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+							{
+			 					DWORD Dest0D ;
+			 					DWORD Dest1D ;
+			 					Dest0D = ( DWORD )BufferI[ 0 ] ;
+			 					Dest1D = ( DWORD )BufferI[ 1 ] ;
+			 					Buffer0[ 0 ] = ( BYTE )0 ;
+			 					Buffer0[ 1 ] = ( BYTE )Dest0D ;
+			 					Buffer0[ 2 ] = ( BYTE )( Dest0D >> 8 ) ;
+			 					Buffer1[ 0 ] = ( BYTE )0 ;
+			 					Buffer1[ 1 ] = ( BYTE )Dest1D ;
+			 					Buffer1[ 2 ] = ( BYTE )( Dest1D >> 8 ) ;
+								Buffer0 += Stride ;
+								Buffer1 += Stride ;
+							}
 						}
  					}
  					break ;
  
  				case 32:
-					for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+					if( SoundSysData.SelfMixingFormat.nChannels == 1 )
 					{
-						*( ( int * )Buffer0 ) = ( short )BufferI[ 0 ] << 16 ;
-						*( ( int * )Buffer1 ) = ( short )BufferI[ 1 ] << 16 ;
-						Buffer0 += Stride ;
-						Buffer1 += Stride ;
+						for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+						{
+							*( ( int * )Buffer0 ) = ( short )( ( BufferI[ 0 ] + BufferI[ 1 ] ) >> 1 ) << 16 ;
+							Buffer0 += Stride ;
+						}
+					}
+					else
+					{
+						for( i = 0 ; i < SampleNum ; i ++, BufferI += 2 )
+						{
+							*( ( int * )Buffer0 ) = ( short )BufferI[ 0 ] << 16 ;
+							*( ( int * )Buffer1 ) = ( short )BufferI[ 1 ] << 16 ;
+							Buffer0 += Stride ;
+							Buffer1 += Stride ;
+						}
 					}
  					break ;
  				}
@@ -19540,7 +19835,7 @@ extern int NS_StopMusicMem( int MusicHandle )
 	// サウンドハンドルの再生の場合はサウンドを止める
 	if( MidiSystemData.DefaultHandle != 0 && MidiSystemData.DefaultHandleToSoundHandleFlag == TRUE )
 	{
-		NS_StopSoundMem( MidiSystemData.DefaultHandle ) ;
+		NS_StopSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
 		NS_DeleteSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
 
 		MidiSystemData.DefaultHandle = 0 ;
@@ -19824,7 +20119,7 @@ extern int NS_StopMusic( void )
 
 	if( MidiSystemData.DefaultHandleToSoundHandleFlag == TRUE )
 	{
-		NS_StopSoundMem( MidiSystemData.DefaultHandle ) ;
+		NS_StopSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
 		NS_DeleteSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
 	}
 	else
@@ -20156,7 +20451,7 @@ static int SoundTypeChangeToStream( int SoundHandle )
 
 	// 既存ハンドルの削除
 	{
-		NS_StopSoundMem( SoundHandle ) ;					// 再生中だったときのことを考えて止めておく
+		NS_StopSoundMem( SoundHandle, FALSE ) ;				// 再生中だったときのことを考えて止めておく
 		NS_DeleteSoundMem( SoundHandle, FALSE ) ;			// ハンドルを削除
 	}
 

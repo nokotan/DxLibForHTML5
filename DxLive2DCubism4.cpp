@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Live2D Cubism4 関係プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // ----------------------------------------------------------------------------
 
@@ -64,7 +64,7 @@ extern int Live2DCubism4_Initialize( void )
 	if( LIVE2DSYS.InitializeFlag == TRUE ) return 0 ;
 
 	// Live2D Cubism4 Model ハンドル管理情報の初期化
-	InitializeHandleManage( DX_HANDLETYPE_LIVE2D_CUBISM4_MODEL, sizeof( LIVE2DCUBISM4MODEL ), MAX_LIVE2D_CUBISM4_MODEL_NUM, Live2DCubism4_Model_InitializeHandle, Live2DCubism4_Model_TerminateHandle, L"Live2DModel" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_LIVE2D_CUBISM4_MODEL, sizeof( LIVE2DCUBISM4MODEL ), MAX_LIVE2D_CUBISM4_MODEL_NUM, Live2DCubism4_Model_InitializeHandle, Live2DCubism4_Model_TerminateHandle, NULL, L"Live2DModel" ) ;
 
 	//---- static 初期化 ----
 	D_JsonValue::StaticInitializeNotForClientCall() ;
@@ -219,6 +219,9 @@ static int Live2DCubism4_Model_InitializeHandle( HANDLEINFO * HandleInfo )
 	Model->ExRateX = 1.0f ;
 	Model->ExRateY = 1.0f ;
 	Model->RotAngle = 0.0f ;
+
+	// 最後に再生したモーションのグループ内の番号を初期化
+	Model->LastPlayMotionNo = -1 ;
 
 	// 終了
 	return 0 ;
@@ -601,6 +604,63 @@ extern int NS_Live2D_InitModel( void )
 	return AllHandleSub( DX_HANDLETYPE_LIVE2D_CUBISM4_MODEL ) ;
 }
 
+// Live2D のモデル描画で使用するシェーダーを設定する( ShaderHandle に -1 を渡すと解除 )
+extern int NS_Live2D_SetUserShader( int TargetShader /* DX_LIVE2D_SHADER_NORMAL_PIXEL 等 */ , int ShaderHandle )
+{
+	if( TargetShader < 0 || TargetShader >= DX_LIVE2D_SHADER_NUM )
+	{
+		return -1 ;
+	}
+
+	// シェーダーハンドルを保存
+	LIVE2DSYS.UserShader[ TargetShader ] = ShaderHandle ;
+
+	// 正常終了
+	return 0 ;
+}
+
+// Live2D のモデル描画の前に呼ばれるコールバック関数を設定する Callback に NULL を渡すと設定を解除 )
+extern int NS_Live2D_DrawCallback( void ( *Callback )( int Live2DModelHandle, int TextureIndex, void *UserData ), void *UserData )
+{
+	// 値を保存
+	LIVE2DSYS.DrawUserCallback = Callback ;
+	LIVE2DSYS.DrawUserCallbackData = UserData ;
+
+	// 正常終了
+	return 0 ;
+
+}
+
+// Live2D のモデル描画をする際に、画面サイズに応じたスケーリングを行うかを設定する( UseFlag  TRUE:スケーリングを行う( デフォルト )  FALSE:スケーリングを行わない )
+extern int NS_Live2D_SetUseAutoScaling( int UseFlag )
+{
+	// 値を保存
+	LIVE2DSYS.NotUseAutoScaling = UseFlag != 0 ? FALSE : TRUE ;
+
+	// 正常終了
+	return 0 ;
+}
+
+// Live2D のモデルを画面の中心に描画するかを設定する( UseFlag   TRUE:画面の中心に描画する( デフォルト )   FALSE:画面の中心に描画しない )
+extern int NS_Live2D_SetUseAutoCentering( int UseFlag )
+{
+	// 値を保存
+	LIVE2DSYS.NotUseAutoCentering = UseFlag != 0 ? FALSE : TRUE ;
+
+	// 正常終了
+	return 0 ;
+}
+
+// Live2D_Model_SetTranslate で指定する平行移動値の y の向きを反転するかを設定する( UseFlag   TRUE:反転する( デフォルト )   FALSE:反転しない )
+extern int NS_Live2D_SetUseReverseYAxis( int UseFlag )
+{
+	// 値を保存
+	LIVE2DSYS.NotUseReverseYAxis = UseFlag != 0 ? FALSE : TRUE ;
+
+	// 正常終了
+	return 0 ;
+}
+
 // Live2D のモデルの状態を更新する
 extern int NS_Live2D_Model_Update( int Live2DModelHandle, float DeltaTimeSeconds )
 {
@@ -672,28 +732,73 @@ extern int NS_Live2D_Model_Draw( int Live2DModelHandle )
 {
 	LIVE2DCUBISM4MODEL * Model ;
 	int windowWidth, windowHeight ;
+	D_CubismVector2 SizeInPixels ;
+	D_CubismVector2 OriginInPixels ;
+	float PixelsPerUnit ;
 
 	// エラー判定
 	if( LIVE2DCUBISM4MODELCHK( Live2DModelHandle, Model ) )
 		return -1 ;
 
+	// キャンバスサイズの取得
+	Model->AppModel->_model->GetCanvasInfo( &SizeInPixels, &OriginInPixels, &PixelsPerUnit ) ;
+
+	// 描画に使用しているハンドルを保存
+	LIVE2DSYS.NowDrawLive2DModelHandle = Live2DModelHandle ;
+
 	// 投影用マトリックス 
 	D_CubismMatrix44 *projection = new_D_CubismMatrix44() ;
 	NS_GetGraphSize( NS_GetDrawScreen(), &windowWidth, &windowHeight ) ;
-	projection->Scale( Model->ExRateX, Model->ExRateY * ( ( float )windowWidth / ( float )windowHeight ) ) ;
-	if( Model->PosX != 0.0f || Model->PosY != 0.0f )
+	if( LIVE2DSYS.NotUseAutoScaling )
 	{
-		projection->Translate( Model->PosX / windowWidth * 2.0f, Model->PosY / windowHeight * 2.0f ) ;
+		projection->Scale(
+			Model->ExRateX * PixelsPerUnit / ( float )windowWidth * 2.0f,
+			Model->ExRateY * PixelsPerUnit / ( float )windowWidth * 2.0f * ( ( float )windowWidth / ( float )windowHeight )
+		) ;
 	}
-	if( Model->RotAngle != 0.0f )
+	else
 	{
-		projection->RotateRelative( -Model->RotAngle ) ;
+		projection->Scale( Model->ExRateX, Model->ExRateY * ( ( float )windowWidth / ( float )windowHeight ) ) ;
 	}
+
+	if( LIVE2DSYS.NotUseAutoCentering )
+	{
+		if( LIVE2DSYS.NotUseReverseYAxis )
+		{
+			projection->Translate(
+				 ( Model->PosX - ( windowWidth  - SizeInPixels.X ) / 2.0f ) / windowWidth  * 2.0f ,
+				-( Model->PosY - ( windowHeight - SizeInPixels.Y ) / 2.0f ) / windowHeight * 2.0f
+			) ;
+		}
+		else
+		{
+			projection->Translate(
+				( Model->PosX - ( windowWidth  - SizeInPixels.X ) / 2.0f ) / windowWidth  * 2.0f ,
+				( Model->PosY - ( windowHeight - SizeInPixels.Y ) / 2.0f ) / windowHeight * 2.0f
+			) ;
+		}
+	}
+	else
+	{
+		if( LIVE2DSYS.NotUseReverseYAxis )
+		{
+			projection->Translate( Model->PosX / windowWidth * 2.0f, -Model->PosY / windowHeight * 2.0f ) ;
+		}
+		else
+		{
+			projection->Translate( Model->PosX / windowWidth * 2.0f, Model->PosY / windowHeight * 2.0f ) ;
+		}
+	}
+
+	projection->RotateRelative( -Model->RotAngle ) ;
 
 	// 描画
-	Model->AppModel->Draw( *projection );
+	Model->AppModel->Draw( *projection, LIVE2DSYS.NotUseAutoScaling == FALSE ) ;
 
 	delete_D_CubismMatrix44( projection ) ;
+
+	// 描画に使用しているモデルハンドルをリセット
+	LIVE2DSYS.NowDrawLive2DModelHandle = 0 ;
 
 	// 正常終了
 	return 0 ;
@@ -753,8 +858,32 @@ extern int Live2D_Model_StartMotion_WCHAR_T( int Live2DModelHandle, const wchar_
 	Result = Model->AppModel->StartMotion( UsegroupBuffer, no, D_CubismMotion_PriorityForce ) ;
 	WCHAR_T_TO_CHAR_STRING_END( group )
 
+	if( Result != InvalidMotionQueueEntryHandleValue )
+	{
+		Model->LastPlayMotionNo = no ;
+	}
+	else
+	{
+		Model->LastPlayMotionNo = -1 ;
+	}
+
 	// 終了
 	return Result == InvalidMotionQueueEntryHandleValue ? -1 : 0 ;
+}
+
+// Live2D のモデルで最後に再生したモーションのグループ内の番号を取得する
+extern int NS_Live2D_Model_GetLastPlayMotionNo( int Live2DModelHandle )
+{
+	LIVE2DCUBISM4MODEL * Model ;
+
+	// エラー判定
+	if( LIVE2DCUBISM4MODELCHK( Live2DModelHandle, Model ) )
+	{
+		return -1 ;
+	}
+
+	// 最後に再生したモーション番号を取得する
+	return Model->LastPlayMotionNo ;
 }
 
 // Live2D のモデルのモーション再生が終了しているかを取得する
@@ -768,6 +897,18 @@ extern int NS_Live2D_Model_IsMotionFinished( int Live2DModelHandle )
 
 	// モーションの再生が終了しているかどうか返す再生
 	return Model->AppModel->_motionManager->IsFinished() ? TRUE : FALSE ;
+}
+
+// Live2D のモデルのモーション再生時間を取得する
+extern float NS_Live2D_Model_GetMotionPlayTime( int Live2DModelHandle )
+{
+	LIVE2DCUBISM4MODEL * Model ;
+
+	// エラー判定
+	if( LIVE2DCUBISM4MODELCHK( Live2DModelHandle, Model ) )
+		return -1 ;
+
+	return Model->AppModel->_motionManager->GetMotionPlayTime() ;
 }
 
 // Live2D のモデルの指定の表情モーションをセットする
@@ -1561,6 +1702,39 @@ extern const TCHAR *NS_Live2D_Model_GetLipSyncParameterId( int Live2DModelHandle
 #endif 
 }
 
+// Live2D のモデルのキャンバスの横幅を取得する
+extern float NS_Live2D_Model_GetCanvasWidth( int Live2DModelHandle )
+{
+	LIVE2DCUBISM4MODEL * Model ;
+	D_CubismVector2 SizeInPixels ;
+	D_CubismVector2 OriginInPixels ;
+	float PixelsPerUnit ;
+
+	// エラー判定
+	if( LIVE2DCUBISM4MODELCHK( Live2DModelHandle, Model ) )
+		return -1.0f ;
+
+	Model->AppModel->_model->GetCanvasInfo( &SizeInPixels, &OriginInPixels, &PixelsPerUnit ) ;
+
+	return SizeInPixels.X ;
+}
+
+// Live2D のモデルのキャンバスの縦幅を取得する
+extern float NS_Live2D_Model_GetCanvasHeight( int Live2DModelHandle )
+{
+	LIVE2DCUBISM4MODEL * Model ;
+	D_CubismVector2 SizeInPixels ;
+	D_CubismVector2 OriginInPixels ;
+	float PixelsPerUnit ;
+
+	// エラー判定
+	if( LIVE2DCUBISM4MODELCHK( Live2DModelHandle, Model ) )
+		return -1.0f ;
+
+	Model->AppModel->_model->GetCanvasInfo( &SizeInPixels, &OriginInPixels, &PixelsPerUnit ) ;
+
+	return SizeInPixels.Y ;
+}
 
 
 

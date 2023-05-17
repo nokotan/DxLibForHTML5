@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字列入力プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -1318,7 +1318,7 @@ extern LRESULT IMEProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 }
 
 // 画面上に入力中の文字列を描画する
-static size_t SetupDrawIMEInputStringInfo( int x, int y, int AddY, RECT *DrawArea, int StrLen, int FontHandle, DRAWIMESTRINFO *DrawImeStrInfo, int *pCharNum, int *pLineNum )
+static size_t SetupDrawIMEInputStringInfo( int x, int y, int EnableExRate, double ExRateX, double ExRateY, int AddY, RECT *DrawArea, int StrLen, int FontHandle, DRAWIMESTRINFO *DrawImeStrInfo, int *pCharNum, int *pLineNum )
 {
 	int PosX ;
 	int PosY ;
@@ -1371,7 +1371,14 @@ static size_t SetupDrawIMEInputStringInfo( int x, int y, int AddY, RECT *DrawAre
 			}
 		}
 
-		CharWidth = GetDrawStringWidthToHandle_WCHAR_T( TempBuf, 0, Num, FontHandle, FALSE ) ;
+		if( EnableExRate )
+		{
+			CharWidth = GetDrawExtendStringWidthToHandle_WCHAR_T( ExRateX, TempBuf, 0, Num, FontHandle, FALSE ) ;
+		}
+		else
+		{
+			CharWidth = GetDrawStringWidthToHandle_WCHAR_T(                TempBuf, 0, Num, FontHandle, FALSE ) ;
+		}
 		if( PosX + CharWidth > DrawArea->right )
 		{
 			if( DrawImeStrInfo != NULL )
@@ -1433,9 +1440,10 @@ static size_t SetupDrawIMEInputStringInfo( int x, int y, int AddY, RECT *DrawAre
 
 	return sizeof( DRAWIMESTRINFO ) + sizeof( DRAWIMESTRLINEINFO ) * LineNum + sizeof( DRAWIMESTRCHARINFO ) * CharNum ;
 }
-extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int DrawCandidateList )
+
+static int DrawIMEInputStringBase( int x , int y , int EnableExRate, double ExRateX, double ExRateY, int SelectStringNum , int DrawCandidateList )
 {
-	int StrLen , FontSize , FontHandle ;
+	int StrLen , FontSizeX , FontSizeY , FontHandle ;
 	int PointX , PointY ;
 	int StrWidth ;
 	int CPointX = 0, CPointY = 0 ;
@@ -1455,7 +1463,12 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 	FontHandle = CharBuf.UseFontHandle == -1 ? NS_GetDefaultFontHandle() : CharBuf.UseFontHandle ;
 
 	// フォントサイズを得る
-	FontSize = NS_GetFontSizeToHandle( FontHandle ) ;
+	FontSizeY = FontSizeX = NS_GetFontSizeToHandle( FontHandle ) ;
+	if( EnableExRate )
+	{
+		FontSizeX = _DTOL( FontSizeX * ExRateX ) ;
+		FontSizeY = _DTOL( FontSizeY * ExRateY ) ;
+	}
 
 	// ３Ｄ有効フラグを得る
 	Use3DFlag = NS_GetUse3DFlag() ;
@@ -1465,7 +1478,7 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 	NS_GetDrawArea( &DrawRect ) ;
 
 	// １行辺りの縦幅を算出
-	AddY = FontSize + FontSize / 10 * 3 ;
+	AddY = FontSizeY + FontSizeY / 10 * 3 ;
 
 	// 入力文字列がない場合はここで終了
 	if( CharBuf.InputString[ 0 ] == 0 )
@@ -1492,7 +1505,7 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 	{
 		size_t BufferBytes ;
 
-		BufferBytes = SetupDrawIMEInputStringInfo( x, y, AddY, &DrawRect, StrLen, FontHandle, NULL, &CharNum, &LineNum ) ;
+		BufferBytes = SetupDrawIMEInputStringInfo( x, y, EnableExRate, ExRateX, ExRateY, AddY, &DrawRect, StrLen, FontHandle, NULL, &CharNum, &LineNum ) ;
 		DrawStrInfo = ( DRAWIMESTRINFO * )DXALLOC( BufferBytes ) ;
 		if( DrawStrInfo == NULL )
 		{
@@ -1501,7 +1514,7 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 		}
 		DrawStrInfo->LineInfo = ( DRAWIMESTRLINEINFO * )( DrawStrInfo + 1 ) ;
 		DrawStrInfo->CharInfo = ( DRAWIMESTRCHARINFO * )( DrawStrInfo->LineInfo + LineNum ) ;
-		SetupDrawIMEInputStringInfo( x, y, AddY, &DrawRect, StrLen, FontHandle, DrawStrInfo, NULL, NULL ) ;
+		SetupDrawIMEInputStringInfo( x, y, EnableExRate, ExRateX, ExRateY, AddY, &DrawRect, StrLen, FontHandle, DrawStrInfo, NULL, NULL ) ;
 	}
 
 	// 入力文字列を描画
@@ -1511,25 +1524,45 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 		{
 			NS_DrawBox(
 				DrawStrInfo->CharInfo[ i ].DrawX, DrawStrInfo->CharInfo[ i ].DrawY,
-				DrawStrInfo->CharInfo[ i ].DrawX + DrawStrInfo->CharInfo[ i ].Width, DrawStrInfo->CharInfo[ i ].DrawY + FontSize,
+				DrawStrInfo->CharInfo[ i ].DrawX + DrawStrInfo->CharInfo[ i ].Width, DrawStrInfo->CharInfo[ i ].DrawY + FontSizeY,
 				DrawStrInfo->CharInfo[ i ].IsSelect ? CharBuf.IMESelectStrBackColor : CharBuf.IMEStrBackColor,
 				TRUE
 			) ;
 		}
 
 		// 入力中文字列を描画
-		for( i = 0 ; i < DrawStrInfo->CharNum ; i++ )
+		if( EnableExRate )
 		{
-			DrawStringToHandle_WCHAR_T(
-				DrawStrInfo->CharInfo[ i ].DrawX, DrawStrInfo->CharInfo[ i ].DrawY,
-				DrawStrInfo->CharInfo[ i ].Char, DrawStrInfo->CharInfo[ i ].CharLength,
-				DrawStrInfo->CharInfo[ i ].IsSelect ? CharBuf.IMESelectStrColor : CharBuf.IMEStrColor,
-				FontHandle,
-				DrawStrInfo->CharInfo[ i ].IsSelect ?
-					( CharBuf.IMESelectStrEdgeColorEnable ? CharBuf.IMESelectStrEdgeColor : CharBuf.IMESelectStrBackColor ) :
-					( CharBuf.IMEStrEdgeColorEnable       ? CharBuf.IMEStrEdgeColor       : CharBuf.IMEStrBackColor       ),
-				FALSE
-			) ;
+			for( i = 0 ; i < DrawStrInfo->CharNum ; i++ )
+			{
+				DrawExtendStringToHandle_WCHAR_T(
+					DrawStrInfo->CharInfo[ i ].DrawX, DrawStrInfo->CharInfo[ i ].DrawY,
+					ExRateX, ExRateY,
+					DrawStrInfo->CharInfo[ i ].Char, DrawStrInfo->CharInfo[ i ].CharLength,
+					DrawStrInfo->CharInfo[ i ].IsSelect ? CharBuf.IMESelectStrColor : CharBuf.IMEStrColor,
+					FontHandle,
+					DrawStrInfo->CharInfo[ i ].IsSelect ?
+						( CharBuf.IMESelectStrEdgeColorEnable ? CharBuf.IMESelectStrEdgeColor : CharBuf.IMESelectStrBackColor ) :
+						( CharBuf.IMEStrEdgeColorEnable       ? CharBuf.IMEStrEdgeColor       : CharBuf.IMEStrBackColor       ),
+					FALSE
+				) ;
+			}
+		}
+		else
+		{
+			for( i = 0 ; i < DrawStrInfo->CharNum ; i++ )
+			{
+				DrawStringToHandle_WCHAR_T(
+					DrawStrInfo->CharInfo[ i ].DrawX, DrawStrInfo->CharInfo[ i ].DrawY,
+					DrawStrInfo->CharInfo[ i ].Char, DrawStrInfo->CharInfo[ i ].CharLength,
+					DrawStrInfo->CharInfo[ i ].IsSelect ? CharBuf.IMESelectStrColor : CharBuf.IMEStrColor,
+					FontHandle,
+					DrawStrInfo->CharInfo[ i ].IsSelect ?
+						( CharBuf.IMESelectStrEdgeColorEnable ? CharBuf.IMESelectStrEdgeColor : CharBuf.IMESelectStrBackColor ) :
+						( CharBuf.IMEStrEdgeColorEnable       ? CharBuf.IMEStrEdgeColor       : CharBuf.IMEStrBackColor       ),
+					FALSE
+				) ;
+			}
 		}
 	}
 
@@ -1549,7 +1582,7 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 		// カーソルの描画
 		NS_DrawBox(
 			CPointX,      CPointY,
-			CPointX + 2 , CPointY + FontSize,
+			CPointX + 2 , CPointY + FontSizeY,
 			CharBuf.IMECursorColor,
 			TRUE
 		) ;
@@ -1561,15 +1594,22 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 
 		StrNum = 0 ;
 		LineX = 0 ;
-		LinePX = FontSize / 20 ;
+		LinePX = FontSizeX / 20 ;
 		if( LinePX < 1 )
 		{
 			LinePX = 1 ;
 		}
-		LinePY = FontSize / 10 ;
+		LinePY = FontSizeY / 10 ;
 		for( i = 0 ; i < CharBuf.ClauseNum ; i ++ )
 		{
-			StrWidth = GetDrawStringWidthToHandle_WCHAR_T( &CharBuf.InputString[ StrNum ], 0, CharBuf.ClauseData[ i ] - StrNum, FontHandle, FALSE ) ;
+			if( EnableExRate )
+			{
+				StrWidth = GetDrawExtendStringWidthToHandle_WCHAR_T( ExRateX, &CharBuf.InputString[ StrNum ], 0, CharBuf.ClauseData[ i ] - StrNum, FontHandle, FALSE ) ;
+			}
+			else
+			{
+				StrWidth = GetDrawStringWidthToHandle_WCHAR_T(                &CharBuf.InputString[ StrNum ], 0, CharBuf.ClauseData[ i ] - StrNum, FontHandle, FALSE ) ;
+			}
 			if( StrWidth > LinePX * 4 )
 			{
 				int j, tl ;
@@ -1597,8 +1637,8 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 						dr = tr <  LineX + StrWidth ? DrawStrInfo->LineInfo[ j ].LineWidth : LineX + StrWidth - tl ;
 
 						NS_DrawBox( 
-							x + dl, y + j * AddY + FontSize + LinePY,
-							x + dr, y + j * AddY + FontSize + LinePY * ( IsSelect ? 3 : 2 ),
+							x + dl, y + j * AddY + FontSizeY + LinePY,
+							x + dr, y + j * AddY + FontSizeY + LinePY * ( IsSelect ? 3 : 2 ),
 							CharBuf.IMELineColor,
 							TRUE
 						) ;
@@ -1624,10 +1664,10 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 		int SelectionNumWidth ;
 
 		// 選択候補の最大数を表示すると描画範囲を超えてしまう場合は描画する候補の数を制限する
-		h = FontSize / 3 ;
-		if( FontSize * ( SelectStringNum + 1 ) + h * 2 > DrawRect.bottom - DrawRect.top )
+		h = FontSizeY / 3 ;
+		if( FontSizeY * ( SelectStringNum + 1 ) + h * 2 > DrawRect.bottom - DrawRect.top )
 		{
-			SelectStringNum = ( DrawRect.bottom - DrawRect.top - ( h * 2 ) ) / FontSize - 1 ;
+			SelectStringNum = ( DrawRect.bottom - DrawRect.top - ( h * 2 ) ) / FontSizeY - 1 ;
 			if( SelectStringNum <= 0 )
 			{
 				SelectStringNum = 1 ;
@@ -1648,14 +1688,28 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 			}
 
 			_SWNPRINTF( StringBuf, sizeof( StringBuf ) / 2, L"%d:%s", j + 1, ( wchar_t * )( ( BYTE * )CharBuf.CandidateList + CharBuf.CandidateList->dwOffset[ ui ] ) ) ;
-			Width = GetDrawStringWidthToHandle_WCHAR_T( StringBuf, 0, ( int )_WCSLEN( StringBuf ), FontHandle, FALSE ) ;
+			if( EnableExRate )
+			{
+				Width = GetDrawExtendStringWidthToHandle_WCHAR_T( ExRateX, StringBuf, 0, ( int )_WCSLEN( StringBuf ), FontHandle, FALSE ) ;
+			}
+			else
+			{
+				Width = GetDrawStringWidthToHandle_WCHAR_T(                StringBuf, 0, ( int )_WCSLEN( StringBuf ), FontHandle, FALSE ) ;
+			}
 			if( Width > MaxWidth )
 			{
 				MaxWidth = Width ;
 			}
 		}
 		_SWNPRINTF( StringBuf, sizeof( StringBuf ) / 2, L"%d/%d", CharBuf.CandidateList->dwSelection + 1, CharBuf.CandidateList->dwCount ) ;
-		SelectionNumWidth = GetDrawStringWidthToHandle_WCHAR_T( StringBuf, 0, ( int )_WCSLEN( StringBuf ), FontHandle, FALSE ) ;
+		if( EnableExRate )
+		{
+			SelectionNumWidth = GetDrawExtendStringWidthToHandle_WCHAR_T( ExRateX, StringBuf, 0, ( int )_WCSLEN( StringBuf ), FontHandle, FALSE ) ;
+		}
+		else
+		{
+			SelectionNumWidth = GetDrawStringWidthToHandle_WCHAR_T(                StringBuf, 0, ( int )_WCSLEN( StringBuf ), FontHandle, FALSE ) ;
+		}
 		if( SelectionNumWidth > MaxWidth )
 		{
 			MaxWidth = SelectionNumWidth ;
@@ -1669,15 +1723,15 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 			{
 				SETRECT(
 					SelectRect,
-					CPointX,					CPointY + FontSize + FontSize / 2 ,
-					CPointX + MaxWidth + h * 2,	CPointY + FontSize + FontSize / 2 + FontSize * j + h * 2
+					CPointX,					CPointY + FontSizeY + FontSizeY / 2 ,
+					CPointX + MaxWidth + h * 2,	CPointY + FontSizeY + FontSizeY / 2 + FontSizeY * j + h * 2
 				) ;
 
 				// インプット文字描画位置より下の位置に配置できるか検証
 				if( SelectRect.bottom > DrawRect.bottom )
 				{
 					// 出来ない場合はインプット文字描画位置より上の位置に配置を試みる
-					if( y - FontSize * j - FontSize / 2 - h * 2 < DrawRect.top )
+					if( y - FontSizeY * j - FontSizeY / 2 - h * 2 < DrawRect.top )
 					{	
 						// それでも駄目な場合は無理やり下の位置に描画する
 						j = SelectRect.bottom - DrawRect.bottom ;
@@ -1685,7 +1739,7 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 					else
 					{
 						// 上の位置を起点に配置
-						j = SelectRect.top - ( y - FontSize * j - FontSize / 2 - h * 2 ) ;
+						j = SelectRect.top - ( y - FontSizeY * j - FontSizeY / 2 - h * 2 ) ;
 					}
 
 					// 高さを補正
@@ -1718,18 +1772,44 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 				IsSelect = ( ui == CharBuf.CandidateList->dwSelection ) ? TRUE : FALSE ;
 				if( IsSelect && CharBuf.IMEConvWinSelectStrBackColorEnable )
 				{
-					NS_DrawBox( SelectRect.left + 1, PointY + j * FontSize , SelectRect.right - 1, PointY + ( j + 1 ) * FontSize, CharBuf.IMEConvWinSelectStrBackColor, TRUE ) ;
+					NS_DrawBox( SelectRect.left + 1, PointY + j * FontSizeY , SelectRect.right - 1, PointY + ( j + 1 ) * FontSizeY, CharBuf.IMEConvWinSelectStrBackColor, TRUE ) ;
 				}
 
 				_SWNPRINTF( StringBuf, sizeof( StringBuf ) / 2, L"%d:%s", j + 1, ( wchar_t * )( ( BYTE * )CharBuf.CandidateList + CharBuf.CandidateList->dwOffset[ui] ) ) ;
-				DrawStringToHandle_WCHAR_T( PointX , PointY + j * FontSize , StringBuf, _WCSLEN( StringBuf ),
-					IsSelect ? CharBuf.IMEConvWinSelectStrColor     : CharBuf.IMEConvWinStrColor , FontHandle ,
-					IsSelect ? CharBuf.IMEConvWinSelectStrEdgeColor : CharBuf.IMEConvWinStrEdgeColor, FALSE ) ;
+				if( EnableExRate )
+				{
+					DrawExtendStringToHandle_WCHAR_T(
+						PointX , PointY + j * FontSizeY ,
+						ExRateX, ExRateY,
+						StringBuf, _WCSLEN( StringBuf ),
+						IsSelect ? CharBuf.IMEConvWinSelectStrColor     : CharBuf.IMEConvWinStrColor , FontHandle ,
+						IsSelect ? CharBuf.IMEConvWinSelectStrEdgeColor : CharBuf.IMEConvWinStrEdgeColor, FALSE ) ;
+				}
+				else
+				{
+					DrawStringToHandle_WCHAR_T(
+						PointX , PointY + j * FontSizeY ,
+						StringBuf, _WCSLEN( StringBuf ),
+						IsSelect ? CharBuf.IMEConvWinSelectStrColor     : CharBuf.IMEConvWinStrColor , FontHandle ,
+						IsSelect ? CharBuf.IMEConvWinSelectStrEdgeColor : CharBuf.IMEConvWinStrEdgeColor, FALSE ) ;
+				}
 			}
  
 			// 候補総数の内何番目か、の情報を描画する
 			_SWNPRINTF( StringBuf, sizeof( StringBuf ) / 2, L"%d/%d", CharBuf.CandidateList->dwSelection + 1, CharBuf.CandidateList->dwCount ) ;
-			DrawStringToHandle_WCHAR_T( PointX + MaxWidth - SelectionNumWidth, PointY + j * FontSize , StringBuf, _WCSLEN( StringBuf ), CharBuf.IMEConvWinStrColor , FontHandle , CharBuf.IMEConvWinStrEdgeColor, FALSE ) ;
+			if( EnableExRate )
+			{
+				DrawExtendStringToHandle_WCHAR_T(
+					PointX + MaxWidth - SelectionNumWidth, PointY + j * FontSizeY ,
+					ExRateX, ExRateY,
+					StringBuf, _WCSLEN( StringBuf ), CharBuf.IMEConvWinStrColor , FontHandle , CharBuf.IMEConvWinStrEdgeColor, FALSE ) ;
+			}
+			else
+			{
+				DrawStringToHandle_WCHAR_T(
+					PointX + MaxWidth - SelectionNumWidth, PointY + j * FontSizeY ,
+					StringBuf, _WCSLEN( StringBuf ), CharBuf.IMEConvWinStrColor , FontHandle , CharBuf.IMEConvWinStrEdgeColor, FALSE ) ;
+			}
 
 			// 候補リストの開始インデックスと候補リストのページサイズを変更
 			{
@@ -1762,6 +1842,17 @@ extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int Draw
 
 	// 終了
 	return 0 ;
+}
+
+extern int NS_DrawIMEInputString( int x , int y , int SelectStringNum , int DrawCandidateList )
+{
+	return DrawIMEInputStringBase( x, y, FALSE, 1.0, 1.0, SelectStringNum, DrawCandidateList ) ;
+}
+
+// 画面上に入力中の文字列を描画する( 拡大率付き )
+extern int NS_DrawIMEInputExtendString( int x, int y, double ExRateX, double ExRateY, int SelectStringNum , int DrawCandidateList )
+{
+	return DrawIMEInputStringBase( x, y, TRUE, ExRateX, ExRateY, SelectStringNum, DrawCandidateList ) ;
 }
 
 // ＩＭＥを使用するかどうかの状態を更新する
@@ -2432,6 +2523,7 @@ extern int NS_DrawObtainsString_CharClip(
 #ifdef UNICODE
 	return DrawObtainsString_CharClip_WCHAR_T(
 		x, y,
+		FALSE, 1.0, 1.0,
 		AddY,
 		String,
 		-1,
@@ -2454,6 +2546,7 @@ extern int NS_DrawObtainsString_CharClip(
 
 	Result = DrawObtainsString_CharClip_WCHAR_T(
 		x, y,
+		FALSE, 1.0, 1.0,
 		AddY,
 		UseStringBuffer,
 		-1,
@@ -2484,6 +2577,7 @@ extern int NS_DrawObtainsNString_CharClip( int x, int y, int AddY, const TCHAR *
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( String, StringLength, return -1 )
 	Result = DrawObtainsString_CharClip_WCHAR_T(
 		x, y,
+		FALSE, 1.0, 1.0,
 		AddY,
 		UseStringBuffer,
 		-1,
@@ -2504,6 +2598,7 @@ extern int NS_DrawObtainsNString_CharClip( int x, int y, int AddY, const TCHAR *
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( String, StringLength, return -1 )
 	Result = DrawObtainsString_CharClip_WCHAR_T(
 		x, y,
+		FALSE, 1.0, 1.0,
 		AddY,
 		UseStringBuffer,
 		-1,
@@ -2527,6 +2622,7 @@ extern int NS_DrawObtainsNString_CharClip( int x, int y, int AddY, const TCHAR *
 // 描画可能領域に収まるように改行しながら文字列を描画( クリップが文字単位 )
 extern int DrawObtainsString_CharClip_WCHAR_T(
 	int x, int y,
+	int EnableExRate, double ExRateX, double ExRateY,
 	int AddY,
 	const wchar_t *String,
 	int StrLen,
@@ -2635,7 +2731,14 @@ extern int DrawObtainsString_CharClip_WCHAR_T(
 //	}
 //	else
 	{
-		int smin = 0, smax = 0;
+		int smin = 0, smax = 0 ;
+		int FontSize ;
+
+		FontSize = NS_GetFontSizeToHandle( FontHandle ) ;
+		if( EnableExRate )
+		{
+			FontSize = _DTOL( FontSize * ExRateY ) ;
+		}
 
 		if( SelectStart != -1 )
 		{
@@ -2679,7 +2782,14 @@ extern int DrawObtainsString_CharClip_WCHAR_T(
 				}
 			}
 
-			StrWidth = GetDrawStringWidthToHandle_WCHAR_T( TempBuf, 0, Num, FontHandle, FALSE ) ;
+			if( EnableExRate )
+			{
+				StrWidth = GetDrawExtendStringWidthToHandle_WCHAR_T( ExRateX, TempBuf, 0, Num, FontHandle, FALSE ) ;
+			}
+			else
+			{
+				StrWidth = GetDrawStringWidthToHandle_WCHAR_T(                TempBuf, 0, Num, FontHandle, FALSE ) ;
+			}
 			if( PointX + StrWidth > DrawRect.right )
 			{
 				PointX = x ;
@@ -2690,12 +2800,26 @@ extern int DrawObtainsString_CharClip_WCHAR_T(
 			{
 				if( SelectStart != -1 && i >= smin && i < smax )
 				{
-					NS_DrawBox( PointX, PointY, PointX + StrWidth, PointY + NS_GetFontSizeToHandle( FontHandle ), SelectBackColor, TRUE ) ; 
-					DrawStringToHandle_WCHAR_T( PointX, PointY, TempBuf, _WCSLEN( TempBuf ), SelectStrColor, FontHandle, SelectStrEdgeColor, FALSE ) ;
+					NS_DrawBox( PointX, PointY, PointX + StrWidth, PointY + FontSize, SelectBackColor, TRUE ) ; 
+					if( EnableExRate )
+					{
+						DrawExtendStringToHandle_WCHAR_T( PointX, PointY, ExRateX, ExRateY, TempBuf, _WCSLEN( TempBuf ), SelectStrColor, FontHandle, SelectStrEdgeColor, FALSE ) ;
+					}
+					else
+					{
+						DrawStringToHandle_WCHAR_T(       PointX, PointY,                   TempBuf, _WCSLEN( TempBuf ), SelectStrColor, FontHandle, SelectStrEdgeColor, FALSE ) ;
+					}
 				}
 				else
 				{
-					DrawStringToHandle_WCHAR_T( PointX, PointY, TempBuf, _WCSLEN( TempBuf ), StrColor, FontHandle, StrEdgeColor, FALSE ) ;
+					if( EnableExRate )
+					{
+						DrawExtendStringToHandle_WCHAR_T( PointX, PointY, ExRateX, ExRateY, TempBuf, _WCSLEN( TempBuf ), StrColor, FontHandle, StrEdgeColor, FALSE ) ;
+					}
+					else
+					{
+						DrawStringToHandle_WCHAR_T(       PointX, PointY,                   TempBuf, _WCSLEN( TempBuf ), StrColor, FontHandle, StrEdgeColor, FALSE ) ;
+					}
 				}
 			}
 
@@ -2789,6 +2913,7 @@ extern int NS_GetObtainsStringCharPosition_CharClip( int x, int y, int AddY, con
 #ifdef UNICODE
 	return DrawObtainsString_CharClip_WCHAR_T(
 		x, y,
+		FALSE, 1.0, 1.0,
 		AddY,
 		String,
 		StrLen,
@@ -2811,6 +2936,7 @@ extern int NS_GetObtainsStringCharPosition_CharClip( int x, int y, int AddY, con
 
 	Result = DrawObtainsString_CharClip_WCHAR_T(
 		x, y,
+		FALSE, 1.0, 1.0,
 		AddY,
 		UseStringBuffer,
 		StrLen,
@@ -4029,7 +4155,7 @@ extern int NS_ProcessActKeyInput( void )
 				if( Imc )
 				{
 					WinAPIData.ImmFunc.ImmSetOpenStatusFunc( Imc, TRUE );
-					WinAPIData.ImmFunc.ImmSetCompositionStringFunc( Imc, SCS_SETSTR, CharBuf.InputTempString, ( DWORD )_WCSLEN( CharBuf.InputTempString ), 0, 0 );
+					WinAPIData.ImmFunc.ImmSetCompositionStringFunc( Imc, SCS_SETSTR, CharBuf.InputTempString, ( DWORD )_WCSLEN( CharBuf.InputTempString ) * sizeof( wchar_t ), 0, 0 );
 					WinAPIData.ImmFunc.ImmReleaseContextFunc( DefHwnd , Imc );
 				}
 			}
@@ -4149,7 +4275,7 @@ extern int NS_ProcessActKeyInput( void )
 #endif // UNICODE
 					// 設定を初期化
 					WinAPIData.ImmFunc.ImmNotifyIMEFunc( Imc , NI_COMPOSITIONSTR ,  CPS_CANCEL , 0  );
-					WinAPIData.ImmFunc.ImmSetCompositionStringFunc( Imc, SCS_SETSTR, TempString, ( DWORD )_WCSLEN( TempString ), 0, 0 );
+					WinAPIData.ImmFunc.ImmSetCompositionStringFunc( Imc, SCS_SETSTR, TempString, ( DWORD )_WCSLEN( TempString ) * sizeof( wchar_t ), 0, 0 );
 				}
 
 				// 入力コンテキストの削除
@@ -4968,10 +5094,10 @@ extern int NS_SetKeyInputDrawArea( int x1, int y1, int x2, int y2, int InputHand
 }
 
 // キー入力中データの描画
-extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCandidateList )
+static int DrawKeyInputStringBase( int x, int y, int EnableExRate, double ExRateX, double ExRateY, int InputHandle , int DrawCandidateList )
 {
 	INPUTDATA * Input ;
-	int Use3DFlag , FontSize , FontHandle ;
+	int Use3DFlag , FontSizeY , FontHandle ;
 	int PointX ;
 	int PointY ;
 	int AddY ;
@@ -4992,8 +5118,12 @@ extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCand
 	FontHandle = CharBuf.UseFontHandle == -1 ? NS_GetDefaultFontHandle() : CharBuf.UseFontHandle ;
 
 	// フォントサイズの取得
-	FontSize = NS_GetFontSizeToHandle( FontHandle ) ;
-	
+	FontSizeY = NS_GetFontSizeToHandle( FontHandle ) ;
+	if( EnableExRate )
+	{
+		FontSizeY = _DTOL( FontSizeY * ExRateY ) ;
+	}
+
 	// カーソル点滅処理
 	if( CharBuf.CBrinkFlag == TRUE )
 	{
@@ -5028,7 +5158,7 @@ extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCand
 //		int SizeX, SizeY, LineCount ;
 		int PosX, PosY ;
 
-		AddY = FontSize + FontSize / 10 * 3 ;
+		AddY = FontSizeY + FontSizeY / 10 * 3 ;
 
 		if( DrawRect.left == DrawRect.right ||
 			DrawRect.bottom == DrawRect.top )
@@ -5065,6 +5195,7 @@ extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCand
 
 		DrawObtainsString_CharClip_WCHAR_T(
 			x, y,
+			EnableExRate, ExRateX, ExRateY,
 			AddY,
 			Input->Buffer,
 			-1,
@@ -5085,6 +5216,7 @@ extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCand
 				{
 					DrawObtainsString_CharClip_WCHAR_T(
 						x, y,
+						EnableExRate, ExRateX, ExRateY,
 						AddY,
 						Input->Buffer + Input->DrawStartPos,
 						Input->Point  - Input->DrawStartPos,
@@ -5128,6 +5260,7 @@ extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCand
 		DrawObtainsString_CharClip_WCHAR_T(
 			x,
 			y,
+			EnableExRate, ExRateX, ExRateY,
 			AddY,
 			Input->Buffer + Input->DrawStartPos,
 			Input->Point - Input->DrawStartPos,
@@ -5147,7 +5280,7 @@ extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCand
 		if( CharBuf.CBrinkDrawFlag == TRUE && InputHandle == CharBuf.ActiveInputHandle )
 	//		|| ( InputHandle == CharBuf.ActiveInputHandle && CharBuf.IMESwitch == TRUE ) )
 		{
-			NS_DrawObtainsBox( PointX , PointY , PointX + 2 , PointY + FontSize , FontSize + FontSize / 10 * 3 , CharBuf.NormalCursorColor , TRUE ) ;
+			NS_DrawObtainsBox( PointX , PointY , PointX + 2 , PointY + FontSizeY , FontSizeY + FontSizeY / 10 * 3 , CharBuf.NormalCursorColor , TRUE ) ;
 		}
 	}
 
@@ -5155,6 +5288,7 @@ extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCand
 	DrawObtainsString_CharClip_WCHAR_T(
 		x,
 		y,
+		EnableExRate, ExRateX, ExRateY,
 		AddY,
 		Input->Buffer + Input->DrawStartPos,
 		-1,
@@ -5177,7 +5311,7 @@ extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCand
 	// 入力中文字列の描画
 	if( InputHandle == CharBuf.ActiveInputHandle )
 	{
-		NS_DrawIMEInputString( PointX , PointY , 5 , DrawCandidateList ) ; 
+		DrawIMEInputStringBase( PointX , PointY , EnableExRate, ExRateX, ExRateY, 5 , DrawCandidateList ) ; 
 	}
 
 	// データを元に戻す
@@ -5185,6 +5319,18 @@ extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCand
 
 	// 終了
 	return 0 ;
+}
+
+// キー入力中データの描画
+extern int NS_DrawKeyInputString( int x , int y , int InputHandle , int DrawCandidateList )
+{
+	return DrawKeyInputStringBase( x, y, FALSE, 0.0, 0.0, InputHandle, DrawCandidateList ) ;
+}
+
+// キー入力ハンドルの入力中情報の描画( 拡大率指定付き )
+extern int NS_DrawKeyInputExtendString( int x, int y, double ExRateX, double ExRateY, int InputHandle , int DrawCandidateList )
+{
+	return DrawKeyInputStringBase( x, y, TRUE, ExRateX, ExRateY, InputHandle, DrawCandidateList ) ;
 }
 
 // キー入力時のカーソルの点滅する早さをセットする
@@ -5631,6 +5777,14 @@ extern const IMEINPUTDATA *NS_GetIMEInputData( void )
 	LPIMEINPUTDATA IMEInput ;
 	int TotalSize, i, Len ;
 	LPIMEINPUTCLAUSEDATA IMEClause ;
+#ifndef UNICODE
+	static char ConvBuffer0[ 1024 ] ;
+	static char ConvBuffer1[ 1024 ] ;
+	char *TempConvBuffer0 = NULL ;
+	char *TempConvBuffer1 = NULL ;
+	char *UseConvBuffer0 ;
+	char *UseConvBuffer1 ;
+#endif // UNICODE
 
 	// 既に確保されていたら解放
 	if( CharBuf.IMEInputData )
@@ -5682,7 +5836,36 @@ extern const IMEINPUTDATA *NS_GetIMEInputData( void )
 		TLen = ( int )_TSTRLEN( IMEInput->InputString ) ;
 
 		// カーソル位置のセット
-		IMEInput->CursorPosition = NS_GetStringPoint( IMEInput->InputString , CharBuf.InputPoint ) ;
+		int CharPositionW ;
+#ifdef UNICODE
+		CharPositionW = NS_GetStringPoint( IMEInput->InputString , CharBuf.InputPoint ) ;
+		IMEInput->CursorPosition = CharPositionW ;
+#else
+		CharPositionW = GetStringPoint2_WCHAR_T( CharBuf.InputString, CharBuf.InputPoint ) ;
+		if( ( CharPositionW + 1 ) * 8 > sizeof( ConvBuffer0 ) )
+		{
+			TempConvBuffer0 = ( char * )DXALLOC( ( CharPositionW + 1 ) * 8 ) ;
+			if( TempConvBuffer0 == NULL )
+			{
+				DXST_LOGFILE_ADDUTF16LE( "\xab\x30\xfc\x30\xbd\x30\xeb\x30\x4d\x4f\x6e\x7f\xe6\x51\x06\x74\x28\x75\x30\x00\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"カーソル位置処理用0のメモリの確保に失敗しました\n" @*/ ) ;
+				return NULL ;
+			}
+			UseConvBuffer0 = TempConvBuffer0 ;
+		}
+		else
+		{
+			UseConvBuffer0 = ConvBuffer0 ;
+		}
+		ConvString( ( const char * )CharBuf.InputString, CharPositionW, WCHAR_T_CHARCODEFORMAT, UseConvBuffer0, ( CharPositionW + 1 ) * 8, _TCHARCODEFORMAT ) ;
+
+		IMEInput->CursorPosition = ( int )_STRLEN( UseConvBuffer0 ) ;
+
+		if( TempConvBuffer0 != NULL )
+		{
+			DXFREE( TempConvBuffer0 ) ;
+			TempConvBuffer0 = NULL ;
+		}
+#endif // UNICODE
 
 		// 分節情報のセット
 		if( CharBuf.ClauseNum > 1 )
@@ -5696,6 +5879,11 @@ extern const IMEINPUTDATA *NS_GetIMEInputData( void )
 #ifdef UNICODE
 				IMEClause->Position = CharBuf.ClauseData[ i ] ;
 				IMEClause->Length   = CharBuf.ClauseData[ i + 1 ] - IMEClause->Position ;
+
+				if( IMEClause->Position == IMEInput->CursorPosition )
+				{
+					IMEInput->SelectClause = i ;
+				}
 #else
 				int CharPosition0 ;
 				int CharPosition1 ;
@@ -5705,17 +5893,67 @@ extern const IMEINPUTDATA *NS_GetIMEInputData( void )
 				CharPosition0 = GetStringPoint2_WCHAR_T( CharBuf.InputString, CharBuf.ClauseData[ i     ] ) ;
 				CharPosition1 = GetStringPoint2_WCHAR_T( CharBuf.InputString, CharBuf.ClauseData[ i + 1 ] ) ;
 
-				CharBytePosition0 = NS_GetStringPoint( IMEInput->InputString, CharPosition0 ) * sizeof( char ) ;
-				CharBytePosition1 = NS_GetStringPoint( IMEInput->InputString, CharPosition1 ) * sizeof( char ) ;
+				if( ( CharPosition0 + 1 ) * 8 > sizeof( ConvBuffer0 ) )
+				{
+					TempConvBuffer0 = ( char * )DXALLOC( ( CharPosition0 + 1 ) * 8 ) ;
+					if( TempConvBuffer0 == NULL )
+					{
+						DXST_LOGFILE_ADDUTF16LE( "\x87\x65\xc0\x7b\x87\x65\x57\x5b\x17\x52\x09\x59\xdb\x63\xe6\x51\x06\x74\x28\x75\x30\x00\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"文節文字列変換処理用0のメモリの確保に失敗しました\n" @*/ ) ;
+						return NULL ;
+					}
+					UseConvBuffer0 = TempConvBuffer0 ;
+				}
+				else
+				{
+					UseConvBuffer0 = ConvBuffer0 ;
+				}
+
+				if( ( CharPosition1 + 1 ) * 8 > sizeof( ConvBuffer1 ) )
+				{
+					TempConvBuffer1 = ( char * )DXALLOC( ( CharPosition1 + 1 ) * 8 ) ;
+					if( TempConvBuffer1 == NULL )
+					{
+						DXST_LOGFILE_ADDUTF16LE( "\x87\x65\xc0\x7b\x87\x65\x57\x5b\x17\x52\x09\x59\xdb\x63\xe6\x51\x06\x74\x28\x75\x30\x00\x6e\x30\xe1\x30\xe2\x30\xea\x30\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"文節文字列変換処理用0のメモリの確保に失敗しました\n" @*/ ) ;
+						if( TempConvBuffer0 != NULL )
+						{
+							DXFREE( TempConvBuffer0 ) ;
+							TempConvBuffer0 = NULL ;
+						}
+						return NULL ;
+					}
+					UseConvBuffer1 = TempConvBuffer1 ;
+				}
+				else
+				{
+					UseConvBuffer1 = ConvBuffer1 ;
+				}
+
+				ConvString( ( const char * )CharBuf.InputString, CharPosition0, WCHAR_T_CHARCODEFORMAT, UseConvBuffer0, ( CharPosition0 + 1 ) * 8, _TCHARCODEFORMAT ) ;
+				ConvString( ( const char * )CharBuf.InputString, CharPosition1, WCHAR_T_CHARCODEFORMAT, UseConvBuffer1, ( CharPosition1 + 1 ) * 8, _TCHARCODEFORMAT ) ;
+
+				CharBytePosition0 = ( int )_STRLEN( UseConvBuffer0 ) ;
+				CharBytePosition1 = ( int )_STRLEN( UseConvBuffer1 ) ;
+
+				if( TempConvBuffer0 != NULL )
+				{
+					DXFREE( TempConvBuffer0 ) ;
+					TempConvBuffer0 = NULL ;
+				}
+
+				if( TempConvBuffer1 != NULL )
+				{
+					DXFREE( TempConvBuffer1 ) ;
+					TempConvBuffer1 = NULL ;
+				}
 
 				IMEClause->Position = CharBytePosition0 ;
 				IMEClause->Length   = CharBytePosition1 - IMEClause->Position ;
-#endif
 
-				if( IMEClause->Position == IMEInput->CursorPosition )
+				if( CharPosition0 == CharPositionW )
 				{
 					IMEInput->SelectClause = i ;
 				}
+#endif
 			}
 
 			NextP = IMEInput->ClauseData + IMEInput->ClauseNum ;
@@ -5782,6 +6020,61 @@ extern const IMEINPUTDATA *NS_GetIMEInputData( void )
 
 	// 作成した情報を返す
 	return CharBuf.IMEInputData ;
+}
+
+// IMEで入力中の文字列を変更する( IMEで文字列を入力中ではなかった場合は何も起こりません )
+extern int NS_SetIMEInputString( const TCHAR *String )
+{
+#ifdef UNICODE
+	return SetIMEInputString_WCHAR_T( String ) ;
+#else
+	int Result ;
+
+	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( String, return -1 )
+
+	Result = SetIMEInputString_WCHAR_T( UseStringBuffer ) ;
+
+	TCHAR_TO_WCHAR_T_STRING_END( String )
+
+	return Result ;
+#endif
+}
+
+// IMEで入力中の文字列を変更する( IMEで文字列を入力中ではなかった場合は何も起こりません )
+extern int NS_SetIMEInputStringWithStrLen( const TCHAR *String, size_t StringLength )
+{
+	int Result ;
+#ifdef UNICODE
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( String, StringLength, return -1 )
+	Result = SetIMEInputString_WCHAR_T( UseStringBuffer ) ;
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( String )
+#else
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( String, StringLength, return -1 )
+	Result = SetIMEInputString_WCHAR_T( UseStringBuffer ) ;
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( String )
+#endif
+	return Result ;
+}
+
+extern int SetIMEInputString_WCHAR_T( const wchar_t *String )
+{
+	HIMC Imc ;
+
+	if( NS_GetIMEInputData() == NULL )
+	{
+		return 0 ;
+	}
+
+	Imc = WinAPIData.ImmFunc.ImmGetContextFunc( WinData.MainWindow ) ;
+	if( Imc )
+	{
+		_MEMSET( CharBuf.InputString, 0, sizeof( CharBuf.InputString ) ) ;
+		_WCSCPY_S( CharBuf.InputString, CHARBUFFER_SIZE * sizeof( wchar_t ), String ) ;
+		WinAPIData.ImmFunc.ImmSetCompositionStringFunc( Imc, SCS_SETSTR, CharBuf.InputString, ( DWORD )_WCSLEN( CharBuf.InputString ) * sizeof( wchar_t ), 0, 0 ) ;
+		WinAPIData.ImmFunc.ImmReleaseContextFunc( WinData.MainWindow , Imc ) ;
+	}
+
+	return 0 ;
 }
 
 /*

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		メモリイメージ制御用プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -63,6 +63,11 @@ extern void DrawPixelSetMemImg( MEMIMG *DestImg, const POINTDATA *PointData, int
 }
 
 extern void DrawLineSetMemImg( MEMIMG *DestImg, const LINEDATA *LineData, int Num )
+{
+	return ;
+}
+
+extern void DrawBoxSetMemImg( MEMIMG *DestImg, const RECTDATA *RectData, int Num )
 {
 	return ;
 }
@@ -1127,6 +1132,21 @@ extern void DrawLineSetMemImg( MEMIMG *DestImg, const LINEDATA *LineData, int Nu
 	for( i = 0 ; i < Num ; i ++, LineData ++ )
 	{
 		DrawLineMemImg( DestImg, LineData->x1, LineData->y1, LineData->x2, LineData->y2, LineData->color ) ;
+	}
+}
+
+// イメージに矩形の集合を描画する
+extern void DrawBoxSetMemImg( MEMIMG *DestImg, const RECTDATA *RectData, int Num )
+{
+	int i ;
+	for( i = 0 ; i < Num ; i ++, RectData ++ )
+	{
+		RECT DrawRect ;
+		DrawRect.left   = RectData->x1 ;
+		DrawRect.top    = RectData->y1 ;
+		DrawRect.right  = RectData->x2 ;
+		DrawRect.bottom = RectData->y2 ;
+		DrawFillBoxMemImg( DestImg, &DrawRect, RectData->color ) ;
 	}
 }
 

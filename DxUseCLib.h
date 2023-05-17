@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		•W€‚bƒ‰ƒCƒuƒ‰ƒŠg—pƒvƒƒOƒ‰ƒ€ƒwƒbƒ_ƒtƒ@ƒCƒ‹
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -81,7 +81,8 @@ extern unsigned int		randMTData( MERSENNE_TWISTER_DATA *MTData ) ;
 extern	int		LoadTiffImage( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) ;						// ‚s‚h‚e‚e‰æ‘œ‚Ì“Ç‚İ‚±‚İ
 #endif
 #ifndef DX_NON_PNGREAD
-extern	int		LoadPngImage(     STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) ;					// ‚o‚m‚f‰æ‘œ‚Ì“Ç‚İ‚±‚İ
+extern	int		LoadPngImage(      STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) ;					// ‚o‚m‚f‰æ‘œ‚Ì“Ç‚İ‚±‚İ
+extern	int		LoadPngImage_Fast( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) ;					// ‚o‚m‚f‰æ‘œ‚Ì“Ç‚İ‚±‚İ( ­‚µ‚‘¬”Å )
 #ifndef DX_NON_SAVEFUNCTION
 extern	int		SaveBaseImageToPngBase( const char *FilePathW, const char *FilePathA, BASEIMAGE *BaseImage, int CompressionLevel ) ;																					// Šî–{‰æ‘œƒf[ƒ^‚ğ‚o‚m‚f‰æ‘œ‚Æ‚µ‚Ä•Û‘¶‚·‚é
 #endif

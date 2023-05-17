@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		マスクデータ管理プログラム
 // 
-//  	Ver 3.23 
+//  	Ver 3.24b
 // 
 //-----------------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ extern int Mask_Initialize( void )
 		return -1 ;
 
 	// マスクハンドル管理データの初期化
-	InitializeHandleManage( DX_HANDLETYPE_GMASK, sizeof( MASKDATA ), MAX_MASK_NUM, Mask_InitializeHandle, Mask_TerminateHandle, L"Mask" ) ;
+	InitializeHandleManage( DX_HANDLETYPE_GMASK, sizeof( MASKDATA ), MAX_MASK_NUM, Mask_InitializeHandle, Mask_TerminateHandle, NULL, L"Mask" ) ;
 
 	// 初期化フラグを立てる
 	MASKD.InitializeFlag = TRUE ;

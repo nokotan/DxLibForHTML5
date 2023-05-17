@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＩｎｐｕｔ制御プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -55,6 +55,14 @@ extern int InitializeInputSystem( void )
 
 	// 初期化完了フラグを立てる
 	InputSysData.InitializeFlag = TRUE ;
+
+	// デフォルトのデッドゾーンが設定されていなかったら設定する
+	if( InputSysData.EnablePadDefaultDeadZone == FALSE )
+	{
+		InputSysData.EnablePadDefaultDeadZone = TRUE ;
+		InputSysData.PadDefaultDeadZone  = PAD_DEFAULT_DEADZONE ;
+		InputSysData.PadDefaultDeadZoneD = PAD_DEFAULT_DEADZONE_D ;
+	}
 
 	// 環境依存処理
 	if( InitializeInputSystem_PF_Timing0() != 0 )
@@ -596,7 +604,7 @@ extern	int AddTouchInputData( TOUCHINPUTDATA *TouchData )
 	{
 		for( i = 0 ; i < TouchData->PointNum ; i ++ )
 		{
-			AddTouchUpInputPointLog( &TouchData->Point[ i ] ) ;
+			AddTouchDownInputPointLog( &TouchData->Point[ i ] ) ;
 		}
 	}
 	else
@@ -616,7 +624,7 @@ extern	int AddTouchInputData( TOUCHINPUTDATA *TouchData )
 				continue ;
 			}
 
-			AddTouchUpInputPointLog( &TouchData->Point[ i ] ) ;
+			AddTouchDownInputPointLog( &TouchData->Point[ i ] ) ;
 		}
 	}
 
@@ -690,7 +698,7 @@ extern int NS_GetTouchInputNum( void )
 }
 
 // タッチの情報を取得する
-extern int NS_GetTouchInput( int InputNo, int *PositionX, int *PositionY, int *ID , int *Device )
+extern int NS_GetTouchInput( int InputNo, int *PositionX, int *PositionY, int *ID , int *Device, float *Pressure )
 {
 	if( InputNo >= InputSysData.Touch.NowData.PointNum )
 	{
@@ -715,6 +723,11 @@ extern int NS_GetTouchInput( int InputNo, int *PositionX, int *PositionY, int *I
 	if( Device != NULL )
 	{
 		*Device = InputSysData.Touch.NowData.Point[ InputNo ].Device ;
+	}
+
+	if( Pressure != NULL )
+	{
+		*Pressure = InputSysData.Touch.NowData.Point[ InputNo ].Pressure ;
 	}
 
 	return 0 ;
@@ -1621,6 +1634,17 @@ extern	int NS_SetJoypadDeadZone( int InputType, double Zone )
 	INPUTPADDATA *pad = &InputSysData.Pad[ JoypadNum ] ;
 	DWORD ZoneI ;
 
+	// 値の補正
+	if( Zone < 0.0 )
+	{
+		Zone = 0.0f ;
+	}
+	else
+	if( Zone > 1.0 )
+	{
+		Zone = 1.0 ;
+	}
+
 	// ソフトが非アクティブの場合はアクティブになるまで待つ
 	CheckActiveState() ;
 	
@@ -1647,6 +1671,9 @@ extern	int NS_SetJoypadDeadZone( int InputType, double Zone )
 	// ゾーンを保存
 	pad->DeadZone = ZoneI ;
 	pad->DeadZoneD = Zone ;
+
+	// ユーザーが変更したことを記録
+	pad->UserChangeDeadZone = TRUE ;
 
 	// 環境依存処理
 	SetJoypadDeadZone_PF( pad ) ;
@@ -1680,6 +1707,68 @@ extern	double NS_GetJoypadDeadZone( int InputType )
 
 	// 値を返す
 	return pad->DeadZoneD ;
+}
+
+// ジョイパッドのデフォルトの無効ゾーンを設定する( Zone:新しい無効ゾーン( 0.0 ～ 1.0 )、デフォルト値は 0.35 )
+extern	int SetJoypadDefaultDeadZoneAll( double Zone )
+{
+	DWORD ZoneI ;
+	INPUTPADDATA *pad ;
+	int i ;
+
+	// 値の補正
+	if( Zone < 0.0 )
+	{
+		Zone = 0.0f ;
+	}
+	else
+	if( Zone > 1.0 )
+	{
+		Zone = 1.0 ;
+	}
+
+	// ソフトが非アクティブの場合はアクティブになるまで待つ
+	CheckActiveState() ;
+
+	// 今までと同じゾーンの場合は何もせず終了
+	ZoneI = ( DWORD )_DTOL( Zone * 65536 ) ;
+	if( InputSysData.EnablePadDefaultDeadZone == TRUE && InputSysData.PadDefaultDeadZone == ZoneI )
+	{
+		return 0 ;
+	}
+
+	// ゾーンを保存
+	InputSysData.PadDefaultDeadZone = ZoneI ;
+	InputSysData.PadDefaultDeadZoneD = Zone ;
+
+	// PadDefaultDeadZone と PadDefaultDeadZoneD が有効かどうかのフラグを立てる
+	InputSysData.EnablePadDefaultDeadZone = TRUE ;
+
+	// ユーザーがデッドゾーンを変更していないジョイパッドに適用
+	pad = InputSysData.Pad ;
+	for( i = 0 ; i < InputSysData.PadNum ; i ++ , pad ++ )
+	{
+		if( pad->UserChangeDeadZone )
+		{
+			continue ;
+		}
+
+		// 値を保存
+		pad->DeadZone = ZoneI ;
+		pad->DeadZoneD = Zone ;
+
+		// 環境依存処理
+		SetJoypadDeadZone_PF( pad ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// ジョイパッドのデフォルトの無効ゾーンを取得する( 戻り値:無効ゾーン( 0.0 ～ 1.0 ) )
+extern	double GetJoypadDefaultDeadZoneAll( void )
+{
+	return InputSysData.PadDefaultDeadZoneD ;
 }
 
 // ジョイパッドの振動を開始する
@@ -1780,6 +1869,7 @@ extern	int NS_StartJoypadVibration( int InputType, int Power, int Time, int Effe
 		pad->Effect[ EffectIndex ].BackTime	= NS_GetNowCount( FALSE ) ;
 		pad->Effect[ EffectIndex ].Time		= Time ;
 		pad->Effect[ EffectIndex ].CompTime	= 0 ;
+		pad->Effect[ EffectIndex ].PrevSetTime = -1 ;
 
 		// 既に再生中でゆれの大きさも同じ場合は何もしない
 		if( pad->Effect[ EffectIndex ].PlayFlag == TRUE && pad->Effect[ EffectIndex ].Power == Power )
@@ -1908,6 +1998,16 @@ extern int NS_ReSetupJoypad( void )
 {
 	// ジョイパッドの再セットアップを行う
 	return SetupJoypad() ;
+}
+
+// 入力システムの再セットアップを行う
+extern int NS_ReSetupInputSystem( void )
+{
+	// 入力システムの終了処理を行う
+	TerminateInputSystem() ;
+
+	// 入力システムの初期化処理を行う
+	return InitializeInputSystem() ;
 }
 
 // キーボードの入力状態の更新

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		アーカイブ制御プログラム
 // 
-// 				Ver 3.23 
+// 				Ver 3.24b
 // 
 // -------------------------------------------------------------------------------
 
@@ -69,6 +69,8 @@ struct DXA_FINDDATA
 	DWORD						ObjectCount;					// 次に渡すディレクトリ内オブジェクトのインデックス
 } ;
 
+#endif // DX_NON_DXA
+
 // 数値ごとの出現数や算出されたエンコード後のビット列や、結合部分の情報等の構造体
 struct HUFFMAN_NODE
 {
@@ -100,6 +102,7 @@ struct BIT_STREAM
 //   (C)bit    数値ごとの出現頻度の差分値
 //   ↑これが256個ある
 
+#ifndef DX_NON_DXA
 
 // 内部大域変数宣言 --------------------------------------------------------------
 
@@ -130,13 +133,15 @@ static int		DXA_FindProcess(					DXA_FINDDATA *FindData, FILEINFOW *FileInfo );	
 static int		DXA_DIR_OpenArchive(				const wchar_t *FilePath, void *FileImage = NULL, int FileSize = -1, int FileImageCopyFlag = FALSE, int FileImageReadOnly = FALSE, int ArchiveIndex = -1, int OnMemory = FALSE, int ASyncThread = FALSE ) ;	// アーカイブファイルを開く
 static int		DXA_DIR_GetArchive(					const wchar_t *FilePath, void *FileImage = NULL ) ;										// 既に開かれているアーカイブのハンドルを取得する( 戻り値: -1=無かった 0以上:ハンドル )
 static int		DXA_DIR_CloseArchive(				int ArchiveHandle ) ;																	// アーカイブファイルを閉じる
-static void		DXA_DIR_CloseWaitArchive(			void ) ;																				// 使用されるのを待っているアーカイブファイルを全て閉じる
+static void		DXA_DIR_CloseWaitArchive(			int AlwaysClose = FALSE ) ;																// 使用されるのを待っているアーカイブファイルを全て閉じる
 static int		DXA_DIR_ConvertFullPath(			const wchar_t *Src, wchar_t *Dest, size_t BufferBytes, int CharUp = 1 ) ;				// 全ての英字小文字を大文字にしながら、フルパスに変換する
 static int		DXA_DIR_AnalysisFileNameAndDirPath( DXARC *DXA, const BYTE *Src, BYTE *FileName = 0, size_t FileNameBytes = 0, BYTE *DirPath = 0, size_t DirPathBytes = 0 ) ;					// ファイル名も一緒になっていると分かっているパス中からファイル名とディレクトリパスを分割する。フルパスである必要は無い、ファイル名だけでも良い、DirPath の終端に ￥ マークは付かない
 static int		DXA_DIR_FileNameCmp(				DXARC *DXA, const BYTE *Src, const BYTE *CmpStr );										// CmpStr の条件に Src が適合するかどうかを調べる( 0:適合する  -1:適合しない )
 static int		DXA_DIR_OpenTest(					const wchar_t *FilePath, int *ArchiveIndex, BYTE *ArchiveFilePath, size_t BufferBytes ) ;	// アーカイブファイルをフォルダに見立ててファイルを開く時の情報を得る( -1:アーカイブとしては存在しなかった  0:存在した )
 
 static int		DXA_DirectoryKeyConv(				DXARC *DXA, DXARC_DIRECTORY *Dir, char *KeyStringBuffer ) ;								// 指定のディレクトリデータの暗号化を解除する( 丸ごとメモリに読み込んだ場合用 )
+
+#endif // DX_NON_DXA
 
 static void			BitStream_Init(  BIT_STREAM *BitStream, void *Buffer, bool IsRead ) ;			// ビット単位入出力の初期化
 static void			BitStream_Write( BIT_STREAM *BitStream, BYTE BitNum, ULONGLONG OutputData ) ;	// ビット単位の数値の書き込みを行う
@@ -214,6 +219,8 @@ ULONGLONG BitStream_GetBytes( BIT_STREAM *BitStream )
 {
 	return BitStream->Bytes + ( BitStream->Bits != 0 ? 1 : 0 ) ;
 }
+
+#ifndef DX_NON_DXA
 
 // ファイルの情報を得る
 static DXARC_FILEHEAD *DXA_GetFileHeader( DXARC *DXA, const BYTE *FilePath, DXARC_DIRECTORY **DirectoryP )
@@ -3640,7 +3647,7 @@ static int DXA_DIR_CloseArchive( int ArchiveHandle )
 }
 
 // 使用されるのを待っているアーカイブファイルを全て閉じる
-static void DXA_DIR_CloseWaitArchive( void )
+static void DXA_DIR_CloseWaitArchive( int AlwaysClose )
 {
 	int i, Num, index ;
 	DXARC_DIR_ARCHIVE *arc ;
@@ -3657,7 +3664,7 @@ static void DXA_DIR_CloseWaitArchive( void )
 		arc = DXARCD.Archive[index] ;
 
 		// 使われていたら解放しない
-		if( arc->UseCounter > 0 )
+		if( arc->UseCounter > 0 && AlwaysClose == FALSE )
 		{
 			continue ;
 		}
@@ -3709,7 +3716,7 @@ extern int DXA_DIR_Terminate( void )
 	}
 
 	// 使用されていないアーカイブファイルを解放する
-	DXA_DIR_CloseWaitArchive() ;
+	DXA_DIR_CloseWaitArchive( TRUE ) ;
 
 	// クリティカルセクションの後始末
 	CriticalSection_Delete( &DXARCD.CriticalSection ) ;
