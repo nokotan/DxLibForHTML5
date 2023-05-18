@@ -13,24 +13,10 @@ jobs:
           submodules: recursive
 
       - name: Build
-        run: |
-          bash Build.sh
+        run: bash Build.sh
       
       - name: Pack
-        run: |
-          mkdir dest
-          mkdir dest/lib
-          cp build/libDxLib.a dest/lib/
-          cp build/libDxUseCLib.a dest/lib/
-          cp build/libDxDrawFunc.a dest/lib/
-          mkdir dest/include
-          cp DxCompileConfig.h dest/include/
-          cp DxDataType.h dest/include/
-          cp DxDataTypeHTML5.h dest/include/
-          cp DxFunctionHTML5.h dest/include/
-          cp DxLib.h dest/include/
-          zip -r DxLibForHTML5.zip dest
-          tar -cvzf DxLibForHTML5.tgz dest/*
+        run: bash Package.sh
 
       - uses: actions/upload-artifact@v3
         with:

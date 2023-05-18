@@ -13,6 +13,9 @@
 #Build Result
 /Build/
 /build
+/dist
+/DxLibHTML5.zip
+/DxLibHTML5.tgz
 
 #VS Config
 /.vscode/

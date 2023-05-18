@@ -8,4 +8,4 @@ cd build
 echo "# Start Building"
 
 emcmake cmake .. -DCMAKE_CXX_FLAGS="-O2 -pthread"
-emmake make -
+emmake make
