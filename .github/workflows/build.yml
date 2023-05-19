@@ -13,7 +13,7 @@ jobs:
           submodules: recursive
 
       - name: Build
-        run: bash Build.sh
+        run: bash ci-scripts/Build.sh
       
       - name: Pack
         run: bash Package.sh
