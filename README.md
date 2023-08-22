@@ -27,8 +27,8 @@ DXライブラリをWebGLで動かしてみたい...
 
 | 開発環境 | リンク |
 |:--:|:--:|
-| Visual Studio | [DXライブラリ HTML5版を使ってブラウザで動くゲームを作ってみる (Visual Studio版, Windows)](https://qiita.com/nokotan/items/5fa6f2d39ff7bb6641e8) |
-| VSCode | [DXライブラリ HTML5版を使ってブラウザで動くゲームを作ってみる (VSCode版, Windows)](https://qiita.com/nokotan/items/d2dff1559f981e5e3da5) |
+| Visual Studio | <https://dxlib.kamenokosoft.com/visual-studio.html> |
+| VSCode | <https://dxlib.kamenokosoft.com/vscode.html> |
 
 ## ライブラリ本体の手動ビルド
 
