@@ -14,19 +14,19 @@ function create_patch_commit_of_common_part() {
 
     # Commit1: cherry-pick preparation
     # Adding DXLIBAPI
-    sed -i.tmp -e "s/extern/extern DXLIBAPI/" ../DxLib.h
-    rm ../DxLib.h.tmp
+    sed -i.tmp -e "s/extern/extern DXLIBAPI/" ../src/DxLib.h
+    rm ../src/DxLib.h.tmp
 
-    git stage ../DxLib.h
+    git stage ../src/DxLib.h
     git commit -m "[Bot] Update DxLib.h before ${DxLibVersion}"
 
     # Commit2: cherry-picked commit
     # Original source difference
-    cp DxLibMake/* ..
-    sed -i.tmp -e "s/extern/extern DXLIBAPI/" ../DxLib.h
-    rm ../DxLib.h.tmp
+    cp DxLibMake/* ../src
+    sed -i.tmp -e "s/extern/extern DXLIBAPI/" ../src/DxLib.h
+    rm ../src/DxLib.h.tmp
 
-    find .. -maxdepth 1 -type f | xargs -I{} git stage {}
+    find ../src -maxdepth 1 -type f | xargs -I{} git stage {}
     git commit -m "[Bot] Create Patch of ${DxLibVersion} (Platform-Independent)"
 
     info "### create_patch_commit_of_common_part done"
@@ -37,8 +37,8 @@ function update_original_branch_of_common_part() {
 
     git switch ${OriginalBranch} --force
 
-    cp DxLibMake/* ..
-    find .. -maxdepth 1 -type f | xargs -I{} git stage {}
+    cp DxLibMake/* ../src
+    find ../src -maxdepth 1 -type f | xargs -I{} git stage {}
     git commit -m "[Bot] Update to ${DxLibVersion} (Platform-Independent)"
 
     info "### update_original_branch_of_common_part done"

@@ -8,11 +8,11 @@ cp build/libDxUseCLib.a dist/lib/
 cp build/libDxDrawFunc.a dist/lib/
 
 mkdir dist/include
-cp DxCompileConfig.h dist/include/
-cp DxDataType.h dist/include/
-cp DxDataTypeHTML5.h dist/include/
-cp DxFunctionHTML5.h dist/include/
-cp DxLib.h dist/include/
+cp src/DxCompileConfig.h dist/include/
+cp src/DxDataType.h dist/include/
+cp src/DxDataTypeHTML5.h dist/include/
+cp src/DxFunctionHTML5.h dist/include/
+cp src/DxLib.h dist/include/
 
 cd dist
 
