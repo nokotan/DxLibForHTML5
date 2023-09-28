@@ -86,7 +86,7 @@ int DecodeImageOnBrowser(BYTE* Src, int Size, DECODEDIMAGE* Decoded) {
 				wakeUp(-1);
 			};
 			image.src = URL.createObjectURL(imageBlob);
-		}
+		})
 	});
 #else
 	return 0;

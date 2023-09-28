@@ -20,7 +20,7 @@ DXライブラリをWebGLで動かしてみたい...
 
 ### 必要条件
 
-- [emscripten 2.0.4](https://emscripten.org/docs/getting_started/downloads.html)
+- [emscripten 3.1.20](https://emscripten.org/docs/getting_started/downloads.html)
 - [Visual Studio](https://visualstudio.microsoft.com/ja/downloads/) または [Visual Studio Code](https://visualstudio.microsoft.com/ja/downloads/)
 
 ### 参考資料

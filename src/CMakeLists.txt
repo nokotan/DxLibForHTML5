@@ -27,7 +27,7 @@ add_subdirectory(HTML5)
 target_include_directories(DxLib
     PRIVATE
         HTML5/
-        extlib/freetype/include/
+        ../extlib/freetype/include/
 )
 
 target_sources(DxLib
@@ -73,7 +73,7 @@ target_sources(DxLib
 
 set_target_properties(DxLib
     PROPERTIES 
-        COMPILE_FLAGS "-s USE_FREETYPE=1"
+        COMPILE_FLAGS "-s USE_FREETYPE=1 -pthread -DASYNCIFY"
         CXX_STANDARD 11
 )
 
@@ -91,6 +91,7 @@ target_sources(DxDrawFunc
 
 set_target_properties(DxDrawFunc
     PROPERTIES 
+        COMPILE_FLAGS "-pthread"
         CXX_STANDARD 11
 )
 
@@ -100,8 +101,8 @@ set_target_properties(DxDrawFunc
 
 target_include_directories(DxUseCLib
     PRIVATE 
-        extlib/vorbis/lib/
-        extlib/bullet3/src/
+        ../extlib/vorbis/lib/
+        ../extlib/bullet3/src/
 )
 
 target_sources(DxUseCLib
@@ -114,7 +115,7 @@ target_sources(DxUseCLib
 
 set_target_properties(DxUseCLib
     PROPERTIES 
-        COMPILE_FLAGS "-s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -s ALLOW_MEMORY_GROWTH=1"
+        COMPILE_FLAGS "-s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -pthread"
         CXX_STANDARD 11
 )
 
