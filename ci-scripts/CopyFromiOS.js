@@ -45,13 +45,14 @@ async function Main()
         const baseName = fileName.replace("HTML5", "iOS");
         
         promises.push((async () => {
-            const fileData = await readFileAsync(`../iOS/${baseName}`);
+            const fileData = await readFileAsync(`../src/iOS/${baseName}`);
             const fileText = decode(fileData, "utf8");
 
             let replacedText = fileText.replace(/iOS/g, "HTML5");
             replacedText = replacedText.replace(/IOS/g, "HTML5");
+            replacedText = replacedText.replace(/ANDR/g, "HTML5");
 
-            await writeFileAsync(`../HTML5/${fileName}`, replacedText);
+            await writeFileAsync(`../src/HTML5/${fileName}`, replacedText);
         })());
     }
 

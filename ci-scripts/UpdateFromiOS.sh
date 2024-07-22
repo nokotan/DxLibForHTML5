@@ -15,11 +15,11 @@ function create_patch_commit_of_ios_part() {
     fi
 
 
-    git stage ../HTML5/*
+    git stage ../src/HTML5/*
     git commit -m "[Bot] Update iOS Part before ${DxLibVersion}"
 
     # Commit2: cherry-picked commit
-    cp DxLibMake/iOS/* ../iOS
+    cp DxLibMake/iOS/* ../src/iOS
     node ./CopyFromiOS.js
 
     if [ $? -ne 0 ]; then
@@ -38,8 +38,8 @@ function update_original_branch_of_ios_part() {
 
     git switch ${OriginalBranch} --force
 
-    cp DxLibMake/iOS/* ../iOS
-    find ../iOS -maxdepth 1 -type f | xargs -I{} git stage {}
+    cp DxLibMake/iOS/* ../src/iOS
+    find ../src/iOS -maxdepth 1 -type f | xargs -I{} git stage {}
     git commit -m "[Bot] Update to ${DxLibVersion} (iOS)"
 
     info "### update_original_branch_of_ios_part done"

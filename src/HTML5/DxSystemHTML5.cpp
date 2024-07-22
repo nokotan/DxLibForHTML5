@@ -767,12 +767,8 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-void WaitedForNextFrame(void* ctx) {
-	emscripten_proxy_finish((em_proxying_ctx*) ctx);
-}
-
 int WaitedForCurrentFrame(double, void* ctx) {
-	emscripten_set_timeout(&WaitedForNextFrame, 0, (em_proxying_ctx*) ctx);
+	emscripten_proxy_finish((em_proxying_ctx*) ctx);
 	return 0;
 }
 
@@ -784,7 +780,7 @@ void WaitForNextFrame() {
 #ifdef ASYNCIFY
 	EM_ASM({
 		Asyncify.handleSleep(function(wakeUp) {
-			window.requestAnimationFrame(wakeUp);
+			requestAnimationFrame(wakeUp);
 		});
 	});
 #else

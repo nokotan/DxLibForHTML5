@@ -13,24 +13,10 @@ jobs:
           submodules: recursive
 
       - name: Build
-        run: |
-          bash Build.sh
+        run: bash ci-scripts/Build.sh
       
       - name: Pack
-        run: |
-          mkdir dest
-          mkdir dest/lib
-          cp build/libDxLib.a dest/lib/
-          cp build/libDxUseCLib.a dest/lib/
-          cp build/libDxDrawFunc.a dest/lib/
-          mkdir dest/include
-          cp DxCompileConfig.h dest/include/
-          cp DxDataType.h dest/include/
-          cp DxDataTypeHTML5.h dest/include/
-          cp DxFunctionHTML5.h dest/include/
-          cp DxLib.h dest/include/
-          zip -r DxLibForHTML5.zip dest
-          tar -cvzf DxLibForHTML5.tgz dest/*
+        run: bash Package.sh
 
       - uses: actions/upload-artifact@v3
         with:
@@ -54,6 +40,7 @@ jobs:
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
           asset_path: DxLibForHTML5.zip
+          asset_name: DxLibForHTML5.zip
           asset_content_type: application/zip
 
       - name: Upload Release Asset (zip)
@@ -64,4 +51,5 @@ jobs:
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
           asset_path: DxLibForHTML5.tgz
+          asset_name: DxLibForHTML5.tgz
           asset_content_type: application/zip
