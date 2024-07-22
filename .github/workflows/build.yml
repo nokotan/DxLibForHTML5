@@ -16,7 +16,7 @@ jobs:
         run: bash ci-scripts/Build.sh
       
       - name: Pack
-        run: bash Package.sh
+        run: bash ci-scripts/Package.sh
 
       - uses: actions/upload-artifact@v3
         with:
