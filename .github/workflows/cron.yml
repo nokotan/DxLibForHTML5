@@ -2,6 +2,10 @@ name: C/C++ Update
 
 on:
   workflow_dispatch:
+  push:
+    branch: [ develop ]
+    paths:
+      - '.github/workflows/cron.yml'
   schedule:
     - cron: '0 15 * * 0'
 
@@ -12,7 +16,11 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: recursive
-      - run: |
+          fetch-depth: 0
+          fetch-tags: true 
+      - env: 
+          LANG: C.UTF-8
+        run: |
           cp -r ci-scripts ci-scripts-temp
           cd ci-scripts-temp
           node --version

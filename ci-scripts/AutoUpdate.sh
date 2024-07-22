@@ -1,8 +1,6 @@
 #!/bin/bash
 
-LANG="ja_JP.SJIS"
-
-export DxLibVersion=$(node ./FetchDxLibVersion.js)
+export DxLibVersion=$(node ./FetchDxLibVersion.mjs)
 export OriginalBranch=original
 export DevelopBranch="update_to_${DxLibVersion}"
 
@@ -16,7 +14,7 @@ source ./Util.sh
 
 function git_init_user() {
     git config user.name "DxLib Update Bot"
-    git config user.mail "kamenokonokotan@gmail.com"
+    git config user.email "kamenokonokotan@gmail.com"
 }
 
 function download_and_unzip_dxlib() {
@@ -32,7 +30,7 @@ function download_and_unzip_dxlib() {
     fi
 
     rm -r DxLibMake || true
-    unzip DxLibMake.zip
+    unzip -O sjis DxLibMake.zip
     
     info "### download_and_unzip_dxlib done"
 }
@@ -44,8 +42,10 @@ function download_and_unzip_dxlib() {
 function do_init() {
     git_init_user
 
-    git switch -c ${WorkingBranch} ${OriginalBranch} 
-    git switch -c ${DevelopBranch} develop 
+    git switch original
+    git switch develop
+    git branch -c ${OriginalBranch} ${WorkingBranch} 
+    git branch -c develop ${DevelopBranch}
 }
 
 function check_update_required() {

@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-const fetch = require("node-fetch");
-const { JSDOM } = require("jsdom");
+import { JSDOM } from "jsdom";
 
 /**
  * @returns {string}
  */
-async function FetchVersion() 
+export async function FetchVersion() 
 {
     const dxlibRawPage = await fetch("https://dxlib.xsrv.jp").then(res => res.text());
     const dxlibPage = new JSDOM(dxlibRawPage);
@@ -23,7 +22,3 @@ async function Main()
 }
 
 Main();
-
-module.exports = {
-    FetchVersion
-};

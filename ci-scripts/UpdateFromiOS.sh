@@ -8,10 +8,10 @@ function create_patch_commit_of_ios_part() {
     git switch ${WorkingBranch} --force
 
     # Commit1: cherry-pick preparation
-    node ./CopyFromiOS.js
+    node ./CopyFromiOS.mjs
 
     if [ $? -ne 0 ]; then
-        err_exit "CopyFromiOS.js failed!"
+        err_exit "CopyFromiOS.mjs failed!"
     fi
 
 
@@ -20,10 +20,10 @@ function create_patch_commit_of_ios_part() {
 
     # Commit2: cherry-picked commit
     cp DxLibMake/iOS/* ../src/iOS
-    node ./CopyFromiOS.js
+    node ./CopyFromiOS.mjs
 
     if [ $? -ne 0 ]; then
-        err_exit "CopyFromiOS.js failed!"
+        err_exit "CopyFromiOS.mjs failed!"
     fi
 
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-const { promisify } = require("util")
-const { readFile, writeFile } = require("fs");
-const { decode } = require("iconv-lite");
+import { promisify } from "util";
+import { readFile, writeFile } from "fs";
+import iconv from 'iconv-lite';
 
+const { decode } = iconv;
 const writeFileAsync = promisify(writeFile);
 const readFileAsync = promisify(readFile);
 

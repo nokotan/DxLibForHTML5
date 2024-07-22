@@ -32,7 +32,13 @@ function apply_to_develop_branch() {
     git cherry-pick --allow-empty $1
 
     if [ $? -ne 0 ]; then
-        err_exit "Git cherry-pick failed!"
+        warn "conflict detected. need to merge manually."
+        git add ../src
+        git cherry-pick --continue
+
+        if [ $? -ne 0 ]; then
+            err_exit "Git cherry-pick failed!"
+        fi
     fi
 
     info "### apply_to_develop_branch done"

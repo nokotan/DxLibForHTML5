@@ -9,10 +9,10 @@ function create_patch_commit_of_android_part() {
     mkdir ../src/HTML5 || true
 
     # Commit1: cherry-pick preparation
-    node ./CopyFromAndroid.js
+    node ./CopyFromAndroid.mjs
 
     if [ $? -ne 0 ]; then
-        err_exit "CopyFromAndroid.js failed!"
+        err_exit "CopyFromAndroid.mjs failed!"
     fi
 
     git stage ../src/HTML5/*
@@ -21,10 +21,10 @@ function create_patch_commit_of_android_part() {
 
     # Commit2: cherry-picked commit
     cp DxLibMake/Android/* ../src/Android
-    node ./CopyFromAndroid.js
+    node ./CopyFromAndroid.mjs
 
     if [ $? -ne 0 ]; then
-        err_exit "CopyFromAndroid.js failed!"
+        err_exit "CopyFromAndroid.mjs failed!"
     fi
 
 
