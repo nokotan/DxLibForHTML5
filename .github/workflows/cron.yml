@@ -1,9 +1,9 @@
 name: C/C++ Update
 
 on:
+  workflow_dispatch:
   schedule:
-    - workflow_dispatch
-    - cron:  '0 15 * * 0'
+    - cron: '0 15 * * 0'
 
 jobs:
   build: 
