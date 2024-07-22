@@ -2,6 +2,7 @@ name: C/C++ Update
 
 on:
   schedule:
+    - workflow_dispatch
     - cron:  '0 15 * * 0'
 
 jobs:
