@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用GraphFilter系プログラム
 // 
-//  	Ver 3.24b
+//  	Ver 3.24d
 // 
 //-----------------------------------------------------------------------------
 
@@ -602,6 +602,7 @@ extern int	GraphFilter_Down_Scale_PF(  GRAPHFILTER_INFO *Info, int DivNum )
 	// 使用するシェーダーのセットアップ
 	switch( DivNum )
 	{
+	case 1 :
 	case 2 : UseShader = 0 ; break ;
 	case 4 : UseShader = 1 ; break ;
 	case 8 : UseShader = 2 ; break ;
@@ -627,6 +628,7 @@ extern int	GraphFilter_Down_Scale_PF(  GRAPHFILTER_INFO *Info, int DivNum )
 
 	switch( DivNum )
 	{
+	case 1 :
 	case 2 :
 		ParamF4[ 0 ][ 0 ] = 0.0f ; ParamF4[ 0 ][ 1 ] = 0.0f ;
 		UseConstNum = 1 ;
@@ -1815,6 +1817,8 @@ extern int	GraphBlend_Basic_PF(           GRAPHFILTER_INFO *Info, int IsPMA )
 		"BasBF_Normal_AlphaCh_PMA.flag",	// DX_GRAPH_BLEND_PMA_NORMAL_ALPHACH
 		"BasBF_Add_AlphaCh_PMA.flag",		// DX_GRAPH_BLEND_PMA_ADD_ALPHACH
 		"BasBF_Multiple_AOnly_PMA.flag",	// DX_GRAPH_BLEND_PMA_MULTIPLE_A_ONLY
+		"BasBF_Mask.flag",					// DX_GRAPH_BLEND_MASK
+		"BasBF_Mask_PMA.flag",				// DX_GRAPH_BLEND_PMA_MASK
 	} ;
 	int                    UseShader ;
 	DX_ANDR_SHADER_FLOAT4  ParamF4[ 1 ] ;
@@ -1884,7 +1888,11 @@ extern int	GraphBlend_RGBA_Select_Mix_PF( GRAPHFILTER_INFO *Info, int SelectR, i
 	if( ( SelectR >= DX_RGBA_SELECT_SRC_INV_R && SelectR <= DX_RGBA_SELECT_BLEND_INV_A ) ||
 		( SelectG >= DX_RGBA_SELECT_SRC_INV_R && SelectG <= DX_RGBA_SELECT_BLEND_INV_A ) ||
 		( SelectB >= DX_RGBA_SELECT_SRC_INV_R && SelectB <= DX_RGBA_SELECT_BLEND_INV_A ) ||
-		( SelectA >= DX_RGBA_SELECT_SRC_INV_R && SelectA <= DX_RGBA_SELECT_BLEND_INV_A ) )
+		( SelectA >= DX_RGBA_SELECT_SRC_INV_R && SelectA <= DX_RGBA_SELECT_BLEND_INV_A ) ||
+		Info->BlendImage->WidthI  != Info->SrcImage->WidthI  ||
+		Info->BlendImage->HeightI != Info->SrcImage->HeightI ||
+		( Info->BlendPosEnable  && ( Info->BlendX  != Info->SrcX1 || Info->BlendY  != Info->SrcY1 ) ) || 
+		( Info->BlendPos2Enable && ( Info->BlendX2 != Info->SrcX2 || Info->BlendY2 != Info->SrcY2 ) ) )
 	{
 		goto USE_BASE_SHADER ;
 	}
