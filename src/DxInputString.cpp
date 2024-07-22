@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字列入力プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -1165,12 +1165,12 @@ extern LRESULT IMEProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 				CharBuf.InputPoint = GetStringPoint2_WCHAR_T( CharBuf.InputString , WinAPIData.ImmFunc.ImmGetCompositionStringFunc( Imc , GCS_CURSORPOS , NULL , 0 ) ) ;
 
 				// 変換候補の情報をリセット
-				if( CharBuf.CandidateList && OlgPoint != CharBuf.InputPoint )
-				{
-					DXFREE( CharBuf.CandidateList ) ;
-					CharBuf.CandidateList = NULL ;
-					CharBuf.CandidateListSize = 0 ;
-				}
+//				if( CharBuf.CandidateList && OlgPoint != CharBuf.InputPoint )
+//				{
+//					DXFREE( CharBuf.CandidateList ) ;
+//					CharBuf.CandidateList = NULL ;
+//					CharBuf.CandidateListSize = 0 ;
+//				}
 			}
 
 			// 文節情報変化時
@@ -1577,7 +1577,7 @@ static int DrawIMEInputStringBase( int x , int y , int EnableExRate, double ExRa
 		CPointX = DrawStrInfo->CharInfo[ CharBuf.InputPoint ].DrawX ;
 		CPointY = DrawStrInfo->CharInfo[ CharBuf.InputPoint ].DrawY ;
 	}
-	if( CharBuf.CandidateList != NULL && CharBuf.CBrinkDrawFlag == TRUE )
+	if( /* CharBuf.CandidateList != NULL && */ CharBuf.CBrinkDrawFlag == TRUE )
 	{
 		// カーソルの描画
 		NS_DrawBox(
@@ -2221,7 +2221,9 @@ extern int NS_DrawObtainsString(
 	unsigned int SelectStrColor ,
 	unsigned int SelectStrEdgeColor ,
 	int SelectStart ,
-	int SelectEnd )
+	int SelectEnd,
+	int *LineCount
+)
 {
 #ifdef UNICODE
 	return DrawObtainsString_WCHAR_T(
@@ -2239,7 +2241,8 @@ extern int NS_DrawObtainsString(
 		SelectEnd,
 		TRUE,
 		NULL,
-		NULL
+		NULL,
+		LineCount
 	) ;
 #else
 	int Result ;
@@ -2261,7 +2264,8 @@ extern int NS_DrawObtainsString(
 		SelectEnd,
 		TRUE,
 		NULL,
-		NULL
+		NULL,
+		LineCount
 	) ;
 
 	TCHAR_TO_WCHAR_T_STRING_END( String )
@@ -2271,7 +2275,7 @@ extern int NS_DrawObtainsString(
 }
 
 // 描画可能領域に収まるように改行しながら文字列を描画
-extern int NS_DrawObtainsNString( int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd )
+extern int NS_DrawObtainsNString( int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd, int *LineCount )
 {
 	int Result ;
 #ifdef UNICODE
@@ -2291,7 +2295,8 @@ extern int NS_DrawObtainsNString( int x, int y, int AddY, const TCHAR *String, s
 		SelectEnd,
 		TRUE,
 		NULL,
-		NULL
+		NULL,
+		LineCount
 	) ;
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( String )
 #else
@@ -2311,7 +2316,8 @@ extern int NS_DrawObtainsNString( int x, int y, int AddY, const TCHAR *String, s
 		SelectEnd,
 		TRUE,
 		NULL,
-		NULL
+		NULL,
+		LineCount
 	) ;
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( String )
 #endif
@@ -2334,7 +2340,8 @@ extern int DrawObtainsString_WCHAR_T(
 	int SelectEnd,
 	int DrawFlag,
 	int *PosX,
-	int *PosY
+	int *PosY,
+	int *LineCount
 )
 {
 #ifndef DX_NON_GRAPHICS
@@ -2353,6 +2360,11 @@ extern int DrawObtainsString_WCHAR_T(
 		// ３Ｄ有効フラグを得る
 		Use3DFlag = NS_GetUse3DFlag() ;
 		NS_SetUse3DFlag( FALSE ) ;
+	}
+
+	if( LineCount != NULL )
+	{
+		*LineCount = 1 ;
 	}
 
 	// 描画可能領域を得る
@@ -2376,6 +2388,11 @@ extern int DrawObtainsString_WCHAR_T(
 	{
 		x -= DrawRect.right - DrawRect.left ;
 		y += AddY ;
+
+		if( LineCount != NULL )
+		{
+			*LineCount += 1 ;
+		}
 	}
 
 	// 入力文字列を描画
@@ -2445,6 +2462,11 @@ extern int DrawObtainsString_WCHAR_T(
 					PointX = x ;
 					PointY += AddY ;
 					i ++ ;
+
+					if( LineCount != NULL )
+					{
+						*LineCount += 1 ;
+					}
 					continue ;
 				}
 				else
@@ -2473,6 +2495,11 @@ extern int DrawObtainsString_WCHAR_T(
 			{
 				PointX = DrawRect.left - ( DrawRect.right - PointX ) ;
 				PointY += AddY ;
+
+				if( LineCount != NULL )
+				{
+					*LineCount += 1 ;
+				}
 			}
 			else
 			{
@@ -2517,7 +2544,8 @@ extern int NS_DrawObtainsString_CharClip(
 	unsigned int SelectStrColor,
 	unsigned int SelectStrEdgeColor,
 	int SelectStart,
-	int SelectEnd
+	int SelectEnd,
+	int *LineCount
 )
 {
 #ifdef UNICODE
@@ -2537,7 +2565,8 @@ extern int NS_DrawObtainsString_CharClip(
 		SelectEnd,
 		TRUE,
 		NULL,
-		NULL
+		NULL,
+		LineCount
 	) ;
 #else
 	int Result ;
@@ -2560,7 +2589,8 @@ extern int NS_DrawObtainsString_CharClip(
 		SelectEnd,
 		TRUE,
 		NULL,
-		NULL
+		NULL,
+		LineCount
 	) ;
 
 	TCHAR_TO_WCHAR_T_STRING_END( String )
@@ -2570,7 +2600,7 @@ extern int NS_DrawObtainsString_CharClip(
 }
 
 // 描画可能領域に収まるように改行しながら文字列を描画( クリップが文字単位 )
-extern int NS_DrawObtainsNString_CharClip( int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd )
+extern int NS_DrawObtainsNString_CharClip( int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd, int *LineCount )
 {
 	int Result ;
 #ifdef UNICODE
@@ -2591,7 +2621,8 @@ extern int NS_DrawObtainsNString_CharClip( int x, int y, int AddY, const TCHAR *
 		SelectEnd,
 		TRUE,
 		NULL,
-		NULL
+		NULL,
+		LineCount
 	) ;
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( String )
 #else
@@ -2612,7 +2643,8 @@ extern int NS_DrawObtainsNString_CharClip( int x, int y, int AddY, const TCHAR *
 		SelectEnd,
 		TRUE,
 		NULL,
-		NULL
+		NULL,
+		LineCount
 	) ;
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( String )
 #endif
@@ -2636,7 +2668,8 @@ extern int DrawObtainsString_CharClip_WCHAR_T(
 	int SelectEnd,
 	int DrawFlag,
 	int *PosX,
-	int *PosY
+	int *PosY,
+	int *LineCount
 )
 {
 #ifndef DX_NON_GRAPHICS
@@ -2658,6 +2691,12 @@ extern int DrawObtainsString_CharClip_WCHAR_T(
 		// ３Ｄ有効フラグを得る
 		Use3DFlag = NS_GetUse3DFlag() ;
 		NS_SetUse3DFlag( FALSE ) ;
+	}
+
+
+	if( LineCount != NULL )
+	{
+		*LineCount = 1 ;
 	}
 
 	// 描画可能領域を得る
@@ -2688,6 +2727,11 @@ extern int DrawObtainsString_CharClip_WCHAR_T(
 	{
 		x -= DrawRect.right - DrawRect.left ;
 		y += AddY ;
+
+		if( LineCount != NULL )
+		{
+			*LineCount += 1 ;
+		}
 	}
 
 	if( StrLen < 0 )
@@ -2772,6 +2816,11 @@ extern int DrawObtainsString_CharClip_WCHAR_T(
 					PointX = x ;
 					PointY += AddY ;
 					i ++ ;
+
+					if( LineCount != NULL )
+					{
+						*LineCount += 1 ;
+					}
 					continue ;
 				}
 				else
@@ -2794,6 +2843,11 @@ extern int DrawObtainsString_CharClip_WCHAR_T(
 			{
 				PointX = x ;
 				PointY += AddY ;
+
+				if( LineCount != NULL )
+				{
+					*LineCount += 1 ;
+				}
 			}
 
 			if( DrawFlag )
@@ -2851,6 +2905,403 @@ extern int DrawObtainsString_CharClip_WCHAR_T(
 #endif // DX_NON_GRAPHICS
 }
 
+// 描画可能領域に収まるように改行しながら文字列を描画( クリップが単語単位 )
+extern int NS_DrawObtainsString_WordClip(
+	int x, int y,
+	int AddY,
+	const TCHAR *String,
+	unsigned int StrColor,
+	unsigned int StrEdgeColor,
+	int FontHandle,
+	unsigned int SelectBackColor,
+	unsigned int SelectStrColor,
+	unsigned int SelectStrEdgeColor,
+	int SelectStart,
+	int SelectEnd,
+	int *LineCount
+)
+{
+#ifdef UNICODE
+	return DrawObtainsString_WordClip_WCHAR_T(
+		x, y,
+		FALSE, 1.0, 1.0,
+		AddY,
+		String,
+		-1,
+		StrColor,
+		StrEdgeColor,
+		FontHandle,
+		SelectBackColor,
+		SelectStrColor,
+		SelectStrEdgeColor,
+		SelectStart,
+		SelectEnd,
+		TRUE,
+		NULL,
+		NULL,
+		LineCount
+	) ;
+#else
+	int Result ;
+
+	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( String, return -1 )
+
+	Result = DrawObtainsString_WordClip_WCHAR_T(
+		x, y,
+		FALSE, 1.0, 1.0,
+		AddY,
+		UseStringBuffer,
+		-1,
+		StrColor,
+		StrEdgeColor,
+		FontHandle,
+		SelectBackColor,
+		SelectStrColor,
+		SelectStrEdgeColor,
+		SelectStart,
+		SelectEnd,
+		TRUE,
+		NULL,
+		NULL,
+		LineCount
+	) ;
+
+	TCHAR_TO_WCHAR_T_STRING_END( String )
+
+	return Result ;
+#endif
+}
+
+// 描画可能領域に収まるように改行しながら文字列を描画( クリップが単語単位 )
+extern int NS_DrawObtainsNString_WordClip( int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd, int *LineCount )
+{
+	int Result ;
+#ifdef UNICODE
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( String, StringLength, return -1 )
+	Result = DrawObtainsString_WordClip_WCHAR_T(
+		x, y,
+		FALSE, 1.0, 1.0,
+		AddY,
+		UseStringBuffer,
+		-1,
+		StrColor,
+		StrEdgeColor,
+		FontHandle,
+		SelectBackColor,
+		SelectStrColor,
+		SelectStrEdgeColor,
+		SelectStart,
+		SelectEnd,
+		TRUE,
+		NULL,
+		NULL,
+		LineCount
+	) ;
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( String )
+#else
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( String, StringLength, return -1 )
+	Result = DrawObtainsString_WordClip_WCHAR_T(
+		x, y,
+		FALSE, 1.0, 1.0,
+		AddY,
+		UseStringBuffer,
+		-1,
+		StrColor,
+		StrEdgeColor,
+		FontHandle,
+		SelectBackColor,
+		SelectStrColor,
+		SelectStrEdgeColor,
+		SelectStart,
+		SelectEnd,
+		TRUE,
+		NULL,
+		NULL,
+		LineCount
+	) ;
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( String )
+#endif
+	return Result ;
+}
+
+// 描画可能領域に収まるように改行しながら文字列を描画( クリップが単語単位 )
+extern int DrawObtainsString_WordClip_WCHAR_T(
+	int x, int y,
+	int EnableExRate, double ExRateX, double ExRateY,
+	int AddY,
+	const wchar_t *String,
+	int StrLen,
+	unsigned int StrColor,
+	unsigned int StrEdgeColor,
+	int FontHandle,
+	unsigned int SelectBackColor,
+	unsigned int SelectStrColor,
+	unsigned int SelectStrEdgeColor,
+	int SelectStart,
+	int SelectEnd,
+	int DrawFlag,
+	int *PosX,
+	int *PosY,
+	int *LineCount
+)
+{
+#ifndef DX_NON_GRAPHICS
+	int PointX , PointY ;
+	int StrWidth ;
+	int Use3DFlag = FALSE ;
+	RECT DrawRect ;
+	int i, j, Num ;
+	wchar_t TempBuf[ 3 ] ;
+
+	// FontHandle が -1 の場合はデフォルトのフォントを使用する
+	if( FontHandle == -1 )
+	{
+		FontHandle = NS_GetDefaultFontHandle() ;
+	}
+
+	if( DrawFlag )
+	{
+		// ３Ｄ有効フラグを得る
+		Use3DFlag = NS_GetUse3DFlag() ;
+		NS_SetUse3DFlag( FALSE ) ;
+	}
+
+	if( LineCount != NULL )
+	{
+		*LineCount = 1 ;
+	}
+
+	// 描画可能領域を得る
+	NS_GetDrawArea( &DrawRect ) ;
+
+	// 初期値をセット
+	if( PosX )
+	{
+		*PosX = 0 ;
+	}
+	if( PosY )
+	{
+		*PosY = 0 ;
+	}
+
+	// 描画範囲に幅が無い場合は何もせずに終了
+	if( DrawRect.left == DrawRect.right ||
+		DrawRect.top  == DrawRect.bottom )
+	{
+		return 0 ;
+	}
+
+	// 描画位置を補正
+	if( x < DrawRect.left ) x = DrawRect.left ;
+	if( y < DrawRect.top  ) y = DrawRect.top ;
+
+	while( x > DrawRect.right )
+	{
+		x -= DrawRect.right - DrawRect.left ;
+		y += AddY ;
+
+		if( LineCount != NULL )
+		{
+			*LineCount += 1 ;
+		}
+	}
+
+	if( StrLen < 0 )
+	{
+		StrLen = ( int )_WCSLEN( String ) ;
+	}
+
+	// 入力文字列を描画
+	{
+		int smin = 0, smax = 0 ;
+		int FontSize ;
+		int DrawStart = 0 ;
+		int c ;
+
+		FontSize = NS_GetFontSizeToHandle( FontHandle ) ;
+		if( EnableExRate )
+		{
+			FontSize = _DTOL( FontSize * ExRateY ) ;
+		}
+
+		if( SelectStart != -1 )
+		{
+			if( SelectStart < SelectEnd )
+			{
+				smax = SelectEnd ;
+				smin = SelectStart ;
+			}
+			else
+			{
+				smax = SelectStart ;
+				smin = SelectEnd ;
+			}
+		}
+
+		PointX = x ;
+		PointY = y ;
+		for( i = 0 ; i < StrLen ; )
+		{
+			// 単語の文字数を数える
+			c = 0 ;
+			for(;;)
+			{
+				if( CHECK_WCHAR_T_DOUBLE( String[ i + c ] ) )
+				{
+					if( c == 0 )
+					{
+						c = 2 ;
+					}
+					break ;
+				}
+				else
+				{
+					if( String[ i + c ] == L' ' || String[ i + c ] == L'\t' || String[ i + c ] == L'\r' || String[ i + c ] == L'\n' )
+					{
+						if( c == 0 )
+						{
+							c = 1 ;
+						}
+						break ;
+					}
+					else
+					if( String[ i + c ] > 0x1000 )
+					{
+						if( c == 0 )
+						{
+							c = 1 ;
+						}
+						break ;
+					}
+					else
+					{
+						c++ ;
+					}
+				}
+			}
+
+			if( EnableExRate )
+			{
+				StrWidth = GetDrawExtendStringWidthToHandle_WCHAR_T( ExRateX, &String[ i ], 0, c, FontHandle, FALSE ) ;
+			}
+			else
+			{
+				StrWidth = GetDrawStringWidthToHandle_WCHAR_T(                &String[ i ], 0, c, FontHandle, FALSE ) ;
+			}
+			if( PointX + StrWidth > DrawRect.right && PointX != x )
+			{
+				PointX = x ;
+				PointY += AddY ;
+
+				if( LineCount != NULL )
+				{
+					*LineCount += 1 ;
+				}
+
+				if( c == 1 && ( String[ i ] == L' ' || String[ i ] == L'\t' || String[ i ] == L'\r' || String[ i ] == L'\n' ) )
+				{
+					i++ ;
+					continue ;
+				}
+			}
+
+			for( j = 0; j < c && i < StrLen; )
+			{
+				if( CHECK_WCHAR_T_DOUBLE( String[ i ] ) )
+				{
+					TempBuf[ 0 ] = String[ i ] ;
+					TempBuf[ 1 ] = String[ i + 1 ] ;
+					TempBuf[ 2 ] = 0 ;
+					Num = 2 ;
+				}
+				else
+				{
+					if( String[ i ] == L'\n' )
+					{
+						PointX = x ;
+						PointY += AddY ;
+						i ++ ;
+
+						if( LineCount != NULL )
+						{
+							*LineCount += 1 ;
+						}
+						continue ;
+					}
+					else
+					{
+						TempBuf[ 0 ] = String[ i ] ;
+						TempBuf[ 1 ] = 0 ;
+						Num = 1 ;
+					}
+				}
+
+				if( EnableExRate )
+				{
+					StrWidth = GetDrawExtendStringWidthToHandle_WCHAR_T( ExRateX, TempBuf, 0, Num, FontHandle, FALSE ) ;
+				}
+				else
+				{
+					StrWidth = GetDrawStringWidthToHandle_WCHAR_T(                TempBuf, 0, Num, FontHandle, FALSE ) ;
+				}
+
+				if( DrawFlag )
+				{
+					if( SelectStart != -1 && i >= smin && i < smax )
+					{
+						NS_DrawBox( PointX, PointY, PointX + StrWidth, PointY + FontSize, SelectBackColor, TRUE ) ; 
+						if( EnableExRate )
+						{
+							DrawExtendStringToHandle_WCHAR_T( PointX, PointY, ExRateX, ExRateY, TempBuf, _WCSLEN( TempBuf ), SelectStrColor, FontHandle, SelectStrEdgeColor, FALSE ) ;
+						}
+						else
+						{
+							DrawStringToHandle_WCHAR_T(       PointX, PointY,                   TempBuf, _WCSLEN( TempBuf ), SelectStrColor, FontHandle, SelectStrEdgeColor, FALSE ) ;
+						}
+					}
+					else
+					{
+						if( EnableExRate )
+						{
+							DrawExtendStringToHandle_WCHAR_T( PointX, PointY, ExRateX, ExRateY, TempBuf, _WCSLEN( TempBuf ), StrColor, FontHandle, StrEdgeColor, FALSE ) ;
+						}
+						else
+						{
+							DrawStringToHandle_WCHAR_T(       PointX, PointY,                   TempBuf, _WCSLEN( TempBuf ), StrColor, FontHandle, StrEdgeColor, FALSE ) ;
+						}
+					}
+				}
+
+				PointX += StrWidth ;
+				i += Num ;
+				j += Num ;
+			}
+		}
+	}
+
+	if( DrawFlag )
+	{
+		// ３Ｄ描画フラグを元に戻す
+		NS_SetUse3DFlag( Use3DFlag ) ;
+	}
+
+	// 座標をセット
+	if( PosX )
+	{
+		*PosX = PointX ;
+	}
+	if( PosY )
+	{
+		*PosY = PointY ;
+	}
+
+	// 終了
+	return 0 ;
+#else // DX_NON_GRAPHICS
+	return -1 ;
+#endif // DX_NON_GRAPHICS
+}
+
 
 
 
@@ -2858,7 +3309,7 @@ extern int DrawObtainsString_CharClip_WCHAR_T(
 
 
 // 描画可能領域に収まるように改行しながら文字列を描画した場合の文字列の末端の座標を取得する
-extern int NS_GetObtainsStringCharPosition(	int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle )
+extern int NS_GetObtainsStringCharPosition(	int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle, int *LineCount )
 {
 #ifdef UNICODE
 	return DrawObtainsString_WCHAR_T(
@@ -2876,7 +3327,8 @@ extern int NS_GetObtainsStringCharPosition(	int x, int y, int AddY, const TCHAR 
 		0 ,
 		FALSE,
 		PosX,
-		PosY
+		PosY,
+		LineCount
 	) ;
 #else
 	int Result ;
@@ -2898,7 +3350,8 @@ extern int NS_GetObtainsStringCharPosition(	int x, int y, int AddY, const TCHAR 
 		0 ,
 		FALSE ,
 		PosX,
-		PosY
+		PosY,
+		LineCount
 	) ;
 
 	TCHAR_TO_WCHAR_T_STRING_END( String )
@@ -2908,7 +3361,7 @@ extern int NS_GetObtainsStringCharPosition(	int x, int y, int AddY, const TCHAR 
 }
 
 // 描画可能領域に収まるように改行しながら文字列を描画した場合の文字列の末端の座標を取得する( クリップが文字単位 )
-extern int NS_GetObtainsStringCharPosition_CharClip( int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle )
+extern int NS_GetObtainsStringCharPosition_CharClip( int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle, int *LineCount )
 {
 #ifdef UNICODE
 	return DrawObtainsString_CharClip_WCHAR_T(
@@ -2927,7 +3380,8 @@ extern int NS_GetObtainsStringCharPosition_CharClip( int x, int y, int AddY, con
 		0,
 		FALSE,
 		PosX,
-		PosY
+		PosY,
+		LineCount
 	) ;
 #else
 	int Result ;
@@ -2950,7 +3404,62 @@ extern int NS_GetObtainsStringCharPosition_CharClip( int x, int y, int AddY, con
 		0,
 		FALSE,
 		PosX,
-		PosY
+		PosY,
+		LineCount
+	) ;
+
+	TCHAR_TO_WCHAR_T_STRING_END( String )
+
+	return Result ;
+#endif
+}
+
+// 描画可能領域に収まるように改行しながら文字列を描画した場合の文字列の末端の座標を取得する( クリップが単語単位 )
+extern int NS_GetObtainsStringCharPosition_WordClip( int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle, int *LineCount )
+{
+#ifdef UNICODE
+	return DrawObtainsString_WordClip_WCHAR_T(
+		x, y,
+		FALSE, 1.0, 1.0,
+		AddY,
+		String,
+		StrLen,
+		0,
+		0,
+		FontHandle,
+		0,
+		0,
+		0,
+		0,
+		0,
+		FALSE,
+		PosX,
+		PosY,
+		LineCount
+	) ;
+#else
+	int Result ;
+
+	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( String, return -1 )
+
+	Result = DrawObtainsString_WordClip_WCHAR_T(
+		x, y,
+		FALSE, 1.0, 1.0,
+		AddY,
+		UseStringBuffer,
+		StrLen,
+		0,
+		0,
+		FontHandle,
+		0,
+		0,
+		0,
+		0,
+		0,
+		FALSE,
+		PosX,
+		PosY,
+		LineCount
 	) ;
 
 	TCHAR_TO_WCHAR_T_STRING_END( String )
@@ -3252,8 +3761,8 @@ extern int InputStringToCustom_WCHAR_T(
 
 	// グラフィックデータを消す
 	DeleteKeyInput( InputHandle ) ;
-	DeleteGraph( ScreenGraphFront, FALSE ) ;
-	DeleteGraph( ScreenGraphBack, FALSE ) ;
+	SubHandle( ScreenGraphFront, FALSE, FALSE ) ;
+	SubHandle( ScreenGraphBack, FALSE, FALSE ) ;
 
 	// 描画設定情報を元に戻す
 	Graphics_DrawSetting_SetScreenDrawSettingInfo( &ScreenDrawSettingInfo ) ;
@@ -3381,7 +3890,7 @@ extern int GetIMEInputModeStr_WCHAR_T( wchar_t *GetBuffer )
 	SETUP_WIN_API
 
 	// ＩＭＥが使われていないときは-1を返す
-	if( CharBuf.IMESwitch == FALSE ) return -1 ;
+	if( CharBuf.IMEUseFlag_OSSet == FALSE || CharBuf.IMESwitch == FALSE ) return -1 ;
 
 	// 文字列の準備ができていない場合は準備を行う
 	if( StringSetup == FALSE )
@@ -3837,7 +4346,7 @@ extern int NS_DrawKeyInputModeString( int x , int y )
 	NS_GetDrawArea( &DrawRect ) ;
 
 	// 入力モードを描画
-	if( CharBuf.IMESwitch )
+	if( CharBuf.IMEUseFlag_OSSet == TRUE && CharBuf.IMESwitch == TRUE )
 	{
 		wchar_t InputModeStr[ 20 ] ;
 		int Width ;
@@ -3875,7 +4384,7 @@ extern int NS_InitKeyInput( void )
 	{
 		if( Input->UseFlag == TRUE )
 		{
-			NS_DeleteKeyInput( i | DX_HANDLETYPE_MASK_KEYINPUT | ( Input->ID << DX_HANDLECHECK_ADDRESS ) ) ;
+			SubHandle( i | DX_HANDLETYPE_MASK_KEYINPUT | ( Input->ID << DX_HANDLECHECK_ADDRESS ), FALSE, FALSE ) ;
 		}
 	}
 
@@ -4501,7 +5010,7 @@ CUT:
 				Buffer = ( wchar_t * )DXALLOC( ( size_t )Size ) ;
 				if( Buffer )
 				{
-					GetClipboardText_WCHAR_T( Buffer ) ;
+					GetClipboardText_WCHAR_T( Buffer, Size ) ;
 					for( p = Buffer ; *p ; p++ )
 					{
 						if( CHECK_WCHAR_T_DOUBLE( *p ) == TRUE )

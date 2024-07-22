@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		アーカイブ制御プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -3300,6 +3300,9 @@ static int DXA_DIR_OpenTest( const wchar_t *FilePath, int *ArchiveIndex, BYTE *A
 	DWORD BackUseDirectoryPathCharCode = 0 ;
 	int   BackUseDirectoryPathCharBytes = 0 ;
 
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &DXARCD.CriticalSection ) ;
+
 	// フルパスを得る
 	if( DXARCD.NotArchivePathCharUp )
 	{
@@ -3326,6 +3329,9 @@ static int DXA_DIR_OpenTest( const wchar_t *FilePath, int *ArchiveIndex, BYTE *A
 		arcindex = DXA_DIR_OpenArchive( DXARCD.BackUseDirectory, NULL, -1, FALSE, FALSE, DXARCD.BackUseArchiveIndex ) ;
 		if( arcindex == -1 )
 		{
+			// クリティカルセクションの解放
+			CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
+
 			return -1 ;
 		}
 
@@ -3392,6 +3398,9 @@ static int DXA_DIR_OpenTest( const wchar_t *FilePath, int *ArchiveIndex, BYTE *A
 
 			if( CharCode1 == '\0' || i == 0 )
 			{
+				// クリティカルセクションの解放
+				CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
+
 				return -1 ;
 			}
 
@@ -3469,6 +3478,9 @@ static int DXA_DIR_OpenTest( const wchar_t *FilePath, int *ArchiveIndex, BYTE *A
 		ConvString( ( const char * )p, -1, WCHAR_T_CHARCODEFORMAT, ( char * )ArchiveFilePath, BufferBytes, DestCharCodeFormat ) ;
 	}
 
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
+
 	// 終了
 	return 0;
 }
@@ -3483,6 +3495,9 @@ static int DXA_DIR_OpenArchive( const wchar_t *FilePath, void *FileImage, int Fi
 	DXARC_DIR_ARCHIVE *	tarc ;
 	DXARC				temparc ;
 
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &DXARCD.CriticalSection ) ;
+
 	// アーカイブの指定がある場合はそのまま使用する
 	if( ArchiveIndex != -1 )
 	{
@@ -3492,6 +3507,10 @@ static int DXA_DIR_OpenArchive( const wchar_t *FilePath, void *FileImage, int Fi
 			if(	_WCSCMP( FilePath, tarc->Path ) == 0 )
 			{
 				DXARCD.Archive[ ArchiveIndex ]->UseCounter ++ ;
+
+				// クリティカルセクションの解放
+				CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
+
 				return ArchiveIndex ;
 			}
 		}
@@ -3515,6 +3534,10 @@ static int DXA_DIR_OpenArchive( const wchar_t *FilePath, void *FileImage, int Fi
 		{
 			// 既に開かれていた場合はそのインデックスを返す
 			arc->UseCounter ++ ;
+
+			// クリティカルセクションの解放
+			CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
+
 			return index ;
 		}
 	}
@@ -3530,6 +3553,9 @@ static int DXA_DIR_OpenArchive( const wchar_t *FilePath, void *FileImage, int Fi
 		// それでも一杯である場合はエラー
 		if( DXARCD.ArchiveNum == DXA_DIR_MAXARCHIVENUM )
 		{
+			// クリティカルセクションの解放
+			CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
+
 			return -1 ;
 		}
 	} 
@@ -3544,20 +3570,32 @@ static int DXA_DIR_OpenArchive( const wchar_t *FilePath, void *FileImage, int Fi
 	{
 		// メモリ上に展開されたファイルイメージを使用する場合
 		if( DXA_OpenArchiveFromMem( &temparc, FileImage, FileSize, FileImageCopyFlag, FileImageReadOnly, DXARCD.ValidKeyString == TRUE ? DXARCD.KeyString : NULL, FilePath ) < 0 )
+		{
+			// クリティカルセクションの解放
+			CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
 			return -1 ;
+		}
 	}
 	else
 	if( OnMemory == TRUE )
 	{
 		// メモリに読み込む場合
 		if( DXA_OpenArchiveFromFileUseMem( &temparc, FilePath, DXARCD.ValidKeyString == TRUE ? DXARCD.KeyString : NULL, ASyncThread ) < 0 )
+		{
+			// クリティカルセクションの解放
+			CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
 			return -1 ;
+		}
 	}
 	else
 	{
 		// ファイルから読み込む場合
 		if( DXA_OpenArchiveFromFile( &temparc, FilePath, DXARCD.ValidKeyString == TRUE ? DXARCD.KeyString : NULL ) < 0 )
+		{
+			// クリティカルセクションの解放
+			CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
 			return -1 ;
+		}
 	}
 
 	// 新しいアーカイブデータ用のメモリを確保する
@@ -3566,6 +3604,10 @@ static int DXA_DIR_OpenArchive( const wchar_t *FilePath, void *FileImage, int Fi
 	{
 		DXA_CloseArchive( &temparc ) ;
 		DXA_Terminate( &temparc ) ;
+
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
+
 		return -1 ;
 	}
 
@@ -3576,6 +3618,9 @@ static int DXA_DIR_OpenArchive( const wchar_t *FilePath, void *FileImage, int Fi
 
 	// 使用中のアーカイブの数を増やす
 	DXARCD.ArchiveNum ++ ;
+
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
 
 	// インデックスを返す
 	return newindex ;
@@ -3632,15 +3677,24 @@ static int DXA_DIR_CloseArchive( int ArchiveHandle )
 {
 	DXARC_DIR_ARCHIVE *arc ;
 
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &DXARCD.CriticalSection ) ;
+
 	// 使用されていなかったら何もせず終了
 	arc = DXARCD.Archive[ArchiveHandle] ;
 	if( arc == NULL || arc->UseCounter == 0 )
 	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
+
 		return -1 ;
 	}
 
 	// 参照カウンタを減らす
 	arc->UseCounter -- ;
+
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
 
 	// 終了
 	return 0 ;
@@ -3651,6 +3705,9 @@ static void DXA_DIR_CloseWaitArchive( int AlwaysClose )
 {
 	int i, Num, index ;
 	DXARC_DIR_ARCHIVE *arc ;
+
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &DXARCD.CriticalSection ) ;
 	
 	Num = DXARCD.ArchiveNum ;
 	for( i = 0, index = 0 ; i < Num ; index ++ )
@@ -3678,6 +3735,9 @@ static void DXA_DIR_CloseWaitArchive( int AlwaysClose )
 		// アーカイブの数を減らす
 		DXARCD.ArchiveNum -- ;
 	}
+
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &DXARCD.CriticalSection ) ;
 }
 
 // アーカイブをディレクトリに見立てる処理の初期化

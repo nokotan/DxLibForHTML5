@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＤｒａｗ制御プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // ----------------------------------------------------------------------------
 
@@ -591,7 +591,7 @@ static int DrawStringHardware( int xi, int yi, float xf, float yf, int PosIntFla
 			NULL,
 			NULL,
 			0,
-			NULL,
+			NULL, 0,
 			FSYS.OnlyDrawType
 		) ;
 		return 0 ;
@@ -635,7 +635,7 @@ static int DrawExtendStringHardware( int xi, int yi, float xf, float yf, int Pos
 			NULL,
 			NULL,
 			0,
-			NULL,
+			NULL, 0,
 			FSYS.OnlyDrawType
 		) ;
 		return 0 ;
@@ -682,7 +682,7 @@ static int DrawRotaStringHardware( int xi, int yi, float xf, float yf, int PosIn
 			NULL,
 			NULL,
 			0,
-			NULL,
+			NULL, 0,
 			FSYS.OnlyDrawType
 		) ;
 		return 0 ;
@@ -700,29 +700,126 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 	// フォントにテクスチャキャッシュが使用されている場合
 	if( Font->TextureCacheFlag )
 	{
-		int DrawWidth ;
-		int DrawHeight ;
+		int i ;
+		int DrawWidth = 0 ;
+		int DrawHeight = 0 ;
 //		int Result ;
 		int *UseTempScreenHandle ;
 		int TempScreenHeight = 0 ;
 		int TempScreenWidth = 0 ;
 		int DrawTempScreenHandle[ 2 ] = { -1, -1 } ;
 		SCREENDRAWSETTINGINFO ScreenDrawSettingInfo ;
+		int StrLen ;
+		int CInfoNum = 0 ;
+		DRAWCHARINFO CInfoBase[ 256 ] ;
+		DRAWCHARINFO *TempCInfo = NULL ;
+		DRAWCHARINFO *UseCInfo ;
 
 		// 描画先が３Ｄデバイスによる描画が出来ない場合はエラー
 		RefreshFontDrawResourceToHandle( Font ) ;
 
+		if( StringLength > 0 )
+		{
+			StrLen = ( int )StringLength ;
+		}
+		else
+		{
+			StrLen = ( int )_WCSLEN( String ) ;
+		}
+
+		FontCacheStringDrawToHandleST(
+			FALSE,
+			0,
+			0,
+			0.0f,
+			0.0f,
+			TRUE,
+			FALSE,
+			1.0,
+			1.0,
+			FALSE, 0.0f, 0.0f, 0.0,
+			String,
+			0,
+			NULL,
+			NULL,
+			FALSE,
+			Font,
+			0,
+			StrLen,
+			VerticalFlag,
+			NULL,
+			NULL,
+			NULL,
+			0,
+			&CInfoNum, 1,
+			0
+		) ;
+
+		if( CInfoNum > 256 )
+		{
+			TempCInfo = ( DRAWCHARINFO * )DXALLOC( sizeof( DRAWCHARINFO ) * CInfoNum ) ;
+			if( TempCInfo == NULL )
+			{
+				return -1 ;
+			}
+			UseCInfo = TempCInfo ;
+		}
+		else
+		{
+			UseCInfo = CInfoBase ;
+		}
+
+		FontCacheStringDrawToHandleST(
+			FALSE,
+			0,
+			0,
+			0.0f,
+			0.0f,
+			TRUE,
+			FALSE,
+			1.0,
+			1.0,
+			FALSE, 0.0f, 0.0f, 0.0,
+			String,
+			0,
+			NULL,
+			NULL,
+			FALSE,
+			Font,
+			0,
+			StrLen,
+			VerticalFlag,
+			NULL,
+			NULL,
+			UseCInfo,
+			CInfoNum,
+			&CInfoNum, 1,
+			0
+		) ;
+
+		for( i = 0 ; i < CInfoNum ; i ++ )
+		{
+			if( DrawWidth  < _FTOL( UseCInfo[ i ].DrawX + UseCInfo[ i ].SizeX ) ) DrawWidth  = _FTOL( UseCInfo[ i ].DrawX + UseCInfo[ i ].SizeX ) ;
+			if( DrawHeight < _FTOL( UseCInfo[ i ].DrawY + UseCInfo[ i ].SizeY ) ) DrawHeight = _FTOL( UseCInfo[ i ].DrawY + UseCInfo[ i ].SizeY ) ;
+		}
+
+		if( TempCInfo != NULL )
+		{
+			DxFree( TempCInfo ) ;
+			TempCInfo = NULL ;
+		}
+
 		if( VerticalFlag )
 		{
-			DrawWidth  = Font->BaseInfo.FontSize + Font->EdgeSize * 2 ;
-			DrawHeight = GetDrawStringWidthToHandle_WCHAR_T( String, StringLength, ( int )StringLength, Font->HandleInfo.Handle, VerticalFlag ) ;
+//			DrawWidth  = Font->BaseInfo.FontSize + Font->EdgeSize * 2 ;
+//			DrawHeight = GetDrawStringWidthToHandle_WCHAR_T( String, StringLength, ( int )StringLength, Font->HandleInfo.Handle, VerticalFlag ) ;
 //			Result     = DrawHeight ;
 			UseTempScreenHandle = Font->ModiDrawScreenV ;
 		}
 		else
 		{
-			DrawWidth  = GetDrawStringWidthToHandle_WCHAR_T( String, StringLength, ( int )StringLength, Font->HandleInfo.Handle, VerticalFlag ) ;
-			DrawHeight = Font->BaseInfo.FontSize + Font->EdgeSize * 2 ;
+//			DrawWidth  = GetDrawStringWidthToHandle_WCHAR_T( String, StringLength, ( int )StringLength, Font->HandleInfo.Handle, VerticalFlag ) ;
+//			DrawHeight = Font->BaseInfo.FontSize + Font->EdgeSize * 2 ;
 //			Result     = DrawWidth ;
 			UseTempScreenHandle = Font->ModiDrawScreen ;
 		}
@@ -739,8 +836,8 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 
 			if( UseTempScreenHandle[ 0 ] >= 0 )
 			{
-				NS_DeleteGraph( UseTempScreenHandle[ 0 ], FALSE ) ;
-				NS_DeleteGraph( UseTempScreenHandle[ 1 ], FALSE ) ;
+				SubHandle( UseTempScreenHandle[ 0 ], FALSE, FALSE ) ;
+				SubHandle( UseTempScreenHandle[ 1 ], FALSE, FALSE ) ;
 				UseTempScreenHandle[ 0 ] = -1 ;
 				UseTempScreenHandle[ 1 ] = -1 ;
 			}
@@ -764,7 +861,7 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 			UseTempScreenHandle[ 1 ] = Graphics_Image_MakeGraph_UseGParam( &GParam, DrawWidth, DrawHeight, FALSE, FALSE, 0, FALSE, FALSE ) ;
 			if( UseTempScreenHandle[ 1 ] < 0 )
 			{
-				NS_DeleteGraph( UseTempScreenHandle[ 0 ], FALSE ) ;
+				SubHandle( UseTempScreenHandle[ 0 ], FALSE, FALSE ) ;
 				UseTempScreenHandle[ 0 ] = -1 ;
 				return -1 ;
 			}
@@ -822,7 +919,7 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 					NULL,
 					NULL,
 					0,
-					NULL,
+					NULL, 0,
 					2
 				) ;
 			}
@@ -857,7 +954,7 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 					NULL,
 					NULL,
 					0,
-					NULL,
+					NULL, 0,
 					1
 				) ;
 			}
@@ -889,14 +986,14 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 				if( DrawTempScreenHandle[ 0 ] >= 0 && ( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 2 ) )
 				{
 					NS_DrawModiGraph(  x1i, y1i, x2i, y2i, x3i, y3i, x4i, y4i, DrawTempScreenHandle[ 0 ], TRUE ) ;
-					NS_DeleteGraph( DrawTempScreenHandle[ 0 ], FALSE ) ;
+					SubHandle( DrawTempScreenHandle[ 0 ], FALSE, FALSE ) ;
 					DrawTempScreenHandle[ 0 ] = -1 ;
 				}
 
 				if( DrawTempScreenHandle[ 1 ] >= 0 && ( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 1 ) )
 				{
 					NS_DrawModiGraph(  x1i, y1i, x2i, y2i, x3i, y3i, x4i, y4i, DrawTempScreenHandle[ 1 ], TRUE ) ;
-					NS_DeleteGraph( DrawTempScreenHandle[ 1 ], FALSE ) ;
+					SubHandle( DrawTempScreenHandle[ 1 ], FALSE, FALSE ) ;
 					DrawTempScreenHandle[ 1 ] = -1 ;
 				}
 			}
@@ -905,14 +1002,14 @@ static int DrawModiStringHardware( int x1i, int y1i, int x2i, int y2i, int x3i, 
 				if( DrawTempScreenHandle[ 0 ] > 0 && ( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 2 ) )
 				{
 					NS_DrawModiGraphF( x1f, y1f, x2f, y2f, x3f, y3f, x4f, y4f, DrawTempScreenHandle[ 0 ], TRUE ) ;
-					NS_DeleteGraph( DrawTempScreenHandle[ 0 ], FALSE ) ;
+					SubHandle( DrawTempScreenHandle[ 0 ], FALSE, FALSE ) ;
 					DrawTempScreenHandle[ 0 ] = -1 ;
 				}
 
 				if( DrawTempScreenHandle[ 1 ] > 0 && ( FSYS.OnlyDrawType == 0 || FSYS.OnlyDrawType == 1 ) )
 				{
 					NS_DrawModiGraphF( x1f, y1f, x2f, y2f, x3f, y3f, x4f, y4f, DrawTempScreenHandle[ 1 ], TRUE ) ;
-					NS_DeleteGraph( DrawTempScreenHandle[ 1 ], FALSE ) ;
+					SubHandle( DrawTempScreenHandle[ 1 ], FALSE, FALSE ) ;
 					DrawTempScreenHandle[ 1 ] = -1 ;
 				}
 			}
@@ -972,7 +1069,7 @@ static int SetupSoftwareStringImage(
 		NULL,
 		NULL,
 		0,
-		NULL,
+		NULL, 0,
 		FSYS.OnlyDrawType
 	) ;
 
@@ -1050,7 +1147,7 @@ static int SetupSoftwareStringImage(
 		NULL,
 		NULL,
 		0,
-		NULL,
+		NULL, 0,
 		FSYS.OnlyDrawType
 	) ;
 
@@ -1096,7 +1193,7 @@ static int DrawStringSoftware( int x, int y, const wchar_t *String, size_t Strin
 		NULL,
 		NULL,
 		0,
-		NULL,
+		NULL, 0,
 		FSYS.OnlyDrawType
 	) ;
 
@@ -1183,7 +1280,7 @@ static int DrawStringSoftware( int x, int y, const wchar_t *String, size_t Strin
 			NULL,
 			NULL,
 			0,
-			NULL,
+			NULL, 0,
 			FSYS.OnlyDrawType
 		) ;
 
@@ -1236,7 +1333,7 @@ NORMALDRAW:
 		NULL,
 		NULL,
 		0,
-		NULL,
+		NULL, 0,
 		FSYS.OnlyDrawType
 	) ;
 
@@ -1550,7 +1647,7 @@ extern int TermFontManage( void )
 		{
 			for( j = 0 ; j < 16 ; j ++ )
 			{
-				NS_DeleteGraph( FSYS.DefaultFontImageGraphHandle[ i ][ j ], FALSE ) ;
+				SubHandle( FSYS.DefaultFontImageGraphHandle[ i ][ j ], FALSE, FALSE ) ;
 				FSYS.DefaultFontImageGraphHandle[ i ][ j ] = 0 ;
 			}
 		}
@@ -1614,7 +1711,7 @@ extern int InitCacheFontToHandle( void )
 
 			// フォントハンドルの作り直し
 			Handle = ManageData->HandleInfo.Handle ;
-			NS_DeleteFontToHandle( Handle ) ;
+			SubHandle( Handle, FALSE, FALSE ) ;
 			InitCreateFontToHandleGParam( &GParam ) ;
 			LoadFontDataFromMemToHandle_UseGParam( &GParam, FontDataImageTemp, FontDataImageTempSize, EdgeSize, Handle, FALSE ) ;
 
@@ -1633,7 +1730,7 @@ extern int InitCacheFontToHandle( void )
 
 			// フォントハンドルの作り直し
 			Handle = ManageData->HandleInfo.Handle ;
-			NS_DeleteFontToHandle( Handle ) ;
+			SubHandle( Handle, FALSE, FALSE ) ;
 			InitCreateFontToHandleGParam( &GParam ) ;
 			CreateFontToHandle_UseGParam( &GParam, FontName, Size, Thick, FontType, CharSet, EdgeSize, Italic, Handle, FALSE ) ;
 		}
@@ -1881,7 +1978,7 @@ extern int RefreshDefaultFont( void )
 			  Italic	== ManageData->BaseInfo.Italic ) )
 			return 0 ;
 
-		NS_DeleteFontToHandle( FSYS.DefaultFontHandle ) ;
+		SubHandle( FSYS.DefaultFontHandle, FALSE, FALSE ) ;
 	}
 
 	// 設定が変わっているかフォントハンドルが無効になっている場合は再作成する	
@@ -6438,13 +6535,13 @@ extern int TerminateFontHandle( HANDLEINFO *HandleInfo )
 		{
 			if( ManageData->ModiDrawScreen[ i ] >= 0 )
 			{
-				NS_DeleteGraph( ManageData->ModiDrawScreen[ i ], FALSE ) ;
+				SubHandle( ManageData->ModiDrawScreen[ i ], FALSE, FALSE ) ;
 				ManageData->ModiDrawScreen[ i ] = -1 ;
 			}
 
 			if( ManageData->ModiDrawScreenV[ i ] >= 0 )
 			{
-				NS_DeleteGraph( ManageData->ModiDrawScreenV[ i ], FALSE ) ;
+				SubHandle( ManageData->ModiDrawScreenV[ i ], FALSE, FALSE ) ;
 				ManageData->ModiDrawScreenV[ i ] = -1 ;
 			}
 		}
@@ -6453,8 +6550,8 @@ extern int TerminateFontHandle( HANDLEINFO *HandleInfo )
 	// テクスチャグラフィック削除
 	if( ManageData->TextureCache >= 0 )
 	{
-		NS_DeleteGraph( ManageData->TextureCache, FALSE ) ;
-		NS_DeleteGraph( ManageData->TextureCacheSub, FALSE ) ;
+		SubHandle( ManageData->TextureCache, FALSE, FALSE ) ;
+		SubHandle( ManageData->TextureCacheSub, FALSE, FALSE ) ;
 		ManageData->TextureCache = -1 ;
 		ManageData->TextureCacheSub = -1 ;
 	}
@@ -6727,7 +6824,7 @@ static void CreateFontToHandle_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( FontHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( FontHandle ) ;
+		SubHandle( FontHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -6816,7 +6913,7 @@ extern int CreateFontToHandle_UseGParam(
 	return FontHandle ;
 
 ERR :
-	SubHandle( FontHandle ) ;
+	SubHandle( FontHandle, ASyncLoadFlag, FALSE ) ;
 
 	return -1 ;
 }
@@ -7080,7 +7177,7 @@ static void LoadFontDataFromMemToHandle_UseGParam_ASync( ASYNCLOADDATA_COMMON *A
 	DecASyncLoadCount( FontHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( FontHandle ) ;
+		SubHandle( FontHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -7157,7 +7254,7 @@ extern int LoadFontDataFromMemToHandle_UseGParam(
 	return FontHandle ;
 
 ERR :
-	SubHandle( FontHandle ) ;
+	SubHandle( FontHandle, ASyncLoadFlag, FALSE ) ;
 
 	return -1 ;
 }
@@ -7258,7 +7355,7 @@ static void LoadFontDataToHandle_UseGParam_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( FontHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( FontHandle ) ;
+		SubHandle( FontHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -7331,7 +7428,7 @@ extern int LoadFontDataToHandle_UseGParam(
 	return FontHandle ;
 
 ERR :
-	SubHandle( FontHandle ) ;
+	SubHandle( FontHandle, ASyncLoadFlag, FALSE ) ;
 
 	return -1 ;
 }
@@ -7594,7 +7691,7 @@ extern int NS_SetDefaultFontStateWithStrLen( const TCHAR *FontName, size_t FontN
 // フォントキャッシュの制御を終了する
 extern int NS_DeleteFontToHandle( int FontHandle )
 {
-	return SubHandle( FontHandle ) ;
+	return SubHandle( FontHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 // 解放時に TRUE にするフラグへのポインタを設定する
@@ -8236,6 +8333,7 @@ extern int FontCacheStringDrawToHandleST(
 	DRAWCHARINFO *	CharInfos,
 	size_t			CharInfoBufferSize,
 	int *			CharInfoNum,
+	int				CharInfoType /* 0:簡易情報  1:詳細情報 */,
 	int				OnlyType /* 0:通常描画 1:本体のみ 2:縁のみ */
 )
 {
@@ -8515,6 +8613,12 @@ extern int FontCacheStringDrawToHandleST(
 		{
 			CharData = NULL ;
 			UseManageData = ManageData ;
+
+			// \n 無視フラグが立っていて且つ \n だった場合は完全無視する
+			if( *CharCode == '\n' && FSYS.IgnoreLFFlag )
+			{
+				continue ;
+			}
 
 			// キャッシュデータを取得
 			CharData = GetFontCacheChar_Inline( ManageData, *CharCode, *IVSCode, &UseManageData, &DrawOffsetX, &DrawOffsetY, TRUE, FALSE ) ;
@@ -9027,7 +9131,7 @@ extern int FontCacheStringDrawToHandleST(
 											TempGraph, TRUE
 										) ;
 									}
-									NS_DeleteGraph( TempGraph, FALSE ) ;
+									SubHandle( TempGraph, FALSE, FALSE ) ;
 									Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 								}
 
@@ -9044,7 +9148,7 @@ extern int FontCacheStringDrawToHandleST(
 										TRUE
 									) ;
 								}
-								NS_DeleteGraph( TempGraph, FALSE ) ;
+								SubHandle( TempGraph, FALSE, FALSE ) ;
 							}
 						}
 						else
@@ -9087,7 +9191,7 @@ extern int FontCacheStringDrawToHandleST(
 											TempGraph, TRUE
 										) ;
 									}
-									NS_DeleteGraph( TempGraph, FALSE ) ;
+									SubHandle( TempGraph, FALSE, FALSE ) ;
 									Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 								}
 
@@ -9104,7 +9208,7 @@ extern int FontCacheStringDrawToHandleST(
 										TRUE/*anti ? FALSE : TRUE*/
 									) ;
 								}
-								NS_DeleteGraph( TempGraph, FALSE ) ;
+								SubHandle( TempGraph, FALSE, FALSE ) ;
 
 								// 描画可能矩形を元に戻す
 								NS_SetDrawArea( MotoDrawRect.left,  MotoDrawRect.top,
@@ -9136,7 +9240,7 @@ extern int FontCacheStringDrawToHandleST(
 											TempGraph, TRUE
 										) ;
 									}
-									NS_DeleteGraph( TempGraph, FALSE ) ;
+									SubHandle( TempGraph, FALSE, FALSE ) ;
 									Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 								}
 
@@ -9153,7 +9257,7 @@ extern int FontCacheStringDrawToHandleST(
 										TRUE/*anti ? FALSE : TRUE*/
 									) ;
 								}
-								NS_DeleteGraph( TempGraph, FALSE ) ;
+								SubHandle( TempGraph, FALSE, FALSE ) ;
 							}
 						}
 					}
@@ -11167,20 +11271,45 @@ LOOPEND :
 					DrawX = ( float )( tmp_xf + DrawPos    ) ;
 					DrawY = ( float )( tmp_yf + DrawPosSub ) ;
 				}
-				if( *CharCode == '\n' )
+
+				if( CharInfoType == 1 )
 				{
-					SizeX = 0.0f ;
+					if( *CharCode == '\n' )
+					{
+						SizeX = 0.0f ;
+						SizeY = ( float )DrawPosSubAdd ;
+					}
+					else
+					if( CharData != NULL )
+					{
+						DrawX += ( float )( CharData->DrawX * ExRate ) ;
+						DrawY += ( float )( CharData->DrawY * ExRate ) ;
+						SizeX  = ( float )( CharData->SizeX * ExRate ) ;
+						SizeY  = ( float )( CharData->SizeY * ExRate ) ;
+					}
+					else
+					{
+						SizeX = ( float )( UseManageData->Space * ExRate ) ;
+						SizeY = ( float )DrawPosSubAdd ;
+					}
 				}
 				else
-				if( CharData != NULL )
 				{
-					SizeX = ( float )( ( CharData->AddX + UseManageData->Space ) * ExRate ) ;
+					if( *CharCode == '\n' )
+					{
+						SizeX = 0.0f ;
+					}
+					else
+					if( CharData != NULL )
+					{
+						SizeX = ( float )( ( CharData->AddX + UseManageData->Space ) * ExRate ) ;
+					}
+					else
+					{
+						SizeX = ( float )( UseManageData->Space * ExRate ) ;
+					}
+					SizeY = ( float )DrawPosSubAdd ;
 				}
-				else
-				{
-					SizeX = ( float )( UseManageData->Space * ExRate ) ;
-				}
-				SizeY = ( float )DrawPosSubAdd ;
 
 				if( VerticalFlag == TRUE )
 				{
@@ -11272,6 +11401,12 @@ LOOPEND :
 		DrawPosSub = 0.0 ;
 		for( i = 0 ; i < DrawCharNum ; i ++, CharCode ++, IVSCode ++ )
 		{
+			// \n 無視フラグが立っていて且つ \n だった場合は完全無視する
+			if( *CharCode == '\n' && FSYS.IgnoreLFFlag )
+			{
+				continue ;
+			}
+
 			// キャッシュデータを取得
 			CharData = NULL ;
 			if( *CharCode != '\n' )
@@ -11375,20 +11510,45 @@ LOOPEND :
 					DrawX = ( float )( tmp_xf + DrawPos    ) ;
 					DrawY = ( float )( tmp_yf + DrawPosSub ) ;
 				}
-				if( *CharCode == '\n' )
+
+				if( CharInfoType == 1 )
 				{
-					SizeX = 0.0f ;
+					if( *CharCode == '\n' )
+					{
+						SizeX = 0.0f ;
+						SizeY = ( float )DrawPosSubAdd ;
+					}
+					else
+					if( CharData != NULL )
+					{
+						DrawX += ( float )( CharData->DrawX * ExRate ) ;
+						DrawY += ( float )( CharData->DrawY * ExRate ) ;
+						SizeX  = ( float )( CharData->SizeX * ExRate ) ;
+						SizeY  = ( float )( CharData->SizeY * ExRate ) ;
+					}
+					else
+					{
+						SizeX = ( float )( UseManageData->Space * ExRate ) ;
+						SizeY = ( float )DrawPosSubAdd ;
+					}
 				}
 				else
-				if( CharData != NULL )
 				{
-					SizeX = ( float )( ( CharData->AddX + UseManageData->Space ) * ExRate ) ;
+					if( *CharCode == '\n' )
+					{
+						SizeX = 0.0f ;
+					}
+					else
+					if( CharData != NULL )
+					{
+						SizeX = ( float )( ( CharData->AddX + UseManageData->Space ) * ExRate ) ;
+					}
+					else
+					{
+						SizeX = ( float )( UseManageData->Space * ExRate ) ;
+					}
+					SizeY = ( float )DrawPosSubAdd ;
 				}
-				else
-				{
-					SizeX = ( float )( UseManageData->Space * ExRate ) ;
-				}
-				SizeY = ( float )DrawPosSubAdd ;
 
 				if( VerticalFlag == TRUE )
 				{
@@ -11652,6 +11812,12 @@ extern int FontCacheStringDrawToHandle_WCHAR_T(
 	{
 		cache = NULL ;
 		usecmanage = cmanage ;
+
+		// \n 無視フラグが立っていて且つ \n だった場合は完全無視する
+		if( *strp == L'\n' && FSYS.IgnoreLFFlag )
+		{
+			continue ;
+		}
 
 		// 改行文字だった場合はキャンセルする
 		if( *strp == L'\n' )
@@ -12947,6 +13113,12 @@ extern int FontBaseImageBltToHandle_WCHAR_T( int x, int y, const wchar_t *StrDat
 		cache = NULL ;
 		usecmanage = cmanage ;
 
+		// \n 無視フラグが立っていて且つ \n だった場合は完全無視する
+		if( *strp == L'\n' && FSYS.IgnoreLFFlag )
+		{
+			continue ;
+		}
+
 		// 改行文字だった場合はキャンセルする
 		if( *strp == L'\n' )
 		{
@@ -13497,7 +13669,7 @@ extern int GetDrawStringWidthToHandle_WCHAR_T( const wchar_t *String, size_t Str
 				NULL,
 				NULL,
 				0,
-				NULL,
+				NULL, 0,
 				0
 			) ;
 }
@@ -13652,7 +13824,7 @@ extern int GetDrawExtendStringWidthToHandle_WCHAR_T( double ExRateX, const wchar
 				NULL,
 				NULL,
 				0,
-				NULL,
+				NULL, 0,
 				0
 			) ;
 }
@@ -13790,7 +13962,7 @@ extern int GetDrawStringSizeToHandle_WCHAR_T( int *SizeX, int *SizeY, int *LineC
 				LineCount,
 				NULL,
 				0,
-				NULL,
+				NULL, 0,
 				0
 			) ;
 
@@ -13904,7 +14076,7 @@ extern int GetDrawExtendStringSizeToHandle_WCHAR_T( int *SizeX, int *SizeY, int 
 				LineCount,
 				NULL,
 				0,
-				NULL,
+				NULL, 0,
 				0
 			) ;
 
@@ -14077,7 +14249,7 @@ extern int GetDrawStringCharInfoToHandle_WCHAR_T( DRAWCHARINFO *InfoBuffer, size
 				NULL,
 				InfoBuffer,
 				InfoBufferSize,
-				&CharInfoNum,
+				&CharInfoNum, 0,
 				0
 			) ;
 
@@ -14180,7 +14352,7 @@ extern int GetDrawExtendStringCharInfoToHandle_WCHAR_T( DRAWCHARINFO *InfoBuffer
 				NULL,
 				InfoBuffer,
 				InfoBufferSize,
-				&CharInfoNum,
+				&CharInfoNum, 0,
 				0
 			) ;
 
@@ -14574,6 +14746,20 @@ extern int NS_SetFontOnlyDrawType( int OnlyType )
 extern int NS_GetFontOnlyDrawType( void )
 {
 	return FSYS.OnlyDrawType ;
+}
+
+// DrawString などで \n を無視するかどうかを設定する( TRUE : 無視する    FALSE : 無視しない( デフォルト ) )
+extern int NS_SetFontIgnoreLFFlag( int Flag )
+{
+	FSYS.IgnoreLFFlag = Flag ;
+
+	return 0 ;
+}
+
+// DrawString などで \n を無視するかどうかを取得する( TRUE : 無視する    FALSE : 無視しない( デフォルト ) )
+extern int NS_GetFontIgnoreLFFlag( void )
+{
+	return FSYS.IgnoreLFFlag ;
 }
 
 // 文字列を描画する

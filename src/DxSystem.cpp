@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		システムプログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -171,15 +171,15 @@ extern int DxLib_FmtErrorUTF16LE( const char *FormatString , ... )
 // クリップボード関係
 
 // クリップボードに格納されているテキストデータを読み出す、-1 の場合はクリップボードにテキストデータは無いということ( DestBuffer に NULL を渡すと格納に必要なデータサイズが返ってくる )
-extern int NS_GetClipboardText( TCHAR *DestBuffer )
+extern int NS_GetClipboardText( TCHAR *DestBuffer, int DestBufferBytes )
 {
-	return GetClipboardText_PF( DestBuffer ) ;
+	return GetClipboardText_PF( DestBuffer, DestBufferBytes ) ;
 }
 
 // クリップボードに格納されているテキストデータを読み出す、-1 の場合はクリップボードにテキストデータは無いということ( DestBuffer に NULL を渡すと格納に必要なデータサイズが返ってくる )
-extern int GetClipboardText_WCHAR_T( wchar_t *DestBuffer )
+extern int GetClipboardText_WCHAR_T( wchar_t *DestBuffer, int DestBufferBytes )
 {
-	return GetClipboardText_WCHAR_T_PF( DestBuffer ) ;
+	return GetClipboardText_WCHAR_T_PF( DestBuffer, DestBufferBytes ) ;
 }
 
 // クリップボードにテキストデータを格納する

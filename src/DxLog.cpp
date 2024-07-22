@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ログプログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -960,7 +960,7 @@ extern int TerminateLog( void )
 	// フォントハンドルを削除する
 	if( LogData.LogFontHandleLostFlag == FALSE && LogData.LogFontHandle > 0 )
 	{
-		NS_DeleteFontToHandle( LogData.LogFontHandle ) ;
+		SubHandle( LogData.LogFontHandle, FALSE, FALSE ) ;
 	}
 	LogData.LogFontHandleLostFlag = TRUE ;
 	LogData.LogFontHandle = -1 ;

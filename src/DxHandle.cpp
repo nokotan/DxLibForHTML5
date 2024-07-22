@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ハンドル管理プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -91,6 +91,9 @@ extern int InitializeHandleManage(
 
 	// ハンドルリストの初期化
 	InitializeHandleList( &HandleManage->ListFirst, &HandleManage->ListLast ) ;
+
+	// 削除リクエストのハンドルリストの初期化
+	InitializeHandleList( &HandleManage->DeleteRequestListFirst, &HandleManage->DeleteRequestListLast ) ;
 
 	// クリティカルセクションの初期化
 	CriticalSection_Initialize( &HandleManage->CriticalSection ) ;
@@ -272,13 +275,11 @@ extern int AddHandle( int HandleType, int ASyncThread, int Handle )
 	return NewHandle ;
 }
 
-// ハンドルを削除する
-extern int SubHandle( int Handle )
+// SubHandle の実処理関数
+static int SubHandleBase( HANDLEMANAGE *HandleManage, HANDLEINFO *HandleInfo )
 {
-	HANDLEINFO *HandleInfo ;
 	int Index ;
-	int HandleType = ( int )( ( ( DWORD )Handle & DX_HANDLETYPE_MASK ) >> DX_HANDLETYPE_ADDRESS ) ;
-	HANDLEMANAGE *HandleManage = &HandleManageArray[ HandleType ] ;
+	int HandleType = ( int )( ( ( DWORD )HandleInfo->Handle & DX_HANDLETYPE_MASK ) >> DX_HANDLETYPE_ADDRESS ) ;
 
 	if( HandleManage->InitializeFlag == FALSE )
 		return -1 ;
@@ -286,16 +287,7 @@ extern int SubHandle( int Handle )
 	// クリティカルセクションの取得
 	CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
 
-	Index = Handle & DX_HANDLEINDEX_MASK ;
-
-	// エラー判定
-	if( HANDLECHK_ASYNC( HandleType, Handle, HandleInfo ) )
-	{
-		// クリティカルセクションの解放
-		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
-
-		return -1 ;
-	}
+	Index = HandleInfo->Handle & DX_HANDLEINDEX_MASK ;
 
 #ifndef DX_NON_ASYNCLOAD
 	// 非同期読み込み中である場合でまだ処理が走っていなかったら処理をキャンセルする
@@ -337,6 +329,15 @@ extern int SubHandle( int Handle )
 	// リストから要素を外す
 	SubHandleList( &HandleInfo->List ) ;
 
+	// 削除リクエストされていたら削除リクエストリストから外す
+	if( HandleInfo->DeleteRequestFlag )
+	{
+		SubHandleList( &HandleInfo->DeleteRequestList ) ;
+
+		// 削除リクエストされていた数も 1 減らす
+		HandleManage->DeleteRequestHandleNum -- ;
+	}
+
 	// データ領域を解放する
 	DXFREE( HandleInfo ) ;
 
@@ -368,6 +369,69 @@ extern int SubHandle( int Handle )
 	}
 
 END :
+
+	// クリティカルセクションの解放
+	CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+
+	// 終了
+	return 0 ;
+}
+
+// ハンドルを削除する
+extern int SubHandle( int Handle, int ASyncLoadFlag, int ASyncThread )
+{
+	HANDLEINFO *HandleInfo ;
+	int HandleType = ( int )( ( ( DWORD )Handle & DX_HANDLETYPE_MASK ) >> DX_HANDLETYPE_ADDRESS ) ;
+	HANDLEMANAGE *HandleManage = &HandleManageArray[ HandleType ] ;
+
+	if( HandleManage->InitializeFlag == FALSE )
+		return -1 ;
+
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
+
+	// エラー判定
+	if( HANDLECHK_ASYNC( HandleType, Handle, HandleInfo ) )
+	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+
+		return -1 ;
+	}
+
+	// 既に削除リクエストリストに登録されている場合はエラー
+	if( HandleInfo->DeleteRequestFlag )
+	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+
+		return -1 ;
+	}
+
+#ifndef DX_NON_ASYNCLOAD
+	if( ASyncThread || ASyncLoadFlag )
+	{
+		// 非同期実行希望や別スレッドからの呼び出しの場合は削除リクエストリストに追加
+		AddHandleList( &HandleManage->DeleteRequestListFirst, &HandleInfo->DeleteRequestList, HandleInfo->Handle, HandleInfo ) ;
+
+		// 削除リクエストリストに登録されているフラグを立てる
+		HandleInfo->DeleteRequestFlag = TRUE ;
+
+		// 削除リクエストのハンドル数をインクリメント
+		HandleManage->DeleteRequestHandleNum ++ ;
+	}
+	else
+#endif // DX_NON_ASYNCLOAD
+	{
+		// 非同期実行希望や別スレッドからの呼び出しではない場合は即座に削除
+		if( SubHandleBase( HandleManage, HandleInfo ) < 0 )
+		{
+			// クリティカルセクションの解放
+			CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+
+			return -1 ;
+		}
+	}
 
 	// クリティカルセクションの解放
 	CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
@@ -529,7 +593,7 @@ extern int AllHandleSub( int HandleType, int (*DeleteCancelCheckFunction)( HANDL
 					// クリティカルセクションの解放
 					CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 
-					SubHandle( Handle ) ;
+					SubHandle( Handle, FALSE, FALSE ) ;
 
 					// クリティカルセクションの取得
 					CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
@@ -654,7 +718,7 @@ extern int NS_SetASyncLoadFinishDeleteFlag(	int Handle )
 	// 既に非同期読み込みが完了していたらこの場でハンドルを削除する
 	if( HandleInfo->ASyncLoadCount == 0 )
 	{
-		SubHandle( Handle ) ;
+		SubHandle( Handle, FALSE, FALSE ) ;
 	}
 	else
 	{
@@ -792,16 +856,16 @@ extern int DecASyncLoadCount( int Handle )
 	// カウントが 0 だったら処理を分岐
 	if( HandleInfo->ASyncLoadCount == 0 )
 	{
-		// 読み込みが終わったら削除するフラグが立っていたらハンドルを削除する
-		if( HandleInfo->ASyncLoadFinishDeleteRequestFlag )
-		{
-			SubHandle( Handle ) ;
-		}
-		else
 		// 読み込みが終わったら呼ぶコールバック関数が設定されていたら呼ぶ
 		if( HandleInfo->ASyncLoadFinishCallback != NULL )
 		{
 			HandleInfo->ASyncLoadFinishCallback( Handle, HandleInfo->ASyncLoadFinishCallbackData ) ;
+		}
+
+		// 読み込みが終わったら削除するフラグが立っていたらハンドルを削除する
+		if( HandleInfo->ASyncLoadFinishDeleteRequestFlag )
+		{
+			SubHandle( Handle, FALSE, TRUE ) ;
 		}
 	}
 
@@ -853,6 +917,12 @@ extern int WaitASyncLoad( int Handle )
 	int HandleType = ( int )( ( ( DWORD )Handle & DX_HANDLETYPE_MASK ) >> DX_HANDLETYPE_ADDRESS ) ;
 	HANDLEMANAGE *HandleManage = &HandleManageArray[ HandleType ] ;
 
+	// メインスレッドではなかったらエラー
+	if( CheckMainThread() == FALSE )
+	{
+		return -1 ;
+	}
+
 	if( HandleManage->InitializeFlag == FALSE )
 		return -1 ;
 
@@ -880,15 +950,98 @@ extern int WaitASyncLoad( int Handle )
 			ProcessASyncLoadRequestMainThread() ;
 			Thread_Sleep( 1 );
 		}
-
-		// クリティカルセクションの取得
-		CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
+	}
+	else
+	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 	}
 
-	// クリティカルセクションの解放
-	CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
-
 	// 終了
+	return 0 ;
+}
+
+// 削除リクエストが来ているハンドルを削除する
+extern int DeleteRequestHandleDelete( int AllDelete )
+{
+	HANDLEINFO *HandleInfo ;
+	int StartTime = NS_GetNowCount( FALSE ) ;
+	int i ;
+	int DeleteRequestTotal ;
+
+	// メインスレッドではなかったらエラー
+	if( CheckMainThread() == FALSE )
+	{
+		return -1 ;
+	}
+
+START:
+
+	DeleteRequestTotal = 0 ;
+
+	for( i = 0 ; i < DX_HANDLETYPE_MAX ; i ++ )
+	{
+		// ハンドル管理データが初期化されていなければ何もしない
+		if( HandleManageArray[ i ].InitializeFlag == FALSE )
+		{
+			continue ;
+		}
+
+		// 削除リクエストが無ければ何もしない
+		if( HandleManageArray[ i ].DeleteRequestHandleNum == 0 )
+		{
+			continue ;
+		}
+
+		// クリティカルセクションの取得
+		CRITICALSECTION_LOCK( &HandleManageArray[ i ].CriticalSection ) ;
+
+		// 削除リクエストが無ければループから抜ける
+		while( HandleManageArray[ i ].DeleteRequestHandleNum > 0 )
+		{
+			// 非同期読み込みが完了しているハンドルを探す
+			HandleInfo = ( HANDLEINFO * )HandleManageArray[ i ].DeleteRequestListLast.Prev->Data ;
+			while( HandleInfo != NULL && HandleInfo->ASyncLoadCount != 0 )
+			{
+				HandleInfo = ( HANDLEINFO * )HandleInfo->DeleteRequestList.Next->Data ;
+			}
+
+			// 非同期読み込みが完了しているハンドルが無かったらループを抜ける
+			if( HandleInfo == NULL )
+			{
+				break ;
+			}
+
+			// ハンドルを削除
+			if( HandleInfo != NULL )
+			{
+				SubHandleBase( &HandleManageArray[ i ], HandleInfo ) ;
+			}
+
+			// 2ms経過していたらループを抜ける
+			if( NS_GetNowCount( FALSE ) - StartTime >= 2 )
+			{
+				break ;
+			}
+		}
+
+		// 削除リクエストの残り数を加算
+		DeleteRequestTotal += HandleManageArray[ i ].DeleteRequestHandleNum ;
+
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManageArray[ i ].CriticalSection ) ;
+	}
+
+	// 全て削除する指定で、まだ削除できていないハンドルがある場合は関数の先頭に戻る
+	if( AllDelete && DeleteRequestTotal > 0 )
+	{
+		// メインスレッドが処理する非同期読み込みの処理を行う
+		ProcessASyncLoadRequestMainThread() ;
+
+		goto START ;
+	}
+
+	// 正常終了
 	return 0 ;
 }
 

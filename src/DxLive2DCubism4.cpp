@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Live2D Cubism4 関係プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // ----------------------------------------------------------------------------
 
@@ -497,7 +497,7 @@ static void Live2DCubism4_LoadModel_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( Live2DModelHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( Live2DModelHandle ) ;
+		SubHandle( Live2DModelHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -585,7 +585,7 @@ ERR :
 	}
 #endif // DX_NON_ASYNCLOAD
 
-	SubHandle( Live2DModelHandle ) ;
+	SubHandle( Live2DModelHandle, ASyncLoadFlag, ASyncThread ) ;
 	Live2DModelHandle = -1 ;
 
 	// 終了
@@ -595,7 +595,7 @@ ERR :
 // Live2D のモデルを削除する
 extern int NS_Live2D_DeleteModel( int Live2DModelHandle )
 {
-	return SubHandle( Live2DModelHandle ) ;
+	return SubHandle( Live2DModelHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 // すべての Live2D のモデルを削除する
@@ -805,11 +805,11 @@ extern int NS_Live2D_Model_Draw( int Live2DModelHandle )
 }
 
 // Live2D のモデルの指定のモーションを再生する
-extern int NS_Live2D_Model_StartMotion( int Live2DModelHandle, const TCHAR *group, int no )
+extern int NS_Live2D_Model_StartMotion( int Live2DModelHandle, const TCHAR *group, int no, float fadeInSeconds, float fadeOutSeconds, int isLoopFadeIn )
 {
 #ifdef UNICODE
 	return Live2D_Model_StartMotion_WCHAR_T(
-		Live2DModelHandle, group, no
+		Live2DModelHandle, group, no, fadeInSeconds, fadeOutSeconds, isLoopFadeIn
 	) ;
 #else
 	int Result ;
@@ -817,7 +817,7 @@ extern int NS_Live2D_Model_StartMotion( int Live2DModelHandle, const TCHAR *grou
 	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( group, return -1 )
 
 	Result = Live2D_Model_StartMotion_WCHAR_T(
-		Live2DModelHandle, UsegroupBuffer, no
+		Live2DModelHandle, UsegroupBuffer, no, fadeInSeconds, fadeOutSeconds, isLoopFadeIn
 	) ;
 
 	TCHAR_TO_WCHAR_T_STRING_END( group )
@@ -827,22 +827,22 @@ extern int NS_Live2D_Model_StartMotion( int Live2DModelHandle, const TCHAR *grou
 }
 
 // Live2D のモデルの指定のモーションを再生する
-extern int NS_Live2D_Model_StartMotionWithStrLen( int Live2DModelHandle, const TCHAR *group, size_t groupLength, int no )
+extern int NS_Live2D_Model_StartMotionWithStrLen( int Live2DModelHandle, const TCHAR *group, size_t groupLength, int no, float fadeInSeconds, float fadeOutSeconds, int isLoopFadeIn )
 {
 	int Result ;
 #ifdef UNICODE
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( group, groupLength, return -1 )
-	Result = Live2D_Model_StartMotion_WCHAR_T( Live2DModelHandle, UsegroupBuffer, no ) ;
+	Result = Live2D_Model_StartMotion_WCHAR_T( Live2DModelHandle, UsegroupBuffer, no, fadeInSeconds, fadeOutSeconds, isLoopFadeIn ) ;
 	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( group )
 #else
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_ONE_BEGIN( group, groupLength, return -1 )
-	Result = Live2D_Model_StartMotion_WCHAR_T( Live2DModelHandle, UsegroupBuffer, no ) ;
+	Result = Live2D_Model_StartMotion_WCHAR_T( Live2DModelHandle, UsegroupBuffer, no, fadeInSeconds, fadeOutSeconds, isLoopFadeIn ) ;
 	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( group )
 #endif
 	return Result ;
 }
 
-extern int Live2D_Model_StartMotion_WCHAR_T( int Live2DModelHandle, const wchar_t *group, int no )
+extern int Live2D_Model_StartMotion_WCHAR_T( int Live2DModelHandle, const wchar_t *group, int no, float fadeInSeconds, float fadeOutSeconds, int isLoopFadeIn )
 {
 	LIVE2DCUBISM4MODEL * Model ;
 	D_CubismMotionQueueEntryHandle Result ;
@@ -855,7 +855,7 @@ extern int Live2D_Model_StartMotion_WCHAR_T( int Live2DModelHandle, const wchar_
 
 	// モーションの再生
 	WCHAR_T_TO_CHAR_STRING_ONE_BEGIN( group, return -1, DX_CHARCODEFORMAT_UTF8 )
-	Result = Model->AppModel->StartMotion( UsegroupBuffer, no, D_CubismMotion_PriorityForce ) ;
+	Result = Model->AppModel->StartMotion( UsegroupBuffer, no, D_CubismMotion_PriorityForce, fadeInSeconds, fadeOutSeconds, isLoopFadeIn != FALSE ) ;
 	WCHAR_T_TO_CHAR_STRING_END( group )
 
 	if( Result != InvalidMotionQueueEntryHandleValue )

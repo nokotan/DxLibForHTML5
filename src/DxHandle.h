@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		ƒnƒ“ƒhƒ‹ŠÇ—ƒvƒƒOƒ‰ƒ€ƒwƒbƒ_ƒtƒ@ƒCƒ‹
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ namespace DxLib
 			( ( (HANDLE) & DX_HANDLEINDEX_MASK ) >= HandleManageArray[ (TYPE) ].MaxNum ) ||							\
 			( ( INFO = HandleManageArray[ (TYPE) ].Handle[ (HANDLE) & DX_HANDLEINDEX_MASK ] ) == NULL ) ||			\
 			( (int)( (INFO)->ID << DX_HANDLECHECK_ADDRESS ) != ( (HANDLE) & DX_HANDLECHECK_MASK ) ) ||				\
-			( (INFO)->ASyncLoadCount != 0 && ( MainThreadProcessASyncLoadData( (INFO)->ASyncDataNumber ) < 0 || HandleManageArray[ (TYPE) ].Handle[ (HANDLE) & DX_HANDLEINDEX_MASK ] == NULL ) ) )
+			( (INFO)->ASyncLoadCount != 0 && ( ( ( (INFO)->ASyncLoadCount > 1 || (INFO)->ASyncDataNumber < 0 ) ? WaitASyncLoad( (HANDLE) ) : ( MainThreadProcessASyncLoadData( (INFO)->ASyncDataNumber ) ) ) < 0 || HandleManageArray[ (TYPE) ].Handle[ (HANDLE) & DX_HANDLEINDEX_MASK ] == NULL ) ) )
 
 #else // DX_NON_ASYNCLOAD
 
@@ -147,6 +147,8 @@ struct HANDLEINFO
 	void					*ASyncLoadFinishCallbackData ;		// ”ñ“¯Šú“Ç‚Ýž‚Ý‚ªŠ®—¹‚µ‚½‚çŒÄ‚Î‚ê‚éƒR[ƒ‹ƒoƒbƒNŠÖ”‚É“n‚·ˆø”
 #endif
 	HANDLELIST				List ;								// ƒnƒ“ƒhƒ‹ƒŠƒXƒg‚Ìˆê‚Â‘O‚ÆŽŸ‚Ì—v‘f‚Ö‚Ìƒ|ƒCƒ“ƒ^
+	int						DeleteRequestFlag ;					// íœƒŠƒNƒGƒXƒg‚ª‚³‚ê‚Ä‚¢‚é‚©( TRUE:íœƒŠƒNƒGƒXƒg‚³‚ê‚Ä‚¢‚é  FALSE:íœƒŠƒNƒGƒXƒg‚³‚ê‚Ä‚¢‚È‚¢ )
+	HANDLELIST				DeleteRequestList ;					// íœƒŠƒNƒGƒXƒg‚Ìƒnƒ“ƒhƒ‹ƒŠƒXƒg‚Ìˆê‚Â‘O‚ÆŽŸ‚Ì—v‘f‚Ö‚Ìƒ|ƒCƒ“ƒ^
 } ;
 
 // ƒnƒ“ƒhƒ‹ŠÇ—‚Ì‹¤’Êƒf[ƒ^
@@ -169,6 +171,9 @@ struct HANDLEMANAGE
 	int						( *DumpInfoFunction )( HANDLEINFO *HandleInfo ) ;	// ƒnƒ“ƒhƒ‹‚Ìî•ñ‚ðo—Í‚·‚éŠÖ”‚Ö‚Ìƒ|ƒCƒ“ƒ^
 	const wchar_t			*Name ;								// ƒnƒ“ƒhƒ‹–¼
 	char					NameUTF16LE[ 128 ] ;				// ƒnƒ“ƒhƒ‹–¼( UTF16LE )
+	int						DeleteRequestHandleNum ;			// íœƒŠƒNƒGƒXƒg‚Ìƒnƒ“ƒhƒ‹‚Ì”
+	HANDLELIST				DeleteRequestListFirst ;			// íœƒŠƒNƒGƒXƒg‚Ìƒnƒ“ƒhƒ‹ƒŠƒXƒg‚Ìæ“ª
+	HANDLELIST				DeleteRequestListLast ;				// íœƒŠƒNƒGƒXƒg‚Ìƒnƒ“ƒhƒ‹ƒŠƒXƒg‚Ì––’[
 } ;
 
 // “à•”‘åˆæ•Ï”éŒ¾ --------------------------------------------------------------
@@ -181,8 +186,8 @@ extern HANDLEMANAGE HandleManageArray[ DX_HANDLETYPE_MAX ] ;
 extern	int		InitializeHandleManage( int HandleType, int OneSize, int MaxNum, int ( *InitializeFunction )( HANDLEINFO *HandleInfo ), int ( *TerminateFunction )( HANDLEINFO *HandleInfo ), int ( *DumpInfoFunction )( HANDLEINFO *HandleInfo ), const wchar_t *Name ) ;	// ƒnƒ“ƒhƒ‹ŠÇ—î•ñ‚ð‰Šú‰»‚·‚é( InitializeFlag ‚É‚Í FALSE ‚ª“ü‚Á‚Ä‚¢‚é•K—v‚ª‚ ‚é )
 extern	int		TerminateHandleManage( int HandleType ) ;																		// ƒnƒ“ƒhƒ‹ŠÇ—î•ñ‚ÌŒãŽn––‚ðs‚¤
 
-extern	int		AddHandle( int HandleType, int ASyncThread, int Handle /* = -1 */ ) ;										// ƒnƒ“ƒhƒ‹‚ð’Ç‰Á‚·‚é
-extern	int		SubHandle( int Handle ) ;															// ƒnƒ“ƒhƒ‹‚ðíœ‚·‚é
+extern	int		AddHandle( int HandleType, int ASyncThread, int Handle /* = -1 */ ) ;				// ƒnƒ“ƒhƒ‹‚ð’Ç‰Á‚·‚é
+extern	int		SubHandle( int Handle, int ASyncLoadFlag, int ASyncThread ) ;						// ƒnƒ“ƒhƒ‹‚ðíœ‚·‚é
 extern	int		ReallocHandle( int Handle, size_t NewSize ) ;										// ƒnƒ“ƒhƒ‹‚Ìî•ñ‚ðŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌƒTƒCƒY‚ð•ÏX‚·‚éA”ñ“¯Šú“Ç‚Ýž‚Ý’†‚Å‚È‚¢‚±‚Æ‚ª‘O’ñ
 extern	HANDLEINFO *GetHandleInfo( int Handle ) ;													// ƒnƒ“ƒhƒ‹‚Ìî•ñ‚ðŽæ“¾‚·‚é
 extern	int		AllHandleSub( int HandleType, int (*DeleteCancelCheckFunction)( HANDLEINFO *HandleInfo ) = NULL ) ;	// ƒnƒ“ƒhƒ‹ŠÇ—î•ñ‚É“o˜^‚³‚ê‚Ä‚¢‚é‚·‚×‚Ä‚Ìƒnƒ“ƒhƒ‹‚ðíœ
@@ -191,6 +196,7 @@ extern	int		IncASyncLoadCount( int Handle, int ASyncDataNumber ) ;								// ƒnƒ
 extern	int		DecASyncLoadCount( int Handle ) ;													// ƒnƒ“ƒhƒ‹‚Ì”ñ“¯Šú“Ç‚Ýž‚Ý’†ƒJƒEƒ“ƒg‚ðƒfƒNƒŠƒƒ“ƒg‚·‚é
 extern	int		GetASyncLoadFinishDeleteFlag( int Handle ) ;										// ƒnƒ“ƒhƒ‹‚Ì”ñ“¯Šú“Ç‚Ýž‚ÝŠ®—¹Œã‚Éíœ‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ðŽæ“¾‚·‚é
 extern	int		WaitASyncLoad( int Handle ) ;														// ƒnƒ“ƒhƒ‹‚ª”ñ“¯Šú“Ç‚Ýž‚Ý’†‚¾‚Á‚½ê‡A”ñ“¯Šú“Ç‚Ýž‚Ý‚ªŠ®—¹‚·‚é‚Ü‚Å‘Ò‚Â
+extern	int		DeleteRequestHandleDelete( int AllDelete ) ;										// íœƒŠƒNƒGƒXƒg‚ª—ˆ‚Ä‚¢‚éƒnƒ“ƒhƒ‹‚ðíœ‚·‚é
 #endif // DX_NON_ASYNCLOAD
 
 

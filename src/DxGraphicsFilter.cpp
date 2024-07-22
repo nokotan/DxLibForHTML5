@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		GraphFilter系プログラム
 // 
-//  	Ver 3.24b
+//  	Ver 3.24d
 // 
 //-----------------------------------------------------------------------------
 
@@ -659,6 +659,8 @@ extern int GraphFilter_RectBltBase(
 	int                                 SrcImageHeight ;
 	int                                 DestImageWidth ;
 	int                                 DestImageHeight ;
+	double                              BlendScaleX = 1.0 ;
+	double                              BlendScaleY = 1.0 ;
 	int                                 Width ;
 	int                                 Height ;
 	int                                 FilterResult       = -1 ;
@@ -734,6 +736,12 @@ extern int GraphFilter_RectBltBase(
 		if( BlendImage->Orig->MovieHandle != -1 )
 			UpdateMovie( BlendImage->Orig->MovieHandle, FALSE ) ;
 #endif
+
+		if( BlendPosEnable && BlendPos2Enable )
+		{
+			BlendScaleX = ( double )( BlendX2 - BlendX ) / ( SrcX2 - SrcX1 ) ;
+			BlendScaleY = ( double )( BlendY2 - BlendY ) / ( SrcY2 - SrcY1 ) ;
+		}
 	}
 	else
 	{
@@ -757,37 +765,99 @@ extern int GraphFilter_RectBltBase(
 	if( SrcX1 < 0 )
 	{
 		DestX += -SrcX1 ;
-		BlendX += -SrcX1 ;
+		if( BlendPosEnable )
+		{
+			if( BlendPos2Enable )
+			{
+				BlendX += _DTOL( -SrcX1 * BlendScaleX ) ;
+			}
+			else
+			{
+				BlendX += -SrcX1 ;
+			}
+		}
 		SrcX1 = 0 ;
 	}
 	if( SrcY1 < 0 )
 	{
 		DestY += -SrcY1 ;
-		BlendY += -SrcY1 ;
+		if( BlendPosEnable )
+		{
+			if( BlendPos2Enable )
+			{
+				BlendY += _DTOL( -SrcY1 * BlendScaleY ) ;
+			}
+			else
+			{
+				BlendY += -SrcY1 ;
+			}
+		}
 		SrcY1 = 0 ;
 	}
 	if( DestX < 0 )
 	{
 		SrcX1 += -DestX ;
-		BlendX += -DestX ;
+		if( BlendPosEnable )
+		{
+			if( BlendPos2Enable )
+			{
+				BlendX += _DTOL( -DestX * BlendScaleX ) ;
+			}
+			else
+			{
+				BlendX += -DestX ;
+			}
+		}
 		DestX = 0 ;
 	}
 	if( DestY < 0 )
 	{
 		SrcY1 += -DestY ;
-		BlendY += -DestY ;
+		if( BlendPosEnable )
+		{
+			if( BlendPos2Enable )
+			{
+				BlendY += _DTOL( -DestY * BlendScaleY ) ;
+			}
+			else
+			{
+				BlendY += -DestY ;
+			}
+		}
 		DestY = 0 ;
 	}
-	if( SrcX2 <= SrcX1 ||
-		SrcY2 <= SrcY1 ) return 0 ;
 	if( SrcX2 > SrcImageWidth )
 	{
+		if( BlendPosEnable )
+		{
+			if( BlendPos2Enable )
+			{
+				BlendX2 -= _DTOL( ( SrcX2 - SrcImageWidth ) * BlendScaleX ) ;
+			}
+			else
+			{
+				BlendX2 -= SrcX2 - SrcImageWidth ;
+			}
+		}
 		SrcX2 = SrcImageWidth ;
 	}
 	if( SrcY2 > SrcImageHeight )
 	{
+		if( BlendPosEnable )
+		{
+			if( BlendPos2Enable )
+			{
+				BlendY2 -= _DTOL( ( SrcY2 - SrcImageHeight ) * BlendScaleY ) ;
+			}
+			else
+			{
+				BlendY2 -= SrcY2 - SrcImageHeight ;
+			}
+		}
 		SrcY2 = SrcImageHeight ;
 	}
+	if( SrcX2 <= SrcX1 ||
+		SrcY2 <= SrcY1 ) return 0 ;
 	if( SrcX1 >= SrcImageWidth ||
 		SrcY1 >= SrcImageHeight ||
 		SrcX2 <= 0 ||
@@ -811,6 +881,11 @@ extern int GraphFilter_RectBltBase(
 		Info.SrcDivNum = va_arg( ParamList, int ) ;
 
 		// パラメータを補正
+		if( Info.SrcDivNum <= 1 )
+		{
+			Info.SrcDivNum = 1 ;
+		}
+		else
 		if( Info.SrcDivNum <= 2 )
 		{
 			Info.SrcDivNum = 2 ;
@@ -1119,6 +1194,7 @@ extern int GraphFilter_RectBltBase(
 			case DX_GRAPH_BLEND_PMA_NORMAL_ALPHACH :
 			case DX_GRAPH_BLEND_PMA_ADD_ALPHACH :
 			case DX_GRAPH_BLEND_PMA_MULTIPLE_A_ONLY :
+			case DX_GRAPH_BLEND_PMA_MASK :
 
 			case DX_GRAPH_BLEND_NORMAL :
 			case DX_GRAPH_BLEND_MULTIPLE :
@@ -1136,6 +1212,7 @@ extern int GraphFilter_RectBltBase(
 			case DX_GRAPH_BLEND_NORMAL_ALPHACH :
 			case DX_GRAPH_BLEND_ADD_ALPHACH :
 			case DX_GRAPH_BLEND_MULTIPLE_A_ONLY :
+			case DX_GRAPH_BLEND_MASK :
 				FilterResult = GraphBlend_Basic( &Info, IsPMA ) ;
 				break ;
 			}
@@ -2145,6 +2222,28 @@ extern int GraphFilter_Down_Scale( GRAPHFILTER_INFO *Info, int DivNum )
 
 		switch( DivNum )
 		{
+		case 1 :
+			SrcAddPitch  = Info->SrcBaseImage.Pitch - Width * 4 ;
+
+			do
+			{
+				i = Width ;
+				do
+				{
+					Dest[ 0 ] = Src[ 0 ] ;
+					Dest[ 1 ] = Src[ 1 ] ;
+					Dest[ 2 ] = Src[ 2 ] ;
+					Dest[ 3 ] = Src[ 3 ] ;
+
+					Src  += 4 ;
+					Dest += 4 ;
+				}while( -- i ) ;
+
+				Src  += SrcAddPitch ;
+				Dest += DestAddPitch ;
+			}while( -- Height ) ;
+			break ;
+
 		case 2 :
 			SrcAddPitch  = Info->SrcBaseImage.Pitch  - Width * 4 * 2 + SrcPitch ;
 
@@ -6137,6 +6236,78 @@ DX_GRAPH_BLEND_PMA_MULTIPLE_A_ONLY_LABEL :
 						Dest[ 1 ] = Src[ 1 ] ;
 						Dest[ 2 ] = Src[ 2 ] ;
 						Dest[ 3 ] = ( BYTE )( ( ( Src[ 3 ] << 16 ) + ( A - Src[ 3 ] ) * TempBlendRatio ) >> 16 ) ;
+
+						Src   += 4 ;
+						Blend += 4 ;
+						Dest  += 4 ;
+					}while( -- i ) ;
+
+					Src   += SrcAddPitch ;
+					Blend += SrcAddPitch ;
+					Dest  += DestAddPitch ;
+				}while( -- Height ) ;
+			}
+			break ;
+
+		case DX_GRAPH_BLEND_PMA_MASK :
+			{
+				BYTE CalcR, CalcG, CalcB ;
+DX_GRAPH_BLEND_PMA_MASK_LABEL : 
+				do
+				{
+					i = Width ;
+					do
+					{
+						TB  = BASEIM.PmaToRgbTable[ Src[ 0 ] ][ Src[ 3 ] ] ;
+						TG  = BASEIM.PmaToRgbTable[ Src[ 1 ] ][ Src[ 3 ] ] ;
+						TR  = BASEIM.PmaToRgbTable[ Src[ 2 ] ][ Src[ 3 ] ] ;
+						TBB = BASEIM.PmaToRgbTable[ Blend[ 0 ] ][ Blend[ 3 ] ] ;
+						TBG = BASEIM.PmaToRgbTable[ Blend[ 1 ] ][ Blend[ 3 ] ] ;
+						TBR = BASEIM.PmaToRgbTable[ Blend[ 2 ] ][ Blend[ 3 ] ] ;
+
+						CalcB = ( BYTE )( ( ( TBB - TB ) * Blend[ 3 ] + ( TB << 8 ) ) >> 8 ) ;
+						CalcG = ( BYTE )( ( ( TBG - TG ) * Blend[ 3 ] + ( TG << 8 ) ) >> 8 ) ;
+						CalcR = ( BYTE )( ( ( TBR - TR ) * Blend[ 3 ] + ( TR << 8 ) ) >> 8 ) ;
+
+						Dest[ 0 ] = BASEIM.RgbToPmaTable[ ( ( CalcB - TB ) * BlendRatio + ( TB << 8 ) ) >> 8 ][ Src[ 3 ] ] ;
+						Dest[ 1 ] = BASEIM.RgbToPmaTable[ ( ( CalcG - TG ) * BlendRatio + ( TG << 8 ) ) >> 8 ][ Src[ 3 ] ] ;
+						Dest[ 2 ] = BASEIM.RgbToPmaTable[ ( ( CalcR - TR ) * BlendRatio + ( TR << 8 ) ) >> 8 ][ Src[ 3 ] ] ;
+						Dest[ 3 ] = Src[ 3 ] ;
+
+						Src   += 4 ;
+						Blend += 4 ;
+						Dest  += 4 ;
+					}while( -- i ) ;
+
+					Src   += SrcAddPitch ;
+					Blend += SrcAddPitch ;
+					Dest  += DestAddPitch ;
+				}while( -- Height ) ;
+			}
+			break ;
+
+		case DX_GRAPH_BLEND_MASK :
+			if( IsPMA )
+			{
+				goto DX_GRAPH_BLEND_PMA_MASK_LABEL ;
+			}
+			else
+			{
+				BYTE CalcR, CalcG, CalcB ;
+
+				do
+				{
+					i = Width ;
+					do
+					{
+						CalcB = ( BYTE )( ( ( Blend[ 0 ] - Src[ 0 ] ) * Blend[ 3 ] + ( Src[ 0 ] << 8 ) ) >> 8 ) ;
+						CalcG = ( BYTE )( ( ( Blend[ 1 ] - Src[ 1 ] ) * Blend[ 3 ] + ( Src[ 1 ] << 8 ) ) >> 8 ) ;
+						CalcR = ( BYTE )( ( ( Blend[ 2 ] - Src[ 2 ] ) * Blend[ 3 ] + ( Src[ 2 ] << 8 ) ) >> 8 ) ;
+
+						Dest[ 0 ] = ( BYTE )( ( ( CalcB - Src[ 0 ] ) * BlendRatio + ( Src[ 0 ] << 8 ) ) >> 8 ) ;
+						Dest[ 1 ] = ( BYTE )( ( ( CalcG - Src[ 1 ] ) * BlendRatio + ( Src[ 1 ] << 8 ) ) >> 8 ) ;
+						Dest[ 2 ] = ( BYTE )( ( ( CalcR - Src[ 2 ] ) * BlendRatio + ( Src[ 2 ] << 8 ) ) >> 8 ) ;
+						Dest[ 3 ] = Src[ 3 ] ;
 
 						Src   += 4 ;
 						Blend += 4 ;

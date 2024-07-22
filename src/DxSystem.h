@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		システムプログラムヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -91,13 +91,13 @@ extern	int			ConvScreenPositionToDxScreenPosition( int ScreenX, int ScreenY, int
 extern	int			GetASyncLoadFlag( void ) ;												// 非同期読み込みを行うかどうかを取得する
 
 // 環境依存関数
-extern	int			GetClipboardText_PF(					TCHAR   *DestBuffer ) ;						// クリップボードに格納されているテキストデータを読み出す( DestBuffer:文字列を格納するバッファの先頭アドレス   戻り値  -1:クリップボードにテキストデータが無い  -1以外:クリップボードに格納されている文字列データのサイズ( 単位:byte ) ) 
-extern	int			GetClipboardText_WCHAR_T_PF(			wchar_t *DestBuffer ) ;						// クリップボードに格納されているテキストデータを読み出す( DestBuffer:文字列を格納するバッファの先頭アドレス   戻り値  -1:クリップボードにテキストデータが無い  -1以外:クリップボードに格納されている文字列データのサイズ( 単位:byte ) ) 
-extern	int			SetClipboardText_WCHAR_T_PF(			const wchar_t *Text                    ) ;	// クリップボードにテキストデータを格納する
+extern	int			GetClipboardText_PF(					TCHAR   *DestBuffer, int DestBufferBytes ) ;	// クリップボードに格納されているテキストデータを読み出す( DestBuffer:文字列を格納するバッファの先頭アドレス   戻り値  -1:クリップボードにテキストデータが無い  -1以外:クリップボードに格納されている文字列データのサイズ( 単位:byte ) ) 
+extern	int			GetClipboardText_WCHAR_T_PF(			wchar_t *DestBuffer, int DestBufferBytes ) ;	// クリップボードに格納されているテキストデータを読み出す( DestBuffer:文字列を格納するバッファの先頭アドレス   戻り値  -1:クリップボードにテキストデータが無い  -1以外:クリップボードに格納されている文字列データのサイズ( 単位:byte ) ) 
+extern	int			SetClipboardText_WCHAR_T_PF(			const wchar_t *Text                    ) ;		// クリップボードにテキストデータを格納する
 extern	int			MailApp_Send_WCHAR_T_PF(				const wchar_t *MailAddr, const wchar_t *MailCCAddr, const wchar_t *MailBCCAddr, const wchar_t *Subject, const wchar_t *Text ) ;
 
 // wchar_t版関数
-extern	int			GetClipboardText_WCHAR_T(		    wchar_t *DestBuffer ) ;
+extern	int			GetClipboardText_WCHAR_T(		    wchar_t *DestBuffer, int DestBufferBytes = -1 ) ;
 extern	int			SetClipboardText_WCHAR_T(		    const wchar_t *Text ) ;
 extern	int			SetClipboardTextWithStrLen_WCHAR_T( const wchar_t *Text, size_t TextLength ) ;
 extern	int			MailApp_Send_WCHAR_T(				const wchar_t *MailAddr, const wchar_t *MailCCAddr, const wchar_t *MailBCCAddr, const wchar_t *Subject, const wchar_t *Text ) ;

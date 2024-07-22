@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ソフトウェアで扱う画像プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -176,7 +176,7 @@ static void LoadSoftImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
 	{
-		NS_DeleteSoftImage( SIHandle ) ;
+		SubHandle( SIHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -251,7 +251,7 @@ extern int LoadSoftImage_UseGParam(
 	return SIHandle ;
 
 ERR :
-	NS_DeleteSoftImage( SIHandle ) ;
+	SubHandle( SIHandle, FALSE, FALSE ) ;
 
 	return -1 ;
 }
@@ -399,7 +399,7 @@ static void LoadARGB8ColorSoftImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
 	{
-		NS_DeleteSoftImage( SIHandle ) ;
+		SubHandle( SIHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -474,7 +474,7 @@ extern int LoadARGB8ColorSoftImage_UseGParam(
 	return SIHandle ;
 
 ERR :
-	NS_DeleteSoftImage( SIHandle ) ;
+	SubHandle( SIHandle, FALSE, FALSE ) ;
 
 	return -1 ;
 }
@@ -635,7 +635,7 @@ static void LoadXRGB8ColorSoftImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
 	{
-		NS_DeleteSoftImage( SIHandle ) ;
+		SubHandle( SIHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -710,7 +710,7 @@ extern int LoadXRGB8ColorSoftImage_UseGParam(
 	return SIHandle ;
 
 ERR :
-	NS_DeleteSoftImage( SIHandle ) ;
+	SubHandle( SIHandle, FALSE, FALSE ) ;
 
 	return -1 ;
 }
@@ -833,7 +833,7 @@ static void LoadSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
 	{
-		NS_DeleteSoftImage( SIHandle ) ;
+		SubHandle( SIHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -909,7 +909,7 @@ extern int LoadSoftImageToMem_UseGParam(
 	return SIHandle ;
 
 ERR :
-	NS_DeleteSoftImage( SIHandle ) ;
+	SubHandle( SIHandle, FALSE, FALSE ) ;
 
 	return -1 ;
 }
@@ -1025,7 +1025,7 @@ static void LoadARGB8ColorSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
 	{
-		NS_DeleteSoftImage( SIHandle ) ;
+		SubHandle( SIHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -1101,7 +1101,7 @@ extern int LoadARGB8ColorSoftImageToMem_UseGParam(
 	return SIHandle ;
 
 ERR :
-	NS_DeleteSoftImage( SIHandle ) ;
+	SubHandle( SIHandle, FALSE, FALSE ) ;
 
 	return -1 ;
 }
@@ -1217,7 +1217,7 @@ static void LoadXRGB8ColorSoftImageToMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( SIHandle ) ;
 	if( Result < 0 )
 	{
-		NS_DeleteSoftImage( SIHandle ) ;
+		SubHandle( SIHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -1293,7 +1293,7 @@ extern int LoadXRGB8ColorSoftImageToMem_UseGParam(
 	return SIHandle ;
 
 ERR :
-	NS_DeleteSoftImage( SIHandle ) ;
+	SubHandle( SIHandle, FALSE, FALSE ) ;
 
 	return -1 ;
 }
@@ -1337,7 +1337,7 @@ extern	int		NS_MakeSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateARGB8ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1367,7 +1367,7 @@ extern	int		NS_MakeARGBF32ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateARGBF32ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1397,7 +1397,7 @@ extern	int		NS_MakeARGBF16ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateARGBF16ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1434,7 +1434,7 @@ extern	int		NS_MakeXRGB8ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateXRGB8ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1464,7 +1464,7 @@ extern int NS_MakeRGBA8ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateRGBA8ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1494,7 +1494,7 @@ extern int NS_MakeABGR8ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateABGR8ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1524,7 +1524,7 @@ extern int NS_MakeBGRA8ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateBGRA8ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1554,7 +1554,7 @@ extern	int		NS_MakeARGB4ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateARGB4ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1584,7 +1584,7 @@ extern	int	NS_MakeA1R5G5B5ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateA1R5G5B5ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1614,7 +1614,7 @@ extern	int	NS_MakeX1R5G5B5ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateX1R5G5B5ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1644,7 +1644,7 @@ extern	int	NS_MakeR5G5B5A1ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateR5G5B5A1ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1674,7 +1674,7 @@ extern	int	NS_MakeR5G6B5ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateR5G6B5ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1704,7 +1704,7 @@ extern	int		NS_MakeRGB8ColorSoftImage( int SizeX, int SizeY )
 	Result = NS_CreateRGB8ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1734,7 +1734,7 @@ extern	int		NS_MakePAL8ColorSoftImage( int SizeX, int SizeY, int UseAlpha )
 	Result = NS_CreatePAL8ColorBaseImage( SizeX, SizeY, &SoftImg->BaseImage, UseAlpha ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1764,7 +1764,7 @@ extern int NS_MakeColorDataSoftImage( int SizeX, int SizeY, const COLORDATA *Col
 	Result = NS_CreateColorDataBaseImage( SizeX, SizeY, ColorData, &SoftImg->BaseImage ) ;
 	if( Result == -1 )
 	{
-		SubHandle( NewHandle ) ;
+		SubHandle( NewHandle, FALSE, FALSE ) ;
 		return -1 ;
 	}
 
@@ -1782,7 +1782,7 @@ extern	int		NS_DeleteSoftImage( int SIHandle )
 		return -1 ;
 	
 	// ハンドルの解放
-	SubHandle( SIHandle ) ; 
+	SubHandle( SIHandle, GetASyncLoadFlag(), FALSE ) ; 
 
 	// 終了
 	return 0 ;

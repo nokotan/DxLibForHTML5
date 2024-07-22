@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Live2D Cubism4 関係
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -8906,7 +8906,7 @@ bool D_CubismOffscreenFrame_DxLib::CreateOffscreenFrame(DWORD displayBufferWidth
 
 void D_CubismOffscreenFrame_DxLib::DestroyOffscreenFrame()
 {
-	DeleteGraph( _GraphHandle, FALSE ) ;
+	SubHandle( _GraphHandle, FALSE, FALSE ) ;
 	_GraphHandle = -1 ;
 }
 
@@ -10591,7 +10591,7 @@ D_LAppModel::~D_LAppModel()
 	// テクスチャの開放 
 	for( DWORD d = 0; d < _bindTextureId.GetSize(); d++ )
 	{
-		DeleteGraph( _bindTextureId[ d ], FALSE );
+		SubHandle( _bindTextureId[ d ], FALSE, FALSE );
 	}
 	_bindTextureId.Clear();
 }
@@ -10965,7 +10965,7 @@ void D_LAppModel::Update( float deltaTimeSeconds )
 
 }
 
-D_CubismMotionQueueEntryHandle D_LAppModel::StartMotion( const char* group, int no, int priority )
+D_CubismMotionQueueEntryHandle D_LAppModel::StartMotion( const char* group, int no, int priority, float fadeInSeconds, float fadeOutSeconds, bool isLoopFadeIn )
 {
 	bool autoDelete = false;
 	D_CubismMotion* motion = NULL ;
@@ -11035,6 +11035,16 @@ D_CubismMotionQueueEntryHandle D_LAppModel::StartMotion( const char* group, int 
 		path = _modelHomeDir + path;
 	}
 
+	if( fadeInSeconds >= 0.0f )
+	{
+		motion->SetFadeInTime( fadeInSeconds );
+	}
+	if( fadeOutSeconds >= 0.0f )
+	{
+		motion->SetFadeOutTime( fadeOutSeconds );
+	}
+	motion->IsLoopFadeIn( isLoopFadeIn );
+
 //	if( _debugMode )
 //	{
 //		LogFileFmtAdd( "[APP]start motion: [%s_%d]", group, no );
@@ -11051,7 +11061,7 @@ D_CubismMotionQueueEntryHandle D_LAppModel::StartRandomMotion( const char* group
 
 	int no = NS_GetRand( _modelSetting->GetMotionCount( group ) - 1 );
 
-	return StartMotion( group, no, priority );
+	return StartMotion( group, no, priority, -1.0f, -1.0f );
 }
 
 void D_LAppModel::DoDraw()

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Ogg関係
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -3772,13 +3772,13 @@ int	TheoraDecode_Terminate( DWORD_PTR Handle )
 
 	if( DT->YGrHandle != -1 )
 	{
-		NS_DeleteGraph( DT->YGrHandle, FALSE ) ;
+		SubHandle( DT->YGrHandle, FALSE, FALSE ) ;
 		DT->YGrHandle = -1 ;
 	}
 
 	if( DT->UVGrHandle != -1 )
 	{
-		NS_DeleteGraph( DT->UVGrHandle, FALSE ) ;
+		SubHandle( DT->UVGrHandle, FALSE, FALSE ) ;
 		DT->UVGrHandle = -1 ;
 	}
 

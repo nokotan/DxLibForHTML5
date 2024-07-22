@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		動画プログラムヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -93,6 +93,8 @@ struct MOVIEGRAPH
 	double					TheoraPlaySpeedRate ;			// Theora用再生速度
 #endif // DX_NON_OGGTHEORA
 
+	int						SoundVolume ;					// 音声のボリューム( 0～10000 )
+
 	RECT					SrcRect ;						// ブロック転送操作の転送元矩形
 
 	LONGLONG				RefreshFrame ;					// 前回更新したフレーム
@@ -166,7 +168,7 @@ extern	int		OpenMovie_UseGParam(
 					int ImageSizeGetOnly = FALSE,
 					int ASyncThread = FALSE ) ;
 
-extern	int		OpenMovie( const wchar_t *FileName, int *Width, int *Height, int SurfaceMode ) ;						// ムービーを開く
+extern	int		OpenMovie( const wchar_t *FileName, int *Width, int *Height, int SurfaceMode ) ;					// ムービーを開く
 extern	int		CloseMovie( int MovieHandle ) ;																		// ムービーを閉じる
 extern 	int		PlayMovie_( int MovieHandle, int PlayType = DX_PLAYTYPE_BACK, int SysPlay = 0 ) ;					// ムービーの再生を開始する
 extern 	int		PauseMovie( int MovieHandle, int SysPause = 0 ) ;													// ムービーの再生をストップする
@@ -175,6 +177,7 @@ extern	int		SeekMovie( int MovieHandle, int Time ) ;															// ムービーの
 extern	int		SetPlaySpeedRateMovie( int MovieHandle, double SpeedRate ) ;										// ムービーの再生速度を設定する( 1.0 = 等倍速  2.0 = ２倍速 )、一部のファイルフォーマットのみで有効な機能です
 extern 	int		GetMovieState( int MovieHandle ) ;																	// ムービーの再生状態を得る
 extern	int		SetMovieVolume( int Volume, int MovieHandle ) ;														// ムービーのボリュームをセットする(0～10000)
+extern	int		GetMovieVolume( int MovieHandle ) ;																	// ムービーのボリュームを取得する(0～10000)
 extern	BASEIMAGE *GetMovieBaseImage( int MovieHandle, int *ImageUpdateFlag, int ImageUpdateFlagSetOnly ) ;			// ムービーの基本イメージデータを取得する
 extern	int		GetMovieTotalFrame( int MovieHandle ) ;																// ムービーの総フレーム数を得る( Ogg Theora でのみ有効 )
 extern	int		TellMovie( int MovieHandle ) ;																		// ムービーの再生位置を取得する(ミリ秒単位)
