@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		描画処理プログラム( HTML5 )ヘッダファイル
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24d
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 // 
 // -------------------------------------------------------------------------------
 
@@ -17,8 +21,13 @@
 // インクルード ------------------------------------------------------------------
 #include "../DxLib.h"
 #include "../DxGraphics.h"
+<<<<<<< HEAD
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+=======
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 #include "DxShader_DataType_HTML5.h"
 #include "DxShader_FS_HTML5.h"
 #include "DxShader_VS_HTML5.h"
@@ -945,7 +954,11 @@ struct GRAPHICS_HARDDATA_HTML5_DRAWSETTING
 	int								BlendGraphType ;						// ブレンド画像タイプ
 	int								BlendGraphFadeRatio ;					// ブレンド画像のフェードパラメータ
 	int								BlendGraphBorderParam ;					// ブレンド画像の境界パラメータ(０(ブレンド画像の影響０)　←　(ブレンド画像の影響少ない)　←　１２８(ブレンド画像の影響１００％)　→　(ブレンド画像の影響を超えて非描画部分が増える)　→２５５(全く描画されない) )
+<<<<<<< HEAD
 	int								BlendGraphBorderRange ;					// ブレンド画像の境界幅(０〜２５５　狭い〜広い　しかし４段階)
+=======
+	int								BlendGraphBorderRange ;					// ブレンド画像の境界幅(０～２５５　狭い～広い　しかし４段階)
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 	float							BlendTextureWidth ;						// ブレンドテクスチャの幅
 	float							BlendTextureHeight ;					// ブレンドテクスチャの高さ
 	float							InvBlendTextureWidth ;					// ブレンドテクスチャの幅の逆数
@@ -1558,8 +1571,13 @@ extern	int		Graphics_HTML5_DeviceState_SetTextureAddressTransformMatrix( int Use
 extern	int		Graphics_HTML5_DeviceState_SetFogEnable( int Flag ) ;												// フォグを有効にするかどうかを設定する( TRUE:有効  FALSE:無効 )
 extern	int		Graphics_HTML5_DeviceState_SetFogVertexMode( int Mode /* DX_FOGMODE_NONE 等 */ ) ;				// フォグモードを設定する
 extern	int		Graphics_HTML5_DeviceState_SetFogColor( unsigned int Color ) ;									// フォグカラーを変更する
+<<<<<<< HEAD
 extern	int		Graphics_HTML5_DeviceState_SetFogStartEnd( float Start, float End ) ;								// フォグが始まる距離と終了する距離を設定する( 0.0f 〜 1.0f )
 extern	int		Graphics_HTML5_DeviceState_SetFogDensity( float Density ) ;										// フォグの密度を設定する( 0.0f 〜 1.0f )
+=======
+extern	int		Graphics_HTML5_DeviceState_SetFogStartEnd( float Start, float End ) ;								// フォグが始まる距離と終了する距離を設定する( 0.0f ～ 1.0f )
+extern	int		Graphics_HTML5_DeviceState_SetFogDensity( float Density ) ;										// フォグの密度を設定する( 0.0f ～ 1.0f )
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 extern	int		Graphics_HTML5_DeviceState_SetLighting( int UseFlag ) ;											// ライティングの有無フラグをセットする
 extern	int		Graphics_HTML5_DeviceState_SetMaxAnisotropy( int MaxAnisotropy, int Sampler = -1 ) ;				// 最大異方性をセットする
 extern	int		Graphics_HTML5_DeviceState_SetViewport( RECT *Viewport ) ;										// ビューポートをセットする

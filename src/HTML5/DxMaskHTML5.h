@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用マスクデータ管理プログラムヘッダファイル
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24d
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 // 
 // -------------------------------------------------------------------------------
 
@@ -17,7 +21,11 @@
 #include "../DxLib.h"
 #include "../DxGraphics.h"
 #include "../DxArchive_.h"
+<<<<<<< HEAD
 #include <GLES2/gl2.h>
+=======
+#include <OpenGLES/ES2/gl.h>
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 
 #ifndef DX_NON_NAMESPACE
 

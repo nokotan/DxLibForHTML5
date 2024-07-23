@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用サウンドデータ変換プログラム
 // 
+<<<<<<< HEAD
 //  	Ver 3.24b
+=======
+//  	Ver 3.24d
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 // 
 //-----------------------------------------------------------------------------
 
@@ -19,11 +23,16 @@
 #include "../DxSystem.h"
 #include "../DxHeap.h"
 #include "../DxMemory.h"
+<<<<<<< HEAD
 #include "../DxStatic.h"
 #include "../DxLog.h"
 
 #include <emscripten.h>
 
+=======
+#include "../DxLog.h"
+
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 #ifndef DX_NON_NAMESPACE
 
 namespace DxLib
@@ -35,6 +44,7 @@ namespace DxLib
 
 // 型定義----------------------------------------------------------------------
 
+<<<<<<< HEAD
 typedef struct tagDECODEDAUDIO
 {
 	int ChannelNum;
@@ -43,6 +53,8 @@ typedef struct tagDECODEDAUDIO
 	int Length;
 } DECODEDAUDIO;
 
+=======
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 // データ宣言------------------------------------------------------------------
 
 SOUNDCONVERTDATA_HTML5 GSoundConvertData_HTML5 ;
@@ -53,6 +65,7 @@ SOUNDCONVERTDATA_HTML5 GSoundConvertData_HTML5 ;
 
 // 初期化・終了関数
 
+<<<<<<< HEAD
 int InitializeDecodeAudioOnBrowser() {
 	return MAIN_THREAD_EM_ASM_INT({
 		if (!Module["DxLib"]) {
@@ -89,6 +102,18 @@ extern	int TerminateSoundConvert_PF( void )
 {
 	TerminateDecodeAudioOnBrowser();
 	
+=======
+// サウンドデータ変換処理の環境依存の初期化を行う
+extern	int InitializeSoundConvert_PF( void )
+{
+	// 正常終了
+	return 0 ;
+}
+
+// サウンドデータ変換処理の環境依存の終了処理を行う
+extern	int TerminateSoundConvert_PF( void )
+{
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 	// 正常終了
 	return 0 ;
 }
@@ -101,6 +126,7 @@ extern	int TerminateSoundConvert_PF( void )
 
 
 
+<<<<<<< HEAD
 EM_JS(int, SetupDecodeAudioOnBrowser, (void* SrcBuffer, size_t Length, DECODEDAUDIO* Data), {
 	return Asyncify.handleSleep(function(wakeUp) {
 		const audioData = new Uint8Array(HEAPU8, SrcBuffer, Length);
@@ -178,6 +204,11 @@ extern	int SetupSoundConvert_PF( SOUNDCONV *SoundConv, STREAMDATA *Stream, int D
 ERR:
 	DXFREE(AudioData);
 
+=======
+// (環境依存処理)変換処理のセットアップ( [戻] -1:エラー )
+extern	int SetupSoundConvert_PF( SOUNDCONV *SoundConv, STREAMDATA *Stream, int DisableReadSoundFunctionMask )
+{
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 	return -1 ;
 }
 
@@ -189,6 +220,7 @@ extern	int SetSampleTimeSoundConvert_PF(    SOUNDCONV *SoundConv, LONGLONG Sampl
 	return res ;
 }
 
+<<<<<<< HEAD
 EM_JS(int, ConvertDecodeAudioOnBrowser, (int BufferId, void* Buffer, size_t ReadSize, int ReadPos), {
 	const decoded = Module["DxLib"].DecodedAudio[BufferId];
 
@@ -238,12 +270,26 @@ extern	int TerminateSoundConvert_PF(        SOUNDCONV *SoundConv )
 {
 	DeleteDecodeAudioOnBrowser(SoundConv->BufferId);
 
+=======
+// (環境依存処理)変換後のバッファにデータを補充する
+extern	int ConvertProcessSoundConvert_PF(  SOUNDCONV *SoundConv )
+{
+	int res = -1 ;
+
+	return res ;
+}
+
+// (環境依存処理)変換処理の後始末を行う
+extern	int TerminateSoundConvert_PF(        SOUNDCONV *SoundConv )
+{
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 	return 0 ;
 }
 
 // (環境依存処理)変換後の大凡のデータサイズを得る
 extern	LONGLONG GetSoundConvertDestSize_Fast_PF( SOUNDCONV *SoundConv )
 {
+<<<<<<< HEAD
 	DWORD_PTR sp;
 	STREAMDATASHRED *sstr;
 	size_t FileSize;
@@ -259,6 +305,9 @@ extern	LONGLONG GetSoundConvertDestSize_Fast_PF( SOUNDCONV *SoundConv )
 	}
 
 	return FileSize ;
+=======
+	return 0 ;
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 }
 
 

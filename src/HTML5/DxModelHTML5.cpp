@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム( HTML5 )
 // 
+<<<<<<< HEAD
 //  	Ver 3.24b
+=======
+//  	Ver 3.24d
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 // 
 //-----------------------------------------------------------------------------
 
@@ -423,6 +427,7 @@ __inline void MV1_HTML5_SetVertexData(
 	else
 	{
 		if( TexCoord0 != NULL )
+<<<<<<< HEAD
 		{		 		
  			( ( FLOAT4 * )Dest )->x = TexCoord0->u ;
  			( ( FLOAT4 * )Dest )->y = TexCoord0->v ;
@@ -432,6 +437,17 @@ __inline void MV1_HTML5_SetVertexData(
  			( ( FLOAT4 * )Dest )->x = 0.0f ;
  			( ( FLOAT4 * )Dest )->y = 0.0f ;
  		}
+=======
+		{
+			( ( FLOAT4 * )Dest )->x = TexCoord0->u ;
+			( ( FLOAT4 * )Dest )->y = TexCoord0->v ;
+		}
+		else
+		{
+			( ( FLOAT4 * )Dest )->x = 0.0f ;
+			( ( FLOAT4 * )Dest )->y = 0.0f ;
+		}
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 	}
 	( ( FLOAT4 * )Dest )->z = 1.0f ;
 	( ( FLOAT4 * )Dest )->w = 1.0f ;
@@ -3894,7 +3910,11 @@ SD4BONESKIN:
 	if( ( ( Model->MeshCategoryHide[ DX_MV1_MESHCATEGORY_OUTLINE ]             == FALSE && MV1Man.UseOrigShaderFlag == FALSE ) ||
 		  ( Model->MeshCategoryHide[ DX_MV1_MESHCATEGORY_OUTLINE_ORIG_SHADER ] == FALSE && MV1Man.UseOrigShaderFlag == TRUE  ) ) && 
 		( Mesh->Material->BaseData->Type == DX_MATERIAL_TYPE_TOON || Mesh->Material->BaseData->Type == DX_MATERIAL_TYPE_TOON_2 ) &&
+<<<<<<< HEAD
  		GSYS.DrawSetting.ShadowMapDraw == FALSE )
+=======
+		GSYS.DrawSetting.ShadowMapDraw == FALSE )
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 	{
 		// 輪郭線の描画
 		if( Mesh->Material->OutLineWidth    > 0.000001f ||

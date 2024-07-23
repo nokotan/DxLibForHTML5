@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用システムプログラム
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24d
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 // 
 // -------------------------------------------------------------------------------
 
@@ -11,12 +15,19 @@
 
 // インクルード ------------------------------------------------------------------
 #include "DxSystemHTML5.h"
+<<<<<<< HEAD
+=======
+#include "DxSystemHTML5_ObjC.h"
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 #include "DxGraphicsHTML5.h"
 #include "DxGraphicsFilterHTML5.h"
 #include "DxLogHTML5.h"
 #include "DxMaskHTML5.h"
 #include "DxModelHTML5.h"
+<<<<<<< HEAD
 #include "DxSoundHTML5.h"
+=======
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 #include "../DxLib.h"
 #include "../DxArchive_.h"
 #include "../DxSystem.h"
@@ -38,14 +49,22 @@
 #include "../DxLive2DCubism4.h"
 #include "../DxUseCLib.h"
 #include <time.h>
+<<<<<<< HEAD
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/time.h>
+=======
+#include <mach/mach_time.h>
+#include <errno.h>
+#include <unistd.h>
+#include <stdlib.h>
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 
 #include "../DxBaseFunc.h"
 #include "../DxMemory.h"
 
+<<<<<<< HEAD
 #include <emscripten.h>
 #include <emscripten/threading.h>
 #include <emscripten/html5.h>
@@ -58,6 +77,11 @@ EM_JS(int, canvas_width, (), {
 EM_JS(int, canvas_height, (), {
 	return Module.canvas.height;
 });
+=======
+
+extern int ios_main( void ) ;
+
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 
 #ifndef DX_NON_NAMESPACE
 
@@ -274,6 +298,28 @@ extern int NS_DxLib_End( void )
 		return 0 ;
 	}
 
+<<<<<<< HEAD
+=======
+#ifndef DX_NON_ASYNCLOAD
+	// 非同期読み込みをしない
+	NS_SetUseASyncLoadFlag( FALSE ) ;
+
+	// 全ての非同期読み込みの終了待ち
+	while( NS_GetASyncLoadNum() > 0 )
+	{
+		// 削除リクエストが来ているハンドルを削除する
+		DeleteRequestHandleDelete( FALSE ) ;
+
+		// メインスレッドが処理する非同期読み込みの処理を行う
+		ProcessASyncLoadRequestMainThread() ;
+		Thread_Sleep( 1 ) ;
+	}
+
+	// 削除リクエストが来ているハンドルを全て削除する
+	DeleteRequestHandleDelete( TRUE ) ;
+#endif // DX_NON_ASYNCLOAD
+
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 #ifndef DX_NON_SOFTIMAGE
 	// 登録した全てのソフトイメージを削除
 	InitSoftImage() ;
@@ -465,12 +511,23 @@ extern int NS_GetNowCount( int /*UseRDTSCFlag*/ )
 // GetNowTimeの高精度バージョン
 extern LONGLONG NS_GetNowHiPerformanceCount( int /*UseRDTSCFlag*/ )
 {
+<<<<<<< HEAD
 	LONGLONG NowTime ;
 	timeval ltimeval ;
 
 	gettimeofday( &ltimeval, NULL ) ;
 
 	NowTime = ( LONGLONG )ltimeval.tv_sec * 1000000 + ltimeval.tv_usec ;
+=======
+	ULONGLONG NowTime ;
+	mach_timebase_info_data_t BaseInfo ;
+
+	mach_timebase_info( &BaseInfo ) ;
+
+	NowTime = mach_absolute_time() ;
+
+	NowTime = NowTime * BaseInfo.numer / BaseInfo.denom / 1000 ;
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 
 	return NowTime ;
 }
@@ -478,61 +535,171 @@ extern LONGLONG NS_GetNowHiPerformanceCount( int /*UseRDTSCFlag*/ )
 // OSが提供する高精度カウンタの現在の値を得る
 extern ULONGLONG NS_GetNowSysPerformanceCount( void )
 {
+<<<<<<< HEAD
 	return ( ULONGLONG )NS_GetNowHiPerformanceCount() ;
+=======
+	return mach_absolute_time() ;
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 }
 
 // OSが提供する高精度カウンタの周波数( 1秒辺りのカウント数 )を得る
 extern ULONGLONG NS_GetSysPerformanceFrequency( void )
 {
+<<<<<<< HEAD
 	return 1000000 ;
+=======
+	mach_timebase_info_data_t BaseInfo ;
+	mach_timebase_info( &BaseInfo ) ;
+	return BaseInfo.denom / BaseInfo.numer ;
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 }
 
 // OSが提供する高精度カウンタの値を秒の値に変換する
 extern ULONGLONG NS_ConvSysPerformanceCountToSeconds( ULONGLONG Count )
 {
+<<<<<<< HEAD
 	return Count / 1000000 ;
+=======
+	mach_timebase_info_data_t BaseInfo ;
+	mach_timebase_info( &BaseInfo ) ;
+	return Count * BaseInfo.numer / BaseInfo.denom / 1000000000 ;
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 }
 
 // OSが提供する高精度カウンタの値をミリ秒の値に変換する
 extern ULONGLONG NS_ConvSysPerformanceCountToMilliSeconds( ULONGLONG Count )
 {
+<<<<<<< HEAD
 	return Count / 1000 ;
+=======
+	mach_timebase_info_data_t BaseInfo ;
+	mach_timebase_info( &BaseInfo ) ;
+	return Count * BaseInfo.numer / BaseInfo.denom / 1000000 ;
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 }
 
 // OSが提供する高精度カウンタの値をマイクロ秒の値に変換する
 extern ULONGLONG NS_ConvSysPerformanceCountToMicroSeconds( ULONGLONG Count )
 {
+<<<<<<< HEAD
 	return Count ;
+=======
+	mach_timebase_info_data_t BaseInfo ;
+	mach_timebase_info( &BaseInfo ) ;
+	return Count * BaseInfo.numer / BaseInfo.denom / 1000 ;
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 }
 
 // OSが提供する高精度カウンタの値をナノ秒の値に変換する
 extern ULONGLONG NS_ConvSysPerformanceCountToNanoSeconds( ULONGLONG Count )
 {
+<<<<<<< HEAD
 	return Count * 1000 ;
+=======
+	mach_timebase_info_data_t BaseInfo ;
+	mach_timebase_info( &BaseInfo ) ;
+	return Count * BaseInfo.numer / BaseInfo.denom ;
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 }
 
 // 秒の値をOSが提供する高精度カウンタの値に変換する
 extern ULONGLONG NS_ConvSecondsToSysPerformanceCount( ULONGLONG Seconds )
 {
+<<<<<<< HEAD
 	return Seconds * 1000000 ;
+=======
+	LONGLONG Temp[ 2 ] ;
+	LONGLONG MulNum ;
+	mach_timebase_info_data_t BaseInfo ;
+	mach_timebase_info( &BaseInfo ) ;
+	MulNum = BaseInfo.denom * 1000000000 ;
+	_MUL128_1( ( DWORD * )&MulNum, ( DWORD * )&Seconds, ( DWORD * )Temp ) ;
+	if( Temp[ 1 ] != 0 )
+	{
+		LONGLONG Result ;
+		_DIV128_1( ( DWORD * )Temp, ( DWORD * )&BaseInfo.numer, ( DWORD * )&Result ) ;
+		return Result ;
+	}
+	else
+	{
+		return ( ULONGLONG )Temp[ 0 ] / BaseInfo.numer ;
+	}
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 }
 
 // ミリ秒の値をOSが提供する高精度カウンタの値に変換する
 extern ULONGLONG NS_ConvMilliSecondsToSysPerformanceCount( ULONGLONG MilliSeconds )
 {
+<<<<<<< HEAD
 	return MilliSeconds * 1000 ;
+=======
+	LONGLONG Temp[ 2 ] ;
+	LONGLONG MulNum ;
+	mach_timebase_info_data_t BaseInfo ;
+	mach_timebase_info( &BaseInfo ) ;
+	MulNum = BaseInfo.denom * 1000000 ;
+	_MUL128_1( ( DWORD * )&MulNum, ( DWORD * )&MilliSeconds, ( DWORD * )Temp ) ;
+	if( Temp[ 1 ] != 0 )
+	{
+		LONGLONG Result ;
+		_DIV128_1( ( DWORD * )Temp, ( DWORD * )&BaseInfo.numer, ( DWORD * )&Result ) ;
+		return Result ;
+	}
+	else
+	{
+		return ( ULONGLONG )Temp[ 0 ] / BaseInfo.numer ;
+	}
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 }
 
 // マイクロ秒の値をOSが提供する高精度カウンタの値に変換する
 extern ULONGLONG NS_ConvMicroSecondsToSysPerformanceCount( ULONGLONG MicroSeconds )
 {
+<<<<<<< HEAD
 	return MicroSeconds ;
+=======
+	LONGLONG Temp[ 2 ] ;
+	LONGLONG MulNum ;
+	mach_timebase_info_data_t BaseInfo ;
+	mach_timebase_info( &BaseInfo ) ;
+	MulNum = BaseInfo.denom * 1000 ;
+	_MUL128_1( ( DWORD * )&MulNum, ( DWORD * )&MicroSeconds, ( DWORD * )Temp ) ;
+	if( Temp[ 1 ] != 0 )
+	{
+		LONGLONG Result ;
+		_DIV128_1( ( DWORD * )Temp, ( DWORD * )&BaseInfo.numer, ( DWORD * )&Result ) ;
+		return Result ;
+	}
+	else
+	{
+		return ( ULONGLONG )Temp[ 0 ] / BaseInfo.numer ;
+	}
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 }
 
 // ナノ秒の値をOSが提供する高精度カウンタの値に変換する
 extern ULONGLONG NS_ConvNanoSecondsToSysPerformanceCount( ULONGLONG NanoSeconds )
 {
+<<<<<<< HEAD
 	return NanoSeconds / 1000 ;
+=======
+	LONGLONG Temp[ 2 ] ;
+	LONGLONG MulNum ;
+	mach_timebase_info_data_t BaseInfo ;
+	mach_timebase_info( &BaseInfo ) ;
+	MulNum = BaseInfo.denom ;
+	_MUL128_1( ( DWORD * )&MulNum, ( DWORD * )&NanoSeconds, ( DWORD * )Temp ) ;
+	if( Temp[ 1 ] != 0 )
+	{
+		LONGLONG Result ;
+		_DIV128_1( ( DWORD * )Temp, ( DWORD * )&BaseInfo.numer, ( DWORD * )&Result ) ;
+		return Result ;
+	}
+	else
+	{
+		return ( ULONGLONG )Temp[ 0 ] / BaseInfo.numer ;
+	}
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 }
 
 // 現在時刻を取得する
@@ -578,14 +745,22 @@ extern int NS_GetBatteryLifePercent( void )
 // クリップボード関係
 
 // クリップボードに格納されているテキストデータを読み出す、-1 の場合はクリップボードにテキストデータは無いということ( DestBuffer に NULL を渡すと格納に必要なデータサイズが返ってくる )
+<<<<<<< HEAD
 extern int GetClipboardText_PF( TCHAR *DestBuffer )
+=======
+extern int GetClipboardText_PF( TCHAR *DestBuffer, int DestBufferBytes )
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 {
 	// 未実装
 	return -1 ;
 }
 
 // クリップボードに格納されているテキストデータを読み出す、-1 の場合はクリップボードにテキストデータは無いということ( DestBuffer に NULL を渡すと格納に必要なデータサイズが返ってくる )
+<<<<<<< HEAD
 extern int GetClipboardText_WCHAR_T_PF( wchar_t *DestBuffer )
+=======
+extern int GetClipboardText_WCHAR_T_PF( wchar_t *DestBuffer, int DestBufferBytes )
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 {
 	// 未実装
 	return -1 ;
@@ -678,7 +853,11 @@ extern int MailApp_Send_WCHAR_T_PF( const wchar_t *MailAddr, const wchar_t *Mail
 		ConvString( ( char * )Text, -1, WCHAR_T_CHARCODEFORMAT, TextUTF8, Bytes, DX_CHARCODEFORMAT_UTF8 ) ;
 	}
 
+<<<<<<< HEAD
 	Result = -1;
+=======
+	Result = MailApp_Send_HTML5( MailAddrUTF8, MailCCAddrUTF8, MailBCCAddrUTF8, SubjectUTF8, TextUTF8 ) ;
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 
 END :
 	if( MailAddrUTF8 != NULL )
@@ -767,6 +946,7 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
+<<<<<<< HEAD
 int WaitedForCurrentFrame(double, void* ctx) {
 	emscripten_proxy_finish((em_proxying_ctx*) ctx);
 	return 0;
@@ -793,13 +973,18 @@ void WaitForNextFrame() {
 #endif
 }
 
+=======
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 // ウインドウズのメッセージループに代わる処理を行う
 extern int NS_ProcessMessage( void )
 {
 	static int EndFlag = FALSE ;
 
+<<<<<<< HEAD
 	WaitForNextFrame();
 
+=======
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 	// もしフラグがたっていたらなにもせず終了
 	if( EndFlag )
 	{
@@ -817,11 +1002,20 @@ extern int NS_ProcessMessage( void )
 		ProcessPlayFinishDeleteSoundMemAll() ;
 //		SoundBuffer_Apply_StopSoundBufferList() ;
 //		ProcessPlay3DSoundMemAll() ;
+<<<<<<< HEAD
 		UpdateSound_PF();
+=======
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 	}
 #endif // DX_NON_SOUND
 
 #ifndef DX_NON_ASYNCLOAD
+<<<<<<< HEAD
+=======
+	// 削除リクエストが来ているハンドルを削除する
+	DeleteRequestHandleDelete( FALSE ) ;
+
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 	// メインスレッドが処理する非同期読み込みの処理を行う
 	ProcessASyncLoadRequestMainThread() ;
 #endif // DX_NON_ASYNCLOAD
@@ -871,7 +1065,14 @@ extern int NS_ProcessMessage( void )
 #endif
 
 	// イベント処理ループ
+<<<<<<< HEAD
 	ProcessInputEvent();	
+=======
+	for(;;)
+	{
+		break ;
+	}
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 
 	// 通常終了
 	return 0 ;
@@ -977,6 +1178,7 @@ extern void DxActiveWait_HTML5( void )
 //	}
 }
 
+<<<<<<< HEAD
 static const char *GetHomeDirectory() {
 	return "/";
 }
@@ -985,6 +1187,8 @@ static const char *GetTmpDirectory() {
 	return "/tmp/";
 }
 
+=======
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 // ディレクトリパスを返す関数の共通処理用の関数
 static int DirPathCommonFunction( const char *AddPath, TCHAR *PathBuffer, int PathBufferBytes )
 {
@@ -1102,6 +1306,7 @@ extern int GetTmpDirPathForChar( char *PathBuffer, size_t PathBufferBytes )
 	return Length + 1 ;
 }
 
+<<<<<<< HEAD
 
 
 
@@ -1164,8 +1369,54 @@ extern void GraphicsViewRenderBufferPresent( void ) {
 
 #endif
 
+=======
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 #ifndef DX_NON_NAMESPACE
 
 }
 
+<<<<<<< HEAD
 #endif // DX_NON_NAMESPACE
+=======
+#endif // DX_NON_NAMESPACE
+
+extern void DrawFunction( void );
+extern void SetAddPos( float x, float y );
+
+
+
+// ソフト用スレッドのエントリーポイント
+static void* ios_app_entry( void * )
+{
+	// カレントコンテキストのセット
+    GraphicsSetCurrentContext() ;
+    
+#ifndef DX_NON_FONT
+    // フォントタイプはアンチエイリアスタイプに固定
+    SetAntialiasingFontOnlyFlag( TRUE ) ;
+#endif // DX_NON_FONT
+    
+#ifndef DX_NON_DXA
+    // DXアーカイブのパスを大文字にしないようにする
+    DXA_DIR_SetNotArchivePathCharUp( TRUE ) ;
+#endif // DX_NON_DXA
+
+	ios_main() ;
+    
+    return NULL ;
+}
+
+// C++ 側での初期化を行う
+extern int DxSystemInitialize_CPP( void )
+{
+	// ソフト実行用スレッド生成
+	pthread_attr_t attr ;
+	pthread_attr_init( &attr ) ;
+	pthread_attr_setdetachstate( &attr, PTHREAD_CREATE_DETACHED ) ;
+	pthread_attr_setstacksize( &attr, 4 * 1024 * 1024 ) ;	// スタックサイズは 4MB
+	pthread_create( &g_HTML5Sys.SoftThread, &attr, ios_app_entry, NULL ) ;
+    
+    return 0 ;
+}
+
+>>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
