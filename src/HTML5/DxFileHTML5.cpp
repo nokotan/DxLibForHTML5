@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用ファイル関係プログラム
 // 
+<<<<<<< HEAD
 //  	Ver 3.24b
+=======
+//  	Ver 3.24d
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 // 
 //-----------------------------------------------------------------------------
 
@@ -53,6 +57,22 @@ const char * g_AddDriveName[ 16 ] =
 
 // プログラム -----------------------------------------------------------------
 
+<<<<<<< HEAD
+=======
+extern void SetAssetManager( AAssetManager *AManager )
+{
+	GFileData.PF.AssetManagerP = AManager ;
+}
+
+extern void SetInternalAndExternalDataPath( const char *InternalDataPath, const char *ExternalDataPath )
+{
+	GFileData.PF.InternalDataPath = InternalDataPath ;
+	GFileData.PF.InternalDataPathLength = CL_strlen( DX_CHARCODEFORMAT_UTF8, InternalDataPath ) ;
+	GFileData.PF.ExternalDataPath = ExternalDataPath ;
+	GFileData.PF.ExternalDataPathLength = CL_strlen( DX_CHARCODEFORMAT_UTF8, ExternalDataPath ) ;
+}
+
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 // ファイルアクセス処理の初期化・終了関数
 
 // ファイルアクセス処理の初期化関数の環境依存の処理を行う関数
@@ -107,6 +127,7 @@ extern int ReadOnlyFileAccessOpen_PF( FILEACCESS *FileAccess, const wchar_t *Pat
 	// wchar_t から UTF-8 に変換
 	HTML5_wchar_t_to_utf8_Path( Path, FullPathUTF8, sizeof( FullPathUTF8 ) ) ;
 
+<<<<<<< HEAD
 	FileAccess->PF.FilePointer = fopen( FullPathUTF8, "rb" ) ;
 
 	if( FileAccess->PF.FilePointer == NULL )
@@ -118,6 +139,40 @@ extern int ReadOnlyFileAccessOpen_PF( FILEACCESS *FileAccess, const wchar_t *Pat
 	fseek( FileAccess->PF.FilePointer, 0, SEEK_END ) ;
 	FileAccess->Size = ftell( FileAccess->PF.FilePointer ) ;
 	fseek( FileAccess->PF.FilePointer, 0, SEEK_SET ) ;
+=======
+	FileAccess->PF.Asset = NULL ;
+	FileAccess->PF.FilePointer = NULL ;
+
+//	// InternalDataPath か ExternalDataPath のディレクトリが指定されている場合は標準入出力を使用する
+//	if( ( GFileData.PF.InternalDataPathLength != 0 && CL_strncmp( DX_CHARCODEFORMAT_UTF8, FullPathUTF8, GFileData.PF.InternalDataPath, GFileData.PF.InternalDataPathLength ) == 0 ) ||
+//		( GFileData.PF.ExternalDataPathLength != 0 && CL_strncmp( DX_CHARCODEFORMAT_UTF8, FullPathUTF8, GFileData.PF.ExternalDataPath, GFileData.PF.ExternalDataPathLength ) == 0 ) )
+	// １文字目が / か \\ だったら標準入出力を使用する
+	if( FullPathUTF8[ 0 ] == '/' || FullPathUTF8[ 0 ] == '\\' )
+	{
+		FileAccess->PF.FilePointer = fopen( FullPathUTF8, "rb" ) ;
+		if( FileAccess->PF.FilePointer == NULL )
+		{
+			return -1 ;
+		}
+
+		// ファイルサイズを取得
+		fseek( FileAccess->PF.FilePointer, 0, SEEK_END ) ;
+		FileAccess->Size = ftell( FileAccess->PF.FilePointer ) ;
+		fseek( FileAccess->PF.FilePointer, 0, SEEK_SET ) ;
+	}
+	else
+	{
+		// それ以外はアセットマネージャーからファイルを開く
+		FileAccess->PF.Asset = AAssetManager_open( GFileData.PF.AssetManagerP, FullPathUTF8, AASSET_MODE_UNKNOWN ) ;
+		if( FileAccess->PF.Asset == NULL )
+		{
+			return -1 ;
+		}
+
+		// ファイルサイズを取得
+		FileAccess->Size = AAsset_getLength64( FileAccess->PF.Asset ) ;
+	}
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 	// 正常終了
 	return 0 ;
@@ -126,17 +181,43 @@ extern int ReadOnlyFileAccessOpen_PF( FILEACCESS *FileAccess, const wchar_t *Pat
 extern int ReadOnlyFileAccessClose_PF( FILEACCESS *FileAccess )
 {
 	// ファイルを閉じる
+<<<<<<< HEAD
 	fclose( FileAccess->PF.FilePointer ) ;
 	FileAccess->PF.FilePointer = NULL ;
 	
+=======
+	if( FileAccess->PF.FilePointer != NULL )
+	{
+		fclose( FileAccess->PF.FilePointer ) ;
+		FileAccess->PF.FilePointer = NULL ;
+	}
+	if( FileAccess->PF.Asset != NULL )
+	{
+		AAsset_close( FileAccess->PF.Asset ) ;
+		FileAccess->PF.Asset = NULL ;
+	}
+
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 	return 0 ;
 }
 
 extern int ReadOnlyFileAccessSeek_PF( FILEACCESS *FileAccess, LONGLONG SeekPoint )
 {
 	// ファイルアクセス位置を変更する
+<<<<<<< HEAD
 	fseek( FileAccess->PF.FilePointer, SeekPoint, SEEK_SET ) ;
 	
+=======
+	if( FileAccess->PF.FilePointer != NULL )
+	{
+		fseek( FileAccess->PF.FilePointer, SeekPoint, SEEK_SET ) ;
+	}
+	else
+	{
+		AAsset_seek64( FileAccess->PF.Asset, SeekPoint, SEEK_SET ) ;
+	}
+
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 	// 正常終了
 	return 0 ;
 }
@@ -150,7 +231,18 @@ extern size_t ReadOnlyFileAccessRead_PF( void *Buffer, size_t BlockSize, size_t 
 		return 0 ;
 	}
 
+<<<<<<< HEAD
 	BytesRead = fread( Buffer, BlockSize, DataNum, FileAccess->PF.FilePointer ) * BlockSize ;	
+=======
+	if( FileAccess->PF.FilePointer != NULL )
+	{
+		BytesRead = fread( Buffer, BlockSize, DataNum, FileAccess->PF.FilePointer ) * BlockSize ;
+	}
+	else
+	{
+		BytesRead = AAsset_read( FileAccess->PF.Asset, Buffer, BlockSize * DataNum ) ;
+	}
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 	return BytesRead ;
 }
@@ -183,20 +275,62 @@ extern int ReadOnlyFileAccessFindFirst_PF(	FINDINFO *FindInfo, const wchar_t *Fi
 	// ディレクトリパスを wchar_t から UTF-8 に変換
 	HTML5_wchar_t_to_utf8_Path( DirPath, DirPathUTF8, sizeof( DirPathUTF8 ) ) ;
 
+<<<<<<< HEAD
 	FindInfo->PF.Dir = NULL ;
 
 	FindInfo->PF.Dir = opendir( DirPathUTF8 ) ;
 	if( FindInfo->PF.Dir == NULL )
 	{
 		return -1 ;
+=======
+	FindInfo->PF.AssetDir = NULL ;
+	FindInfo->PF.Dir = NULL ;
+
+//	// InternalDataPath か ExternalDataPath のディレクトリが指定されている場合は標準入出力を使用する
+//	if( CL_strncmp( DX_CHARCODEFORMAT_UTF8, DirPathUTF8, GFileData.PF.InternalDataPath, GFileData.PF.InternalDataPathLength ) == 0 ||
+//		CL_strncmp( DX_CHARCODEFORMAT_UTF8, DirPathUTF8, GFileData.PF.ExternalDataPath, GFileData.PF.ExternalDataPathLength ) == 0 )
+	// １文字目が / か \\ だったら標準入出力を使用する
+	if( DirPathUTF8[ 0 ] == '/' || DirPathUTF8[ 0 ] == '\\' )
+	{
+		FindInfo->PF.Dir = opendir( DirPathUTF8 ) ;
+		if( FindInfo->PF.Dir == NULL )
+		{
+			return -1 ;
+		}
+	}
+	else
+	{
+		// アセットマネージャーを使用してディレクトリを開く
+		FindInfo->PF.AssetDir = AAssetManager_openDir( GFileData.PF.AssetManagerP, DirPathUTF8 ) ;
+		if( FindInfo->PF.AssetDir == NULL )
+		{
+			return -1 ;
+		}
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 	}
 
 	// 最初のファイルを検索する
 	if( ReadOnlyFileAccessFindNext_PF( FindInfo, Buffer ) < 0 )
+<<<<<<< HEAD
 	{		
 		closedir( FindInfo->PF.Dir ) ;
 		FindInfo->PF.Dir = NULL ;
 	
+=======
+	{
+		if( FindInfo->PF.Dir != NULL )
+		{
+			closedir( FindInfo->PF.Dir ) ;
+			FindInfo->PF.Dir = NULL ;
+		}
+
+		if( FindInfo->PF.AssetDir != NULL )
+		{
+			AAssetDir_close( FindInfo->PF.AssetDir ) ;
+			FindInfo->PF.AssetDir = NULL ;
+		}
+
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 		return -1 ;
 	}
 
@@ -208,11 +342,16 @@ extern int ReadOnlyFileAccessFindNext_PF(	FINDINFO *FindInfo, FILEINFOW *Buffer 
 	const char *FileName ;
 	wchar_t FileNameW[ 1024 ] ;
 
+<<<<<<< HEAD
 	if( FindInfo->PF.Dir == NULL )
+=======
+	if( FindInfo->PF.AssetDir == NULL && FindInfo->PF.Dir == NULL )
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 	{
 		return -1 ;
 	}
 
+<<<<<<< HEAD
 	for(;;)
 	{
 		dirent *ret = readdir( FindInfo->PF.Dir ) ;
@@ -235,6 +374,60 @@ extern int ReadOnlyFileAccessFindNext_PF(	FINDINFO *FindInfo, FILEINFOW *Buffer 
 			}
 
 			return 0 ;
+=======
+	if( FindInfo->PF.Dir != NULL )
+	{
+		for(;;)
+		{
+			dirent *ret = readdir( FindInfo->PF.Dir ) ;
+			if( ret == NULL )
+			{
+				return -1 ;
+			}
+
+			ConvString( ret->d_name, -1, DX_CHARCODEFORMAT_UTF8, ( char * )FileNameW, sizeof( FileNameW ), WCHAR_T_CHARCODEFORMAT ) ;
+
+			if( Strcmp_Str2_WildcardW_( FileNameW, FindInfo->PF.SearchFileName ) == 0 )
+			{
+				if( Buffer )
+				{
+					CL_strcpy( WCHAR_T_CHARCODEFORMAT, ( char * )Buffer->Name, ( char * )FileNameW ) ;
+					Buffer->DirFlag = ret->d_type == DT_DIR ? TRUE : FALSE ;
+					Buffer->Size = 0 ;
+					_MEMSET( &Buffer->CreationTime, 0, sizeof( Buffer->CreationTime ) ) ;
+					_MEMSET( &Buffer->LastWriteTime, 0, sizeof( Buffer->LastWriteTime ) ) ;
+				}
+
+				return 0 ;
+			}
+		}
+	}
+	else
+	{
+		for(;;)
+		{
+			FileName = AAssetDir_getNextFileName( FindInfo->PF.AssetDir ) ;
+			if( FileName == NULL )
+			{
+				return -1 ;
+			}
+
+			ConvString( FileName, -1, DX_CHARCODEFORMAT_UTF8, ( char * )FileNameW, sizeof( FileNameW ), WCHAR_T_CHARCODEFORMAT ) ;
+
+			if( Strcmp_Str2_WildcardW_( FileNameW, FindInfo->PF.SearchFileName ) == 0 )
+			{
+				if( Buffer )
+				{
+					CL_strcpy( WCHAR_T_CHARCODEFORMAT, ( char * )Buffer->Name, ( char * )FileNameW ) ;
+					Buffer->DirFlag = 0 ;
+					Buffer->Size = 0 ;
+					_MEMSET( &Buffer->CreationTime, 0, sizeof( Buffer->CreationTime ) ) ;
+					_MEMSET( &Buffer->LastWriteTime, 0, sizeof( Buffer->LastWriteTime ) ) ;
+				}
+
+				return 0 ;
+			}
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 		}
 	}
 
@@ -242,9 +435,24 @@ extern int ReadOnlyFileAccessFindNext_PF(	FINDINFO *FindInfo, FILEINFOW *Buffer 
 }
 
 extern int ReadOnlyFileAccessFindClose_PF( FINDINFO *FindInfo )
+<<<<<<< HEAD
 {	
 	closedir( FindInfo->PF.Dir ) ;
 	FindInfo->PF.Dir = NULL ;
+=======
+{
+	if( FindInfo->PF.Dir != NULL )
+	{
+		closedir( FindInfo->PF.Dir ) ;
+		FindInfo->PF.Dir = NULL ;
+	}
+
+	if( FindInfo->PF.AssetDir != NULL )
+	{
+		AAssetDir_close( FindInfo->PF.AssetDir ) ;
+		FindInfo->PF.AssetDir = NULL ;
+	}
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 	return 0 ;
 }

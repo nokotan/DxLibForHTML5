@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用入力情報プログラム
 // 
+<<<<<<< HEAD
 //  	Ver 3.24b
+=======
+//  	Ver 3.24d
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 // 
 //-----------------------------------------------------------------------------
 
@@ -20,9 +24,12 @@
 #include "../DxInput.h"
 #include "../DxSystem.h"
 
+<<<<<<< HEAD
 #include "DxInputKeyCodesHTML5.h"
 #include <emscripten/html5.h>
 
+=======
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 #ifndef DX_NON_NAMESPACE
 
 namespace DxLib
@@ -43,6 +50,7 @@ namespace DxLib
 
 // データ宣言------------------------------------------------------------------
 
+<<<<<<< HEAD
 const static unsigned char g_HTML5InputSourceTable[ HTML5_INPUT_SOURCE_NUM ] =
 {
 	HTML5_INPUT_SOURCE_UNKNOWN,
@@ -174,16 +182,157 @@ const static unsigned char g_HTML5KeyToDXInputKey[][ 2 /* 0:HTML5キーコード
 	{ HTML_KEYCODE_BACK,			KEY_INPUT_ESCAPE },		// HTML5 の Backボタン
 
 	{ 0xff,					0xff },
+=======
+const static int32_t g_HTML5InputSourceTable[ HTML5_INPUT_SOURCE_NUM ] =
+{
+	AINPUT_SOURCE_UNKNOWN,
+	AINPUT_SOURCE_KEYBOARD,
+	AINPUT_SOURCE_DPAD,
+	AINPUT_SOURCE_GAMEPAD,
+	AINPUT_SOURCE_TOUCHSCREEN,
+	AINPUT_SOURCE_MOUSE,
+	AINPUT_SOURCE_STYLUS,
+	AINPUT_SOURCE_TRACKBALL,
+	AINPUT_SOURCE_TOUCHPAD,
+	AINPUT_SOURCE_TOUCH_NAVIGATION,
+	AINPUT_SOURCE_JOYSTICK,
+} ;
+
+const static unsigned short g_HTML5KeyToDXInputKey[][ 2 /* 0:HTML5キーコード  1:DirectInputキーコード  */ ] =
+{
+	{ AKEYCODE_DEL,				KEY_INPUT_BACK },		// BackSpaceキー
+	{ AKEYCODE_TAB,				KEY_INPUT_TAB },		// Tabキー
+	{ AKEYCODE_ENTER,			KEY_INPUT_RETURN },		// Enterキー
+
+	{ AKEYCODE_SHIFT_LEFT,		KEY_INPUT_LSHIFT },		// 左Shiftキー
+	{ AKEYCODE_SHIFT_RIGHT,		KEY_INPUT_RSHIFT },		// 右Shiftキー
+	{ AKEYCODE_CTRL_LEFT,		KEY_INPUT_LCONTROL },	// 左Ctrlキー
+	{ AKEYCODE_CTRL_RIGHT,		KEY_INPUT_RCONTROL },	// 右Ctrlキー
+	{ AKEYCODE_ESCAPE,			KEY_INPUT_ESCAPE },		// Escキー
+	{ AKEYCODE_SPACE,			KEY_INPUT_SPACE },		// スペースキー
+	{ AKEYCODE_PAGE_UP,			KEY_INPUT_PGUP },		// PageUpキー
+	{ AKEYCODE_PAGE_DOWN,		KEY_INPUT_PGDN },		// PageDownキー
+	{ AKEYCODE_MOVE_END,		KEY_INPUT_END },		// Endキー
+	{ AKEYCODE_MOVE_HOME,		KEY_INPUT_HOME },		// Homeキー
+	{ AKEYCODE_DPAD_LEFT,		KEY_INPUT_LEFT },		// 左キー
+	{ AKEYCODE_DPAD_UP,			KEY_INPUT_UP },			// 上キー
+	{ AKEYCODE_DPAD_RIGHT,		KEY_INPUT_RIGHT },		// 右キー
+	{ AKEYCODE_DPAD_DOWN,		KEY_INPUT_DOWN },		// 下キー
+	{ AKEYCODE_INSERT,			KEY_INPUT_INSERT },		// Insertキー
+	{ AKEYCODE_FORWARD_DEL,		KEY_INPUT_DELETE },		// Deleteキー
+
+	{ AKEYCODE_MINUS,			KEY_INPUT_MINUS },		// －キー
+	{ AKEYCODE_YEN,				KEY_INPUT_YEN },		// ￥キー
+	{ AKEYCODE_EQUALS,			KEY_INPUT_PREVTRACK },	// ＾キー
+	{ AKEYCODE_PERIOD,			KEY_INPUT_PERIOD },		// ．キー
+	{ AKEYCODE_SLASH,			KEY_INPUT_SLASH },		// ／キー
+	{ AKEYCODE_ALT_LEFT,		KEY_INPUT_LALT },		// 左Altキー
+	{ AKEYCODE_ALT_RIGHT,		KEY_INPUT_RALT },		// 右Altキー
+	{ AKEYCODE_SCROLL_LOCK,		KEY_INPUT_SCROLL },		// ScrollLockキー
+	{ AKEYCODE_SEMICOLON,		KEY_INPUT_SEMICOLON },	// ；キー
+	{ AKEYCODE_APOSTROPHE,		KEY_INPUT_COLON },		// ：キー
+	{ AKEYCODE_LEFT_BRACKET,	KEY_INPUT_LBRACKET },	// ［キー
+	{ AKEYCODE_RIGHT_BRACKET,	KEY_INPUT_RBRACKET },	// ］キー
+	{ AKEYCODE_AT,				KEY_INPUT_AT },			// ＠キー
+	{ AKEYCODE_RO,				KEY_INPUT_BACKSLASH },	// ＼キー
+	{ AKEYCODE_COMMA,			KEY_INPUT_COMMA },		// ，キー
+	{ AKEYCODE_ZENKAKU_HANKAKU,	KEY_INPUT_KANJI },		// 漢字キー
+	{ AKEYCODE_HENKAN,			KEY_INPUT_CONVERT },	// 変換キー
+	{ AKEYCODE_MUHENKAN,		KEY_INPUT_NOCONVERT },	// 無変換キー
+	{ AKEYCODE_KANA,			KEY_INPUT_KANA },		// カナキー
+	{ AKEYCODE_SEARCH,			KEY_INPUT_APPS },		// アプリケーションメニューキー
+	{ AKEYCODE_CAPS_LOCK,		KEY_INPUT_CAPSLOCK },	// CaspLockキー
+	{ AKEYCODE_SYSRQ,			KEY_INPUT_SYSRQ },		// PrintScreenキー
+	{ AKEYCODE_BREAK,			KEY_INPUT_PAUSE },		// PauseBreakキー
+//	{							KEY_INPUT_LWIN },		// 左Winキー
+//	{							KEY_INPUT_RWIN },		// 右Winキー
+
+	{ AKEYCODE_NUM_LOCK,		KEY_INPUT_NUMLOCK },	// テンキーNumLockキー
+	{ AKEYCODE_NUMPAD_0,		KEY_INPUT_NUMPAD0 },	// テンキー０
+	{ AKEYCODE_NUMPAD_1,		KEY_INPUT_NUMPAD1 },	// テンキー１
+	{ AKEYCODE_NUMPAD_2,		KEY_INPUT_NUMPAD2 },	// テンキー２
+	{ AKEYCODE_NUMPAD_3,		KEY_INPUT_NUMPAD3 },	// テンキー３
+	{ AKEYCODE_NUMPAD_4,		KEY_INPUT_NUMPAD4 },	// テンキー４
+	{ AKEYCODE_NUMPAD_5,		KEY_INPUT_NUMPAD5 },	// テンキー５
+	{ AKEYCODE_NUMPAD_6,		KEY_INPUT_NUMPAD6 },	// テンキー６
+	{ AKEYCODE_NUMPAD_7,		KEY_INPUT_NUMPAD7 },	// テンキー７
+	{ AKEYCODE_NUMPAD_8,		KEY_INPUT_NUMPAD8 },	// テンキー８
+	{ AKEYCODE_NUMPAD_9,		KEY_INPUT_NUMPAD9 },	// テンキー９
+	{ AKEYCODE_NUMPAD_MULTIPLY,	KEY_INPUT_MULTIPLY },	// テンキー＊キー
+	{ AKEYCODE_NUMPAD_ADD,		KEY_INPUT_ADD },		// テンキー＋キー
+	{ AKEYCODE_NUMPAD_SUBTRACT,	KEY_INPUT_SUBTRACT },	// テンキー－キー
+	{ AKEYCODE_NUMPAD_DOT,		KEY_INPUT_DECIMAL },	// テンキー．キー
+	{ AKEYCODE_NUMPAD_DIVIDE,	KEY_INPUT_DIVIDE },		// テンキー／キー
+	{ AKEYCODE_NUMPAD_ENTER,	KEY_INPUT_NUMPADENTER },// テンキーのエンターキー
+
+	{ AKEYCODE_F1,				KEY_INPUT_F1 },			// Ｆ１キー
+	{ AKEYCODE_F2,				KEY_INPUT_F2 },			// Ｆ２キー
+	{ AKEYCODE_F3,				KEY_INPUT_F3 },			// Ｆ３キー
+	{ AKEYCODE_F4,				KEY_INPUT_F4 },			// Ｆ４キー
+	{ AKEYCODE_F5,				KEY_INPUT_F5 },			// Ｆ５キー
+	{ AKEYCODE_F6,				KEY_INPUT_F6 },			// Ｆ６キー
+	{ AKEYCODE_F7,				KEY_INPUT_F7 },			// Ｆ７キー
+	{ AKEYCODE_F8,				KEY_INPUT_F8 },			// Ｆ８キー
+	{ AKEYCODE_F9,				KEY_INPUT_F9 },			// Ｆ９キー
+	{ AKEYCODE_F10,				KEY_INPUT_F10 },		// Ｆ１０キー
+	{ AKEYCODE_F11,				KEY_INPUT_F11 },		// Ｆ１１キー
+	{ AKEYCODE_F12,				KEY_INPUT_F12 },		// Ｆ１２キー
+
+	{ AKEYCODE_A,				KEY_INPUT_A },			// Ａキー
+	{ AKEYCODE_B,				KEY_INPUT_B },			// Ｂキー
+	{ AKEYCODE_C,				KEY_INPUT_C },			// Ｃキー
+	{ AKEYCODE_D,				KEY_INPUT_D },			// Ｄキー
+	{ AKEYCODE_E,				KEY_INPUT_E },			// Ｅキー
+	{ AKEYCODE_F,				KEY_INPUT_F },			// Ｆキー
+	{ AKEYCODE_G,				KEY_INPUT_G },			// Ｇキー
+	{ AKEYCODE_H,				KEY_INPUT_H },			// Ｈキー
+	{ AKEYCODE_I,				KEY_INPUT_I },			// Ｉキー
+	{ AKEYCODE_J,				KEY_INPUT_J },			// Ｊキー
+	{ AKEYCODE_K,				KEY_INPUT_K },			// Ｋキー
+	{ AKEYCODE_L,				KEY_INPUT_L },			// Ｌキー
+	{ AKEYCODE_M,				KEY_INPUT_M },			// Ｍキー
+	{ AKEYCODE_N,				KEY_INPUT_N },			// Ｎキー
+	{ AKEYCODE_O,				KEY_INPUT_O },			// Ｏキー
+	{ AKEYCODE_P,				KEY_INPUT_P },			// Ｐキー
+	{ AKEYCODE_Q,				KEY_INPUT_Q },			// Ｑキー
+	{ AKEYCODE_R,				KEY_INPUT_R },			// Ｒキー
+	{ AKEYCODE_S,				KEY_INPUT_S },			// Ｓキー
+	{ AKEYCODE_T,				KEY_INPUT_T },			// Ｔキー
+	{ AKEYCODE_U,				KEY_INPUT_U },			// Ｕキー
+	{ AKEYCODE_V,				KEY_INPUT_V },			// Ｖキー
+	{ AKEYCODE_W,				KEY_INPUT_W },			// Ｗキー
+	{ AKEYCODE_X,				KEY_INPUT_X },			// Ｘキー
+	{ AKEYCODE_Y,				KEY_INPUT_Y },			// Ｙキー
+	{ AKEYCODE_Z,				KEY_INPUT_Z },			// Ｚキー
+
+	{ AKEYCODE_0,				KEY_INPUT_0 },			// ０キー
+	{ AKEYCODE_1,				KEY_INPUT_1 },			// １キー
+	{ AKEYCODE_2,				KEY_INPUT_2 },			// ２キー
+	{ AKEYCODE_3,				KEY_INPUT_3 },			// ３キー
+	{ AKEYCODE_4,				KEY_INPUT_4 },			// ４キー
+	{ AKEYCODE_5,				KEY_INPUT_5 },			// ５キー
+	{ AKEYCODE_6,				KEY_INPUT_6 },			// ６キー
+	{ AKEYCODE_7,				KEY_INPUT_7 },			// ７キー
+	{ AKEYCODE_8,				KEY_INPUT_8 },			// ８キー
+	{ AKEYCODE_9,				KEY_INPUT_9 },			// ９キー
+
+	{ AKEYCODE_BACK,			KEY_INPUT_ESCAPE },		// HTML5 の Backボタン
+
+	{ 0xffff,					0xffff },
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 } ;
 
 // 関数プロトタイプ宣言 -------------------------------------------------------
 
+<<<<<<< HEAD
 static EM_BOOL onKeyAction(int eventType, const EmscriptenKeyboardEvent *keyEvent, void *userData);
 static EM_BOOL onMouseWheel(int eventType, const EmscriptenWheelEvent *wheelEvent, void *userData);
 static EM_BOOL onMouseAction(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData);
 static EM_BOOL onTouchAction(int eventType, const EmscriptenTouchEvent *touchEvent, void *userData);
 static EM_BOOL onGamepadAction(int eventType, const EmscriptenGamepadEvent *gamepadEvent, void *userData);
 
+=======
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 // プログラム------------------------------------------------------------------
 
 // 入力システムを初期化する処理の環境依存処理
@@ -243,6 +392,7 @@ extern int InitializeInputSystem_PF_Timing0( void )
 
 	InputSysData.PF.UseInputInfoNum = 0 ;
 
+<<<<<<< HEAD
 	emscripten_set_keydown_callback("canvas", NULL, true, &onKeyAction);
 	emscripten_set_keyup_callback("canvas", NULL, true, &onKeyAction);
 	emscripten_set_mousedown_callback("canvas", NULL, true, &onMouseAction);
@@ -253,6 +403,8 @@ extern int InitializeInputSystem_PF_Timing0( void )
 	emscripten_set_gamepadconnected_callback(NULL, true, &onGamepadAction);
 	emscripten_set_gamepaddisconnected_callback(NULL, true, &onGamepadAction);
 
+=======
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 	// 初期化中フラグを倒す
 	NowInitialize = FALSE ;
 
@@ -299,7 +451,11 @@ extern int UpdateKeyboardInputState_PF( int UseProcessMessage )
 		{
 			INPUT_HTML5_DEVICE_INFO *Info = &InputSysData.PF.InputInfo[ InputSysData.PF.SourceNoToInputInfoTable[ HTML5_INPUT_SOURCE_KEYBOARD ][ j ] ] ;
 
+<<<<<<< HEAD
 			for( i = 0 ; g_HTML5KeyToDXInputKey[i][0] != 0xff ; i ++ )
+=======
+			for( i = 0 ; g_HTML5KeyToDXInputKey[i][0] != 0xffff ; i ++ )
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 			{
 				InputSysData.KeyInputBuf[ g_HTML5KeyToDXInputKey[ i ][ 1 ] ] |= Info->KeyState[ g_HTML5KeyToDXInputKey[ i ][ 0 ] ] ? 0x80 : 0x00 ;
 			}
@@ -383,6 +539,7 @@ extern int UpdateJoypadInputState_PF( int PadNo )
 	pad->State.POV[ 1 ]      = 0xffffffff ;
 	pad->State.POV[ 2 ]      = 0xffffffff ;
 	pad->State.POV[ 3 ]      = 0xffffffff ;
+<<<<<<< HEAD
 	pad->State.Buttons[  0 ] = ((Info->ButtonState & PAD_INPUT_1) 	|| Info->KeyState[  0 ]) ? 0x80 : 0x00 ;
 	pad->State.Buttons[  1 ] = ((Info->ButtonState & PAD_INPUT_2) 	|| Info->KeyState[  1 ]) ? 0x80 : 0x00 ;
 	pad->State.Buttons[  2 ] = ((Info->ButtonState & PAD_INPUT_3) 	|| Info->KeyState[  2 ]) ? 0x80 : 0x00 ;
@@ -395,6 +552,20 @@ extern int UpdateJoypadInputState_PF( int PadNo )
 	pad->State.Buttons[  9 ] = ((Info->ButtonState & PAD_INPUT_10) 	|| Info->KeyState[  9 ]) ? 0x80 : 0x00 ;
 	pad->State.Buttons[ 10 ] = ((Info->ButtonState & PAD_INPUT_11) 	|| Info->KeyState[ 10 ]) ? 0x80 : 0x00 ;
 	pad->State.Buttons[ 11 ] = ((Info->ButtonState & PAD_INPUT_12) 	|| Info->KeyState[ 11 ]) ? 0x80 : 0x00 ;
+=======
+	pad->State.Buttons[  0 ] = Info->KeyState[ AKEYCODE_BUTTON_A      ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[  1 ] = Info->KeyState[ AKEYCODE_BUTTON_B      ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[  2 ] = Info->KeyState[ AKEYCODE_BUTTON_X      ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[  3 ] = Info->KeyState[ AKEYCODE_BUTTON_Y      ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[  4 ] = Info->KeyState[ AKEYCODE_BUTTON_L1     ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[  5 ] = Info->KeyState[ AKEYCODE_BUTTON_R1     ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[  6 ] = Info->KeyState[ AKEYCODE_BUTTON_L2     ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[  7 ] = Info->KeyState[ AKEYCODE_BUTTON_R2     ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[  8 ] = Info->KeyState[ AKEYCODE_BUTTON_THUMBL ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[  9 ] = Info->KeyState[ AKEYCODE_BUTTON_THUMBR ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[ 10 ] = Info->KeyState[ AKEYCODE_BUTTON_SELECT ] ? 0x80 : 0x00 ;
+	pad->State.Buttons[ 11 ] = Info->KeyState[ AKEYCODE_BUTTON_START  ] ? 0x80 : 0x00 ;
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 	pad->State.Buttons[ 12 ] = 0 ;
 	pad->State.Buttons[ 13 ] = 0 ;
 	pad->State.Buttons[ 14 ] = 0 ;
@@ -416,6 +587,7 @@ extern int UpdateJoypadInputState_PF( int PadNo )
 	pad->State.Buttons[ 30 ] = 0 ;
 	pad->State.Buttons[ 31 ] = 0 ;
 
+<<<<<<< HEAD
 //	if( Info->KeyState[ HTML_KEYCODE_DPAD_LEFT  ] != 0 ) pad->State.X = -1000 ;
 //	if( Info->KeyState[ HTML_KEYCODE_DPAD_RIGHT ] != 0 ) pad->State.X =  1000 ;
 //	if( Info->KeyState[ HTML_KEYCODE_DPAD_UP    ] != 0 ) pad->State.Y = -1000 ;
@@ -443,11 +615,44 @@ extern int UpdateJoypadInputState_PF( int PadNo )
 //	if( Info->KeyState[ HTML_KEYCODE_D ] )
 //	{
 //		if( Info->KeyState[ HTML_KEYCODE_S ] )
+=======
+//	if( Info->KeyState[ AKEYCODE_DPAD_LEFT  ] != 0 ) pad->State.X = -1000 ;
+//	if( Info->KeyState[ AKEYCODE_DPAD_RIGHT ] != 0 ) pad->State.X =  1000 ;
+//	if( Info->KeyState[ AKEYCODE_DPAD_UP    ] != 0 ) pad->State.Y = -1000 ;
+//	if( Info->KeyState[ AKEYCODE_DPAD_DOWN  ] != 0 ) pad->State.Y =  1000 ;
+//
+//	if( Info->KeyState[ AKEYCODE_J          ] != 0 ) pad->State.Z  = -1000 ;
+//	if( Info->KeyState[ AKEYCODE_L          ] != 0 ) pad->State.Z  =  1000 ;
+//	if( Info->KeyState[ AKEYCODE_I          ] != 0 ) pad->State.Rz = -1000 ;
+//	if( Info->KeyState[ AKEYCODE_K          ] != 0 ) pad->State.Rz =  1000 ;
+//
+//	if( Info->KeyState[ AKEYCODE_2          ] != 0 ) pad->State.Buttons[  0 ] = 0x80 ;
+//	if( Info->KeyState[ AKEYCODE_3          ] != 0 ) pad->State.Buttons[  1 ] = 0x80 ;
+//	if( Info->KeyState[ AKEYCODE_1          ] != 0 ) pad->State.Buttons[  2 ] = 0x80 ;
+//	if( Info->KeyState[ AKEYCODE_4          ] != 0 ) pad->State.Buttons[  3 ] = 0x80 ;
+//	if( Info->KeyState[ AKEYCODE_5          ] != 0 ) pad->State.Buttons[  4 ] = 0x80 ;
+//	if( Info->KeyState[ AKEYCODE_6          ] != 0 ) pad->State.Buttons[  5 ] = 0x80 ;
+//	if( Info->KeyState[ AKEYCODE_7          ] != 0 ) pad->State.Buttons[  6 ] = 0x80 ;
+//	if( Info->KeyState[ AKEYCODE_8          ] != 0 ) pad->State.Buttons[  7 ] = 0x80 ;
+//	if( Info->KeyState[ AKEYCODE_9          ] != 0 ) pad->State.Buttons[  8 ] = 0x80 ;
+//	if( Info->KeyState[ AKEYCODE_0          ] != 0 ) pad->State.Buttons[  9 ] = 0x80 ;
+//
+//	if( Info->KeyState[ AKEYCODE_DEL        ] != 0 ) pad->State.Buttons[ 10 ] = 0x80 ;
+//	if( Info->KeyState[ AKEYCODE_ENTER      ] != 0 ) pad->State.Buttons[ 11 ] = 0x80 ;
+//
+//	if( Info->KeyState[ AKEYCODE_D ] )
+//	{
+//		if( Info->KeyState[ AKEYCODE_S ] )
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 //		{
 //			pad->State.POV[ 0 ] = 13500 ;
 //		}
 //		else
+<<<<<<< HEAD
 //		if( Info->KeyState[ HTML_KEYCODE_W ] )
+=======
+//		if( Info->KeyState[ AKEYCODE_W ] )
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 //		{
 //			pad->State.POV[ 0 ] = 4500 ;
 //		}
@@ -457,14 +662,24 @@ extern int UpdateJoypadInputState_PF( int PadNo )
 //		}
 //	}
 //	else
+<<<<<<< HEAD
 //	if( Info->KeyState[ HTML_KEYCODE_A ] )
 //	{
 //		if( Info->KeyState[ HTML_KEYCODE_S ] )
+=======
+//	if( Info->KeyState[ AKEYCODE_A ] )
+//	{
+//		if( Info->KeyState[ AKEYCODE_S ] )
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 //		{
 //			pad->State.POV[ 0 ] = 22500 ;
 //		}
 //		else
+<<<<<<< HEAD
 //		if( Info->KeyState[ HTML_KEYCODE_W ] )
+=======
+//		if( Info->KeyState[ AKEYCODE_W ] )
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 //		{
 //			pad->State.POV[ 0 ] = 31500 ;
 //		}
@@ -475,12 +690,20 @@ extern int UpdateJoypadInputState_PF( int PadNo )
 //	}
 //	else
 //	{
+<<<<<<< HEAD
 //		if( Info->KeyState[ HTML_KEYCODE_S ] )
+=======
+//		if( Info->KeyState[ AKEYCODE_S ] )
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 //		{
 //			pad->State.POV[ 0 ] = 18000 ;
 //		}
 //		else
+<<<<<<< HEAD
 //		if( Info->KeyState[ HTML_KEYCODE_W ] )
+=======
+//		if( Info->KeyState[ AKEYCODE_W ] )
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 //		{
 //			pad->State.POV[ 0 ] = 0 ;
 //		}
@@ -656,6 +879,7 @@ extern int GetHTML5DeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId )
 
 	for( i = 0 ; i < InputSysData.PF.UseInputInfoNum ; i ++ )
 	{
+<<<<<<< HEAD
 		if(    InputSysData.PF.InputInfo[ i ].Source   == Source   &&
 			   InputSysData.PF.InputInfo[ i ].DeviceId == DeviceId )
 		{
@@ -675,6 +899,27 @@ extern int GetHTML5DeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId )
 			// 	RefreshHTML5SourceNoToInputInfoTable( Source ) ;
 			// 	RefreshHTML5GamePadSourceNoToInputInfoTable() ;
 			// }
+=======
+		if( /* InputSysData.PF.InputInfo[ i ].Source   == Source   && */
+			   InputSysData.PF.InputInfo[ i ].DeviceId == DeviceId )
+		{
+			int UpdateFlag = FALSE ;
+
+			if( ( InputSysData.PF.InputInfo[ i ].Source & Source ) != Source )
+			{
+				UpdateFlag = TRUE ;
+			}
+
+			InputSysData.PF.InputInfo[ i ].Source |= Source ;
+			InputSysData.PF.InputInfo[ i ].UpdateCount = InputSysData.PF.UpdateCount ;
+			InputSysData.PF.UpdateCount ++ ;
+
+			if( UpdateFlag )
+			{
+				RefreshHTML5SourceNoToInputInfoTable( Source ) ;
+				RefreshHTML5GamePadSourceNoToInputInfoTable() ;
+			}
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 			return i ;
 		}
 	}
@@ -746,7 +991,11 @@ extern int RefreshHTML5SourceNoToInputInfoTable( int32_t Source )
 	Info = InputSysData.PF.InputInfo ;
 	for( i = 0 ; i < InputSysData.PF.UseInputInfoNum ; i ++, Info ++ )
 	{
+<<<<<<< HEAD
 		if( Info->Source  == Source )
+=======
+		if( ( Info->Source & Source ) == Source )
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 		{
 			InfoTable[ Num ] = Info ;
 			Num ++ ;
@@ -802,7 +1051,12 @@ extern int RefreshHTML5GamePadSourceNoToInputInfoTable( void )
 	for( i = 0 ; i < InputSysData.PF.UseInputInfoNum ; i ++, Info ++ )
 	{
 		// ＤＸライブラリがゲームパッドとして扱う要素を持っている場合はゲームパッドとする
+<<<<<<< HEAD
 		if( Info->Source == HTML5_INPUT_SOURCE_JOYSTICK )
+=======
+		if( ( ( Info->Source & AINPUT_SOURCE_GAMEPAD  ) == AINPUT_SOURCE_GAMEPAD ) ||
+			( ( Info->Source & AINPUT_SOURCE_JOYSTICK ) == AINPUT_SOURCE_JOYSTICK ) )
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 		{
 			InfoTable[ Num ] = Info ;
 			Num ++ ;
@@ -846,6 +1100,7 @@ extern int RefreshHTML5GamePadSourceNoToInputInfoTable( void )
 }
 
 // 入力イベントを処理する
+<<<<<<< HEAD
 extern int32_t ProcessInputEvent( )
 {
 	int gamePadCount;
@@ -1085,6 +1340,259 @@ static EM_BOOL onGamepadAction(int eventType, const EmscriptenGamepadEvent *game
 	// Disconnected & connected.
 	return false;
 }
+=======
+extern int32_t ProcessInputEvent( AInputEvent* event )
+{
+	int32_t InputType ;
+	int32_t Source ;
+	int32_t DeviceId ;
+	int InputNo ;
+
+	Source		= AInputEvent_getSource( event ) ;
+	InputType	= AInputEvent_getType( event ) ;
+	DeviceId	= AInputEvent_getDeviceId( event ) ;
+
+	InputNo = GetHTML5DeviceIdToInputInfoNo( Source, DeviceId ) ;
+
+	if( InputType == AINPUT_EVENT_TYPE_MOTION )
+	{
+		TOUCHINPUTDATA TouchInputData ;
+		int32_t PointerCount ;
+		int32_t Action ;
+		int32_t PIndex ;
+		Action = AMotionEvent_getAction( event ) ;
+		PIndex = ( Action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK ) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT ;
+		Action &= AMOTION_EVENT_ACTION_MASK ;
+
+		if( ( Source & AINPUT_SOURCE_TOUCHSCREEN ) == AINPUT_SOURCE_TOUCHSCREEN ||
+			( Source & AINPUT_SOURCE_TOUCHPAD    ) == AINPUT_SOURCE_TOUCHPAD )
+		{
+			TouchInputData.PointNum = 0 ;
+			TouchInputData.Time = ( LONGLONG )AMotionEvent_getEventTime( event ) ;
+			TouchInputData.Source = Source ;
+
+			if( Action != AMOTION_EVENT_ACTION_UP &&
+				Action != AMOTION_EVENT_ACTION_HOVER_ENTER &&
+				Action != AMOTION_EVENT_ACTION_HOVER_EXIT &&
+				Action != AMOTION_EVENT_ACTION_HOVER_MOVE )
+			{
+				PointerCount = AMotionEvent_getPointerCount( event ) ;
+				if( PointerCount > 0 )
+				{
+					int32_t i ;
+					TOUCHINPUTPOINT *TouchPoint ;
+
+					TouchPoint = TouchInputData.Point ;
+					for( i = 0; i < PointerCount; i++ )
+					{
+						int ScreenX, ScreenY ;
+
+						if( PIndex == i && Action == AMOTION_EVENT_ACTION_POINTER_UP )
+						{
+							continue ;
+						}
+
+						TouchPoint->Device = 0 ;
+						TouchPoint->ID = AMotionEvent_getPointerId( event, i ) ;
+						ScreenX = AMotionEvent_getX( event, i ) ;
+						ScreenY = AMotionEvent_getY( event, i ) ;
+						ConvScreenPositionToDxScreenPosition( ScreenX, ScreenY, &TouchPoint->PositionX, &TouchPoint->PositionY ) ;
+
+						TouchPoint->Pressure    = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_PRESSURE,    i ) ;
+						TouchPoint->Orientation = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_ORIENTATION, i ) ;
+						TouchPoint->Tilt        = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_TILT,        i ) ;
+						TouchPoint->ToolType    = AMotionEvent_getToolType( event, i ) ;
+
+						TouchInputData.PointNum ++ ;
+						TouchPoint ++ ;
+					}
+				}
+			}
+
+			AddTouchInputData( &TouchInputData ) ;
+		}
+
+		if( ( Source & AINPUT_SOURCE_STYLUS      ) == AINPUT_SOURCE_STYLUS &&
+			( Source & AINPUT_SOURCE_TOUCHSCREEN ) != AINPUT_SOURCE_TOUCHSCREEN )
+		{
+			TouchInputData.PointNum = 0 ;
+			TouchInputData.Time = ( LONGLONG )AMotionEvent_getEventTime( event ) ;
+			TouchInputData.Source = Source ;
+
+			if( Action != AMOTION_EVENT_ACTION_HOVER_EXIT )
+			{
+				PointerCount = AMotionEvent_getPointerCount( event ) ;
+				if( PointerCount > 0 )
+				{
+					int32_t i ;
+					TOUCHINPUTPOINT *TouchPoint ;
+
+					TouchPoint = TouchInputData.Point ;
+					for( i = 0; i < PointerCount; i++ )
+					{
+						int ScreenX, ScreenY ;
+
+						if( PIndex == i && Action == AMOTION_EVENT_ACTION_POINTER_UP )
+						{
+							continue ;
+						}
+
+						TouchPoint->Device = 0 ;
+						TouchPoint->ID = AMotionEvent_getPointerId( event, i ) ;
+						ScreenX = AMotionEvent_getX( event, i ) ;
+						ScreenY = AMotionEvent_getY( event, i ) ;
+						ConvScreenPositionToDxScreenPosition( ScreenX, ScreenY, &TouchPoint->PositionX, &TouchPoint->PositionY ) ;
+
+						TouchPoint->Pressure    = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_PRESSURE,    i ) ;
+						TouchPoint->Orientation = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_ORIENTATION, i ) ;
+						TouchPoint->Tilt        = AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_TILT,        i ) ;
+						TouchPoint->ToolType    = AMotionEvent_getToolType( event, i ) ;
+
+						if( TouchPoint->ToolType != 0 )
+						{
+							TouchInputData.PointNum ++ ;
+							TouchPoint ++ ;
+						}
+					}
+				}
+			}
+
+			AddTouchInputData( &TouchInputData ) ;
+		}
+
+		if( ( Source & AINPUT_SOURCE_MOUSE ) == AINPUT_SOURCE_MOUSE )
+		{
+			if( InputNo >= 0 && InputNo < HTML5_DEVICE_MAX_NUM )
+			{
+				int LogType = -1 ;
+
+				if( PIndex >= 0 && PIndex < HTML5_POINTER_MAX_NUM )
+				{
+					if( Action == AMOTION_EVENT_ACTION_POINTER_DOWN )
+					{
+						LogType = MOUSE_INPUT_LOG_DOWN ;
+						InputSysData.PF.InputInfo[ InputNo ].PointerState[ PIndex ] = 1 ;
+					}
+					else
+					if( Action == AMOTION_EVENT_ACTION_POINTER_UP )
+					{
+						LogType = MOUSE_INPUT_LOG_UP ;
+						InputSysData.PF.InputInfo[ InputNo ].PointerState[ PIndex ] = 0 ;
+					}
+				}
+
+				InputSysData.PF.InputInfo[ InputNo ].ButtonState	= AMotionEvent_getButtonState( event ) ;
+				InputSysData.PF.InputInfo[ InputNo ].AxisX			= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_X,			0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].AxisY			= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_Y,			0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].Wheel			= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_WHEEL,		0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].VScroll		= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_VSCROLL,		0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].HScroll		= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_HSCROLL,		0 ) ;
+
+				InputSysData.PF.MouseX = InputSysData.PF.InputInfo[ InputNo ].AxisX ;
+				InputSysData.PF.MouseY = InputSysData.PF.InputInfo[ InputNo ].AxisY ;
+
+				InputSysData.MouseMoveZ  += InputSysData.PF.InputInfo[ InputNo ].VScroll ;
+				InputSysData.MouseMoveHZ += InputSysData.PF.InputInfo[ InputNo ].HScroll ;
+
+				// ログを追加
+				if( LogType != -1 )
+				{
+					int MouseX, MouseY ;
+					int i ;
+					int Button ;
+
+					ConvScreenPositionToDxScreenPosition(
+						InputSysData.PF.InputInfo[ InputNo ].AxisX,
+						InputSysData.PF.InputInfo[ InputNo ].AxisY,
+						&MouseX,
+						&MouseY
+					) ;
+
+					for( i = 0 ; i < 8 ; i ++ )
+					{
+						Button = 1 << i ;
+						if( ( InputSysData.PF.InputInfo[ InputNo ].ButtonState & Button ) != 0 )
+						{
+							if( LogType == MOUSE_INPUT_LOG_DOWN )
+							{
+								StockMouseInputLogData( Button, MouseX, MouseY ) ;
+							}
+							StockMouseInputLogData2( Button, MouseX, MouseY, LogType ) ;
+						}
+					}
+				}
+			}
+
+			// マウス入力があった際はタップの入力を無効化する( スタイラスペンの場合は無効化しない )
+			if( ( Source & AINPUT_SOURCE_STYLUS ) == 0 )
+			{
+				TouchInputData.PointNum = 0 ;
+				TouchInputData.Time = ( LONGLONG )AMotionEvent_getEventTime( event ) ;
+
+				AddTouchInputData( &TouchInputData ) ;
+			}
+		}
+
+		if( ( Source & AINPUT_SOURCE_JOYSTICK ) == AINPUT_SOURCE_JOYSTICK )
+		{
+			if( InputNo >= 0 && InputNo < HTML5_DEVICE_MAX_NUM )
+			{
+				InputSysData.PF.InputInfo[ InputNo ].AxisX			= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_X,			0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].AxisY			= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_Y,			0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].AxisZ			= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_Z,			0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].AxisRx			= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_RX,			0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].AxisRy			= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_RY,			0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].AxisRz			= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_RZ,			0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].AxisHatX		= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_HAT_X,		0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].AxisHatY		= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_HAT_Y,		0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].AxisLTrigger	= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_LTRIGGER,	0 ) ;
+				InputSysData.PF.InputInfo[ InputNo ].AxisRTrigger	= AMotionEvent_getAxisValue( event, AMOTION_EVENT_AXIS_RTRIGGER,	0 ) ;
+			}
+		}
+
+		return 1 ;
+	}
+	else
+	if( InputType == AINPUT_EVENT_TYPE_KEY )
+	{
+		int32_t Action ;
+		int32_t KeyCode ;
+		int32_t res = 1 ; 
+
+		Action = AKeyEvent_getAction( event ) ;
+		KeyCode = AKeyEvent_getKeyCode( event ) ;
+		if( InputNo >= 0 && InputNo < HTML5_DEVICE_MAX_NUM )
+		{
+			if( KeyCode < HTML5_KEYCODE_MAX )
+			{
+				if( Action == AKEY_EVENT_ACTION_DOWN )
+				{
+					InputSysData.PF.InputInfo[ InputNo ].KeyState[ KeyCode ] = 1 ;
+				}
+				else
+				if( Action == AKEY_EVENT_ACTION_UP )
+				{
+					InputSysData.PF.InputInfo[ InputNo ].KeyState[ KeyCode ] = 0 ;
+				}
+			}
+		}
+
+		if( KeyCode == AKEYCODE_VOLUME_UP   ||
+			KeyCode == AKEYCODE_VOLUME_DOWN ||
+			KeyCode == AKEYCODE_POWER       ||
+			KeyCode == AKEYCODE_HOME        ||
+			KeyCode == AKEYCODE_CAMERA )
+		{
+			res = 0 ;
+		}
+
+		return res ;
+	}
+
+	return 0 ;
+}
+
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 #ifndef DX_NON_NAMESPACE
 

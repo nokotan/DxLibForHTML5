@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用メモリ関係プログラム
 // 
+<<<<<<< HEAD
 //  	Ver 3.24b
+=======
+//  	Ver 3.24d
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 // 
 //-----------------------------------------------------------------------------
 
@@ -13,7 +17,10 @@
 #include "../DxMemory.h"
 #include "../DxLog.h"
 #include "../DxBaseFunc.h"
+<<<<<<< HEAD
 #include "DxMemoryHTML5.h"
+=======
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 #include <stdlib.h>
 #include <new>
 #include <cstdlib>

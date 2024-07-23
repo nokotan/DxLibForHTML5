@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用ファイル関係プログラムヘッダファイル
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24d
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 // 
 // -------------------------------------------------------------------------------
 
@@ -12,6 +16,10 @@
 // インクルード ------------------------------------------------------------------
 #include "../DxCompileConfig.h"
 #include "../DxThread.h"
+<<<<<<< HEAD
+=======
+#include <android/asset_manager.h>
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 #include <stdio.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -30,12 +38,20 @@ namespace DxLib
 // HTML5用ファイルアクセス処理用構造体
 struct FILEACCESS_PF
 {
+<<<<<<< HEAD
+=======
+	AAsset					*Asset ;							// ファイルアクセス用アセット
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 	FILE					*FilePointer ;						// ファイルアクセス用ファイルポインタ
 } ;
 
 // ファイル検索処理用構造体
 struct FINDINFO_PF
 {
+<<<<<<< HEAD
+=======
+	AAssetDir				*AssetDir ;							// ディレクトリアクセス用アセットディレクトリ
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 	DIR						*Dir ;								// ディレクトリアクセス用ディレクトリ
 	wchar_t					SearchFileName[ 1024 ] ;			// 検索ファイル名
 } ;
@@ -43,6 +59,10 @@ struct FINDINFO_PF
 // ファイルアクセス処理が使用するグローバルデータの環境依存データ構造体
 struct FILEMANAGEDATA_PF
 {
+<<<<<<< HEAD
+=======
+	AAssetManager *			AssetManagerP ;
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 	const char *			InternalDataPath ;
 	int						InternalDataPathLength ;
 	const char *			ExternalDataPath ;
@@ -55,6 +75,12 @@ struct FILEMANAGEDATA_PF
 
 // 関数プロトタイプ宣言-----------------------------------------------------------
 
+<<<<<<< HEAD
+=======
+extern void SetAssetManager( AAssetManager *AManager ) ;
+extern void SetInternalAndExternalDataPath( const char *InternalDataPath, const char *ExternalDataPath ) ;
+
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 #ifndef DX_NON_NAMESPACE
 
 }

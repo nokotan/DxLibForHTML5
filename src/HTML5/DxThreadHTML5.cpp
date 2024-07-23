@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用スレッド関係プログラム
 // 
+<<<<<<< HEAD
 //  	Ver 3.24b
+=======
+//  	Ver 3.24d
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 // 
 //-----------------------------------------------------------------------------
 
@@ -220,8 +224,13 @@ extern void Thread_SetPriority( THREAD_INFO *pThreadInfo, int Priority /* DX_THR
 		int MinPrio ;
 		int MaxPrio ;
 
+<<<<<<< HEAD
 		MaxPrio = sched_get_priority_max( 0 ) ;
 		MinPrio = sched_get_priority_min( 0 ) ;
+=======
+		MaxPrio = sched_get_priority_max( SCHED_NORMAL ) ;
+		MinPrio = sched_get_priority_min( SCHED_NORMAL ) ;
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 		PriorityTable[ DX_THREAD_PRIORITY_LOWEST       ] = ( MaxPrio - MinPrio ) * 0 / 3 + MinPrio ;
 		PriorityTable[ DX_THREAD_PRIORITY_BELOW_NORMAL ] = ( MaxPrio - MinPrio ) * 1 / 3 + MinPrio ;
@@ -232,7 +241,11 @@ extern void Thread_SetPriority( THREAD_INFO *pThreadInfo, int Priority /* DX_THR
 	}
 	
 	param.sched_priority = PriorityTable[ Priority ] ;
+<<<<<<< HEAD
 	pthread_setschedparam( pThreadInfo->Thread, 0, &param ) ;
+=======
+	pthread_setschedparam( pThreadInfo->Thread, SCHED_NORMAL, &param ) ;
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 }
 
 // カレントスレッドのＩＤを取得する
@@ -305,6 +318,7 @@ extern void Thread_Sleep( DWORD MiliSecond )
 // クリティカルセクションの初期化
 extern int CriticalSection_Initialize( DX_CRITICAL_SECTION *pCSection )
 {
+<<<<<<< HEAD
 	// emscripten has no support for thread and critical section
 	return 0;
 
@@ -356,11 +370,62 @@ extern int CriticalSection_Initialize( DX_CRITICAL_SECTION *pCSection )
 // 	}
 
 // 	return -1 ;
+=======
+	pCSection->Mutex_valid		= 0 ;
+	pCSection->Mutexaddr_valid	= 0 ;
+
+	// ミューテックス属性の初期化
+	if( pthread_mutexattr_init( &pCSection->Mutexattr ) != 0 )
+	{
+		goto ERR ;
+	}
+	pCSection->Mutexaddr_valid = 1 ;
+
+	// 再帰ロック可能にする
+	if( pthread_mutexattr_settype( &pCSection->Mutexattr, PTHREAD_MUTEX_RECURSIVE ) != 0 )
+	{
+		goto ERR ;
+	}
+
+	// ミューテックスの作成
+	if( pthread_mutex_init( &pCSection->Mutex, &pCSection->Mutexattr ) != 0 )
+	{
+		goto ERR ;
+	}
+	pCSection->Mutex_valid = 1 ;
+
+#if defined( _DEBUG )
+	int i ;
+	for( i = 0 ; i < 256 ; i ++ )
+	{
+		pCSection->FilePath[ 0 ] = '\0' ;
+	}
+#endif
+
+	return 0 ;
+
+ERR :
+
+	if( pCSection->Mutex_valid )
+	{
+		pthread_mutex_destroy( &pCSection->Mutex ) ;
+		pCSection->Mutex_valid = 0 ;
+	}
+
+	if( pCSection->Mutexaddr_valid )
+	{
+		pthread_mutexattr_destroy( &pCSection->Mutexattr ) ;
+		pCSection->Mutexaddr_valid = 0 ;
+	}
+
+	return -1 ;
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 }
 
 // クリティカルセクションの削除
 extern int CriticalSection_Delete( DX_CRITICAL_SECTION *pCSection )
 {
+<<<<<<< HEAD
 	return 0;
 
 	// if( pCSection->Mutex_valid )
@@ -376,6 +441,21 @@ extern int CriticalSection_Delete( DX_CRITICAL_SECTION *pCSection )
 	// }
 
 	// return 0 ;
+=======
+	if( pCSection->Mutex_valid )
+	{
+		pthread_mutex_destroy( &pCSection->Mutex ) ;
+		pCSection->Mutex_valid = 0 ;
+	}
+
+	if( pCSection->Mutexaddr_valid )
+	{
+		pthread_mutexattr_destroy( &pCSection->Mutexattr ) ;
+		pCSection->Mutexaddr_valid = 0 ;
+	}
+
+	return 0 ;
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 }
 
 // クリティカルセクションのロックの取得
@@ -391,7 +471,11 @@ extern int CriticalSection_Lock( DX_CRITICAL_SECTION *pCSection )
 #endif
 
 	// ミューテックスをロック
+<<<<<<< HEAD
 	// pthread_mutex_lock( &pCSection->Mutex ) ;
+=======
+	pthread_mutex_lock( &pCSection->Mutex ) ;
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 #if defined( _DEBUG )
 	int Length = ( int )_STRLEN( FilePath ) ;

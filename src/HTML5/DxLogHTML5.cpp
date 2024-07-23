@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用ログプログラム
 // 
+<<<<<<< HEAD
 //  	Ver 3.24b
+=======
+//  	Ver 3.24d
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 // 
 //-----------------------------------------------------------------------------
 
@@ -24,8 +28,13 @@
 #include "../DxMemory.h"
 #include "../DxGraphics.h"
 #include "DxGraphicsHTML5.h"
+<<<<<<< HEAD
 #include <stdio.h>
 #include <wchar.h>
+=======
+#include <wchar.h>
+#include <android/log.h>
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 #ifndef DX_NON_NAMESPACE
 
@@ -36,8 +45,13 @@ namespace DxLib
 
 // マクロ定義 -----------------------------------------------------------------
 
+<<<<<<< HEAD
 #define LOGI(...) ((void)printf(__VA_ARGS__))
 #define LOGW(...) ((void)printf(__VA_ARGS__))
+=======
+#define LOGI(...) ((void)__android_log_print(HTML5_LOG_INFO, "DxLibLog", __VA_ARGS__))
+#define LOGW(...) ((void)__android_log_print(HTML5_LOG_WARN, "DxLibLog", __VA_ARGS__))
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 // 構造体宣言 -----------------------------------------------------------------
 
@@ -59,6 +73,20 @@ extern int LogFileInitialize_PF( const wchar_t *LogFilePath )
 	// 初期化フラグを立てる
 	LogData.PF.InitializeFlag = TRUE ;
 
+<<<<<<< HEAD
+=======
+	// エラーログファイルのパスをコピー
+	if( g_HTML5Sys.NativeActivity == NULL ||
+		g_HTML5Sys.NativeActivity->externalDataPath == NULL )
+	{
+		LogData.PF.ExternalDataPath[ 0 ] = 0 ;
+	}
+	else
+	{
+		CL_strcpy_s( DX_CHARCODEFORMAT_UTF8, LogData.PF.ExternalDataPath, sizeof( LogData.PF.ExternalDataPath ), g_HTML5Sys.NativeActivity->externalDataPath ) ;
+	}
+
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 	// エラーログファイルを再作成する
 	if( LogData.PF.ExternalDataPath[ 0 ] != '\0' )
 	{

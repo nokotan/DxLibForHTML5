@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用入力情報プログラムヘッダファイル
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24d
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 // 
 // -------------------------------------------------------------------------------
 
@@ -15,6 +19,10 @@
 
 // インクルード ------------------------------------------------------------------
 #include "../DxLib.h"
+<<<<<<< HEAD
+=======
+#include <HTML5/input.h>
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 #ifndef DX_NON_NAMESPACE
 
@@ -27,18 +35,34 @@ namespace DxLib
 
 #define HTML5_INPUT_LOG_NUM					(64)
 #define HTML5_DEVICE_MAX_NUM					(64)
+<<<<<<< HEAD
 #define HTML5_INPUT_SOURCE_NUM				(64)
+=======
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 #define HTML5_POINTER_MAX_NUM				(256)
 #define HTML5_KEYCODE_MAX					(320)
 
 // 入力ソース
 #define HTML5_INPUT_SOURCE_UNKNOWN			(0)
 #define HTML5_INPUT_SOURCE_KEYBOARD			(1)
+<<<<<<< HEAD
 #define HTML5_INPUT_SOURCE_TOUCHSCREEN		(2)
 #define HTML5_INPUT_SOURCE_MOUSE			(3)
 #define HTML5_INPUT_SOURCE_JOYSTICK			(4)
 
 
+=======
+#define HTML5_INPUT_SOURCE_DPAD				(2)
+#define HTML5_INPUT_SOURCE_GAMEPAD			(3)
+#define HTML5_INPUT_SOURCE_TOUCHSCREEN		(4)
+#define HTML5_INPUT_SOURCE_MOUSE				(5)
+#define HTML5_INPUT_SOURCE_STYLUS			(6)
+#define HTML5_INPUT_SOURCE_TRACKBALL			(7)
+#define HTML5_INPUT_SOURCE_TOUCHPAD			(8)
+#define HTML5_INPUT_SOURCE_TOUCH_NAVIGATION	(9)
+#define HTML5_INPUT_SOURCE_JOYSTICK			(10)
+#define HTML5_INPUT_SOURCE_NUM				(11)
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 // 構造体定義 --------------------------------------------------------------------
 
@@ -109,7 +133,11 @@ struct INPUTSYSTEMDATA_PF
 extern	int GetHTML5DeviceIdToInputInfoNo( int32_t Source, int32_t DeviceId ) ;	// デバイスＩＤから値を代入すべき入力情報番号を取得する
 extern	int RefreshHTML5SourceNoToInputInfoTable( int32_t Source ) ;				// 入力ソース番号と入力情報との対応テーブルを更新する
 extern	int RefreshHTML5GamePadSourceNoToInputInfoTable( void ) ;					// ゲームパッドの番号と入力情報との対応テーブルを更新する
+<<<<<<< HEAD
 extern	int32_t ProcessInputEvent( ) ;												// 入力イベントを処理する
+=======
+extern	int32_t ProcessInputEvent( AInputEvent* event ) ;							// 入力イベントを処理する
+>>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 #ifndef DX_NON_NAMESPACE
 
