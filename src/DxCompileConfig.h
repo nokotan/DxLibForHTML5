@@ -1,198 +1,198 @@
 // ----------------------------------------------------------------------------
 //
-//		ï¿½cï¿½wï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½Rï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½Rï¿½ï¿½ï¿½tï¿½Bï¿½Oï¿½wï¿½bï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½
+//		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ@ƒRƒ“ƒpƒCƒ‹ƒRƒ“ƒtƒBƒOƒwƒbƒ_ƒtƒ@ƒCƒ‹
 //
 //				Ver 3.24b
 //
 // ----------------------------------------------------------------------------
 
 /*
-<<ï¿½ï¿½ï¿½ï¿½>>
-ï¿½@ï¿½@ï¿½ï¿½ï¿½Ìƒwï¿½bï¿½_ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ #define ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½Aï¿½Eï¿½gï¿½ï¿½Ô‚ï¿½ÏXï¿½ï¿½ï¿½Ä‚ï¿½ï¿½A
-  ï¿½cï¿½wï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ÌÄƒRï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½È‚ï¿½ï¿½ÆŒï¿½ï¿½Ê‚Í‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B
+<<’ˆÓ>>
+@@‚±‚Ìƒwƒbƒ_ƒtƒ@ƒCƒ‹‚Ì #define ‚ÌƒRƒƒ“ƒgƒAƒEƒgó‘Ô‚ð•ÏX‚µ‚Ä‚àA
+  ‚c‚wƒ‰ƒCƒuƒ‰ƒŠŽ©‘Ì‚ÌÄƒRƒ“ƒpƒCƒ‹‚ðs‚í‚È‚¢‚ÆŒø‰Ê‚Í‚ ‚è‚Ü‚¹‚ñB
 */
 
-// ï¿½ï¿½ï¿½dï¿½Cï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½[ï¿½hï¿½hï¿½~ï¿½pï¿½}ï¿½Nï¿½ï¿½
+// ‘½dƒCƒ“ƒNƒ‹[ƒh–hŽ~—pƒ}ƒNƒ
 #ifndef DXCOMPILECONFIG_H
 #define DXCOMPILECONFIG_H
 
-// ï¿½Xï¿½^ï¿½eï¿½Bï¿½bï¿½Nï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½` -----------------------
+// ƒXƒ^ƒeƒBƒbƒNƒ‰ƒCƒuƒ‰ƒŠ¶¬Žžƒ‰ƒCƒuƒ‰ƒŠ‹@”\§ŒÀ—p’è‹` -----------------------
 
-// Cï¿½ï¿½ï¿½ï¿½pï¿½Æ‚ï¿½ï¿½ÄƒRï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// CŒ¾Œê—p‚Æ‚µ‚ÄƒRƒ“ƒpƒCƒ‹‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_COMPILE_TYPE_C_LANGUAGE
 
-// namespace DxLib ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// namespace DxLib ‚ðŽg—p‚µ‚È‚¢ê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_NON_NAMESPACE
 
-// DxLib.h ï¿½Éï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ using namespace DxLib ; ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// DxLib.h ‚É‘‚©‚ê‚Ä‚¢‚é using namespace DxLib ; ‚ðŽg—p‚µ‚È‚¢ê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_NON_USING_NAMESPACE_DXLIB
 
-// ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½Aï¿½Zï¿½ï¿½ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½\ï¿½[ï¿½Xï¿½Rï¿½[ï¿½hï¿½ÅƒRï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½ÍˆÈ‰ï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½Aï¿½Eï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒCƒ“ƒ‰ƒCƒ“ƒAƒZƒ“ƒuƒ‰‚ðŽg—p‚µ‚È‚¢ƒ\[ƒXƒR[ƒh‚ÅƒRƒ“ƒpƒCƒ‹‚·‚éê‡‚ÍˆÈ‰º‚ÌƒRƒƒ“ƒgƒAƒEƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 #define DX_NON_INLINE_ASM
 
-// ï¿½cï¿½wï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ï¿½Ìƒvï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç•¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø”rï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½ÍƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-// (ï¿½oï¿½Cï¿½iï¿½ï¿½ï¿½Gï¿½fï¿½Bï¿½^ï¿½ÅŽï¿½ï¿½sï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½Ä‚ï¿½ï¿½cï¿½wï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚±ï¿½Æ‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï‚­ï¿½È‚ï¿½Ü‚ï¿½(ï¿½æ‚­ï¿½ï¿½ï¿½×‚ï¿½Î“ï¿½ï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½)
-//  ï¿½ï¿½ï¿½Ý‚ÉAï¿½Gï¿½ï¿½ï¿½[ï¿½oï¿½Í‚ï¿½ï¿½ï¿½Ø‚ï¿½ï¿½ï¿½È‚ï¿½ï¿½È‚ï¿½Ü‚ï¿½ï¿½Ì‚ÅŠÇ—ï¿½ï¿½lï¿½Ì‘Î‰ï¿½ï¿½ï¿½ï¿½ÉŽxï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½)
+// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ÌƒvƒƒOƒ‰ƒ€‚©‚ç•¶Žš—ñ‚ðˆêØ”rœ‚·‚éê‡‚ÍƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
+// (ƒoƒCƒiƒŠƒGƒfƒBƒ^‚ÅŽÀsƒtƒ@ƒCƒ‹‚ðŠJ‚¢‚Ä‚à‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ðŽg—p‚µ‚Ä‚¢‚é‚±‚Æ‚ª•ª‚©‚è“ï‚­‚È‚è‚Ü‚·(‚æ‚­’²‚×‚ê‚Î“–‘R•ª‚©‚è‚Ü‚·‚ª)
+//  ˆö‚Ý‚ÉAƒGƒ‰[o—Í‚ªˆêØ‚³‚ê‚È‚­‚È‚è‚Ü‚·‚Ì‚ÅŠÇ—l‚Ì‘Î‰žŽž‚ÉŽxá‚ð‚«‚½‚·‚©‚à‚µ‚ê‚Ü‚¹‚ñ)
 // #define DX_NON_LITERAL_STRING
 
-// ï¿½ï¿½ï¿½×‚Ä‚ÌŠÖï¿½ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½Zï¿½[ï¿½tï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ‚·‚×‚Ä‚ÌŠÖ”‚ðƒXƒŒƒbƒhƒZ[ƒt‚É‚·‚éê‡‚ÍƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 // #define DX_THREAD_SAFE
 
-// ï¿½lï¿½bï¿½gï¿½ï¿½ï¿½[ï¿½Nï¿½Ö˜Aï¿½ÌŠÖï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½Zï¿½[ï¿½tï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒlƒbƒgƒ[ƒNŠÖ˜A‚ÌŠÖ”‚¾‚¯ƒXƒŒƒbƒhƒZ[ƒt‚É‚·‚éê‡‚ÍƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 // #define DX_THREAD_SAFE_NETWORK_ONLY
 
-// ï¿½cï¿½wï¿½Aï¿½[ï¿½Jï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-// ( ï¿½cï¿½wï¿½Aï¿½[ï¿½Jï¿½Cï¿½uï¿½ð–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½ÆAï¿½cï¿½wï¿½Aï¿½[ï¿½Jï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÅŽgï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ÖŒWï¿½ï¿½ DX_NON_MODEL ï¿½ï¿½ DX_NON_FILTER ï¿½ï¿½ DX_NON_MOVIE ï¿½ï¿½ DX_NON_NORMAL_DRAW_SHADER ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½É‚È‚ï¿½Ü‚ï¿½ )
+// ‚c‚wƒA[ƒJƒCƒu‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
+// ( ‚c‚wƒA[ƒJƒCƒu‚ð–³Œø‚É‚·‚é‚ÆA‚c‚wƒA[ƒJƒCƒu‚ð“à•”‚ÅŽg‚Á‚Ä‚¢‚éŠÖŒWã DX_NON_MODEL ‚Æ DX_NON_FILTER ‚Æ DX_NON_MOVIE ‚Æ DX_NON_NORMAL_DRAW_SHADER ‚à—LŒø‚É‚È‚è‚Ü‚· )
 // #define DX_NON_DXA
 
-// ï¿½ï¿½ï¿½[ï¿½rï¿½[ï¿½@ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-// #define DX_NON_MOVIE
+// ƒ€[ƒr[‹@”\‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
+#define DX_NON_MOVIE
 
-// ï¿½aï¿½lï¿½oï¿½æ‘œï¿½Ì“Ç‚Ýï¿½ï¿½Ý‹@ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ‚a‚l‚o‰æ‘œ‚Ì“Ç‚Ýž‚Ý‹@”\‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 // #define DX_NON_BMPREAD
 
-// ï¿½sï¿½fï¿½`ï¿½æ‘œï¿½Ì“Ç‚Ýï¿½ï¿½Ý‹@ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ‚s‚f‚`‰æ‘œ‚Ì“Ç‚Ýž‚Ý‹@”\‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 // #define DX_NON_TGA
 
-// ï¿½iï¿½oï¿½dï¿½fï¿½æ‘œï¿½Ì“Ç‚Ý‚ï¿½ï¿½Ý‹@ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-// ï¿½ï¿½DxUseCLib.lib ï¿½ï¿½ï¿½ÄƒRï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
+// ‚i‚o‚d‚f‰æ‘œ‚Ì“Ç‚Ý‚±‚Ý‹@”\‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
+// ¦DxUseCLib.lib ‚àÄƒRƒ“ƒpƒCƒ‹‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 // #define DX_NON_JPEGREAD
 
-// ï¿½oï¿½mï¿½fï¿½æ‘œï¿½Ì“Ç‚Ý‚ï¿½ï¿½Ý‹@ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-// ï¿½ï¿½DxUseCLib.lib ï¿½ï¿½ï¿½ÄƒRï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
+// ‚o‚m‚f‰æ‘œ‚Ì“Ç‚Ý‚±‚Ý‹@”\‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
+// ¦DxUseCLib.lib ‚àÄƒRƒ“ƒpƒCƒ‹‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 // #define DX_NON_PNGREAD
 
-// ï¿½sï¿½hï¿½eï¿½eï¿½æ‘œï¿½Ì“Ç‚Ý‚ï¿½ï¿½Ý‹@ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-// ï¿½ï¿½DxUseCLib.lib ï¿½ï¿½ï¿½ÄƒRï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
+// ‚s‚h‚e‚e‰æ‘œ‚Ì“Ç‚Ý‚±‚Ý‹@”\‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
+// ¦DxUseCLib.lib ‚àÄƒRƒ“ƒpƒCƒ‹‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 #define DX_NON_TIFFREAD
 
-// GraphFilter ï¿½ï¿½ GraphBlend ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// GraphFilter ‚â GraphBlend ‚ðŽg—p‚µ‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 // #define DX_NON_FILTER
 
-// ï¿½Êï¿½`ï¿½ï¿½Éƒvï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½}ï¿½uï¿½ï¿½ï¿½Vï¿½Fï¿½[ï¿½_ï¿½[ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ’Êí•`‰æ‚ÉƒvƒƒOƒ‰ƒ}ƒuƒ‹ƒVƒF[ƒ_[‚ðŽg—p‚µ‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 // #define DX_NON_NORMAL_DRAW_SHADER
 
-// ï¿½Oï¿½ï¿½ï¿½tï¿½Bï¿½bï¿½Nï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒOƒ‰ƒtƒBƒbƒNƒXˆ—‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 // #define DX_NON_GRAPHICS
 
-// ï¿½\ï¿½tï¿½gï¿½Eï¿½Gï¿½Aï¿½Qï¿½cï¿½`ï¿½æ‚ªï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒ\ƒtƒgƒEƒGƒA‚Q‚c•`‰æ‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 #define DX_NON_2DDRAW
 
-// ï¿½Wï¿½ï¿½ WAVE ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ÈŠOï¿½Ì‰ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// •W€ WAVE ƒtƒ@ƒCƒ‹ˆÈŠO‚Ì‰¹ºƒtƒ@ƒCƒ‹‚ðŽg—p‚µ‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_NON_ACM
 
-// ï¿½Wï¿½ï¿½ WAVE ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// •W€ WAVE ƒtƒ@ƒCƒ‹‚ðŽg—p‚µ‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 // #define DX_NON_WAVE
 
-// DirectShow ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ï¿½ MP3 ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒfï¿½Rï¿½[ï¿½hï¿½ï¿½ï¿½sï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// DirectShow ‚ðŽg—p‚µ‚½ MP3 ƒtƒ@ƒCƒ‹‚ÌƒfƒR[ƒh‚ðs‚í‚È‚¢ê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ð‚Í‚¸‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_NON_DSHOW_MP3
 
-// DirectShow ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒfï¿½Rï¿½[ï¿½hï¿½ï¿½ï¿½sï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// DirectShow ‚ðŽg—p‚µ‚½“®‰æƒtƒ@ƒCƒ‹‚ÌƒfƒR[ƒh‚ðs‚í‚È‚¢ê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ð‚Í‚¸‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_NON_DSHOW_MOVIE
 
-// Media Foundation ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Ìƒfï¿½Rï¿½[ï¿½hï¿½ï¿½ï¿½sï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// Media Foundation ‚ðŽg—p‚µ‚½“®‰æƒtƒ@ƒCƒ‹‚ÌƒfƒR[ƒh‚ðs‚í‚È‚¢ê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ð‚Í‚¸‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_NON_MEDIA_FOUNDATION
 
-// ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½ÌŠï¿½{ï¿½Iï¿½È“ï¿½ï¿½Í‹@ï¿½\ï¿½ÈŠOï¿½Í‚ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒL[ƒ{[ƒh‚ÌŠî–{“I‚È“ü—Í‹@”\ˆÈŠO‚Í‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_NON_KEYEX
 
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‹@ï¿½\ï¿½Í‚ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// •¶Žš—ñ“ü—Í‹@”\‚Í‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 //#define DX_NON_INPUTSTRING
 
-// ï¿½ÊMï¿½@ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ’ÊM‹@”\‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 #define DX_NON_NETWORK
 
-// ï¿½}ï¿½Xï¿½Nï¿½@ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒ}ƒXƒN‹@”\‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 // #define DX_NON_MASK
 
-// ï¿½nï¿½ï¿½ï¿½ï¿½ ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-// ï¿½ï¿½DxUseCLib.lib ï¿½ï¿½ï¿½ÄƒRï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
+// ‚n‚‡‚‡ ‚u‚‚’‚‚‚‰‚“ ƒf[ƒ^‚ðŽg—p‚µ‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ð‚Í‚¸‚µ‚Ä‚­‚¾‚³‚¢
+// ¦DxUseCLib.lib ‚àÄƒRƒ“ƒpƒCƒ‹‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 // #define DX_NON_OGGVORBIS
 
-// ï¿½nï¿½ï¿½ï¿½ï¿½ ï¿½sï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-// ï¿½ï¿½DxUseCLib.lib ï¿½ï¿½ï¿½ÄƒRï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
+// ‚n‚‡‚‡ ‚s‚ˆ‚…‚‚’‚ ƒf[ƒ^‚ðŽg—p‚µ‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ð‚Í‚¸‚µ‚Ä‚­‚¾‚³‚¢
+// ¦DxUseCLib.lib ‚àÄƒRƒ“ƒpƒCƒ‹‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 #define DX_NON_OGGTHEORA
 
-// Opus ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-// ï¿½ï¿½DxUseCLib.lib ï¿½ï¿½ï¿½ÄƒRï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
+// Opus ƒf[ƒ^‚ðŽg—p‚µ‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ð‚Í‚¸‚µ‚Ä‚­‚¾‚³‚¢
+// ¦DxUseCLib.lib ‚àÄƒRƒ“ƒpƒCƒ‹‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 #define DX_NON_OPUS
 
-// ASIO ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Í‚ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ASIO ‚ðŽg—p‚µ‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ð‚Í‚¸‚µ‚Ä‚­‚¾‚³‚¢
 #define DX_NON_ASIO
 
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Mersenne Twister ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍˆÈ‰ï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
-// ï¿½ï¿½DxUseCLib.lib ï¿½ï¿½ï¿½ÄƒRï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
+// —””­¶Ší‚É Mersenne Twister ‚ðŽg—p‚µ‚È‚¢ê‡‚ÍˆÈ‰º‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
+// ¦DxUseCLib.lib ‚àÄƒRƒ“ƒpƒCƒ‹‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 //#define DX_NON_MERSENNE_TWISTER
 
-// ï¿½cï¿½wï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠmï¿½Ûƒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒ_ï¿½ï¿½ï¿½vï¿½@ï¿½\ï¿½ï¿½Lï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ“à‚ÌŠm•Ûƒƒ‚ƒŠ‚Ìƒ_ƒ“ƒv‹@”\‚ð—LŒø‚É‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 // #define DX_USE_DXLIB_MEM_DUMP
 
-// ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½@ï¿½\ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒ‚ƒfƒ‹ƒf[ƒ^‚ðˆµ‚¤‹@”\‚ðŽg—p‚µ‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 // #define DX_NON_MODEL
 
-// Bullet Physics ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-// ï¿½ï¿½DxUseCLib.lib ï¿½ï¿½ï¿½ÄƒRï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Kï¿½vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
+// Bullet Physics ‚ðƒŠƒ“ƒN‚µ‚È‚¢ê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
+// ¦DxUseCLib.lib ‚àÄƒRƒ“ƒpƒCƒ‹‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 // #define DX_NON_BULLET_PHYSICS
 
-// ï¿½eï¿½aï¿½wï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ï¿½Ç‚Ýï¿½ï¿½Þ‹@ï¿½\ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½( ï¿½gï¿½pï¿½É‚ï¿½ FBX SDK ï¿½ÌƒZï¿½bï¿½gï¿½Aï¿½bï¿½vï¿½ï¿½ï¿½Kï¿½vï¿½Å‚ï¿½ )
+// ‚e‚a‚wƒtƒ@ƒCƒ‹‚ð“Ç‚Ýž‚Þ‹@”\‚ðŽg—p‚·‚é•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢( Žg—p‚É‚Í FBX SDK ‚ÌƒZƒbƒgƒAƒbƒv‚ª•K—v‚Å‚· )
 //#define DX_LOAD_FBX_MODEL
 
-// ï¿½rï¿½[ï¿½vï¿½ï¿½ï¿½@ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒr[ƒv‰¹‹@”\‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_NON_BEEP
 
-// ï¿½^ï¿½Xï¿½Nï¿½Xï¿½Cï¿½bï¿½`ï¿½ï¿½ï¿½nï¿½eï¿½eï¿½É‚ï¿½ï¿½ï¿½@ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-// ( ï¿½^ï¿½Xï¿½Nï¿½Xï¿½Cï¿½bï¿½`ï¿½nï¿½eï¿½eï¿½@ï¿½\ï¿½ÍŽgï¿½pï¿½sï¿½Â‚Å‚ï¿½ )
+// ƒ^ƒXƒNƒXƒCƒbƒ`‚ð‚n‚e‚e‚É‚·‚é‹@”\‚ª‚¢‚ç‚È‚¢•û‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
+// ( ƒ^ƒXƒNƒXƒCƒbƒ`‚n‚e‚e‹@”\‚ÍŽg—p•s‰Â‚Å‚· )
 //#define DX_NON_STOPTASKSWITCH
 
-// ï¿½ï¿½ï¿½Oï¿½oï¿½Í‚ï¿½ï¿½sï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒƒOo—Í‚ðs‚í‚È‚¢ê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 //#define DX_NON_LOG
 
-// printfDx ï¿½ð–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// printfDx ‚ð–³Œø‚É‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 //#define DX_NON_PRINTF_DX
 
-// ï¿½ñ“¯Šï¿½ï¿½Ç‚Ýï¿½ï¿½Ý‚ð–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// ”ñ“¯Šú“Ç‚Ýž‚Ý‚ð–³Œø‚É‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 //#define DX_NON_ASYNCLOAD
 
-// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Û‘ï¿½ï¿½@ï¿½\ï¿½ð–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒtƒ@ƒCƒ‹•Û‘¶‹@”\‚ð–³Œø‚É‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 //#define DX_NON_SAVEFUNCTION
 
-// ï¿½\ï¿½tï¿½gï¿½Eï¿½Fï¿½Aï¿½Åˆï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Wï¿½ð–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒ\ƒtƒgƒEƒFƒA‚Åˆµ‚¤ƒCƒ[ƒW‚ð–³Œø‚É‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 // #define DX_NON_SOFTIMAGE
 
-// ï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½`ï¿½ï¿½@ï¿½\ï¿½ð–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒtƒHƒ“ƒg•`‰æ‹@”\‚ð–³Œø‚É‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 //#define DX_NON_FONT
 
-// ï¿½uï¿½ï¿½ï¿½Eï¿½Uï¿½Ë‘ï¿½ï¿½Ìƒtï¿½Hï¿½ï¿½ï¿½gï¿½`ï¿½ï¿½@ï¿½\ï¿½ï¿½Lï¿½ï¿½ï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒuƒ‰ƒEƒUˆË‘¶‚ÌƒtƒHƒ“ƒg•`‰æ‹@”\‚ð—LŒø‚É‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 // #define DX_USE_BROWSER_FONT
 
-// ï¿½Tï¿½Eï¿½ï¿½ï¿½hï¿½Äï¿½ï¿½@ï¿½\( ï¿½\ï¿½tï¿½gï¿½Eï¿½Gï¿½Aï¿½Tï¿½Eï¿½ï¿½ï¿½hï¿½AMIDIï¿½Ü‚ï¿½ )ï¿½ð–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒTƒEƒ“ƒhÄ¶‹@”\( ƒ\ƒtƒgƒEƒGƒAƒTƒEƒ“ƒhAMIDIŠÜ‚Þ )‚ð–³Œø‚É‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 //#define DX_NON_SOUND
 
-// ï¿½ï¿½ï¿½Í‹@ï¿½\ï¿½ð–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‰ï¿½ï¿½ï¿½ï¿½ï¿½
+// “ü—Í‹@”\‚ð–³Œø‚É‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‰º‚³‚¢
 //#define DX_NON_INPUT
 
-// ï¿½}ï¿½ï¿½ï¿½`ï¿½Xï¿½ï¿½ï¿½bï¿½hï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‚ðŽg—p‚µ‚È‚¢ê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_NON_MULTITHREAD
 
-// ï¿½eï¿½nï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ÌƒGï¿½ï¿½ï¿½[ï¿½`ï¿½Fï¿½bï¿½Nï¿½ð–³Œï¿½ï¿½É‚ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½( ï¿½áŠ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É–ï¿½ï¿½ï¿½ï¿½Èƒnï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½Öï¿½ï¿½É“nï¿½ï¿½ï¿½Æ‘ï¿½ï¿½sï¿½ï¿½ï¿½Èƒï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Nï¿½Zï¿½Xï¿½Gï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ‚¤ï¿½É‚È‚ï¿½Ü‚ï¿½ )
+// Šeƒnƒ“ƒhƒ‹‚ÌƒGƒ‰[ƒ`ƒFƒbƒN‚ð–³Œø‚É‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢( ŽáŠ±‚‘¬‰»‚³‚ê‚é‘ã‚í‚è‚É–³Œø‚Èƒnƒ“ƒhƒ‹‚ðŠÖ”‚É“n‚·‚Æ‘¦•s³‚Èƒƒ‚ƒŠƒAƒNƒZƒXƒGƒ‰[‚ª”­¶‚·‚é‚æ‚¤‚É‚È‚è‚Ü‚· )
 // #define DX_NON_HANDLE_ERROR_CHECK
 
-// Direct3D11 ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍˆÈ‰ï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½( ï¿½ï¿½ï¿½ÝŠJï¿½ï¿½ï¿½ï¿½ï¿½È‚Ì‚ÅAï¿½Kï¿½ï¿½ï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô‚É‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ )
+// Direct3D11 ‚ðŽg—p‚µ‚È‚¢ê‡‚ÍˆÈ‰º‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢( Œ»ÝŠJ”­’†‚È‚Ì‚ÅA•K‚¸ƒRƒƒ“ƒg‚ðŠO‚µ‚½ó‘Ô‚É‚µ‚Ä‚­‚¾‚³‚¢ )
 #define DX_NON_DIRECT3D11
 
-// Direct3D9 ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍˆÈ‰ï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// Direct3D9 ‚ðŽg—p‚µ‚È‚¢ê‡‚ÍˆÈ‰º‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 #define DX_NON_DIRECT3D9
 
-// ï¿½yï¿½Êƒoï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½Ì‚cï¿½wï¿½ï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½ï¿½ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// Œy—Êƒo[ƒWƒ‡ƒ“‚Ì‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚ð¶¬‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 // #define DX_LIB_LITEVER
 
-// ï¿½Rï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½Ï‚Ý‚ÌƒVï¿½Fï¿½[ï¿½_ï¿½[ï¿½oï¿½Cï¿½iï¿½ï¿½ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ï¿½ï¿½Aï¿½Vï¿½Fï¿½[ï¿½_ï¿½[ï¿½Rï¿½[ï¿½hï¿½ÌŽï¿½ï¿½sï¿½ï¿½ï¿½Rï¿½ï¿½ï¿½pï¿½Cï¿½ï¿½ï¿½ð—˜—pï¿½ï¿½ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒRƒ“ƒpƒCƒ‹Ï‚Ý‚ÌƒVƒF[ƒ_[ƒoƒCƒiƒŠ‚ðŽg—p‚¹‚¸AƒVƒF[ƒ_[ƒR[ƒh‚ÌŽÀsŽžƒRƒ“ƒpƒCƒ‹‚ð—˜—p‚·‚éê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_NON_SHADERCODE_BINARY
 
-// Live2D Cubism 4 ï¿½Ö˜Aï¿½Ì‹@ï¿½\ï¿½ï¿½ï¿½gï¿½pï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// Live2D Cubism 4 ŠÖ˜A‚Ì‹@”\‚ðŽg—p‚µ‚È‚¢ê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 #define DX_NON_LIVE2D_CUBISM4
 
-// ï¿½Eï¿½Bï¿½ï¿½ï¿½hï¿½Eï¿½ï¿½ï¿½ì¬ï¿½ï¿½ï¿½È‚ï¿½ï¿½ê‡ï¿½ÍŽï¿½ï¿½ÌƒRï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ƒEƒBƒ“ƒhƒE‚ðì¬‚µ‚È‚¢ê‡‚ÍŽŸ‚ÌƒRƒƒ“ƒg‚ðŠO‚µ‚Ä‚­‚¾‚³‚¢
 //#define DX_NON_WINDOW
 
 #ifndef __cplusplus
