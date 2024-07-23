@@ -2029,7 +2029,11 @@ extern DXLIBAPI	DWORD		GetMersenneTwisterRandHandle( DWORD_PTR RandHandle ) ;			
 extern DXLIBAPI	int			GetBatteryLifePercent( void ) ;											// 電池の残量を % で取得する( 戻り値： 100=フル充電状態  0=充電残量無し )
 
 // クリップボード関係
+<<<<<<< HEAD
 extern DXLIBAPI	int			GetClipboardText(			TCHAR *DestBuffer ) ;						// クリップボードに格納されているテキストデータを読み出す( DestBuffer:文字列を格納するバッファの先頭アドレス   戻り値  -1:クリップボードにテキストデータが無い  -1以外:クリップボードに格納されている文字列データのサイズ( 単位:byte ) ) 
+=======
+extern DXLIBAPI	int			GetClipboardText(			TCHAR *DestBuffer, int DestBufferBytes DEFAULTPARAM( = -1 ) ) ;		// クリップボードに格納されているテキストデータを読み出す( DestBuffer:文字列を格納するバッファの先頭アドレス   戻り値  -1:クリップボードにテキストデータが無い  -1以外:クリップボードに格納されている文字列データのサイズ( 単位:byte ) ) 
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	int			SetClipboardText(			const TCHAR *Text                    ) ;	// クリップボードにテキストデータを格納する
 extern DXLIBAPI	int			SetClipboardTextWithStrLen(	const TCHAR *Text, size_t TextLength ) ;	// クリップボードにテキストデータを格納する
 
@@ -2323,7 +2327,11 @@ extern DXLIBAPI	int				sprintfDx(     TCHAR *Buffer,                    const TC
 extern DXLIBAPI	int				snprintfDx(    TCHAR *Buffer, size_t BufferSize, const TCHAR *FormatString, ... ) ;			// snprintf と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
 extern DXLIBAPI	TCHAR *			itoaDx(        int Value, TCHAR *Buffer,                     int Radix ) ;		// itoa と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
 extern DXLIBAPI	TCHAR *			itoa_sDx(      int Value, TCHAR *Buffer, size_t BufferBytes, int Radix ) ;		// itoa_s と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
+<<<<<<< HEAD
 extern DXLIBAPI	int				atoiDx(        const TCHAR *Str ) ;												// atoi と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
+=======
+extern DXLIBAPI	int				atoiDx(        const TCHAR *Str ) ;												// atoi と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます ) 
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	double			atofDx(        const TCHAR *Str ) ;												// atof と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
 extern DXLIBAPI	int				vsscanfDx(     const TCHAR *String, const TCHAR *FormatString, va_list Arg ) ;	// vsscanf と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
 extern DXLIBAPI	int				sscanfDx(      const TCHAR *String, const TCHAR *FormatString, ... ) ;			// sscanf と同等の機能( マルチバイト文字列版では文字コード形式として SetUseCharCodeFormat で設定した形式が使用されます )
@@ -2470,12 +2478,24 @@ extern DXLIBAPI	int			GetStringPoint2WithStrLen(	const TCHAR *String, size_t Str
 extern DXLIBAPI	int			GetStringLength(			const TCHAR *String ) ;										// 全角文字、半角文字入り乱れる中から文字数を取得する
 
 #ifndef DX_NON_FONT
+<<<<<<< HEAD
 extern DXLIBAPI	int			DrawObtainsString(						int x, int y, int AddY, const TCHAR *String,                      unsigned int StrColor, unsigned int StrEdgeColor DEFAULTPARAM( = 0 ) , int FontHandle DEFAULTPARAM( = -1 ) , unsigned int SelectBackColor DEFAULTPARAM( = 0xffffffff ) , unsigned int SelectStrColor DEFAULTPARAM( = 0 ) , unsigned int SelectStrEdgeColor DEFAULTPARAM( = 0xffffffff ) , int SelectStart DEFAULTPARAM( = -1 ) , int SelectEnd DEFAULTPARAM( = -1 ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画
 extern DXLIBAPI	int			DrawObtainsNString(						int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor DEFAULTPARAM( = 0 ) , int FontHandle DEFAULTPARAM( = -1 ) , unsigned int SelectBackColor DEFAULTPARAM( = 0xffffffff ) , unsigned int SelectStrColor DEFAULTPARAM( = 0 ) , unsigned int SelectStrEdgeColor DEFAULTPARAM( = 0xffffffff ) , int SelectStart DEFAULTPARAM( = -1 ) , int SelectEnd DEFAULTPARAM( = -1 ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画
 extern DXLIBAPI	int			DrawObtainsString_CharClip(				int x, int y, int AddY, const TCHAR *String,                      unsigned int StrColor, unsigned int StrEdgeColor DEFAULTPARAM( = 0 ) , int FontHandle DEFAULTPARAM( = -1 ) , unsigned int SelectBackColor DEFAULTPARAM( = 0xffffffff ) , unsigned int SelectStrColor DEFAULTPARAM( = 0 ) , unsigned int SelectStrEdgeColor DEFAULTPARAM( = 0xffffffff ) , int SelectStart DEFAULTPARAM( = -1 ) , int SelectEnd DEFAULTPARAM( = -1 ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画( クリップが文字単位 )
 extern DXLIBAPI	int			DrawObtainsNString_CharClip(			int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor DEFAULTPARAM( = 0 ) , int FontHandle DEFAULTPARAM( = -1 ) , unsigned int SelectBackColor DEFAULTPARAM( = 0xffffffff ) , unsigned int SelectStrColor DEFAULTPARAM( = 0 ) , unsigned int SelectStrEdgeColor DEFAULTPARAM( = 0xffffffff ) , int SelectStart DEFAULTPARAM( = -1 ) , int SelectEnd DEFAULTPARAM( = -1 ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画( クリップが文字単位 )
 extern DXLIBAPI	int			GetObtainsStringCharPosition(			int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle DEFAULTPARAM( = -1 ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画した場合の文字列の末端の座標を取得する
 extern DXLIBAPI	int			GetObtainsStringCharPosition_CharClip(	int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle DEFAULTPARAM( = -1 ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画した場合の文字列の末端の座標を取得する( クリップが文字単位 )
+=======
+extern DXLIBAPI	int			DrawObtainsString(						int x, int y, int AddY, const TCHAR *String,                      unsigned int StrColor, unsigned int StrEdgeColor DEFAULTPARAM( = 0 ) , int FontHandle DEFAULTPARAM( = -1 ) , unsigned int SelectBackColor DEFAULTPARAM( = 0xffffffff ) , unsigned int SelectStrColor DEFAULTPARAM( = 0 ) , unsigned int SelectStrEdgeColor DEFAULTPARAM( = 0xffffffff ) , int SelectStart DEFAULTPARAM( = -1 ) , int SelectEnd DEFAULTPARAM( = -1 ) , int *LineCount DEFAULTPARAM( = NULL ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画
+extern DXLIBAPI	int			DrawObtainsNString(						int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor DEFAULTPARAM( = 0 ) , int FontHandle DEFAULTPARAM( = -1 ) , unsigned int SelectBackColor DEFAULTPARAM( = 0xffffffff ) , unsigned int SelectStrColor DEFAULTPARAM( = 0 ) , unsigned int SelectStrEdgeColor DEFAULTPARAM( = 0xffffffff ) , int SelectStart DEFAULTPARAM( = -1 ) , int SelectEnd DEFAULTPARAM( = -1 ) , int *LineCount DEFAULTPARAM( = NULL ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画
+extern DXLIBAPI	int			DrawObtainsString_CharClip(				int x, int y, int AddY, const TCHAR *String,                      unsigned int StrColor, unsigned int StrEdgeColor DEFAULTPARAM( = 0 ) , int FontHandle DEFAULTPARAM( = -1 ) , unsigned int SelectBackColor DEFAULTPARAM( = 0xffffffff ) , unsigned int SelectStrColor DEFAULTPARAM( = 0 ) , unsigned int SelectStrEdgeColor DEFAULTPARAM( = 0xffffffff ) , int SelectStart DEFAULTPARAM( = -1 ) , int SelectEnd DEFAULTPARAM( = -1 ) , int *LineCount DEFAULTPARAM( = NULL ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画( クリップが文字単位 )
+extern DXLIBAPI	int			DrawObtainsNString_CharClip(			int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor DEFAULTPARAM( = 0 ) , int FontHandle DEFAULTPARAM( = -1 ) , unsigned int SelectBackColor DEFAULTPARAM( = 0xffffffff ) , unsigned int SelectStrColor DEFAULTPARAM( = 0 ) , unsigned int SelectStrEdgeColor DEFAULTPARAM( = 0xffffffff ) , int SelectStart DEFAULTPARAM( = -1 ) , int SelectEnd DEFAULTPARAM( = -1 ) , int *LineCount DEFAULTPARAM( = NULL ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画( クリップが文字単位 )
+extern DXLIBAPI	int			DrawObtainsString_WordClip(				int x, int y, int AddY, const TCHAR *String,                      unsigned int StrColor, unsigned int StrEdgeColor DEFAULTPARAM( = 0 ) , int FontHandle DEFAULTPARAM( = -1 ) , unsigned int SelectBackColor DEFAULTPARAM( = 0xffffffff ) , unsigned int SelectStrColor DEFAULTPARAM( = 0 ) , unsigned int SelectStrEdgeColor DEFAULTPARAM( = 0xffffffff ) , int SelectStart DEFAULTPARAM( = -1 ) , int SelectEnd DEFAULTPARAM( = -1 ) , int *LineCount DEFAULTPARAM( = NULL ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画( クリップが単語単位 )
+extern DXLIBAPI	int			DrawObtainsNString_WordClip(			int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor DEFAULTPARAM( = 0 ) , int FontHandle DEFAULTPARAM( = -1 ) , unsigned int SelectBackColor DEFAULTPARAM( = 0xffffffff ) , unsigned int SelectStrColor DEFAULTPARAM( = 0 ) , unsigned int SelectStrEdgeColor DEFAULTPARAM( = 0xffffffff ) , int SelectStart DEFAULTPARAM( = -1 ) , int SelectEnd DEFAULTPARAM( = -1 ) , int *LineCount DEFAULTPARAM( = NULL ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画( クリップが単語単位 )
+extern DXLIBAPI	int			GetObtainsStringCharPosition(			int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle DEFAULTPARAM( = -1 ) , int *LineCount DEFAULTPARAM( = NULL ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画した場合の文字列の末端の座標を取得する
+extern DXLIBAPI	int			GetObtainsStringCharPosition_CharClip(	int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle DEFAULTPARAM( = -1 ) , int *LineCount DEFAULTPARAM( = NULL ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画した場合の文字列の末端の座標を取得する( クリップが文字単位 )
+extern DXLIBAPI	int			GetObtainsStringCharPosition_WordClip(	int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle DEFAULTPARAM( = -1 ) , int *LineCount DEFAULTPARAM( = NULL ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画した場合の文字列の末端の座標を取得する( クリップが単語単位 )
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 #endif // DX_NON_FONT
 extern DXLIBAPI	int			DrawObtainsBox(					int x1, int y1, int x2, int y2, int AddY, unsigned int Color, int FillFlag ) ;																																										// 描画可能領域に収まるように補正を加えながら矩形を描画
 
@@ -2643,13 +2663,21 @@ extern DXLIBAPI	int			MakeGraph(							int SizeX, int SizeY, int NotUse3DFlag DE
 extern DXLIBAPI	int			MakeScreen(							int SizeX, int SizeY, int UseAlphaChannel DEFAULTPARAM( = FALSE ) ) ;		// SetDrawScreen で描画対象にできるグラフィックハンドルを作成する
 extern DXLIBAPI	int			DerivationGraph(					int   SrcX, int   SrcY, int   Width, int   Height, int SrcGraphHandle ) ;	// 指定のグラフィックハンドルの指定部分だけを抜き出して新たなグラフィックハンドルを作成する
 extern DXLIBAPI	int			DerivationGraphF(					float SrcX, float SrcY, float Width, float Height, int SrcGraphHandle ) ;	// 指定のグラフィックハンドルの指定部分だけを抜き出して新たなグラフィックハンドルを作成する( float版 )
+<<<<<<< HEAD
 extern DXLIBAPI	int			DeleteGraph(						int GrHandle, int LogOutFlag DEFAULTPARAM( = FALSE ) ) ;					// グラフィックハンドルを削除する
+=======
+extern DXLIBAPI	int			DeleteGraph(						int GrHandle ) ;															// グラフィックハンドルを削除する
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	int			DeleteSharingGraph(					int GrHandle ) ;															// 指定のグラフィックハンドルと、同じグラフィックハンドルから派生しているグラフィックハンドル( DerivationGraph で派生したハンドル、LoadDivGraph 読み込んで作成された複数のハンドル )を一度に削除する
 extern DXLIBAPI	int			GetGraphNum(						void ) ;																	// 有効なグラフィックハンドルの数を取得する
 extern DXLIBAPI	int			FillGraph(							int GrHandle, int Red, int Green, int Blue, int Alpha DEFAULTPARAM( = 255 ) ) ;											// グラフィックハンドルを指定の色で塗りつぶす
 extern DXLIBAPI	int			FillRectGraph(						int GrHandle, int x, int y, int Width, int Height, int Red, int Green, int Blue, int Alpha DEFAULTPARAM( = 255 ) ) ;	// グラフィックハンドルの指定の範囲を指定の色で塗りつぶす
 extern DXLIBAPI	int			SetGraphLostFlag(					int GrHandle, int *LostFlag ) ;												// 指定のグラフィックハンドルが削除された際に 1 にする変数のアドレスを設定する
+<<<<<<< HEAD
 extern DXLIBAPI	int			InitGraph(							int LogOutFlag DEFAULTPARAM( = FALSE ) ) ;									// すべてのグラフィックハンドルを削除する
+=======
+extern DXLIBAPI	int			InitGraph(							void ) ;																	// すべてのグラフィックハンドルを削除する
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	int			ReloadFileGraphAll(					void ) ;																	// ファイルから画像を読み込んだ全てのグラフィックハンドルについて、再度ファイルから画像を読み込む
 
 // シャドウマップハンドル関係関数
@@ -2872,7 +2900,11 @@ extern DXLIBAPI	int			DrawBoxAA(        float x1, float y1, float x2, float y2, 
 extern DXLIBAPI	int			DrawFillBox(      int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color ) ;																	// 中身を塗りつぶす四角形を描画する
 extern DXLIBAPI	int			DrawLineBox(      int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color ) ;																	// 枠だけの四角形の描画 する
 extern DXLIBAPI	int			DrawCircle(       int   x,  int   y,  int   r,                                                    unsigned int Color, int FillFlag DEFAULTPARAM( = TRUE ), int   LineThickness DEFAULTPARAM( = 1 )    ) ;	// 円を描画する
+<<<<<<< HEAD
 extern DXLIBAPI	int			DrawCircleAA(     float x,  float y,  float r,            int posnum,                             unsigned int Color, int FillFlag DEFAULTPARAM( = TRUE ), float LineThickness DEFAULTPARAM( = 1.0f ) ) ;	// 円を描画する( アンチエイリアス付き )
+=======
+extern DXLIBAPI	int			DrawCircleAA(     float x,  float y,  float r,            int posnum,                             unsigned int Color, int FillFlag DEFAULTPARAM( = TRUE ), float LineThickness DEFAULTPARAM( = 1.0f ), double Angle DEFAULTPARAM( = 0.0 ) ) ;	// 円を描画する( アンチエイリアス付き )
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	int			DrawOval(         int   x,  int   y,  int   rx, int   ry,                                         unsigned int Color, int FillFlag,        int   LineThickness DEFAULTPARAM( = 1 )    ) ;	// 楕円を描画する
 extern DXLIBAPI	int			DrawOvalAA(       float x,  float y,  float rx, float ry, int posnum,                             unsigned int Color, int FillFlag,        float LineThickness DEFAULTPARAM( = 1.0f ) ) ;	// 楕円を描画する( アンチエイリアス付き )
 extern DXLIBAPI	int			DrawOval_Rect(    int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int FillFlag ) ;														// 指定の矩形に収まる円( 楕円 )を描画する
@@ -2985,7 +3017,11 @@ extern DXLIBAPI	int			DrawRotaGraphFast3ToZBuffer( int x, int y, int cx, int cy,
 extern DXLIBAPI	int			DrawModiGraphToZBuffer(   int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4,               int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */ ) ;														// Ｚバッファに対して画像の自由変形描画
 extern DXLIBAPI	int			DrawBoxToZBuffer(         int x1, int y1, int x2, int y2,                                               int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */ ) ;														// Ｚバッファに対して矩形の描画
 extern DXLIBAPI	int			DrawCircleToZBuffer(      int x, int y, int r,                                                          int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */ ) ;														// Ｚバッファに対して円の描画
+<<<<<<< HEAD
 extern DXLIBAPI	int			DrawTriangleToZBuffer(    int x1, int y1, int x2, int y2, int x3, int y3,                               int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */ ) ;														// Ｚバッファに対して三角形を描画する
+=======
+extern DXLIBAPI	int			DrawTriangleToZBuffer(    int x1, int y1, int x2, int y2, int x3, int y3,                               int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */ ) ;														// Ｚバッファに対して三角形を描画する 
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	int			DrawQuadrangleToZBuffer(  int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4,               int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */ ) ;														// Ｚバッファに対して四角形を描画する
 extern DXLIBAPI	int			DrawRoundRectToZBuffer(   int x1, int y1, int x2, int y2, int rx, int ry,                               int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */ ) ;														// Ｚバッファに対して角の丸い四角形を描画する
 
@@ -3183,9 +3219,16 @@ extern DXLIBAPI	int				GetVideoMemorySize(							int *AllSize, int *FreeSize ) ;
 extern DXLIBAPI	int				GetVideoMemorySizeEx(						ULONGLONG *TotalSize, ULONGLONG *UseSize ) ;									// ビデオメモリの容量を得る( 64bit版 )
 extern DXLIBAPI	int				GetRefreshRate(								void ) ;																		// 現在の画面のリフレッシュレートを取得する
 extern DXLIBAPI	int				GetDisplayNum(								void ) ;																		// ディスプレイの数を取得
+<<<<<<< HEAD
 extern DXLIBAPI	int				GetDisplayInfo(								int DisplayIndex, int *DesktopRectX, int *DesktopRectY, int *DesktopSizeX, int *DesktopSizeY, int *IsPrimary ) ;	// ディスプレイのデスクトップ上での矩形位置を取得する
 extern DXLIBAPI	int				GetDisplayModeNum(							int DisplayIndex DEFAULTPARAM( = 0 ) ) ;										// 変更可能なディスプレイモードの数を取得する
 extern DXLIBAPI	DISPLAYMODEDATA	GetDisplayMode(								int ModeIndex, int DisplayIndex DEFAULTPARAM( = 0 ) ) ;							// 変更可能なディスプレイモードの情報を取得する( ModeIndex は 0 ～ GetDisplayModeNum の戻り値-1 )
+=======
+extern DXLIBAPI	int				GetDisplayInfo(								int DisplayIndex, int *DesktopRectX, int *DesktopRectY, int *DesktopSizeX, int *DesktopSizeY, int *IsPrimary, int *DesktopRefreshRate DEFAULTPARAM( = NULL ) ) ;	// ディスプレイのデスクトップ上での矩形位置を取得する
+extern DXLIBAPI	int				GetDisplayModeNum(							int DisplayIndex DEFAULTPARAM( = 0 ) ) ;										// 変更可能なディスプレイモードの数を取得する
+extern DXLIBAPI	DISPLAYMODEDATA	GetDisplayMode(								int ModeIndex, int DisplayIndex DEFAULTPARAM( = 0 ) ) ;							// 変更可能なディスプレイモードの情報を取得する( ModeIndex は 0 ～ GetDisplayModeNum の戻り値-1 )
+extern DXLIBAPI	DISPLAYMODEDATA	GetFullScreenUseDisplayMode(				void ) ;																		// フルスクリーンモードで起動している場合の使用しているディスプレイモードの情報を取得する( 仮想フルスクリーンモードの場合は取得できない )
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	int				GetDisplayMaxResolution(					int *SizeX, int *SizeY, int DisplayIndex DEFAULTPARAM( = 0 ) ) ;				// ディスプレイの最大解像度を取得する
 extern DXLIBAPI	const COLORDATA* GetDispColorData(							void ) ;																		// ディスプレイのカラーデータアドレスを取得する
 extern DXLIBAPI	int				GetMultiDrawScreenNum(						void ) ;																		// 同時に描画を行うことができる画面の数を取得する
@@ -3349,7 +3392,11 @@ extern DXLIBAPI	int			DrawPolygonIndexed3DToShader_UseVertexBuffer(    int Verte
 extern DXLIBAPI	int			DrawPrimitive3DToShader_UseVertexBuffer(         int VertexBufHandle,                     int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */ ) ;													// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファ使用版 )
 extern DXLIBAPI	int			DrawPrimitive3DToShader_UseVertexBuffer2(        int VertexBufHandle,                     int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int StartVertex, int UseVertexNum ) ;				// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファ使用版 )
 extern DXLIBAPI	int			DrawPrimitiveIndexed3DToShader_UseVertexBuffer(  int VertexBufHandle, int IndexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */ ) ;													// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファとインデックスバッファ使用版 )
+<<<<<<< HEAD
 extern DXLIBAPI	int			DrawPrimitiveIndexed3DToShader_UseVertexBuffer2( int VertexBufHandle, int IndexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int BaseVertex, int StartVertex, int UseVertexNum, int StartIndex, int UseIndexNum ) ;	// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファとインデックスバッファ使用版 )
+=======
+extern DXLIBAPI	int			DrawPrimitiveIndexed3DToShader_UseVertexBuffer2( int VertexBufHandle, int IndexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int BaseVertex, int StartVertex, int UseVertexNum, int StartIndex, int UseIndexNum ) ;		// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファとインデックスバッファ使用版 )
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 
 // シェーダー用定数バッファ関係関数
 extern DXLIBAPI	int			InitShaderConstantBuffer(		void ) ;																					// 全てのシェーダー用定数バッファハンドルを削除する
@@ -3393,6 +3440,7 @@ extern DXLIBAPI	int			GraphBlend(         int    GrHandle, int BlendGrHandle,   
 extern DXLIBAPI	int			GraphBlendBlt(      int SrcGrHandle, int BlendGrHandle, int DestGrHandle,                                                                                                                       int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD 等 */ , ... ) ;	// 二つの画像をブレンドして結果を指定の画像に出力する
 extern DXLIBAPI	int			GraphBlendRectBlt(  int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX,  int BlendY,                            int DestX, int DestY, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD 等 */ , ... ) ;	// 二つの画像をブレンドして結果を指定の画像に出力する( 矩形指定 )
 extern DXLIBAPI	int			GraphBlendRectBlt2( int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX1, int BlendY1, int BlendX2, int BlendY2, int DestX, int DestY, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */ , int BlendType /* DX_GRAPH_BLEND_ADD 等 */ , ... ) ;	// 二つの画像をブレンドして結果を指定の画像に出力する( 矩形指定、ブレンド画像も矩形指定 )
+<<<<<<< HEAD
 //		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_NORMAL ) ;
 //		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_RGBA_SELECT_MIX, int SelectR = ( 出力の赤分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectG = ( 出力の緑成分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectB = ( 出力の青成分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectA = ( 出力のα成分となる成分 DX_RGBA_SELECT_SRC_R 等 ) ) ;
 //		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_MULTIPLE ) ;
@@ -3411,6 +3459,44 @@ extern DXLIBAPI	int			GraphBlendRectBlt2( int SrcGrHandle, int BlendGrHandle, in
 //		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_ADD_ALPHACH ) ;
 //		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_MULTIPLE_A_ONLY ) ;
 //		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_MULTIPLE_A_ONLY ) ;
+=======
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_NORMAL ) ; // 通常
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_RGBA_SELECT_MIX, int SelectR = ( 出力の赤分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectG = ( 出力の緑成分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectB = ( 出力の青成分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectA = ( 出力のα成分となる成分 DX_RGBA_SELECT_SRC_R 等 ) ) ;	// RGBAの要素を選択して合成
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_MULTIPLE ) ;	// 乗算
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_DIFFERENCE ) ;	// 減算
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_ADD ) ;		  	// 加算
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_SCREEN ) ;	// スクリーン
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_OVERLAY ) ;	// オーバーレイ
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_DODGE ) ;	// 覆い焼き
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_BURN ) ;	// 焼き込み
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_DARKEN ) ;	// 比較(暗)
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_LIGHTEN ) ;	// 比較(明)
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_SOFTLIGHT ) ;	// ソフトライト
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_HARDLIGHT ) ;	// ハードライト
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_EXCLUSION ) ;	// 除外
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_NORMAL_ALPHACH ) ;	// αチャンネル付き画像の通常合成
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_ADD_ALPHACH ) ;	// αチャンネル付き画像の加算合成
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_MULTIPLE_A_ONLY ) ;	// アルファチャンネルのみの乗算
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_MASK ) ;	// マスク( SrcGrHandle に BlendGrHandle を通常描画した上で、SrcGrHandle の A を優先 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_NORMAL ) ; // 通常( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_RGBA_SELECT_MIX ) ; // RGBAの要素を選択して合成( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_MULTIPLE ) ; // 乗算( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_DIFFERENCE ) ; // 減算( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_ADD ) ; // 加算( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_SCREEN ) ; // スクリーン( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_OVERLAY ) ; // オーバーレイ( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_DODGE ) ; // 覆い焼き( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_BURN ) ; // 焼き込み( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_DARKEN ) ; // 比較(暗)( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_LIGHTEN ) ; // 比較(明)( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_SOFTLIGHT ) ; // ソフトライト( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_HARDLIGHT ) ; // ハードライト( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_EXCLUSION ) ; // 除外( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_NORMAL_ALPHACH ) ; // αチャンネル付き画像の通常合成( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_ADD_ALPHACH ) ; // αチャンネル付き画像の加算合成( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_MULTIPLE_A_ONLY ) ;	// アルファチャンネルのみの乗算( 乗算済みα画像用 )
+//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_MASK ) ;	// マスク( DX_GRAPH_BLEND_MASK の 乗算済みα画像用 )
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 #endif // DX_NON_FILTER
 
 #ifndef DX_NON_MOVIE
@@ -3427,9 +3513,17 @@ extern DXLIBAPI 	int			PauseMovieToGraph(					int GraphHandle, int SysPause DEFA
 extern DXLIBAPI	int			AddMovieFrameToGraph(				int GraphHandle, unsigned int FrameNum ) ;									// 動画ファイルの再生フレームを進める、戻すことは出来ない( 動画ファイルが停止状態で、且つ Ogg Theora のみ有効 )
 extern DXLIBAPI	int			SeekMovieToGraph(					int GraphHandle, int Time ) ;												// 動画ファイルの再生位置を設定する(ミリ秒単位)
 extern DXLIBAPI	int			SetPlaySpeedRateMovieToGraph(		int GraphHandle, double SpeedRate ) ;										// 動画ファイルの再生速度を設定する( 1.0 = 等倍速  2.0 = ２倍速 )、一部のファイルフォーマットのみで有効な機能です
+<<<<<<< HEAD
 extern DXLIBAPI int			GetMovieStateToGraph(				int GraphHandle ) ;															// 動画ファイルの再生状態を得る
 extern DXLIBAPI	int			SetMovieVolumeToGraph(				int Volume, int GraphHandle ) ;												// 動画ファイルの音量を設定する(0～10000)
 extern DXLIBAPI	int			ChangeMovieVolumeToGraph(			int Volume, int GraphHandle ) ;												// 動画ファイルの音量を設定する(0～255)
+=======
+extern DXLIBAPI 	int			GetMovieStateToGraph(				int GraphHandle ) ;															// 動画ファイルの再生状態を得る
+extern DXLIBAPI	int			SetMovieVolumeToGraph(				int Volume, int GraphHandle ) ;												// 動画ファイルの音量を設定する(0～10000)
+extern DXLIBAPI	int			GetMovieVolumeToGraph(				            int GraphHandle ) ;												// 動画ファイルの音量を取得する(0～10000)
+extern DXLIBAPI	int			ChangeMovieVolumeToGraph(			int Volume, int GraphHandle ) ;												// 動画ファイルの音量を設定する(0～255)
+extern DXLIBAPI	int			GetMovieVolumeToGraph2(				            int GraphHandle ) ;												// 動画ファイルの音量を取得する(0～255)
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	const BASEIMAGE* GetMovieBaseImageToGraph(		int GraphHandle, int *ImageUpdateFlag DEFAULTPARAM( = NULL ) , int ImageUpdateFlagSetOnly DEFAULTPARAM( = FALSE ) ) ;	// 動画ファイルの基本イメージデータを取得する( ImageUpdateFlag に int 型変数のアドレスを渡すと、イメージが更新された場合は 1 が、更新されていない場合は 0 が格納されます、 ImageUpdateFlagSetOnly を TRUE にすると戻り値の BASEIMAGE は有効な画像データではなくなりますが、BASEIMAGE の更新処理が行われませんので、ImageUpdateFlag を利用して画像が更新されたかどうかだけをチェックしたい場合は TRUE にしてください )
 extern DXLIBAPI	int			GetMovieTotalFrameToGraph(			int GraphHandle ) ;															// 動画ファイルの総フレーム数を得る( Ogg Theora と mp4 でのみ有効 )
 extern DXLIBAPI	int			TellMovieToGraph(					int GraphHandle ) ;															// 動画ファイルの再生位置を取得する(ミリ秒単位)
@@ -3437,6 +3531,10 @@ extern DXLIBAPI	int			TellMovieToGraphToFrame(			int GraphHandle ) ;												
 extern DXLIBAPI	int			SeekMovieToGraphToFrame(			int GraphHandle, int Frame ) ;												// 動画ファイルの再生位置を設定する(フレーム単位)
 extern DXLIBAPI	LONGLONG	GetOneFrameTimeMovieToGraph(		int GraphHandle ) ;															// 動画ファイルの１フレームあたりの時間を取得する(戻り値：１フレームの時間(単位:マイクロ秒))
 extern DXLIBAPI	int			GetLastUpdateTimeMovieToGraph(		int GraphHandle ) ;															// 動画ファイルのイメージを最後に更新した時間を得る(ミリ秒単位)
+<<<<<<< HEAD
+=======
+extern DXLIBAPI	int			UpdateMovieToGraph(					int GraphHandle ) ;															// 動画ファイルの更新処理を行う
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	int			SetMovieRightImageAlphaFlag(		int Flag ) ;																// 読み込む動画ファイル映像の右半分の赤成分をα情報として扱うかどうかをセットする( TRUE:α情報として扱う  FALSE:α情報として扱わない( デフォルト ) )
 extern DXLIBAPI	int			SetMovieColorA8R8G8B8Flag(			int Flag ) ;																// 読み込む動画ファイルが32bitカラーだった場合、A8R8G8B8 形式として扱うかどうかをセットする、32bitカラーではない動画ファイルに対しては無効( Flag  TRUE:A8R8G8B8として扱う  FALSE:X8R8G8B8として扱う( デフォルト ) )
 extern DXLIBAPI	int			SetMovieUseYUVFormatSurfaceFlag(	int Flag ) ;																// ＹＵＶフォーマットのサーフェスが使用できる場合はＹＵＶフォーマットのサーフェスを使用するかどうかを設定する( TRUE:使用する( デフォルト ) FALSE:ＲＧＢフォーマットのサーフェスを使用する )
@@ -3772,6 +3870,11 @@ extern DXLIBAPI	int			SetFontUseAdjustSizeFlag(               int Flag ) ;						
 extern DXLIBAPI	int			GetFontUseAdjustSizeFlag(               void ) ;																						// フォントのサイズを補正する処理を行うかどうかを取得する
 extern DXLIBAPI	int			SetFontOnlyDrawType(					int OnlyType ) ;																				// フォントの描画で縁のみ、又は本体のみ描画を行うかどうかを設定する( OnlyType  0:通常描画 1:本体のみ描画 2:縁のみ描画 )
 extern DXLIBAPI	int			GetFontOnlyDrawType(					void ) ;																						// フォントの描画で縁のみ、又は本体のみ描画を行うかどうかを取得する( 戻り値  0:通常描画 1:本体のみ描画 2:縁のみ描画 )
+<<<<<<< HEAD
+=======
+extern DXLIBAPI	int			SetFontIgnoreLFFlag(					int Flag ) ;																					// DrawString などで \n を無視するかどうかを設定する( TRUE : 無視する    FALSE : 無視しない( デフォルト ) )
+extern DXLIBAPI	int			GetFontIgnoreLFFlag(					void ) ;																						// DrawString などで \n を無視するかどうかを取得する( TRUE : 無視する    FALSE : 無視しない( デフォルト ) )
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 
 
 // FontCacheStringDraw の代わりに DrawString を使ってください
@@ -4824,7 +4927,11 @@ extern DXLIBAPI	int			SaveSoftImageToJpegWithStrLen(        const TCHAR *FilePat
 // DxSound.cpp関数プロトタイプ宣言
 
 // サウンドデータ管理系関数
+<<<<<<< HEAD
 extern DXLIBAPI	int			InitSoundMem(                        int LogOutFlag DEFAULTPARAM( = FALSE ) ) ;																	// 全てのサウンドハンドルを削除する
+=======
+extern DXLIBAPI	int			InitSoundMem(                        void ) ;																					// 全てのサウンドハンドルを削除する
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 
 extern DXLIBAPI	int			AddSoundData(                        int Handle DEFAULTPARAM( = -1 ) ) ;																											// サウンドハンドルを作成する
 extern DXLIBAPI	int			AddStreamSoundMem(                   STREAMDATA *Stream, int LoopNum,  int SoundHandle, int StreamDataType, int *CanStreamCloseFlag, int UnionHandle DEFAULTPARAM( = -1 ) ) ;		// ストリーム再生タイプのサウンドハンドルにストリームデータを再生対象に追加する
@@ -4863,7 +4970,11 @@ extern DXLIBAPI	int			LoadSoundMemByMemImageToBufNumSitei( const void *FileImage
 extern DXLIBAPI	int			LoadSoundMem2ByMemImage(             const void *FileImage1, size_t FileImageSize1, const void *FileImage2, size_t FileImageSize2 ) ;	// 前奏部とループ部に分かれた二つのメモリ上に展開されたサウンドファイルイメージからサウンドハンドルを作成する
 extern DXLIBAPI	int			LoadSoundMemFromSoftSound(           int SoftSoundHandle, int BufferNum DEFAULTPARAM( = 3 ) ) ;											// ソフトウエアサウンドハンドルが持つサウンドデータからサウンドハンドルを作成する
 
+<<<<<<< HEAD
 extern DXLIBAPI	int			DeleteSoundMem(                      int SoundHandle, int LogOutFlag DEFAULTPARAM( = FALSE ) ) ;												// サウンドハンドルを削除する
+=======
+extern DXLIBAPI	int			DeleteSoundMem(                      int SoundHandle ) ;																		// サウンドハンドルを削除する
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 
 extern DXLIBAPI	int			PlaySoundMem(                        int SoundHandle, int PlayType, int TopPositionFlag DEFAULTPARAM( = TRUE ) ) ;				// サウンドハンドルを再生する
 extern DXLIBAPI	int			StopSoundMem(                                                                        int SoundHandle, int IsNextLoopEnd DEFAULTPARAM( = FALSE ) ) ;	// サウンドハンドルの再生を停止する( IsNextLoopEnd を TRUE にすると次回のループ終了のタイミングで音を止める )
@@ -4871,7 +4982,11 @@ extern DXLIBAPI	int			CheckSoundMem(                                            
 extern DXLIBAPI	int			SetPanSoundMem(                      int PanPal,                                     int SoundHandle ) ;						// サウンドハンドルのパンを設定する( 100分の1デシベル単位 0 ～ 10000 )
 extern DXLIBAPI	int			ChangePanSoundMem(                   int PanPal,                                     int SoundHandle ) ;						// サウンドハンドルのパンを設定する( -255 ～ 255 )
 extern DXLIBAPI	int			GetPanSoundMem(                                                                      int SoundHandle ) ;						// サウンドハンドルのパンを取得する
+<<<<<<< HEAD
 extern DXLIBAPI	int			SetVolumeSoundMem(                   int VolumePal,                                  int SoundHandle ) ;						// サウンドハンドルのボリュームを設定する( 100分の1デシベル単位 0 ～ 10000 )
+=======
+extern DXLIBAPI	int			SetVolumeSoundMem(                   int VolumePal,                                  int SoundHandle ) ;						// サウンドハンドルのボリュームを設定する( 100分の1デシベル単位 0 ～ 10000 ) 
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	int			ChangeVolumeSoundMem(                int VolumePal,                                  int SoundHandle ) ;						// サウンドハンドルのボリュームを設定する( 0 ～ 255 )
 extern DXLIBAPI	int			GetVolumeSoundMem(                                                                   int SoundHandle ) ;						// サウンドハンドルのボリュームを取得する( 100分の1デシベル単位 0 ～ 10000 )
 extern DXLIBAPI	int			GetVolumeSoundMem2(                                                                  int SoundHandle ) ;						// サウンドハンドルのボリュームを取得する( 0 ～ 255 )
@@ -5267,7 +5382,11 @@ extern DXLIBAPI	int			MV1GetAnimTargetFrame(				int MHandle, int AnimIndex, int 
 extern DXLIBAPI	int			MV1GetAnimTargetFrameKeySetNum(		int MHandle, int AnimIndex, int AnimFrameIndex ) ;									// 指定のアニメーションがターゲットとするフレーム用のアニメーションキーセットの数を取得する
 extern DXLIBAPI	int			MV1GetAnimTargetFrameKeySet(		int MHandle, int AnimIndex, int AnimFrameIndex, int Index ) ;						// 指定のアニメーションがターゲットとするフレーム用のアニメーションキーセットキーセットインデックスを取得する
 
+<<<<<<< HEAD
 extern DXLIBAPI	int			MV1GetAnimKeySetNum(				int MHandle ) ;																		// モデルに含まれるアニメーションキーセットの総数を得る
+=======
+extern DXLIBAPI	int			MV1GetAnimKeySetNum(				int MHandle ) ;																		// モデルに含まれるアニメーションキーセットの総数を得る 
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	int			MV1GetAnimKeySetType(				int MHandle, int AnimKeySetIndex ) ;												// 指定のアニメーションキーセットのタイプを取得する( MV1_ANIMKEY_TYPE_QUATERNION 等 )
 extern DXLIBAPI	int			MV1GetAnimKeySetDataType(			int MHandle, int AnimKeySetIndex ) ;												// 指定のアニメーションキーセットのデータタイプを取得する( MV1_ANIMKEY_DATATYPE_ROTATE 等 )
 extern DXLIBAPI	int			MV1GetAnimKeySetTimeType(			int MHandle, int AnimKeySetIndex ) ;												// 指定のアニメーションキーセットのキーの時間データタイプを取得する( MV1_ANIMKEY_TIME_TYPE_ONE 等 )
@@ -5564,8 +5683,13 @@ extern DXLIBAPI	int			Live2D_Model_SetExtendRate(		int Live2DModelHandle, float 
 extern DXLIBAPI	int			Live2D_Model_SetRotate(			int Live2DModelHandle, float RotAngle ) ;								// Live2D のモデルの回転を設定する
 extern DXLIBAPI	int			Live2D_Model_Draw(				int Live2DModelHandle ) ;												// Live2D のモデルを描画する
 
+<<<<<<< HEAD
 extern DXLIBAPI	int			Live2D_Model_StartMotion(				int Live2DModelHandle, const TCHAR *group,						int no ) ;							// Live2D のモデルの指定のモーションを再生する
 extern DXLIBAPI	int			Live2D_Model_StartMotionWithStrLen(		int Live2DModelHandle, const TCHAR *group, size_t groupLength,	int no ) ;							// Live2D のモデルの指定のモーションを再生する
+=======
+extern DXLIBAPI	int			Live2D_Model_StartMotion(				int Live2DModelHandle, const TCHAR *group,						int no, float fadeInSeconds DEFAULTPARAM( = -1.0f ) , float fadeOutSeconds DEFAULTPARAM( = -1.0f ) , int isLoopFadeIn DEFAULTPARAM( = TRUE ) ) ;	// Live2D のモデルの指定のモーションを再生する
+extern DXLIBAPI	int			Live2D_Model_StartMotionWithStrLen(		int Live2DModelHandle, const TCHAR *group, size_t groupLength,	int no, float fadeInSeconds DEFAULTPARAM( = -1.0f ) , float fadeOutSeconds DEFAULTPARAM( = -1.0f ) , int isLoopFadeIn DEFAULTPARAM( = TRUE ) ) ;	// Live2D のモデルの指定のモーションを再生する
+>>>>>>> 3c78112 ([Bot] Update DxLib.h before 3.24d)
 extern DXLIBAPI	int			Live2D_Model_GetLastPlayMotionNo(		int Live2DModelHandle ) ;																			// Live2D のモデルで最後に再生したモーションのグループ内の番号を取得する
 extern DXLIBAPI	int			Live2D_Model_IsMotionFinished(			int Live2DModelHandle ) ;																			// Live2D のモデルのモーション再生が終了しているかを取得する( 戻り値  TRUE:再生が終了している  FALSE:再生中 )
 extern DXLIBAPI	float		Live2D_Model_GetMotionPlayTime(			int Live2DModelHandle ) ;																			// Live2D のモデルのモーション再生時間を取得する
