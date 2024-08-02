@@ -51,13 +51,18 @@
 #include <emscripten/html5.h>
 #include <emscripten/proxying.h>
 
-EM_JS(int, canvas_width, (), {
-	return Module.canvas.width;
-});
+int canvas_width() {
+	return MAIN_THREAD_EM_ASM_INT({
+		return Module.canvas.width;
+	});
+}
 
-EM_JS(int, canvas_height, (), {
-	return Module.canvas.height;
-});
+int canvas_height() {
+	return MAIN_THREAD_EM_ASM_INT({
+		return Module.canvas.height;
+	});
+}
+
 
 #ifndef DX_NON_NAMESPACE
 

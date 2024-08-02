@@ -243,15 +243,15 @@ extern int InitializeInputSystem_PF_Timing0( void )
 
 	InputSysData.PF.UseInputInfoNum = 0 ;
 
-	emscripten_set_keydown_callback("canvas", NULL, true, &onKeyAction);
-	emscripten_set_keyup_callback("canvas", NULL, true, &onKeyAction);
-	emscripten_set_mousedown_callback("canvas", NULL, true, &onMouseAction);
-	emscripten_set_mousemove_callback("canvas", NULL, true, &onMouseAction);
-	emscripten_set_mouseup_callback("canvas", NULL, true, &onMouseAction);
-	emscripten_set_wheel_callback("canvas", NULL, true, &onMouseWheel);
-	emscripten_set_touchmove_callback("canvas", NULL, true, &onTouchAction);
-	emscripten_set_gamepadconnected_callback(NULL, true, &onGamepadAction);
-	emscripten_set_gamepaddisconnected_callback(NULL, true, &onGamepadAction);
+	emscripten_set_keydown_callback_on_thread("canvas", NULL, true, &onKeyAction, EM_CALLBACK_THREAD_CONTEXT_MAIN_BROWSER_THREAD);
+	emscripten_set_keyup_callback_on_thread("canvas", NULL, true, &onKeyAction, EM_CALLBACK_THREAD_CONTEXT_MAIN_BROWSER_THREAD);
+	emscripten_set_mousedown_callback_on_thread("canvas", NULL, true, &onMouseAction, EM_CALLBACK_THREAD_CONTEXT_MAIN_BROWSER_THREAD);
+	emscripten_set_mousemove_callback_on_thread("canvas", NULL, true, &onMouseAction, EM_CALLBACK_THREAD_CONTEXT_MAIN_BROWSER_THREAD);
+	emscripten_set_mouseup_callback_on_thread("canvas", NULL, true, &onMouseAction, EM_CALLBACK_THREAD_CONTEXT_MAIN_BROWSER_THREAD);
+	emscripten_set_wheel_callback_on_thread("canvas", NULL, true, &onMouseWheel, EM_CALLBACK_THREAD_CONTEXT_MAIN_BROWSER_THREAD);
+	emscripten_set_touchmove_callback_on_thread("canvas", NULL, true, &onTouchAction, EM_CALLBACK_THREAD_CONTEXT_MAIN_BROWSER_THREAD);
+	emscripten_set_gamepadconnected_callback_on_thread(NULL, true, &onGamepadAction, EM_CALLBACK_THREAD_CONTEXT_MAIN_BROWSER_THREAD);
+	emscripten_set_gamepaddisconnected_callback_on_thread(NULL, true, &onGamepadAction, EM_CALLBACK_THREAD_CONTEXT_MAIN_BROWSER_THREAD);
 
 	// 初期化中フラグを倒す
 	NowInitialize = FALSE ;

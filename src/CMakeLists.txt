@@ -73,7 +73,7 @@ target_sources(DxLib
 
 set_target_properties(DxLib
     PROPERTIES 
-        COMPILE_FLAGS "-s USE_FREETYPE=1 -pthread -DASYNCIFY"
+        COMPILE_FLAGS "-sUSE_FREETYPE=1 -pthread -fwasm-exceptions"
         CXX_STANDARD 11
 )
 
@@ -91,7 +91,7 @@ target_sources(DxDrawFunc
 
 set_target_properties(DxDrawFunc
     PROPERTIES 
-        COMPILE_FLAGS "-pthread"
+        COMPILE_FLAGS "-pthread -fwasm-exceptions"
         CXX_STANDARD 11
 )
 
@@ -115,7 +115,7 @@ target_sources(DxUseCLib
 
 set_target_properties(DxUseCLib
     PROPERTIES 
-        COMPILE_FLAGS "-s USE_OGG=1 -s USE_VORBIS=1 -s USE_LIBPNG=1 -s USE_LIBJPEG=1 -s USE_ZLIB=1 -s USE_BULLET=1 -pthread"
+        COMPILE_FLAGS "-sUSE_OGG=1 -sUSE_VORBIS=1 -sUSE_LIBPNG=1 -sUSE_LIBJPEG=1 -sUSE_ZLIB=1 -sUSE_BULLET=1 -pthread -fwasm-exceptions"
         CXX_STANDARD 11
 )
 
@@ -136,7 +136,7 @@ target_link_libraries(DxLibSharedMain
 set_target_properties(DxLibSharedMain
     PROPERTIES 
         COMPILE_FLAGS "-s USE_FREETYPE=1 -s MAIN_MODULE=1"
-        LINK_FLAGS "-s ERROR_ON_UNDEFINED_SYMBOLS=0 -s USE_FREETYPE=1 -s USE_BULLET=1 -s USE_VORBIS=1 -s USE_OGG=1 -s USE_LIBPNG=1 -s USE_ZLIB=1 -s FULL_ES2=1 -s ALLOW_MEMORY_GROWTH=1 -s MAIN_MODULE=1 -s DECLARE_ASM_MODULE_EXPORTS=0"
+        LINK_FLAGS "-sERROR_ON_UNDEFINED_SYMBOLS=0 -sUSE_FREETYPE=1 -sUSE_BULLET=1 -sUSE_VORBIS=1 -sUSE_OGG=1 -sUSE_LIBPNG=1 -sUSE_ZLIB=1 -sFULL_ES2=1 -sALLOW_MEMORY_GROWTH=1 -sMAIN_MODULE=1 -sDECLARE_ASM_MODULE_EXPORTS=0"
         CXX_STANDARD 11
 )
 
@@ -145,17 +145,17 @@ set_target_properties(DxLibSharedMain
 if (DXLIB_BUILD_SHARED_MAIN)
     target_compile_options(DxLib
         PRIVATE
-            "SHELL:-s SIDE_MODULE=1"
+            "-sSIDE_MODULE=1"
     )
 
     target_compile_options(DxDrawFunc
         PRIVATE
-            "SHELL:-s SIDE_MODULE=1"
+            "-sSIDE_MODULE=1"
     )
 
     target_compile_options(DxUseCLib
         PRIVATE
-            "SHELL:-s SIDE_MODULE=1"
+            "-sSIDE_MODULE=1"
     )
 
     set_target_properties(DxLibSharedMain

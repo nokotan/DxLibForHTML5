@@ -35,7 +35,10 @@
 #include "../DxASyncLoad.h"
 #include <unistd.h>
 
+#include <emscripten.h>
+#include <emscripten/threading.h>
 #include <emscripten/html5.h>
+#include <emscripten/proxying.h>
 
 
 #ifndef DX_NON_NAMESPACE
@@ -3578,15 +3581,14 @@ extern	int		Graphics_HTML5_Device_Create( void )
 		attrib.stencil = EM_TRUE;
 		attrib.antialias = EM_TRUE;
 		attrib.premultipliedAlpha = EM_TRUE;
-		attrib.preserveDrawingBuffer = EM_FALSE;
-		attrib.preserveDrawingBuffer = EM_WEBGL_POWER_PREFERENCE_DEFAULT;
+		attrib.preserveDrawingBuffer = EM_TRUE;
 		attrib.failIfMajorPerformanceCaveat = EM_FALSE;
 		attrib.renderViaOffscreenBackBuffer = EM_TRUE;
-		attrib.proxyContextToMainThread = EM_FALSE;
+		attrib.proxyContextToMainThread = EMSCRIPTEN_WEBGL_CONTEXT_PROXY_ALWAYS;
 
 		attrib.majorVersion = 2;
 		attrib.minorVersion = 0;
-		attrib.explicitSwapControl = EM_FALSE;
+		attrib.explicitSwapControl = EM_TRUE;
 
 		ctxHandle = emscripten_webgl_create_context("#canvas", &attrib);
 
