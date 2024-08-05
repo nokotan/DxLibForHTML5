@@ -58,6 +58,7 @@
 
 #ifdef EMSCRIPTEN
 #include "HTML5/DxGraphicsHTML5.h"
+#include "HTML5/DxWindow.h"
 #endif
 
 
@@ -27572,6 +27573,10 @@ extern int Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int Col
 	// ドラッグ＆ドロップの設定をし直す
 	RefreshDragFileValidFlag() ;
 #endif // WINDOWS_DESKTOP_OS
+
+#ifdef EMSCRIPTEN
+	UpdateMainWindowSize();
+#endif
 
 END:
 	// Graphics_Screen_ChangeMode 実行中フラグを倒す

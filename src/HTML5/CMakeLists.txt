@@ -33,6 +33,7 @@ target_sources(DxLib
         DxSoundHTML5.cpp
         DxSystemHTML5.cpp
         DxThreadHTML5.cpp
+        DxWindow.cpp
 )
 
 

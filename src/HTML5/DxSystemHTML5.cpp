@@ -17,6 +17,7 @@
 #include "DxMaskHTML5.h"
 #include "DxModelHTML5.h"
 #include "DxSoundHTML5.h"
+#include "DxWindow.h"
 #include "../DxLib.h"
 #include "../DxArchive_.h"
 #include "../DxSystem.h"
@@ -48,21 +49,7 @@
 
 #include <emscripten.h>
 #include <emscripten/threading.h>
-#include <emscripten/html5.h>
 #include <emscripten/proxying.h>
-
-int canvas_width() {
-	return MAIN_THREAD_EM_ASM_INT({
-		return Module.canvas.width;
-	});
-}
-
-int canvas_height() {
-	return MAIN_THREAD_EM_ASM_INT({
-		return Module.canvas.height;
-	});
-}
-
 
 #ifndef DX_NON_NAMESPACE
 
@@ -166,6 +153,8 @@ extern int NS_DxLib_Init( void )
 	// デフォルトのグラフィック復元関数を登録
 	NS_SetRestoreGraphCallback( NULL ) ;
 #endif // DX_NON_GRAPHICS
+
+	if( InitializeWindow() == -1 ) goto ERROR_DX ;	
 
 	// 各処理系の初期化
 	if( DxSysData.NotInputFlag == FALSE )
@@ -1142,15 +1131,19 @@ static int SetupViewBuffer( void )
 }
 
 extern int GetGraphicsViewFramebufferInfo( unsigned int *ViewFrameBuffer, int *Width, int *Height ) {
-	if( g_HTML5Sys.ViewWidth != GLsizei(canvas_width()) ||
-		g_HTML5Sys.ViewHeight != GLsizei(canvas_height()) )
+	int CanvasWidth, CanvasHeight;
+
+	GetMainWindowSize(&CanvasWidth, &CanvasHeight);
+
+	if( g_HTML5Sys.ViewWidth != GLsizei(CanvasWidth) ||
+		g_HTML5Sys.ViewHeight != GLsizei(CanvasHeight) )
 	{
 		// TerminateViewBuffer() ;
 
 		SetupViewBuffer() ;
 
-		g_HTML5Sys.ViewWidth = GLsizei(canvas_width());
-		g_HTML5Sys.ViewHeight = GLsizei(canvas_height()) ;
+		g_HTML5Sys.ViewWidth = GLsizei(CanvasWidth);
+		g_HTML5Sys.ViewHeight = GLsizei(CanvasHeight) ;
 
 		Graphics_HTML5_SetScreenSize( g_HTML5Sys.ViewWidth, g_HTML5Sys.ViewHeight );
 	}

@@ -18248,6 +18248,261 @@ extern	int		Graphics_SetWaitVSyncFlag_PF( int Flag )
 }
 
 
+static void glUnbindFramebuffer(GLenum target) {
+	MAIN_THREAD_ASYNC_EM_ASM({
+		GLctx.bindFramebuffer($0, null);
+	}, target);
+}
+
+static void Graphics_ScreenFlip_MainThread(em_proxying_ctx* ctx, void* unused) 
+// サブバックバッファの内容を実バッファに転送する
+{
+	RECT DestRect ;
+	DWORD DestW ;
+	DWORD DestH ;
+	GLuint ViewFrameBuffer ;
+	GLint RenderBuffer;
+	int BlendMode ;
+	int BlendEnable ;
+	int BlendRGBSrc ;
+	int BlendRGBDest ;
+	int BlendRGBOp ;
+	int BlendASrc ;
+	int BlendADest ;
+	int BlendAOp ;
+	int NotWriteAlphaChannelFlag ;
+	float VertexData[ 4 ][ 4 ] =
+	{
+		{ -1.0f,  1.0f,  0.0f, 0.0f },
+		{  1.0f,  1.0f,  1.0f, 0.0f },
+		{ -1.0f, -1.0f,  0.0f, 1.0f },
+		{  1.0f, -1.0f,  1.0f, 1.0f },
+	} ;
+	
+	glGetIntegerv(GL_RENDERBUFFER_BINDING, &RenderBuffer);
+	GetGraphicsViewFramebufferInfo( ( unsigned int * )&ViewFrameBuffer, ( int * )&GHTML5.Device.Screen.Width, ( int * )&GHTML5.Device.Screen.Height );
+
+	if( GSYS.Screen.FullScreenFitScalingFlag )
+	{
+		DestW = GHTML5.Device.Screen.Width ;
+		DestH = GHTML5.Device.Screen.Height ;
+	}
+	else
+	{
+		DestW = GHTML5.Device.Screen.Width ;
+		DestH = GHTML5.Device.Screen.Width * GHTML5.Device.Screen.SubBackBufferTextureSizeY / GHTML5.Device.Screen.SubBackBufferTextureSizeX ;
+		if( DestH > GHTML5.Device.Screen.Height )
+		{
+			DestW = GHTML5.Device.Screen.Height * GHTML5.Device.Screen.SubBackBufferTextureSizeX / GHTML5.Device.Screen.SubBackBufferTextureSizeY ;
+			DestH = GHTML5.Device.Screen.Height ;
+		}
+	}
+
+	DestRect.left   = ( GHTML5.Device.Screen.Width  - DestW ) / 2 ;
+	DestRect.top    = ( GHTML5.Device.Screen.Height - DestH ) / 2 ;
+	DestRect.right  = DestRect.left + DestW ;
+	DestRect.bottom = DestRect.top  + DestH ;
+
+	// ブレンドモードをブレンド無しに変更
+	BlendMode		= GHTML5.Device.State.BlendMode ;
+	BlendEnable		= GHTML5.Device.State.BlendEnable ;
+	BlendRGBSrc		= GHTML5.Device.State.BlendRGBSrc ;
+	BlendRGBDest	= GHTML5.Device.State.BlendRGBDest ;
+	BlendRGBOp		= GHTML5.Device.State.BlendRGBOp ;
+	BlendASrc		= GHTML5.Device.State.BlendASrc ;
+	BlendADest		= GHTML5.Device.State.BlendADest ;
+	BlendAOp		= GHTML5.Device.State.BlendAOp ;
+	NotWriteAlphaChannelFlag = GHTML5.Device.State.NotWriteAlphaChannelFlag ;
+	Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, FALSE ) ;
+
+	// 描画先をフレームバッファに変更( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
+	// glBindFramebuffer( GL_FRAMEBUFFER, ViewFrameBuffer ) ;
+	glUnbindFramebuffer( GL_FRAMEBUFFER ) ;
+
+	// ビューポートをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
+	glViewport( DestRect.left, DestRect.top, DestRect.right - DestRect.left, DestRect.bottom - DestRect.top ) ;
+
+	// Ｚバッファを無効にする
+	Graphics_HTML5_DeviceState_SetDepthEnable( FALSE ) ;
+	Graphics_HTML5_DeviceState_SetDepthWriteEnable( FALSE ) ;
+
+	// カリングを無効にする
+	Graphics_HTML5_DeviceState_SetCullMode( DX_CULLING_NONE ) ;
+
+	// 画面をクリア( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
+	// glClearColor( 0.0f, 0.0f, 0.0f, 0.0f ) ;
+	// glClear( GL_COLOR_BUFFER_BIT ) ;
+
+	// 単純転送シェーダーをセット
+	Graphics_HTML5_DeviceState_SetShader( &GHTML5.Device.Shader.Base.StretchRect_Shader, FALSE ) ;
+
+	// Uniform の更新
+	Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 0 ) ;
+
+	// テクスチャをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
+	glActiveTexture( GL_TEXTURE0 ) ;
+	glBindTexture( GL_TEXTURE_2D, GHTML5.Device.Screen.SubBackBufferTexture ) ;
+
+	// ユーザー指定のメモリイメージがあるかどうかで処理を分岐
+	if( GSYS.Screen.UserScreenImage != NULL )
+	{
+		BYTE *Src = ( BYTE * )GSYS.Screen.UserScreenImage ;
+		BYTE *Dst = ( BYTE * )GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ;
+		DWORD i ;
+		DWORD Bytes ;
+
+		// ネイティブに対応していない場合は変換してから転送
+		if( GSYS.Screen.UserScreenImagePixelFormat == DX_USER_SCREEN_PIXEL_FORMAT_X8R8G8B8 &&
+			GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] == FALSE )
+		{
+			Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 4 ;
+			for( i = 0 ; i < Bytes ; i += 4 )
+			{
+				Dst[ i + 2 ] = Src[ i + 0 ] ;
+				Dst[ i + 1 ] = Src[ i + 1 ] ;
+				Dst[ i + 0 ] = Src[ i + 2 ] ;
+			}
+
+			glTexSubImage2D(
+				GL_TEXTURE_2D,
+				0,
+				0,
+				0,
+				GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+				GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+				GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+				GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+				GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
+			) ;
+		}
+		else
+		if( GSYS.Screen.UserScreenImagePixelFormat == DX_USER_SCREEN_PIXEL_FORMAT_X1R5G5B5 )
+		{
+			Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 2 ;
+			for( i = 0 ; i < Bytes ; i += 2 )
+			{
+				*( ( WORD * )&Dst[ i ] ) = ( WORD )( ( *( ( WORD * )&Src[ i ] ) << 1 ) | 1 ) ;
+			}
+
+			glTexSubImage2D(
+				GL_TEXTURE_2D,
+				0,
+				0,
+				0,
+				GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+				GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+				GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+				GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+				GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
+			) ;
+		}
+		else
+		{
+			glTexSubImage2D(
+				GL_TEXTURE_2D,
+				0,
+				0,
+				0,
+				GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+				GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+				GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+				GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+				GSYS.Screen.UserScreenImage
+			) ;
+		}
+	}
+	else
+	// ソフトウェアレンダリングモードの場合はここでテクスチャを更新
+	if( GSYS.Setting.NotUseHardware )
+	{
+		// ネイティブに対応している場合は単純転送
+		if( GSYS.Screen.MainScreenColorBitDepth == 16 || GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] )
+		{
+			glTexSubImage2D(
+				GL_TEXTURE_2D,
+				0,
+				0,
+				0,
+				GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+				GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+				GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+				GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+				GSYS.SoftRender.MainBufferMemImg.UseImage
+			) ;
+		}
+		else
+		{
+			BYTE *Src ;
+			BYTE *Dst ;
+			DWORD i ;
+			DWORD Bytes ;
+
+			// 対応していない場合は変換してから転送
+			Src = GSYS.SoftRender.MainBufferMemImg.UseImage ;
+			Dst = ( BYTE * )GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ;
+			Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 4 ;
+			for( i = 0 ; i < Bytes ; i += 4 )
+			{
+				Dst[ i + 2 ] = Src[ i + 0 ] ;
+				Dst[ i + 1 ] = Src[ i + 1 ] ;
+				Dst[ i + 0 ] = Src[ i + 2 ] ;
+			}
+
+			glTexSubImage2D(
+				GL_TEXTURE_2D,
+				0,
+				0,
+				0,
+				GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+				GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+				GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+				GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+				GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
+			) ;
+		}
+	}
+
+	// 拡大モードをセット
+	{
+		GLint FilterMode = GL_LINEAR ;
+		switch( GSYS.Screen.FullScreenScalingMode )
+		{
+		case DX_FSSCALINGMODE_BILINEAR :	FilterMode = GL_LINEAR ;	break ;
+		case DX_FSSCALINGMODE_NEAREST :		FilterMode = GL_NEAREST ;	break ;
+		}
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, FilterMode ) ;
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilterMode ) ;
+	}
+
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ) ;
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE ) ;
+
+	// 頂点データのセットアップ
+	Graphics_HTML5_DeviceState_SetupShaderVertexData(
+		&GHTML5.Device.Shader.Base.StretchRect_Shader,
+		&g_StretchRectVertexInputInfo,
+		VertexData
+	) ;
+
+	// 描画
+	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ) ;
+	GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+	// ブレンドモードを元に戻す
+	Graphics_HTML5_DeviceState_SetBlendMode(
+		BlendMode,
+		BlendEnable,
+		BlendRGBSrc,
+		BlendRGBDest,
+		BlendRGBOp,
+		BlendASrc,
+		BlendADest,
+		BlendAOp,
+		NotWriteAlphaChannelFlag
+	) ;
+
+	emscripten_proxy_finish((em_proxying_ctx*) ctx);
+}
 
 
 // 裏画面と表画面を交換する
@@ -18264,252 +18519,12 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 	// 描画を終了する
 	Graphics_HTML5_RenderEnd() ;
 
-	// サブバックバッファの内容を実バッファに転送する
-	{
-		RECT DestRect ;
-		DWORD DestW ;
-		DWORD DestH ;
-        GLuint ViewFrameBuffer ;
-		GLint RenderBuffer;
-		int BlendMode ;
-		int BlendEnable ;
-		int BlendRGBSrc ;
-		int BlendRGBDest ;
-		int BlendRGBOp ;
-		int BlendASrc ;
-		int BlendADest ;
-		int BlendAOp ;
-		int NotWriteAlphaChannelFlag ;
-		float VertexData[ 4 ][ 4 ] =
-		{
-			{ -1.0f,  1.0f,  0.0f, 0.0f },
-			{  1.0f,  1.0f,  1.0f, 0.0f },
-			{ -1.0f, -1.0f,  0.0f, 1.0f },
-			{  1.0f, -1.0f,  1.0f, 1.0f },
-		} ;
-		
-		glGetIntegerv(GL_RENDERBUFFER_BINDING, &RenderBuffer);
-		GetGraphicsViewFramebufferInfo( ( unsigned int * )&ViewFrameBuffer, ( int * )&GHTML5.Device.Screen.Width, ( int * )&GHTML5.Device.Screen.Height );
-
-		if( GSYS.Screen.FullScreenFitScalingFlag )
-		{
-			DestW = GHTML5.Device.Screen.Width ;
-			DestH = GHTML5.Device.Screen.Height ;
-		}
-		else
-		{
-			DestW = GHTML5.Device.Screen.Width ;
-			DestH = GHTML5.Device.Screen.Width * GHTML5.Device.Screen.SubBackBufferTextureSizeY / GHTML5.Device.Screen.SubBackBufferTextureSizeX ;
-			if( DestH > GHTML5.Device.Screen.Height )
-			{
-				DestW = GHTML5.Device.Screen.Height * GHTML5.Device.Screen.SubBackBufferTextureSizeX / GHTML5.Device.Screen.SubBackBufferTextureSizeY ;
-				DestH = GHTML5.Device.Screen.Height ;
-			}
-		}
-
-		DestRect.left   = ( GHTML5.Device.Screen.Width  - DestW ) / 2 ;
-		DestRect.top    = ( GHTML5.Device.Screen.Height - DestH ) / 2 ;
-		DestRect.right  = DestRect.left + DestW ;
-		DestRect.bottom = DestRect.top  + DestH ;
-
-		// ブレンドモードをブレンド無しに変更
-		BlendMode		= GHTML5.Device.State.BlendMode ;
-		BlendEnable		= GHTML5.Device.State.BlendEnable ;
-		BlendRGBSrc		= GHTML5.Device.State.BlendRGBSrc ;
-		BlendRGBDest	= GHTML5.Device.State.BlendRGBDest ;
-		BlendRGBOp		= GHTML5.Device.State.BlendRGBOp ;
-		BlendASrc		= GHTML5.Device.State.BlendASrc ;
-		BlendADest		= GHTML5.Device.State.BlendADest ;
-		BlendAOp		= GHTML5.Device.State.BlendAOp ;
-		NotWriteAlphaChannelFlag = GHTML5.Device.State.NotWriteAlphaChannelFlag ;
-		Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, FALSE ) ;
-
-		// 描画先をフレームバッファに変更( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
-		// glBindFramebuffer( GL_FRAMEBUFFER, ViewFrameBuffer ) ;
-		glBindFramebuffer( GL_FRAMEBUFFER, 0 ) ;
-
-		// ビューポートをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
-		glViewport( DestRect.left, DestRect.top, DestRect.right - DestRect.left, DestRect.bottom - DestRect.top ) ;
-
-		// Ｚバッファを無効にする
-		Graphics_HTML5_DeviceState_SetDepthEnable( FALSE ) ;
-		Graphics_HTML5_DeviceState_SetDepthWriteEnable( FALSE ) ;
-
-		// カリングを無効にする
-		Graphics_HTML5_DeviceState_SetCullMode( DX_CULLING_NONE ) ;
-
-		// 画面をクリア( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
-		glClearColor( 0.0f, 0.0f, 0.0f, 0.0f ) ;
-		glClear( GL_COLOR_BUFFER_BIT ) ;
-
-		// 単純転送シェーダーをセット
-		Graphics_HTML5_DeviceState_SetShader( &GHTML5.Device.Shader.Base.StretchRect_Shader, FALSE ) ;
-
-		// Uniform の更新
-		Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 0 ) ;
-
-		// テクスチャをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
-		glActiveTexture( GL_TEXTURE0 ) ;
-		glBindTexture( GL_TEXTURE_2D, GHTML5.Device.Screen.SubBackBufferTexture ) ;
-
-		// ユーザー指定のメモリイメージがあるかどうかで処理を分岐
-		if( GSYS.Screen.UserScreenImage != NULL )
-		{
-			BYTE *Src = ( BYTE * )GSYS.Screen.UserScreenImage ;
-			BYTE *Dst = ( BYTE * )GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ;
-			DWORD i ;
-			DWORD Bytes ;
-
-			// ネイティブに対応していない場合は変換してから転送
-			if( GSYS.Screen.UserScreenImagePixelFormat == DX_USER_SCREEN_PIXEL_FORMAT_X8R8G8B8 &&
-				GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] == FALSE )
-			{
-				Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 4 ;
-				for( i = 0 ; i < Bytes ; i += 4 )
-				{
-					Dst[ i + 2 ] = Src[ i + 0 ] ;
-					Dst[ i + 1 ] = Src[ i + 1 ] ;
-					Dst[ i + 0 ] = Src[ i + 2 ] ;
-				}
-
-				glTexSubImage2D(
-					GL_TEXTURE_2D,
-					0,
-					0,
-					0,
-					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
-					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
-					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
-					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
-					GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
-				) ;
-			}
-			else
-			if( GSYS.Screen.UserScreenImagePixelFormat == DX_USER_SCREEN_PIXEL_FORMAT_X1R5G5B5 )
-			{
-				Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 2 ;
-				for( i = 0 ; i < Bytes ; i += 2 )
-				{
-					*( ( WORD * )&Dst[ i ] ) = ( WORD )( ( *( ( WORD * )&Src[ i ] ) << 1 ) | 1 ) ;
-				}
-
-				glTexSubImage2D(
-					GL_TEXTURE_2D,
-					0,
-					0,
-					0,
-					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
-					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
-					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
-					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
-					GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
-				) ;
-			}
-			else
-			{
-				glTexSubImage2D(
-					GL_TEXTURE_2D,
-					0,
-					0,
-					0,
-					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
-					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
-					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
-					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
-					GSYS.Screen.UserScreenImage
-				) ;
-			}
-		}
-		else
-		// ソフトウェアレンダリングモードの場合はここでテクスチャを更新
-		if( GSYS.Setting.NotUseHardware )
-		{
-			// ネイティブに対応している場合は単純転送
-			if( GSYS.Screen.MainScreenColorBitDepth == 16 || GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] )
-			{
-				glTexSubImage2D(
-					GL_TEXTURE_2D,
-					0,
-					0,
-					0,
-					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
-					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
-					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
-					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
-					GSYS.SoftRender.MainBufferMemImg.UseImage
-				) ;
-			}
-			else
-			{
-				BYTE *Src ;
-				BYTE *Dst ;
-				DWORD i ;
-				DWORD Bytes ;
-
-				// 対応していない場合は変換してから転送
-				Src = GSYS.SoftRender.MainBufferMemImg.UseImage ;
-				Dst = ( BYTE * )GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ;
-				Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 4 ;
-				for( i = 0 ; i < Bytes ; i += 4 )
-				{
-					Dst[ i + 2 ] = Src[ i + 0 ] ;
-					Dst[ i + 1 ] = Src[ i + 1 ] ;
-					Dst[ i + 0 ] = Src[ i + 2 ] ;
-				}
-
-				glTexSubImage2D(
-					GL_TEXTURE_2D,
-					0,
-					0,
-					0,
-					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
-					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
-					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
-					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
-					GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
-				) ;
-			}
-		}
-
-		// 拡大モードをセット
-		{
-			GLint FilterMode = GL_LINEAR ;
-			switch( GSYS.Screen.FullScreenScalingMode )
-			{
-			case DX_FSSCALINGMODE_BILINEAR :	FilterMode = GL_LINEAR ;	break ;
-			case DX_FSSCALINGMODE_NEAREST :		FilterMode = GL_NEAREST ;	break ;
-			}
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, FilterMode ) ;
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilterMode ) ;
-		}
-
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ) ;
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE ) ;
-
-		// 頂点データのセットアップ
-		Graphics_HTML5_DeviceState_SetupShaderVertexData(
-			&GHTML5.Device.Shader.Base.StretchRect_Shader,
-			&g_StretchRectVertexInputInfo,
-			VertexData
-		) ;
-
-		// 描画
-		glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ) ;
-		GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
-
-		// ブレンドモードを元に戻す
-		Graphics_HTML5_DeviceState_SetBlendMode(
-			BlendMode,
-			BlendEnable,
-			BlendRGBSrc,
-			BlendRGBDest,
-			BlendRGBOp,
-			BlendASrc,
-			BlendADest,
-			BlendAOp,
-			NotWriteAlphaChannelFlag
-		) ;
-	}
+	auto defaultQueue = emscripten_proxy_get_system_queue();
+	emscripten_proxy_sync_with_ctx(
+		defaultQueue,
+		emscripten_main_browser_thread_id(),
+		&Graphics_ScreenFlip_MainThread,
+		nullptr);
 
 	// ＶＳＹＮＣ待ちフラグを立てる
 	GHTML5.Device.Screen.WaitVSyncFlag = TRUE ;
@@ -18530,7 +18545,7 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 		// }
 	}
 
-	emscripten_webgl_commit_frame();
+    // emscripten_webgl_commit_frame();
 	return 0 ;
 }
 
