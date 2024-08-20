@@ -71,6 +71,11 @@ target_sources(DxLib
         DxThread.cpp
 )
 
+target_compile_definitions(DxLib
+PRIVATE
+    PROXY_TO_PTHREAD
+)
+
 set_target_properties(DxLib
     PROPERTIES 
         COMPILE_FLAGS "-sUSE_FREETYPE=1 -pthread -fwasm-exceptions"

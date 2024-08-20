@@ -49,18 +49,18 @@
 #define DX_NON_MOVIE
 
 // ＢＭＰ画像の読み込み機能がいらない方は次のコメントを外してください
-// #define DX_NON_BMPREAD
+#define DX_NON_BMPREAD
 
 // ＴＧＡ画像の読み込み機能がいらない方は次のコメントを外してください
 // #define DX_NON_TGA
 
 // ＪＰＥＧ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-// #define DX_NON_JPEGREAD
+#define DX_NON_JPEGREAD
 
 // ＰＮＧ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
-// #define DX_NON_PNGREAD
+#define DX_NON_PNGREAD
 
 // ＴＩＦＦ画像の読みこみ機能がいらない方は次のコメントを外してください
 // ※DxUseCLib.lib も再コンパイルする必要があります
@@ -82,7 +82,7 @@
 //#define DX_NON_ACM
 
 // 標準 WAVE ファイルを使用しない方は次のコメントを外してください
-// #define DX_NON_WAVE
+#define DX_NON_WAVE
 
 // DirectShow を使用した MP3 ファイルのデコードを行わない場合は次のコメントをはずしてください
 //#define DX_NON_DSHOW_MP3
@@ -163,7 +163,7 @@
 //#define DX_NON_FONT
 
 // ブラウザ依存のフォント描画機能を有効にする場合は次のコメントを外して下さい
-// #define DX_USE_BROWSER_FONT
+#define DX_USE_BROWSER_FONT
 
 // サウンド再生機能( ソフトウエアサウンド、MIDI含む )を無効にする場合は次のコメントを外して下さい
 //#define DX_NON_SOUND

@@ -50,8 +50,9 @@
 #ifndef DX_NON_PNGREAD
 	#include "png.h"
 //  #include "pngpriv.h"
-	#include "zlib.h"
 #endif
+
+#include "zlib.h"
 
 #ifndef DX_NON_JPEGREAD
 	#ifdef DX_GCC_COMPILE
