@@ -125,6 +125,11 @@ extern int NS_DxLib_Init( void )
 	InitializeASyncLoad( Thread_GetCurrentId() ) ;
 #endif // DX_NON_ASYNCLOAD
 
+#if !defined(DX_NON_FONT) && defined(DX_USE_BROWSER_FONT)
+	// フォントタイプはアンチエイリアスタイプに固定
+	SetAntialiasingFontOnlyFlag( TRUE ) ;
+#endif // DX_NON_FONT
+
 	// ファイルアクセス処理の初期化
 	InitializeFile() ;
 
@@ -761,29 +766,42 @@ namespace DxLib
 
 #endif // DX_NON_NAMESPACE
 
-int WaitedForCurrentFrame(double, void* ctx) {
-	emscripten_proxy_finish((em_proxying_ctx*) ctx);
-	return 0;
-}
+#ifdef PROXY_TO_PTHREAD
 
-void WaitForNextFrameImpl(em_proxying_ctx* ctx, void*) {
-	emscripten_request_animation_frame(&WaitedForCurrentFrame, ctx);
-}
+EM_JS(void, WaitForNewFrameOnMainThread, (em_proxying_ctx* ctx, void* arg), {
+	requestAnimationFrame(() => {
+		_emscripten_proxy_finish(ctx);
+	});
+});
 
-void WaitForNextFrame() {
+EM_JS_DEPS(WaitForNewFrameOnMainThread, "emscripten_proxy_finish");
+
+#endif
+
+void WaitForNewFrame( void ) {
 #ifdef ASYNCIFY
 	EM_ASM({
 		Asyncify.handleSleep(function(wakeUp) {
 			requestAnimationFrame(wakeUp);
 		});
 	});
-#else
+#elif defined(PROXY_TO_PTHREAD)
 	auto defaultQueue = emscripten_proxy_get_system_queue();
 	emscripten_proxy_sync_with_ctx(
 		defaultQueue,
 		emscripten_main_browser_thread_id(),
-		&WaitForNextFrameImpl,
+		&WaitForNewFrameOnMainThread,
 		nullptr);
+#endif
+}
+
+void YieldToBrowserMessageLoop( void ) {
+#ifdef ASYNCIFY
+	EM_ASM({
+		Asyncify.handleSleep(function(wakeUp) {
+			setTimeout(wakeUp, 0);
+		});
+	});
 #endif
 }
 
@@ -791,8 +809,6 @@ void WaitForNextFrame() {
 extern int NS_ProcessMessage( void )
 {
 	static int EndFlag = FALSE ;
-
-	WaitForNextFrame();
 
 	// もしフラグがたっていたらなにもせず終了
 	if( EndFlag )

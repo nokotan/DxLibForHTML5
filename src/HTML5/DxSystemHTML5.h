@@ -77,6 +77,12 @@ extern int GetGraphicsViewFramebufferInfo( unsigned int *ViewFrameBuffer, int *W
 
 extern void GraphicsViewRenderBufferPresent( void ) ;
 
+// requestAnimationFrame が呼ばれるまで待機する
+extern void WaitForNewFrame( void ) ;
+
+// ブラウザのメッセージループを処理する
+extern void YieldToBrowserMessageLoop( void ) ;
+
 #ifndef DX_NON_NAMESPACE
 
 }

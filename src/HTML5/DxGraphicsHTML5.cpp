@@ -18244,6 +18244,7 @@ extern	int		Graphics_Hardware_WaitVSync_PF( int SyncNum )
 // ScreenFlip 実行時にＶＳＹＮＣ待ちをするかどうかを設定する
 extern	int		Graphics_SetWaitVSyncFlag_PF( int Flag )
 {
+	GSYS.Screen.NotWaitVSyncFlag = Flag ;
 	return 0 ;
 }
 
@@ -18254,7 +18255,7 @@ static void glUnbindFramebuffer(GLenum target) {
 	}, target);
 }
 
-static void Graphics_ScreenFlip_MainThread(em_proxying_ctx* ctx, void* unused) 
+static void Graphics_ScreenFlip_MainThread(void* unused) 
 // サブバックバッファの内容を実バッファに転送する
 {
 	RECT DestRect ;
@@ -18500,8 +18501,6 @@ static void Graphics_ScreenFlip_MainThread(em_proxying_ctx* ctx, void* unused)
 		BlendAOp,
 		NotWriteAlphaChannelFlag
 	) ;
-
-	emscripten_proxy_finish((em_proxying_ctx*) ctx);
 }
 
 
@@ -18519,12 +18518,16 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 	// 描画を終了する
 	Graphics_HTML5_RenderEnd() ;
 
+#ifdef PROXY_TO_PTHREAD
 	auto defaultQueue = emscripten_proxy_get_system_queue();
-	emscripten_proxy_sync_with_ctx(
+	emscripten_proxy_sync(
 		defaultQueue,
 		emscripten_main_browser_thread_id(),
 		&Graphics_ScreenFlip_MainThread,
 		nullptr);
+#else
+    Graphics_ScreenFlip_MainThread(nullptr);
+#endif
 
 	// ＶＳＹＮＣ待ちフラグを立てる
 	GHTML5.Device.Screen.WaitVSyncFlag = TRUE ;
@@ -18538,14 +18541,13 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 	// ＶＳＹＮＣ待ちする
 	if( GSYS.Screen.NotWaitVSyncFlag == FALSE )
 	{
-		// emscriten では Vsync解除未実装
-		// while( GHTML5.Device.Screen.WaitVSyncFlag == TRUE )
-		// {
-		// 	usleep( 50 ) ;
-		// }
+		WaitForNewFrame();
+	}
+	else
+	{
+		YieldToBrowserMessageLoop();
 	}
 
-    // emscripten_webgl_commit_frame();
 	return 0 ;
 }
 
