@@ -23,6 +23,8 @@
 #include "../DxLog.h"
 
 #include <emscripten.h>
+#include <emscripten/threading.h>
+#include <emscripten/proxying.h>
 
 #ifndef DX_NON_NAMESPACE
 
@@ -37,11 +39,20 @@ namespace DxLib
 
 typedef struct tagDECODEDAUDIO
 {
+	void* SrcBuffer;
+	int SrcLength;
+
 	int ChannelNum;
 	int DecodedId;
 	int SamplingRate;
 	int Length;
 } DECODEDAUDIO;
+
+typedef struct SOUNDCONV_BROWSER
+{
+	int							BufferId;
+	int							ReadPos;
+} SOUNDCONV_BROWSER;
 
 // データ宣言------------------------------------------------------------------
 
@@ -53,7 +64,7 @@ SOUNDCONVERTDATA_HTML5 GSoundConvertData_HTML5 ;
 
 // 初期化・終了関数
 
-int InitializeDecodeAudioOnBrowser() {
+static int InitializeDecodeAudioOnBrowser() {
 	return MAIN_THREAD_EM_ASM_INT({
 		if (!Module["DxLib"]) {
 			Module["DxLib"] = {};
@@ -74,15 +85,17 @@ extern	int InitializeSoundConvert_PF( void )
 	return 0 ;
 }
 
-EM_JS(int, TerminateDecodeAudioOnBrowser, (), {
-	if (Module["DxLib"]) {
-		delete Module["DxLib"].audioContext;
-		delete Module["DxLib"].NextDecodedAudioId;
-		delete Module["DxLib"].DecodedAudio;
-	}
+static int TerminateDecodeAudioOnBrowser() {
+	return MAIN_THREAD_EM_ASM_INT({
+		if (Module["DxLib"]) {
+			delete Module["DxLib"].audioContext;
+			delete Module["DxLib"].NextDecodedAudioId;
+			delete Module["DxLib"].DecodedAudio;
+		}
 
-	return 0;
-})
+		return 0;
+	});
+}
 
 // サウンドデータ変換処理の環境依存の終了処理を行う
 extern	int TerminateSoundConvert_PF( void )
@@ -100,34 +113,65 @@ extern	int TerminateSoundConvert_PF( void )
 
 
 
+#ifdef PROXY_TO_PTHREAD
+EM_JS(void, SetupDecodeAudioOnBrowserJs, (em_proxying_ctx* ctx, void* Data),
+#else
+EM_JS(void, SetupDecodeAudioOnBrowserJs, (DECODEDAUDIO* Data), 
+#endif
+	{
+		function DecodeAudioImpl(wakeUp) {
+			const SrcBuffer = HEAPU32[(Data>>2)+0];
+			const Length = HEAPU32[(Data>>2)+1];
 
-EM_JS(int, SetupDecodeAudioOnBrowser, (void* SrcBuffer, size_t Length, DECODEDAUDIO* Data), {
-	return Asyncify.handleSleep(function(wakeUp) {
-		const audioData = new Uint8Array(HEAPU8, SrcBuffer, Length);
-		const onSuccess = function(decoded) {
-			const id = Module["DxLib"].NextDecodedAudioId++;
-			Module["DxLib"].DecodedAudio[id] = decoded;
+			const audioData = HEAPU8.slice(SrcBuffer, SrcBuffer + Length);
+			const onSuccess = function(decoded) {
+				const id = Module["DxLib"].NextDecodedAudioId++;
+				Module["DxLib"].DecodedAudio[id] = decoded;
 
-			HEAP32[(Data>>2)+0] = decoded.numberOfChannels;
-			HEAP32[(Data>>2)+1] = id;
-			HEAPU32[(Data>>2)+2] = decoded.sampleRate;
-			HEAPU32[(Data>>2)+3] = decoded.length*decoded.numberOfChannels;
+				HEAP32[(Data>>2)+2] = decoded.numberOfChannels;
+				HEAP32[(Data>>2)+3] = id;
+				HEAPU32[(Data>>2)+4] = decoded.sampleRate;
+				HEAPU32[(Data>>2)+5] = decoded.length*decoded.numberOfChannels;
 
-			wakeUp(0);
-		};
+				wakeUp();
+			};
 
-		const onFailure = function() {
-			HEAP32[(Data>>2)+0] = 0;
-			HEAP32[(Data>>2)+1] = 0;
-			HEAPU32[(Data>>2)+2] = 0;
-			HEAPU32[(Data>>2)+3] = 0;
+			const onFailure = function() {
+				HEAP32[(Data>>2)+2] = 0;
+				HEAP32[(Data>>2)+3] = -1;
+				HEAPU32[(Data>>2)+4] = 0;
+				HEAPU32[(Data>>2)+5] = 0;
 
-			wakeUp(-1);
-		};
+				wakeUp();
+			};
 
-		Module["DxLib"].audioContext.decodeAudioData(audioData.buffer, onSuccess, onFailure); 
-	});
-})
+			Module["DxLib"].audioContext.decodeAudioData(audioData.buffer, onSuccess, onFailure); 
+		}
+
+	#ifdef ASYNCIFY
+		Asyncify.handleSleep(DecodeAudioImpl);
+	#elif defined(PROXY_TO_PTHREAD)
+		DecodeAudioImpl(function() {
+			_emscripten_proxy_finish(ctx);
+		});
+	#endif
+	})
+
+static int SetupDecodeAudioOnBrowser(DECODEDAUDIO* Data) 
+{
+#ifdef ASYNCIFY
+	SetupDecodeAudioOnBrowserJs(Data);
+#elif defined(PROXY_TO_PTHREAD)
+	auto defaultQueue = emscripten_proxy_get_system_queue();
+	emscripten_proxy_sync_with_ctx(
+		defaultQueue,
+		emscripten_main_runtime_thread_id(),
+		&SetupDecodeAudioOnBrowserJs,
+		(void*)Data);
+#endif
+
+	return Data->DecodedId;
+}
 
 // (環境依存処理)変換処理のセットアップ( [戻] -1:エラー )
 extern	int SetupSoundConvert_PF( SOUNDCONV *SoundConv, STREAMDATA *Stream, int DisableReadSoundFunctionMask )
@@ -137,6 +181,7 @@ extern	int SetupSoundConvert_PF( SOUNDCONV *SoundConv, STREAMDATA *Stream, int D
 	size_t FileSize;
 	BYTE *AudioData = NULL;
 	DECODEDAUDIO DecodedAudio;
+	SOUNDCONV_BROWSER* SoundConvBrowser;
 
 	{
 		sstr = &Stream->ReadShred ;
@@ -151,16 +196,19 @@ extern	int SetupSoundConvert_PF( SOUNDCONV *SoundConv, STREAMDATA *Stream, int D
 	// デコード後のデータを格納するメモリ領域の確保
 	AudioData = (BYTE *)DXALLOC( ( size_t )FileSize ) ;	
 	if( AudioData == NULL ) goto ERR ;
-	if( SetupDecodeAudioOnBrowser( AudioData, FileSize, &DecodedAudio) == -1) goto ERR ;
+	if( ( sstr->Read( AudioData, sizeof(BYTE), FileSize, sp ) ) <= 0 ) goto ERR ;
+
+	{
+		DecodedAudio.SrcBuffer = AudioData;
+		DecodedAudio.SrcLength = FileSize;
+	}
+
+	if( SetupDecodeAudioOnBrowser(&DecodedAudio) == -1) goto ERR ;
 
 	SoundConv->HeaderPos = 0;
 	SoundConv->HeaderSize = 0;
 	SoundConv->DataPos = 0;
 	SoundConv->DataSize = DecodedAudio.Length ;
-	SoundConv->BufferId = DecodedAudio.DecodedId;
-
-	// 変換後のＰＣＭデータを一時的に保存するメモリ領域のサイズをセット
-	SoundConv->DestDataSize = ( LONGLONG )SoundConv->OutFormat.nAvgBytesPerSec ;
 
 	SoundConv->OutFormat.nSamplesPerSec  = DecodedAudio.SamplingRate ;
 	SoundConv->OutFormat.nChannels       = DecodedAudio.ChannelNum ;
@@ -168,6 +216,13 @@ extern	int SetupSoundConvert_PF( SOUNDCONV *SoundConv, STREAMDATA *Stream, int D
 	SoundConv->OutFormat.wFormatTag      = WAVE_FORMAT_PCM ;
 	SoundConv->OutFormat.nBlockAlign     = ( WORD )( SoundConv->OutFormat.wBitsPerSample  * SoundConv->OutFormat.nChannels / 8 ) ;
 	SoundConv->OutFormat.nAvgBytesPerSec = SoundConv->OutFormat.nBlockAlign * SoundConv->OutFormat.nSamplesPerSec ;
+
+	SoundConvBrowser = (SOUNDCONV_BROWSER*)SoundConv->ConvFunctionBuffer;
+	SoundConvBrowser->BufferId = DecodedAudio.DecodedId;
+	SoundConvBrowser->ReadPos = 0;
+
+	// 変換後のＰＣＭデータを一時的に保存するメモリ領域のサイズをセット
+	SoundConv->DestDataSize = ( LONGLONG )SoundConv->OutFormat.nAvgBytesPerSec ;
 
 	// タイプセット
 	SoundConv->MethodType = SOUND_METHODTYPE_BROWSER ;
@@ -189,54 +244,70 @@ extern	int SetSampleTimeSoundConvert_PF(    SOUNDCONV *SoundConv, LONGLONG Sampl
 	return res ;
 }
 
-EM_JS(int, ConvertDecodeAudioOnBrowser, (int BufferId, void* Buffer, size_t ReadSize, int ReadPos), {
-	const decoded = Module["DxLib"].DecodedAudio[BufferId];
+int ConvertDecodeAudioOnBrowser(int BufferId, void* Buffer, size_t ReadSize, int ReadPos) {
+	return MAIN_THREAD_EM_ASM_INT({
+		const BufferId = $0;
+		const Buffer = $1;
+		const ReadSize = $2;
+		const ReadPos = $3;
 
-	if (!decoded) {
-		return -1;
-	}
+		const decoded = Module["DxLib"].DecodedAudio[BufferId];
 
-	const readSizeByChannel = ReadSize / decoded.numberOfChannels;
-	const readPosByChannel = ReadPos / decoded.numberOfChannels;
-
-	for (let i = 0; i < decoded.numberOfChannels; i++) {
-		const rawData = decoded.getChannelData(i);
-		for (let j = readPosByChannel; j < readPosByChannel + readSizeByChannel; i++) {
-			HEAP16[(Buffer>>1)+j*decoded.numberOfChannels+i]=rawData[j];
+		if (!decoded) {
+			return -1;
 		}
-	}
 
-	return 0;
-})
+		const readSizeByChannel = ReadSize / decoded.numberOfChannels;
+		const readPosByChannel = ReadPos / decoded.numberOfChannels;
+
+		for (let i = 0; i < decoded.numberOfChannels; i++) {
+			const rawData = decoded.getChannelData(i);
+			for (let j = readPosByChannel; j < readPosByChannel + readSizeByChannel; j++) {
+				HEAP16[(Buffer>>1)+j*decoded.numberOfChannels+i]=rawData[j] * 32767;
+			}
+		}
+
+		return 0;
+	}, BufferId, Buffer, ReadSize, ReadPos);
+}
 
 // (環境依存処理)変換後のバッファにデータを補充する
 extern	int ConvertProcessSoundConvert_PF(  SOUNDCONV *SoundConv )
 {
 	LONGLONG readsize, pos ;
-	int BufferId;
+	SOUNDCONV_BROWSER* SoundConvBrowser;
 
-	BufferId = SoundConv->BufferId;
-	pos = SoundConv->Stream.DataPoint - SoundConv->DataPos ;
-	if( pos == SoundConv->DataSize ) return -1 ;
+	SoundConvBrowser = (SOUNDCONV_BROWSER*)SoundConv->ConvFunctionBuffer;
+	
+	pos = SoundConvBrowser->ReadPos - SoundConv->DataPos ;
+	if( pos >= SoundConv->DataSize ) return -1 ;
 
 	// 読み込むデータサイズを決定する
 	readsize = SoundConv->DataSize - pos ;
 	if( SoundConv->DestDataSize < readsize ) readsize = SoundConv->DestDataSize ;
 
-	ConvertDecodeAudioOnBrowser(BufferId, SoundConv->DestData, readsize, pos);
+	ConvertDecodeAudioOnBrowser(SoundConvBrowser->BufferId, SoundConv->DestData, readsize, pos);
+	SoundConv->DestDataValidSize = readsize ;
+	SoundConvBrowser->ReadPos += readsize ;
 
 	return 0 ;
 }
 
-EM_JS(int, DeleteDecodeAudioOnBrowser, (int BufferId), {
-	delete Module["DxLib"].DecodedAudio[BufferId];
-	return 0;
-})
+int DeleteDecodeAudioOnBrowser(int BufferId) {
+	return MAIN_THREAD_EM_ASM_INT({
+		delete Module["DxLib"].DecodedAudio[$0];
+		return 0;
+	}, BufferId);
+}
 
 // (環境依存処理)変換処理の後始末を行う
 extern	int TerminateSoundConvert_PF(        SOUNDCONV *SoundConv )
 {
-	DeleteDecodeAudioOnBrowser(SoundConv->BufferId);
+	SOUNDCONV_BROWSER* SoundConvBrowser;
+
+	SoundConvBrowser = (SOUNDCONV_BROWSER*)SoundConv->ConvFunctionBuffer;
+
+	DeleteDecodeAudioOnBrowser(SoundConvBrowser->BufferId);
 
 	return 0 ;
 }

@@ -107,17 +107,25 @@ extern int TermFontManage_PF( void )
 
 
 
-EM_JS(int, CreateFontOnBrowser, (char* FontName, int FontSize), {
-    const FontNameString = UTF8ToString(FontName);
-    const FontSpec = `${FontSize}px '${FontNameString}'`;
+int CreateFontOnBrowser(char* FontName, int FontSize) {
+    return MAIN_THREAD_EM_ASM_INT({
+        const FontName = $0;
+        const FontSize = $1;
 
-    const id = Module["DxLib"].NextFontDataId++;
-    Module["DxLib"].FontData[id] = {
-        font: FontSpec,
-        size: FontSize
-    };
-    return id;
-})
+        const FontNameString = UTF8ToString(FontName);
+        const FontSpec = `${FontSize}px '${FontNameString}'`;
+
+        const id = Module["DxLib"].NextFontDataId++;
+        (Module["DxLib"].FontData[id] = {
+            font: FontSpec,
+            size: FontSize
+        });
+        return id;
+    }, FontName, FontSize);
+}
+
+
+
 
 // CreateFontToHandle の環境依存処理を行う関数
 extern int CreateFontToHandle_PF( CREATEFONTTOHANDLE_GPARAM *GParam, FONTMANAGE *ManageData, int DefaultCharSet )
@@ -190,37 +198,43 @@ extern int FontCacheCharAddToHandle_Timing0_PF( FONTMANAGE *ManageData )
 	return 0 ;
 }
 
-EM_JS(int, RenderFontBitmap, (int FontId, DWORD CharCode, FONTDATA* FontData), {
-    const font = Module["DxLib"].FontData[FontId].font;
-    const size = Module["DxLib"].FontData[FontId].size;
+int RenderFontBitmap(int FontId, DWORD CharCode, FONTDATA* FontData) {
+    MAIN_THREAD_EM_ASM({
+        const FontId = $0;
+        const CharCode = $1;
+        let FontData = $2;
 
-    Module["DxLib"].TextRenderingContext.fillStyle = "0xfff";
-    Module["DxLib"].TextRenderingContext.font = font;
-    Module["DxLib"].TextRenderingContext.textBaseline = "bottom";
+        const font = Module["DxLib"].FontData[FontId].font;
+        const size = Module["DxLib"].FontData[FontId].size;
 
-    const text = String.fromCharCode(CharCode);
-    const textMetrix = Module["DxLib"].TextRenderingContext.measureText(text);
-    const fontWidth = Math.ceil(Math.abs(textMetrix.actualBoundingBoxLeft) + Math.abs(textMetrix.actualBoundingBoxRight)) || 1;
-    const fontHeight = Math.ceil(Math.abs(textMetrix.actualBoundingBoxAscent) + Math.abs(textMetrix.actualBoundingBoxDescent)) || 1;
-    const fontXAdvance = textMetrix.width;
+        Module["DxLib"].TextRenderingContext.fillStyle = "0xfff";
+        Module["DxLib"].TextRenderingContext.font = font;
+        // Module["DxLib"].TextRenderingContext.textBaseline = "bottom";
 
-    Module["DxLib"].TextRenderingContext.clearRect(0, 0, Module["DxLib"].TextRenderingCanvas.width, Module["DxLib"].TextRenderingCanvas.height);
-    Module["DxLib"].TextRenderingContext.fillText(text, Math.abs(textMetrix.actualBoundingBoxLeft), fontHeight);
+        const text = String.fromCharCode(CharCode);
+        const textMetrix = Module["DxLib"].TextRenderingContext.measureText(text);
+        const fontWidth = Math.ceil(textMetrix.actualBoundingBoxRight - textMetrix.actualBoundingBoxLeft) || 1;
+        const fontHeight = Math.ceil(textMetrix.actualBoundingBoxAscent + textMetrix.actualBoundingBoxDescent) || 1;
+        const fontXAdvance = fontWidth;
 
-    const textBitmap = Module["DxLib"].TextRenderingContext.getImageData(0, 0, fontWidth, fontHeight).data;
-    const dataBuffer = Module["_malloc"](textBitmap.length);
+        Module["DxLib"].TextRenderingContext.clearRect(0, 0, Module["DxLib"].TextRenderingCanvas.width, Module["DxLib"].TextRenderingCanvas.height);
+        Module["DxLib"].TextRenderingContext.fillText(text, 0, Math.ceil(textMetrix.actualBoundingBoxAscent));
 
-    HEAPU8.set(textBitmap, dataBuffer);
+        const textBitmap = Module["DxLib"].TextRenderingContext.getImageData(0, 0, fontWidth, fontHeight).data;
+        const dataBuffer = Module["_malloc"](textBitmap.length);
 
-    HEAP32[FontData>>2] = dataBuffer; FontData += 4;                            // buffer
-    HEAP32[FontData>>2] = fontWidth; FontData += 4;                             // width
-    HEAP32[FontData>>2] = fontHeight; FontData += 4;                            // height
-    HEAP32[FontData>>2] = textMetrix.actualBoundingBoxLeft; FontData += 4;      // left
-    HEAP32[FontData>>2] = size - textMetrix.actualBoundingBoxAscent; FontData += 4; // top
-    HEAPF32[FontData>>2] = fontXAdvance; FontData += 4;                         // xAdvance
+        HEAPU8.set(textBitmap, dataBuffer);
+
+        HEAP32[FontData>>2] = dataBuffer; FontData += 4;                            // buffer
+        HEAP32[FontData>>2] = fontWidth; FontData += 4;                             // width
+        HEAP32[FontData>>2] = fontHeight; FontData += 4;                            // height
+        HEAP32[FontData>>2] = 0; FontData += 4;      // left
+        HEAP32[FontData>>2] = size - textMetrix.actualBoundingBoxAscent; FontData += 4; // top
+        HEAPF32[FontData>>2] = fontXAdvance; FontData += 4;                         // xAdvance
+    }, FontId, CharCode, FontData);
 
     return 0;
-})
+}
 
 // FontCacheCharaAddToHandleの環境依存処理を行う関数( 実行箇所区別 1 )
 extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHARDATA *CharData, DWORD CharCode, DWORD IVSCode, int TextureCacheUpdate )
@@ -253,9 +267,9 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
         for (i = 0; i < BitmapSize; i++)
         {
             *pDst = *(pSrc + 3);
-            if (*pDst < 64) {
-                *pDst = 0;
-            }
+            // if (*pDst < 64) {
+            //     *pDst = 0;
+            // }
             pSrc += 4;
             pDst += 1;
         }
@@ -269,7 +283,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
                 CharCode,
                 IVSCode,
                 TRUE,
-                DX_FONT_SRCIMAGETYPE_8BIT_ON_OFF,
+                DX_FONT_SRCIMAGETYPE_8BIT_MAX255,
                 NULL,
                 0,
                 0,
@@ -286,7 +300,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
                 CharCode,
                 IVSCode,
                 FALSE,
-                DX_FONT_SRCIMAGETYPE_8BIT_ON_OFF,
+                DX_FONT_SRCIMAGETYPE_8BIT_MAX255,
                 AlphaChannel,
                 FontData.BitmapWidth,
                 FontData.BitmapHeight,

@@ -18,6 +18,8 @@
 #include "../DxBaseFunc.h"
 
 #include <emscripten.h>
+#include <emscripten/threading.h>
+#include <emscripten/proxying.h>
 
 #ifndef DX_NON_NAMESPACE
 
@@ -32,6 +34,8 @@ namespace DxLib
 
 typedef struct tagDECODEDIMAGE
 {
+	BYTE* SrcImage;
+	int SrcLength;
 	BYTE* DecodedImage;
 	int Length;
 	int Width;
@@ -49,18 +53,27 @@ int ( *DefaultImageLoadFunc_PF[] )( STREAMDATA *Src, BASEIMAGE *BaseImage, int G
 
 // プログラム -----------------------------------------------------------------
 
-// 環境依存初期化・終了関数
-int DecodeImageOnBrowser(BYTE* Src, int Size, DECODEDIMAGE* Decoded) {
-#ifdef ASYNCIFY
-	return EM_ASM_INT({
-		return Asyncify.handleSleep(function(wakeUp) {
+#ifdef PROXY_TO_PTHREAD
+EM_JS(void, DecodeImage, (em_proxying_ctx* ctx, void* Decoded),
+#else
+EM_JS(void, DecodeImage, (DECODEDIMAGE* Decoded),
+#endif
+	{
+		function DecodeImageImpl(wakeUp) {
 			if (!Module["decodeCanvas"]) {
 				Module["decodeCanvas"] = document.createElement('canvas');
 				Module["decodeContext"] = Module["decodeCanvas"].getContext("2d");
 			}
 
+			const Src = HEAPU32[(Decoded>>2)+0];
+			const Size = HEAPU32[(Decoded>>2)+1];
+
 			const imageData = new Uint8ClampedArray(HEAPU8.buffer, Src, Size);
-			const imageBlob = new Blob([ imageData ]);
+			const clonedData = new ArrayBuffer(Size);
+			const clonedDataView = new Uint8ClampedArray(clonedData);
+			clonedDataView.set(imageData);
+			const imageBlob = new Blob([ clonedDataView ]);
+
 			const image = new Image();
 
 			image.onload = function() {
@@ -73,24 +86,48 @@ int DecodeImageOnBrowser(BYTE* Src, int Size, DECODEDIMAGE* Decoded) {
 
 				HEAPU8.set(decodedImageData, dataBuffer);
 
-				HEAPU32[(Decoded>>2)+0] = dataBuffer;
-				HEAPU32[(Decoded>>2)+1] = decodedImageData.length;
-				HEAPU32[(Decoded>>2)+2] = image.width;
-				HEAPU32[(Decoded>>2)+3] = image.height;
+				HEAPU32[(Decoded>>2)+2] = dataBuffer;
+				HEAPU32[(Decoded>>2)+3] = decodedImageData.length;
+				HEAPU32[(Decoded>>2)+4] = image.width;
+				HEAPU32[(Decoded>>2)+5] = image.height;
 
 				URL.revokeObjectURL(image.src);
-				wakeUp(0);
+				wakeUp();
 			};
 			image.onerror = function() {
+				HEAPU32[(Decoded>>2)+2] = 0;
+
 				URL.revokeObjectURL(image.src);
-				wakeUp(-1);
+				wakeUp();
 			};
 			image.src = URL.createObjectURL(imageBlob);
-		})
-	});
-#else
-	return 0;
+		}
+
+#ifdef ASYNCIFY
+		return Asyncify.handleSleep(DecodeImageImpl);
+#elif defined(PROXY_TO_PTHREAD)
+		DecodeImageImpl(function() {
+			_emscripten_proxy_finish(ctx);
+		});
 #endif
+	}
+);
+
+// 環境依存初期化・終了関数
+int DecodeImageOnBrowser(DECODEDIMAGE* Decoded) {
+
+#ifdef ASYNCIFY
+	DecodeImage(Decoded);
+#elif defined(PROXY_TO_PTHREAD)
+	auto defaultQueue = emscripten_proxy_get_system_queue();
+	emscripten_proxy_sync_with_ctx(
+		defaultQueue,
+		emscripten_main_runtime_thread_id(),
+		&DecodeImage,
+		(void*)Decoded);
+#endif
+
+	return (Decoded->DecodedImage != NULL ? 0 : -1);
 }
 
 // 基本イメージ管理情報の環境依存処理の初期化
@@ -129,7 +166,13 @@ extern int LoadImageFromBrowser(STREAMDATA *Stream, BASEIMAGE *BaseImage, int Ge
 	ImageData = (BYTE *)DXALLOC( ( size_t )FileSize ) ;	
 	if( ImageData == NULL ) goto ERR ;
 	if( ( sstr->Read( ImageData, sizeof(BYTE), FileSize, sp ) ) <= 0 ) goto ERR ;
-	if( DecodeImageOnBrowser(ImageData, FileSize, &DecodedImage) == -1 ) goto ERR ;
+
+	{
+		DecodedImage.SrcImage = ImageData ;
+		DecodedImage.SrcLength = FileSize ;
+	}
+
+	if( DecodeImageOnBrowser(&DecodedImage) == -1 ) goto ERR ;
 
 	DecodedImageSize = ( size_t )(DecodedImage.Width *  DecodedImage.Height * 4);
 	DecodedImageData = (BYTE *)DXALLOC( DecodedImageSize ) ;	
