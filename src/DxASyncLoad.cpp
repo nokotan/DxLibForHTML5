@@ -154,6 +154,8 @@ extern int SetupASyncLoadThread( int ProcessorNum )
 
 #ifdef DX_ANDROID_DEBUG
 	GASyncLoadData.ThreadNum = 2 ;
+#elif EMSCRIPTEN
+	GASyncLoadData.ThreadNum = 4 ;
 #else
 	GASyncLoadData.ThreadNum = 32 ;
 #endif
