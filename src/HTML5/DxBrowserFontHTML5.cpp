@@ -221,7 +221,7 @@ int RenderFontBitmap(int FontId, DWORD CharCode, FONTDATA* FontData) {
         Module["DxLib"].TextRenderingContext.fillText(text, 0, Math.ceil(textMetrix.actualBoundingBoxAscent));
 
         const textBitmap = Module["DxLib"].TextRenderingContext.getImageData(0, 0, fontWidth, fontHeight).data;
-        const dataBuffer = Module["_malloc"](textBitmap.length);
+        const dataBuffer = _malloc(textBitmap.length);
 
         HEAPU8.set(textBitmap, dataBuffer);
 

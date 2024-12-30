@@ -789,7 +789,7 @@ void WaitForNewFrame( void ) {
 	auto defaultQueue = emscripten_proxy_get_system_queue();
 	emscripten_proxy_sync_with_ctx(
 		defaultQueue,
-		emscripten_main_browser_thread_id(),
+		emscripten_main_runtime_thread_id(),
 		&WaitForNewFrameOnMainThread,
 		nullptr);
 #endif

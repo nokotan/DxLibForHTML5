@@ -82,7 +82,7 @@ EM_JS(void, DecodeImage, (DECODEDIMAGE* Decoded),
 				Module["decodeContext"].drawImage(image, 0, 0);
 
 				const decodedImageData = Module["decodeContext"].getImageData(0, 0, image.width, image.height).data;
-				const dataBuffer = Module["_malloc"](decodedImageData.length);
+				const dataBuffer = _malloc(decodedImageData.length);
 
 				HEAPU8.set(decodedImageData, dataBuffer);
 
