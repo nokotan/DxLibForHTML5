@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Live2D Cubism4関係プログラム( Android )
 // 
-//  	Ver 3.24d
+//  	Ver 3.24f
 // 
 //-----------------------------------------------------------------------------
 
@@ -64,42 +64,49 @@ static	int			Live2DCubism4_DLL_Unload( void ) ;														// Live2D Cubism 4 
 // Live2D Cubism 4 DLL の読み込み
 static int Live2DCubism4_DLL_Load( void )
 {
-	LIVE2DDLL.csmGetVersion						= ( DWORD					( LIVE2D_CUBISM4_FUNC * )( void ) )csmGetVersion ;
-	LIVE2DDLL.csmGetLatestMocVersion			= ( DWORD					( LIVE2D_CUBISM4_FUNC * )( void ) )csmGetLatestMocVersion ;
-	LIVE2DDLL.csmGetMocVersion					= ( DWORD					( LIVE2D_CUBISM4_FUNC * )( const void* address, const DWORD size ) )csmGetMocVersion ;
-	LIVE2DDLL.csmGetLogFunction					= ( csmLogFunctionP			( LIVE2D_CUBISM4_FUNC * )( void ) )csmGetLogFunction ;
-	LIVE2DDLL.csmSetLogFunction					= ( void					( LIVE2D_CUBISM4_FUNC * )( csmLogFunctionP handler ) )csmSetLogFunction ;
-	LIVE2DDLL.csmReviveMocInPlace				= ( void*					( LIVE2D_CUBISM4_FUNC * )( void* address, const DWORD size ) )csmReviveMocInPlace ;
-	LIVE2DDLL.csmGetSizeofModel					= ( DWORD 					( LIVE2D_CUBISM4_FUNC * )( const void* moc ) )csmGetSizeofModel ;
-	LIVE2DDLL.csmInitializeModelInPlace			= ( void* 					( LIVE2D_CUBISM4_FUNC * )( const void* moc, void* address, const DWORD size ) )csmInitializeModelInPlace ;
-	LIVE2DDLL.csmUpdateModel					= ( void 					( LIVE2D_CUBISM4_FUNC * )( void* model ) )csmUpdateModel ;
-	LIVE2DDLL.csmReadCanvasInfo					= ( void 					( LIVE2D_CUBISM4_FUNC * )( const void* model, D_CubismVector2* outSizeInPixels, D_CubismVector2* outOriginInPixels, float* outPixelsPerUnit ) )csmReadCanvasInfo ;
-	LIVE2DDLL.csmGetParameterCount				= ( int 					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterCount ;
-	LIVE2DDLL.csmGetParameterIds 				= ( const char** 			( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterIds ;
-	LIVE2DDLL.csmGetParameterMinimumValues		= ( const float*			( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterMinimumValues ;
-	LIVE2DDLL.csmGetParameterMaximumValues		= ( const float*			( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterMaximumValues ;
-	LIVE2DDLL.csmGetParameterDefaultValues		= ( const float*			( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterDefaultValues ;
-	LIVE2DDLL.csmGetParameterValues				= ( float* 					( LIVE2D_CUBISM4_FUNC * )( void* model ) )csmGetParameterValues ;
-	LIVE2DDLL.csmGetPartCount					= ( int 					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetPartCount ;
-	LIVE2DDLL.csmGetPartIds						= ( const char**			( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetPartIds ;
-	LIVE2DDLL.csmGetPartOpacities				= ( float*					( LIVE2D_CUBISM4_FUNC * ) (void* model ) )csmGetPartOpacities ;
-	LIVE2DDLL.csmGetPartParentPartIndices 		= ( const int*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetPartParentPartIndices ;
-	LIVE2DDLL.csmGetDrawableCount				= ( int 					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableCount ;
-	LIVE2DDLL.csmGetDrawableIds					= ( const char**			( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableIds ;
-	LIVE2DDLL.csmGetDrawableConstantFlags 		= ( const BYTE*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableConstantFlags ;
-	LIVE2DDLL.csmGetDrawableDynamicFlags		= ( const BYTE*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableDynamicFlags ;
-	LIVE2DDLL.csmGetDrawableTextureIndices		= ( const int*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableTextureIndices ;
-	LIVE2DDLL.csmGetDrawableDrawOrders			= ( const int*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableDrawOrders ;
-	LIVE2DDLL.csmGetDrawableRenderOrders		= ( const int*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableRenderOrders ;
-	LIVE2DDLL.csmGetDrawableOpacities			= ( const float*			( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableOpacities ;
-	LIVE2DDLL.csmGetDrawableMaskCounts 			= ( const int*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableMaskCounts ;
-	LIVE2DDLL.csmGetDrawableMasks				= ( const int**				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableMasks ;
-	LIVE2DDLL.csmGetDrawableVertexCounts		= ( const int*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableVertexCounts ;
-	LIVE2DDLL.csmGetDrawableVertexPositions		= ( const D_CubismVector2**	( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableVertexPositions ;
-	LIVE2DDLL.csmGetDrawableVertexUvs			= ( const D_CubismVector2**	( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableVertexUvs ;
-	LIVE2DDLL.csmGetDrawableIndexCounts			= ( const int*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableIndexCounts ;
-	LIVE2DDLL.csmGetDrawableIndices 			= ( const unsigned short**	( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableIndices ;
-	LIVE2DDLL.csmResetDrawableDynamicFlags		= ( void					( LIVE2D_CUBISM4_FUNC * )( void* model ) )csmResetDrawableDynamicFlags ;
+	LIVE2DDLL.csmGetVersion						= ( DWORD						( LIVE2D_CUBISM4_FUNC * )( void ) )csmGetVersion ;
+	LIVE2DDLL.csmGetLatestMocVersion			= ( DWORD						( LIVE2D_CUBISM4_FUNC * )( void ) )csmGetLatestMocVersion ;
+	LIVE2DDLL.csmGetMocVersion					= ( DWORD						( LIVE2D_CUBISM4_FUNC * )( const void* address, const DWORD size ) )csmGetMocVersion ;
+	LIVE2DDLL.csmHasMocConsistency				= ( int							( LIVE2D_CUBISM4_FUNC * )( void* address, const unsigned int size ) )csmHasMocConsistency ;
+	LIVE2DDLL.csmGetLogFunction					= ( csmLogFunctionP				( LIVE2D_CUBISM4_FUNC * )( void ) )csmGetLogFunction ;
+	LIVE2DDLL.csmSetLogFunction					= ( void						( LIVE2D_CUBISM4_FUNC * )( csmLogFunctionP handler ) )csmSetLogFunction ;
+	LIVE2DDLL.csmReviveMocInPlace				= ( void*						( LIVE2D_CUBISM4_FUNC * )( void* address, const DWORD size ) )csmReviveMocInPlace ;
+	LIVE2DDLL.csmGetSizeofModel					= ( DWORD 						( LIVE2D_CUBISM4_FUNC * )( const void* moc ) )csmGetSizeofModel ;
+	LIVE2DDLL.csmInitializeModelInPlace			= ( void* 						( LIVE2D_CUBISM4_FUNC * )( const void* moc, void* address, const DWORD size ) )csmInitializeModelInPlace ;
+	LIVE2DDLL.csmUpdateModel					= ( void 						( LIVE2D_CUBISM4_FUNC * )( void* model ) )csmUpdateModel ;
+	LIVE2DDLL.csmReadCanvasInfo					= ( void 						( LIVE2D_CUBISM4_FUNC * )( const void* model, D_CubismVector2* outSizeInPixels, D_CubismVector2* outOriginInPixels, float* outPixelsPerUnit ) )csmReadCanvasInfo ;
+	LIVE2DDLL.csmGetParameterCount				= ( int 						( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterCount ;
+	LIVE2DDLL.csmGetParameterIds 				= ( const char** 				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterIds ;
+	LIVE2DDLL.csmGetParameterTypes 				= ( const D_csmParameterType*	( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterTypes ;
+	LIVE2DDLL.csmGetParameterMinimumValues		= ( const float*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterMinimumValues ;
+	LIVE2DDLL.csmGetParameterMaximumValues		= ( const float*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterMaximumValues ;
+	LIVE2DDLL.csmGetParameterDefaultValues		= ( const float*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterDefaultValues ;
+	LIVE2DDLL.csmGetParameterValues				= ( float* 						( LIVE2D_CUBISM4_FUNC * )( void* model ) )csmGetParameterValues ;
+	LIVE2DDLL.csmGetParameterKeyCounts			= ( const int*	 				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterKeyCounts ;
+	LIVE2DDLL.csmGetParameterKeyValues			= ( const float** 				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetParameterKeyValues ;
+	LIVE2DDLL.csmGetPartCount					= ( int 						( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetPartCount ;
+	LIVE2DDLL.csmGetPartIds						= ( const char**				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetPartIds ;
+	LIVE2DDLL.csmGetPartOpacities				= ( float*						( LIVE2D_CUBISM4_FUNC * ) (void* model ) )csmGetPartOpacities ;
+	LIVE2DDLL.csmGetPartParentPartIndices 		= ( const int*					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetPartParentPartIndices ;
+	LIVE2DDLL.csmGetDrawableCount				= ( int 						( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableCount ;
+	LIVE2DDLL.csmGetDrawableIds					= ( const char**				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableIds ;
+	LIVE2DDLL.csmGetDrawableConstantFlags 		= ( const BYTE*					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableConstantFlags ;
+	LIVE2DDLL.csmGetDrawableDynamicFlags		= ( const BYTE*					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableDynamicFlags ;
+	LIVE2DDLL.csmGetDrawableTextureIndices		= ( const int*					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableTextureIndices ;
+	LIVE2DDLL.csmGetDrawableDrawOrders			= ( const int*					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableDrawOrders ;
+	LIVE2DDLL.csmGetDrawableRenderOrders		= ( const int*					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableRenderOrders ;
+	LIVE2DDLL.csmGetDrawableOpacities			= ( const float*				( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableOpacities ;
+	LIVE2DDLL.csmGetDrawableMaskCounts 			= ( const int*					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableMaskCounts ;
+	LIVE2DDLL.csmGetDrawableMasks				= ( const int**					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableMasks ;
+	LIVE2DDLL.csmGetDrawableVertexCounts		= ( const int*					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableVertexCounts ;
+	LIVE2DDLL.csmGetDrawableVertexPositions		= ( const D_CubismVector2**		( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableVertexPositions ;
+	LIVE2DDLL.csmGetDrawableVertexUvs			= ( const D_CubismVector2**		( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableVertexUvs ;
+	LIVE2DDLL.csmGetDrawableIndexCounts			= ( const int*					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableIndexCounts ;
+	LIVE2DDLL.csmGetDrawableIndices 			= ( const unsigned short**		( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableIndices ;
+	LIVE2DDLL.csmGetDrawableMultiplyColors		= ( const D_CubismVector4*		( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableMultiplyColors ;
+	LIVE2DDLL.csmGetDrawableScreenColors		= ( const D_CubismVector4*		( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableScreenColors ;
+	LIVE2DDLL.csmGetDrawableParentPartIndices	= ( const int*					( LIVE2D_CUBISM4_FUNC * )( const void* model ) )csmGetDrawableParentPartIndices ;
+	LIVE2DDLL.csmResetDrawableDynamicFlags		= ( void						( LIVE2D_CUBISM4_FUNC * )( void* model ) )csmResetDrawableDynamicFlags ;
 
 	// 正常終了
 	return 0 ;
@@ -111,6 +118,7 @@ static int Live2DCubism4_DLL_Unload( void )
 	LIVE2DDLL.csmGetVersion						= NULL ;
 	LIVE2DDLL.csmGetLatestMocVersion			= NULL ;
 	LIVE2DDLL.csmGetMocVersion					= NULL ;
+	LIVE2DDLL.csmHasMocConsistency				= NULL ;
 	LIVE2DDLL.csmGetLogFunction					= NULL ;
 	LIVE2DDLL.csmSetLogFunction					= NULL ;
 	LIVE2DDLL.csmReviveMocInPlace				= NULL ;
@@ -120,10 +128,13 @@ static int Live2DCubism4_DLL_Unload( void )
 	LIVE2DDLL.csmReadCanvasInfo					= NULL ;
 	LIVE2DDLL.csmGetParameterCount				= NULL ;
 	LIVE2DDLL.csmGetParameterIds 				= NULL ;
+	LIVE2DDLL.csmGetParameterTypes 				= NULL ;
 	LIVE2DDLL.csmGetParameterMinimumValues		= NULL ;
 	LIVE2DDLL.csmGetParameterMaximumValues		= NULL ;
 	LIVE2DDLL.csmGetParameterDefaultValues		= NULL ;
 	LIVE2DDLL.csmGetParameterValues				= NULL ;
+	LIVE2DDLL.csmGetParameterKeyCounts			= NULL ;
+	LIVE2DDLL.csmGetParameterKeyValues			= NULL ;
 	LIVE2DDLL.csmGetPartCount					= NULL ;
 	LIVE2DDLL.csmGetPartIds						= NULL ;
 	LIVE2DDLL.csmGetPartOpacities				= NULL ;
@@ -143,6 +154,9 @@ static int Live2DCubism4_DLL_Unload( void )
 	LIVE2DDLL.csmGetDrawableVertexUvs			= NULL ;
 	LIVE2DDLL.csmGetDrawableIndexCounts			= NULL ;
 	LIVE2DDLL.csmGetDrawableIndices 			= NULL ;
+	LIVE2DDLL.csmGetDrawableMultiplyColors		= NULL ;
+	LIVE2DDLL.csmGetDrawableScreenColors		= NULL ;
+	LIVE2DDLL.csmGetDrawableParentPartIndices	= NULL ;
 	LIVE2DDLL.csmResetDrawableDynamicFlags		= NULL ;
 
 	// 正常終了
@@ -238,10 +252,12 @@ extern int Live2DCubism4_SetupShader_PF( int ConstantBufferHandle, D_CubismConst
 	// シェーダーを使用状態にセット
 	glUseProgram( LIVE2DSYS.PF.Shader[ index ].Shader ) ;
 
-	GLuint u_matrix      = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_matrix" ) ;
-	GLuint u_clipMatrix  = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_clipMatrix" ) ;
-	GLuint u_channelFlag = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_channelFlag" ) ;
-	GLuint u_baseColor   = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_baseColor" ) ;
+	GLuint u_matrix        = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_matrix" ) ;
+	GLuint u_clipMatrix    = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_clipMatrix" ) ;
+	GLuint u_channelFlag   = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_channelFlag" ) ;
+	GLuint u_multiplyColor = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_multiplyColor" ) ;
+	GLuint u_screenColor   = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_screenColor" ) ;
+	GLuint u_baseColor     = Graphics_Android_Shader_GetUniformIndex( &LIVE2DSYS.PF.Shader[ index ], "u_baseColor" ) ;
 
 	if( u_matrix != 0xffffffff )
 	{
@@ -258,6 +274,14 @@ extern int Live2DCubism4_SetupShader_PF( int ConstantBufferHandle, D_CubismConst
 	if( u_baseColor != 0xffffffff )
 	{
 		UNIFORM_SET_FLOAT4( u_baseColor, ( ( float * )&ConstantBuffer->baseColor ) )
+	}
+	if( u_multiplyColor != 0xffffffff )
+	{
+		UNIFORM_SET_FLOAT4( u_multiplyColor, ( ( float * )&ConstantBuffer->multiplyColor ) )
+	}
+	if( u_screenColor != 0xffffffff )
+	{
+		UNIFORM_SET_FLOAT4( u_screenColor, ( ( float * )&ConstantBuffer->screenColor ) )
 	}
 
 	GANDR.Device.State.SetShader_Force = &LIVE2DSYS.PF.Shader[ index ] ;

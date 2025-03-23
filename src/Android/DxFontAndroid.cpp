@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用フォント関係プログラム
 // 
-//  	Ver 3.24d
+//  	Ver 3.24f
 // 
 //-----------------------------------------------------------------------------
 
@@ -515,7 +515,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
 			JAVAANDR.methodID_Canvas_drawText,
 			charArray_DrawChar,
 			0, CharNum,
-			2.0f,
+			0.0f,
 			-ManageData->PF->PaintFontMetrics_top + 2.0f,
 			ManageData->PF->object_Paint
 		) ;
@@ -571,7 +571,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
 					BltWidth,
 					ManageData->PF->BitmapSizeY,
 					ManageData->PF->BitmapSizeX,
-					-2,
+					0,
 					-2 - ( ManageData->PF->PaintFontMetrics_ascent - ManageData->PF->PaintFontMetrics_top ),
 					DrawWidth,
 					TextureCacheUpdate
