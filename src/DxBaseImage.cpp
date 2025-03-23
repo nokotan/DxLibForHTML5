@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＢａｓｅＩｍａｇｅプログラム
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // ----------------------------------------------------------------------------
 
@@ -5986,6 +5986,9 @@ extern int NS_ConvertNormalFormatBaseImage( BASEIMAGE *BaseImage, int ReleaseOri
 
 	// データの数をセット
 	GraphNum = ( DWORD )( BaseImage->GraphDataCount == 0 ? 1 : 6 ) ;
+
+	// ミップマップの無効化
+	BaseImage->MipMapCount = 0 ;
 
 	// 新しいデータを格納するメモリ領域の確保
 	NewPixelByte = 4 ;

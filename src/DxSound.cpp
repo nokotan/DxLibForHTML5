@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		‚c‚‰‚’‚…‚ƒ‚”‚r‚‚•‚Ž‚„§ŒäƒvƒƒOƒ‰ƒ€
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -10,6 +10,14 @@
 #define DX_MAKE
 
 #include "DxSound.h"
+
+#ifndef DX_NON_NAMESPACE
+#ifdef DX_NON_USING_NAMESPACE_DXLIB
+
+using namespace DxLib ;
+
+#endif // DX_NON_USING_NAMESPACE_DXLIB
+#endif // DX_NON_NAMESPACE
 
 #ifndef DX_NON_SOUND
 
@@ -2702,9 +2710,12 @@ extern int ProcessStreamSoundMem_UseGParam( int SoundHandle, int ASyncThread )
 //			SBuffer->Lock( MoveStartOffset, MoveByte,
 //							( void ** )&(LockData.WriteP), &LockData.Length,
 //							( void ** )&(LockData.WriteP2), &LockData.Length2, 0 ) ; 
-			SoundBuffer_Lock( SBuffer, ( DWORD )MoveStartOffset, ( DWORD )MoveByte,
-							( void ** )&(LockData.WriteP), &LockData.Length,
-							( void ** )&(LockData.WriteP2), &LockData.Length2 ) ; 
+			if( SoundBuffer_Lock( SBuffer, ( DWORD )MoveStartOffset, ( DWORD )MoveByte,
+									( void ** )&(LockData.WriteP), &LockData.Length,
+									( void ** )&(LockData.WriteP2), &LockData.Length2 ) < 0 )
+			{
+				goto ERR ;
+			} 
 			LockData.Offset  = 0 ;
 			LockData.Offset2 = 0 ;
 			LockData.Valid  = LockData.Length ;

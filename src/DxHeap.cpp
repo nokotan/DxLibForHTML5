@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ヒープ関連プログラム
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -2966,7 +2966,7 @@ static void HeapDrawAllocInfo_Help( ALLOCMEMTAG *MemTag, int x, int y, int Width
 			DrawPixelTempX2 = ( DrawPixelPosition + DrawPixelWidth ) - CheckPixelPosition ;
 		}
 
-		NS_DrawBox( x + DrawPixelTempX1, y + i, x + DrawPixelTempX2, y + i + 1, Color, TRUE ) ;
+		NS_DrawBox( x + DrawPixelTempX1, y + i, x + DrawPixelTempX2, y + i + 1, Color, TRUE, 1 ) ;
 	}
 }
 
@@ -3001,7 +3001,7 @@ extern int HeapDrawAllocInfo( HEAPINFO *Heap, int x, int y, int Width, int Heigh
 	Scale = ( float )Pixels / ( Heap->TotalFreeSize + Heap->TotalUseSize ) ;
 
 	NS_SetDrawBlendMode( DX_BLENDMODE_ALPHA, 255 ) ;
-	NS_DrawBox( x, y, x + Width, y + Height, GetColor( 0, 0, 0 ), TRUE ) ;
+	NS_DrawBox( x, y, x + Width, y + Height, GetColor( 0, 0, 0 ), TRUE, 1 ) ;
 
 	NS_SetDrawBlendMode( DX_BLENDMODE_ADD, 255 ) ;
 

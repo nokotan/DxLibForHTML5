@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ハンドル管理プログラム
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -276,16 +276,27 @@ extern int AddHandle( int HandleType, int ASyncThread, int Handle )
 }
 
 // SubHandle の実処理関数
-static int SubHandleBase( HANDLEMANAGE *HandleManage, HANDLEINFO *HandleInfo )
+static int SubHandleBase( int Handle )
 {
 	int Index ;
-	int HandleType = ( int )( ( ( DWORD )HandleInfo->Handle & DX_HANDLETYPE_MASK ) >> DX_HANDLETYPE_ADDRESS ) ;
+	HANDLEINFO *HandleInfo ;
+	int HandleType = ( int )( ( ( DWORD )Handle & DX_HANDLETYPE_MASK ) >> DX_HANDLETYPE_ADDRESS ) ;
+	HANDLEMANAGE *HandleManage = &HandleManageArray[ HandleType ] ;
 
 	if( HandleManage->InitializeFlag == FALSE )
 		return -1 ;
 
 	// クリティカルセクションの取得
 	CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
+
+	// エラー判定
+	if( HANDLECHK_ASYNC( HandleType, Handle, HandleInfo ) )
+	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+
+		return -1 ;
+	}
 
 	Index = HandleInfo->Handle & DX_HANDLEINDEX_MASK ;
 
@@ -419,22 +430,22 @@ extern int SubHandle( int Handle, int ASyncLoadFlag, int ASyncThread )
 
 		// 削除リクエストのハンドル数をインクリメント
 		HandleManage->DeleteRequestHandleNum ++ ;
+
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 	}
 	else
 #endif // DX_NON_ASYNCLOAD
 	{
-		// 非同期実行希望や別スレッドからの呼び出しではない場合は即座に削除
-		if( SubHandleBase( HandleManage, HandleInfo ) < 0 )
-		{
-			// クリティカルセクションの解放
-			CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 
+		// 非同期実行希望や別スレッドからの呼び出しではない場合は即座に削除
+		if( SubHandleBase( Handle ) < 0 )
+		{
 			return -1 ;
 		}
 	}
-
-	// クリティカルセクションの解放
-	CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
 
 	// 終了
 	return 0 ;
@@ -1015,7 +1026,7 @@ START:
 			// ハンドルを削除
 			if( HandleInfo != NULL )
 			{
-				SubHandleBase( &HandleManageArray[ i ], HandleInfo ) ;
+				SubHandleBase( HandleInfo->Handle ) ;
 			}
 
 			// 2ms経過していたらループを抜ける

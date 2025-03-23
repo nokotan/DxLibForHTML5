@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Ogg関係ヘッダファイル
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -105,7 +105,11 @@ typedef struct tagTHEORA_STOCKFRAME
 // Ogg Theora デコード処理用データ構造体
 typedef struct tagDECODE_THEORA
 {
+#ifndef DX_NON_NAMESPACE
+	DxLib::DX_CRITICAL_SECTION	CriticalSection ;		// 複数スレッドでの競合防止用のクリティカルセクション
+#else // DX_NON_NAMESPACE
 	DX_CRITICAL_SECTION		CriticalSection ;			// 複数スレッドでの競合防止用のクリティカルセクション
+#endif // DX_NON_NAMESPACE
 
 	volatile int			ThreadState ;				// スレッドの状態( THEORAT_STATE_IDLE 等 )
 	volatile int			ThreadStopRequest ;			// スレッドに止まってほしいときに 1 にする
@@ -117,9 +121,17 @@ typedef struct tagDECODE_THEORA
 	volatile int			ThreadStandbyTime ;			// 待機状態を維持する目安とする時間
 //	volatile HANDLE			DecodeThreadHandle ;		// デコード処理スレッド
 //	volatile DWORD			DecodeThreadID ;			// デコード処理スレッドのＩＤ 
+#ifndef DX_NON_NAMESPACE
+	DxLib::THREAD_INFO		DecodeThreadInfo ;			// デコードスレッド情報
+#else // DX_NON_NAMESPACE
 	THREAD_INFO				DecodeThreadInfo ;			// デコードスレッド情報
+#endif // DX_NON_NAMESPACE
 
+#ifndef DX_NON_NAMESPACE
+	DxLib::STREAMDATASHRED	StreamShred ;				// ストリーム関数
+#else // DX_NON_NAMESPACE
 	STREAMDATASHRED			StreamShred ;				// ストリーム関数
+#endif // DX_NON_NAMESPACE
 	DWORD_PTR				StreamData ;				// ストリームデータ
 
 	ogg_sync_state			OggSyncState ;				// Ogg ベースデータ
@@ -147,7 +159,11 @@ typedef struct tagDECODE_THEORA
 	volatile THEORA_STOCKFRAME *StockFrame ;			// ストックフレーム
 	volatile int			StockFrameMaxNum ;			// ストックフレームの最大数
 
+#ifndef DX_NON_NAMESPACE
+	DxLib::BASEIMAGE		BaseImage ;					// カレントフレームが格納されたフレームスタック中のイメージのコピー
+#else // DX_NON_NAMESPACE
 	BASEIMAGE				BaseImage ;					// カレントフレームが格納されたフレームスタック中のイメージのコピー
+#endif // DX_NON_NAMESPACE
 	volatile int			BaseImageSetup ;			// カレントフレームの RGB イメージが構築されているかどうか( 1:されている  0:されていない )
 
 	volatile int			NotUseYUVFormatSurface ;	// ＹＵＶフォーマットのサーフェスを使用しないかどうか
@@ -186,14 +202,19 @@ extern	int		TheoraDecode_SetupImage_PF( DECODE_THEORA *DT, volatile THEORA_STOCK
 extern	const void * TheoraDecode_GetYUVImage_PF( DECODE_THEORA *DT ) ;														// 一時バッファの YUV フォーマットのテクスチャを得る
 extern	int		TheoraDecode_InitializeStream_PF( DECODE_THEORA *DT ) ;														// Ogg Theora の読み込み処理の準備を行う処理の環境依存処理を行う関数
 
-#endif
+#endif // DX_NON_OGGTHEORA
 
 #ifndef DX_NON_OGGVORBIS
 
+#ifndef DX_NON_NAMESPACE
+extern	int		GetOggCommentNumBase( DxLib::STREAMDATA *Stream ) ;
+extern	int		GetOggCommentBase( DxLib::STREAMDATA *Stream, int CommentIndex, char *CommentNameBuffer, size_t CommentNameBufferBytes, char *CommentBuffer, size_t CommentBufferBytes ) ;
+#else // DX_NON_NAMESPACE
 extern	int		GetOggCommentNumBase( STREAMDATA *Stream ) ;
 extern	int		GetOggCommentBase( STREAMDATA *Stream, int CommentIndex, char *CommentNameBuffer, size_t CommentNameBufferBytes, char *CommentBuffer, size_t CommentBufferBytes ) ;
+#endif // DX_NON_NAMESPACE
 
-#endif
+#endif // DX_NON_OGGVORBIS
 
 //}
 

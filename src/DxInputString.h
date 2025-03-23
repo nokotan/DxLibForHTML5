@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字列入力プログラムヘッダファイル
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -11,15 +11,18 @@
 
 #include "DxCompileConfig.h"
 
-#ifndef DX_NON_INPUTSTRING
-
 // インクルード ------------------------------------------------------------------
 #include "DxLib.h"
+
+#ifndef DX_NON_INPUTSTRING
 
 #ifndef DX_NON_KEYEX
 #include "Windows/DxDirectX.h"
 #include "Windows/DxGuid.h"
 #endif // DX_NON_KEYEX
+
+#endif // DX_NON_INPUTSTRING
+
 
 #ifndef DX_NON_NAMESPACE
 
@@ -33,6 +36,8 @@ namespace DxLib
 #define CHARBUFFER_SIZE				(1024)				// 文字コードバッファ容量
 
 // 構造体定義 --------------------------------------------------------------------
+
+#ifndef DX_NON_INPUTSTRING
 
 #ifndef DX_NON_KEYEX
 
@@ -219,13 +224,13 @@ extern	void		RefreshIMEFlag( int Always = FALSE ) ;										// ＩＭＥを使用する
 
 
 // wchar_t版関数
-#ifndef DX_NON_INPUTSTRING
 extern	int			StockInputChar_WCHAR_T(		wchar_t CharCode ) ;
 extern	wchar_t		GetInputChar_WCHAR_T(		int DeleteFlag ) ;
 extern	wchar_t		GetInputCharWait_WCHAR_T(	int DeleteFlag ) ;
 extern	int			GetOneChar_WCHAR_T(			wchar_t *CharBuffer, int DeleteFlag ) ;
 extern	int			GetOneCharWait_WCHAR_T(		wchar_t *CharBuffer, int DeleteFlag ) ;
 extern	int			GetCtrlCodeCmp_WCHAR_T(		wchar_t Char ) ;
+
 #endif // DX_NON_INPUTSTRING
 
 extern	int			GetStringPoint_WCHAR_T(				const wchar_t *String, int Point ) ;
@@ -238,6 +243,8 @@ extern	int			DrawObtainsString_CharClip_WCHAR_T(	int x, int y, int EnableExRate,
 extern	int			DrawObtainsString_WordClip_WCHAR_T(	int x, int y, int EnableExRate, double ExRateX, double ExRateY, int AddY, const wchar_t *String, int StrLen, unsigned int StrColor, unsigned int StrEdgeColor = 0 , int FontHandle = -1 , unsigned int SelectBackColor = 0xffffffff , unsigned int SelectStrColor = 0 , unsigned int SelectStrEdgeColor = 0xffffffff , int SelectStart = -1 , int SelectEnd = -1 , int DrawFlag = TRUE, int *PosX = NULL, int *PosY = NULL, int *LineCount = NULL ) ;
 #endif // DX_NON_FONT
 
+#ifndef DX_NON_INPUTSTRING
+
 #ifndef DX_NON_KEYEX
 extern	int			InputStringToCustom_WCHAR_T(		int x, int y, size_t BufLength, wchar_t *StrBuffer, int CancelValidFlag, int SingleCharOnlyFlag, int NumCharOnlyFlag, int DoubleCharOnlyFlag = FALSE , int EnableNewLineFlag = FALSE , int DisplayCandidateList = TRUE ) ;
 extern	int			KeyInputString_WCHAR_T(				int x, int y, size_t CharMaxLength, wchar_t *StrBuffer, int CancelValidFlag ) ;
@@ -248,6 +255,7 @@ extern	int			SetKeyInputString_WCHAR_T(			const wchar_t *String, int InputHandle
 extern	int			GetKeyInputString_WCHAR_T(			wchar_t *StrBuffer,    int InputHandle ) ;
 #endif // DX_NON_KEYEX
 
+#endif // DX_NON_INPUTSTRING
 
 
 #ifndef DX_NON_NAMESPACE
@@ -255,7 +263,5 @@ extern	int			GetKeyInputString_WCHAR_T(			wchar_t *StrBuffer,    int InputHandle
 }
 
 #endif // DX_NON_NAMESPACE
-
-#endif // DX_NON_INPUTSTRING
 
 #endif // DX_INPUTSTRING_H

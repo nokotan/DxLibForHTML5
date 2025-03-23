@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＩｎｐｕｔ制御プログラム
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -1710,7 +1710,7 @@ extern	double NS_GetJoypadDeadZone( int InputType )
 }
 
 // ジョイパッドのデフォルトの無効ゾーンを設定する( Zone:新しい無効ゾーン( 0.0 ～ 1.0 )、デフォルト値は 0.35 )
-extern	int SetJoypadDefaultDeadZoneAll( double Zone )
+extern	int NS_SetJoypadDefaultDeadZoneAll( double Zone )
 {
 	DWORD ZoneI ;
 	INPUTPADDATA *pad ;
@@ -1766,7 +1766,7 @@ extern	int SetJoypadDefaultDeadZoneAll( double Zone )
 }
 
 // ジョイパッドのデフォルトの無効ゾーンを取得する( 戻り値:無効ゾーン( 0.0 ～ 1.0 ) )
-extern	double GetJoypadDefaultDeadZoneAll( void )
+extern	double NS_GetJoypadDefaultDeadZoneAll( void )
 {
 	return InputSysData.PadDefaultDeadZoneD ;
 }
@@ -2054,6 +2054,12 @@ extern int NS_SetUseJoypadVibrationFlag( int Flag )
 {
 	InputSysData.NoUseVibrationFlag = !Flag ;
 
+	// 設定を反映する
+	if( InputSysData.InitializeFlag )
+	{
+		RefreshEffectPlayState( TRUE ) ;
+	}
+
 	// 終了
 	return 0 ;
 }
@@ -2129,7 +2135,7 @@ extern int JoypadEffectProcess( void )
 }
 
 // パッドエフェクトの再生状態を更新する(ソフトが非アクティブになることもあるため)
-extern int RefreshEffectPlayState( void )
+extern int RefreshEffectPlayState( int AlwaysRunFlag )
 {
 	// 初期化判定
 	if( InputSysData.InitializeFlag == FALSE )
@@ -2138,7 +2144,7 @@ extern int RefreshEffectPlayState( void )
 	}
 
 	// 環境依存処理
-	RefreshEffectPlayState_PF() ;
+	RefreshEffectPlayState_PF( AlwaysRunFlag ) ;
 
 	// 終了
 	return 0 ;

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画プログラム
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // ----------------------------------------------------------------------------
 
@@ -424,7 +424,7 @@ static int  Graphics_Software_DrawModiGraphF(       float x1, float y1, float x2
 static int  Graphics_Software_DrawChipMap(          int Sx, int Sy, int XNum, int YNum, const int *MapData, int MapDataPitch, int ChipTypeNum, const int *ChipGrHandle, int TransFlag ) ;	// ソフトウエアレンダリング版 DrawChipMap
 static int  Graphics_Software_DrawTile(             int x1, int y1, int x2, int y2, int Tx, int Ty, double ExtRate, double Angle,   IMAGEDATA *Image, int TransFlag ) ;						// ソフトウエアレンダリング版 DrawTile
 static int  Graphics_Software_DrawFillBox(          int x1, int y1, int x2, int y2,                                 unsigned int Color ) ;						// ソフトウエアレンダリング版 DrawFillBox
-static int  Graphics_Software_DrawLineBox(          int x1, int y1, int x2, int y2,                                 unsigned int Color ) ;						// ソフトウエアレンダリング版 DrawLineBox
+static int  Graphics_Software_DrawLineBox(          int x1, int y1, int x2, int y2,                                 unsigned int Color, int Thickness ) ;		// ソフトウエアレンダリング版 DrawLineBox
 static int  Graphics_Software_DrawLine(             int x1, int y1, int x2, int y2,                                 unsigned int Color ) ;						// ソフトウエアレンダリング版 DrawLine
 static int  Graphics_Software_DrawCircle_Thickness( int x, int y, int r,                                            unsigned int Color, int Thickness ) ;		// ソフトウエアレンダリング版 DrawCircle( 太さ指定あり )
 static int  Graphics_Software_DrawOval_Thickness(   int x, int y, int rx, int ry,                                   unsigned int Color, int Thickness ) ;		// ソフトウエアレンダリング版 DrawOval( 太さ指定あり )
@@ -1666,7 +1666,7 @@ static int  Graphics_Software_DrawFillBox( int x1, int y1, int x2, int y2, unsig
 }
 
 // ソフトウエアレンダリング版 DrawLineBox
-static int  Graphics_Software_DrawLineBox( int x1, int y1, int x2, int y2, unsigned int Color )
+static int  Graphics_Software_DrawLineBox( int x1, int y1, int x2, int y2, unsigned int Color, int Thickness )
 {
 	LINEDATA Line[4] ;
 
@@ -2078,7 +2078,7 @@ extern int NS_FillRectGraph( int GrHandle, int x, int y, int Width, int Height, 
 			NS_SetDrawBlendMode( DX_BLENDMODE_SRCCOLOR, Alpha ) ;
 
 			// 描画
-			NS_DrawBox( x, y, x + Width, y + Height, GetColor( Red, Green, Blue ), TRUE ) ;
+			NS_DrawBox( x, y, x + Width, y + Height, GetColor( Red, Green, Blue ), TRUE, 1 ) ;
 
 			// 描画設定情報を元に戻す
 			Graphics_DrawSetting_SetScreenDrawSettingInfo( &ScreenDrawSettingInfo ) ;
@@ -5857,7 +5857,7 @@ static int DrawLine_Thickness( int x1, int y1, int x2, int y2, unsigned int Colo
 			int x ;
 
 			x = x1 - Thickness / 2 ;
-			return NS_DrawBox( x, y1, x + Thickness, y2, Color, TRUE ) ;
+			return NS_DrawBox( x, y1, x + Thickness, y2, Color, TRUE, 1 ) ;
 		}
 		else
 		if( y1 == y2 && Thickness % 2 == 1 )
@@ -5865,7 +5865,7 @@ static int DrawLine_Thickness( int x1, int y1, int x2, int y2, unsigned int Colo
 			int y ;
 
 			y = y1 - Thickness / 2 ;
-			return NS_DrawBox( x1, y, x2, y + Thickness, Color, TRUE ) ;
+			return NS_DrawBox( x1, y, x2, y + Thickness, Color, TRUE, 1 ) ;
 		}
 	}
 
@@ -6157,12 +6157,12 @@ extern int NS_DrawLineAA( float x1, float y1, float x2, float y2, unsigned int C
 
 
 // 四角形の描画
-extern	int NS_DrawBox( int x1, int y1, int x2, int y2, unsigned int Color, int FillFlag )
+extern	int NS_DrawBox( int x1, int y1, int x2, int y2, unsigned int Color, int FillFlag, int LineThickness )
 {
 	int Ret ;
 	
 	if( FillFlag )	Ret = NS_DrawFillBox( x1, y1, x2, y2, Color ) ;
-	else			Ret = NS_DrawLineBox( x1, y1, x2, y2, Color ) ;
+	else			Ret = NS_DrawLineBox( x1, y1, x2, y2, Color, LineThickness ) ;
 
 	// 終了
 	return Ret ;
@@ -6518,7 +6518,7 @@ extern	int NS_DrawFillBox( int x1, int y1, int x2, int y2, unsigned int Color )
 }
 
 // 四角形の描画 
-extern	int NS_DrawLineBox( int x1, int y1, int x2, int y2, unsigned int Color )
+extern	int NS_DrawLineBox( int x1, int y1, int x2, int y2, unsigned int Color, int LineThickness )
 {
 	int Ret = -1 ;
 	int Flag ;
@@ -6536,8 +6536,8 @@ extern	int NS_DrawLineBox( int x1, int y1, int x2, int y2, unsigned int Color )
 
 	// 描画
 	DRAW_DEF(
-		Graphics_Hardware_DrawLineBox_PF( x1, y1, x2, y2, Color ),
-		Graphics_Software_DrawLineBox(    x1, y1, x2, y2, Color ),
+		Graphics_Hardware_DrawLineBox_PF( x1, y1, x2, y2, Color, LineThickness ),
+		Graphics_Software_DrawLineBox(    x1, y1, x2, y2, Color, LineThickness ),
 		SETDRAWRECTCODE,
 		Ret,
 		Flag
@@ -9406,20 +9406,20 @@ extern int NS_DrawRoundRect( int x1, int y1, int x2, int y2, int rx, int ry, uns
 
 	if( FillFlag )
 	{
-		NS_DrawBox( x1 + rx, y1,      x2 - rx, y2,      Color, FillFlag ) ;
-		NS_DrawBox( x1,      y1 + ry, x1 + rx, y2 - ry, Color, FillFlag ) ;
-		NS_DrawBox( x2 - rx, y1 + ry, x2,      y2 - ry, Color, FillFlag ) ;
+		NS_DrawBox( x1 + rx, y1,      x2 - rx, y2,      Color, FillFlag, 1 ) ;
+		NS_DrawBox( x1,      y1 + ry, x1 + rx, y2 - ry, Color, FillFlag, 1 ) ;
+		NS_DrawBox( x2 - rx, y1 + ry, x2,      y2 - ry, Color, FillFlag, 1 ) ;
 	}
 	else
 	{
 		NS_SetDrawArea( x1 + rx, y1, x2 - rx, y2 ) ;
-		NS_DrawBox( x1, y1, x2, y2, Color, FillFlag ) ;
+		NS_DrawBox( x1, y1, x2, y2, Color, FillFlag, 1 ) ;
 
 		NS_SetDrawArea( x1, y1 + ry, x1 + rx, y2 - ry ) ;
-		NS_DrawBox( x1, y1, x2, y2, Color, FillFlag ) ;
+		NS_DrawBox( x1, y1, x2, y2, Color, FillFlag, 1 ) ;
 
 		NS_SetDrawArea( x2 - rx, y1 + ry, x2, y2 - ry ) ;
-		NS_DrawBox( x1, y1, x2, y2, Color, FillFlag ) ;
+		NS_DrawBox( x1, y1, x2, y2, Color, FillFlag, 1 ) ;
 
 		NS_SetDrawArea( BackupDrawRect.left, BackupDrawRect.top, BackupDrawRect.right, BackupDrawRect.bottom ) ; 
 	}
@@ -11961,6 +11961,564 @@ extern int NS_DrawCapsule3DD( VECTOR_D Pos1, VECTOR_D Pos2, double r, int DivNum
 			ind[ 1 ] = ( WORD )k ;
 			ind += 2 ;
 		}
+
+		NS_DrawPrimitiveIndexed3D( Vertex, vertnum, Index, indexnum, DX_PRIMTYPE_LINELIST, DX_NONE_GRAPH, TRUE ) ;
+	}
+
+	// メモリの解放
+	DXFREE( Vertex ) ;
+
+	if( GSYS.DrawSetting.Large3DPositionSupport )
+	{
+		Graphics_Draw_EndLarge3DPositionSupportDraw( &Large3DPosDrawInfo ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// ３Ｄの円柱を描画する
+extern int NS_DrawCylinder3D( VECTOR Pos1, VECTOR Pos2, float r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag )
+{
+	return NS_DrawCylinder3DD( VConvFtoD( Pos1 ), VConvFtoD( Pos2 ), r, DivNum, DifColor, SpcColor, FillFlag ) ;
+}
+
+// ３Ｄの円柱を描画する
+extern int NS_DrawCylinder3DD( VECTOR_D Pos1, VECTOR_D Pos2, double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag )
+{
+	VERTEX3D *Vertex, *vert1, *vert2, *vert3, *vert4 ;
+	MATRIX   Axis ;
+	WORD *Index, *ind ;
+	VECTOR_D SubV, xv, yv, zv ;
+	VECTOR topvec, bottomvec, norm, Pos1F ;
+	double Length ;
+	float LengthF ;
+	float *SinCosTable, *t, rf ;
+	int CirVertNum, vertnum, indexnum ;
+	int dr, dg, db, a, sr, sg, sb, i, j, k, bottomind, num ;
+	LARGE3DPOSITIONSUPPORT_DRAWINFO Large3DPosDrawInfo ;
+
+	if( GSYS.DrawSetting.Large3DPositionSupport )
+	{
+		Graphics_Draw_BeginLarge3DPositionSupportDraw( &Large3DPosDrawInfo, Pos1 ) ; 
+
+		Pos2 = VSubD( Pos2, Pos1 ) ;
+		Pos1 = VGetD( 0.0, 0.0, 0.0 ) ;
+	}
+
+	Pos1F = VConvDtoF( Pos1 ) ;
+	rf    = ( float )r ;
+
+	NS_GetColor2( DifColor, &dr, &dg, &db ) ;
+	NS_GetColor2( SpcColor, &sr, &sg, &sb ) ;
+	a = GSYS.DrawSetting.BlendMode == DX_BLENDMODE_NOBLEND ? 255 : GSYS.DrawSetting.BlendParam ;
+
+	SubV    = VSubD( Pos1, Pos2 ) ;
+	Length  = VSizeD( SubV ) ;
+	LengthF = ( float )Length ;
+	zv      = VScaleD( SubV, 1.0 / Length ) ;
+	xv      = VGetD( 1.0, 0.0, 0.0 ) ;
+	VectorOuterProductD( &yv, &xv, &zv ) ;
+	if( VSquareSizeD( yv ) < 0.000000001 )
+	{
+		xv = VGetD( 0.0, 0.0, 1.0 ) ;
+		VectorOuterProductD( &yv, &xv, &zv ) ;
+	}
+	xv   = VNormD( VCrossD( yv, zv ) ) ;
+	yv   = VNormD( yv ) ;
+	Axis = MGetAxis1( VConvDtoF( xv ), VConvDtoF( yv ), VConvDtoF( zv ), VConvDtoF( Pos2 ) ) ;
+
+	norm = VConvDtoF( VNormD( VCrossD( VGetD( 0.0, 0.0, 1.0 ), VSubD( VGetD( r, 0.0, 0.0 ), VGetD( 0.0, Length, 0.0 ) ) ) ) ) ;
+
+	CirVertNum = DivNum + 4 ;
+	vertnum    = CirVertNum * 4 ;
+	bottomind  = CirVertNum * 3 ;
+	indexnum   = FillFlag ? CirVertNum * 6 + ( CirVertNum - 2 ) * 3 * 2 : CirVertNum * 2 + CirVertNum * 2 * 2 ;
+	Vertex     = ( VERTEX3D * )DXALLOC( sizeof( WORD ) * indexnum + sizeof( VERTEX3D ) * vertnum + sizeof( float ) * CirVertNum * 2 ) ;
+	if( Vertex == NULL )
+	{
+		if( GSYS.DrawSetting.Large3DPositionSupport )
+		{
+			Graphics_Draw_EndLarge3DPositionSupportDraw( &Large3DPosDrawInfo ) ;
+		}
+		return 0 ;
+	}
+	SinCosTable = ( float * )( Vertex + vertnum ) ;
+	Index       = ( WORD * )( SinCosTable + CirVertNum * 2 ) ;
+
+	// 頂点データの作成
+	t = SinCosTable ;
+	for( i = 0 ; i < CirVertNum ; i ++, t += 2 )
+	{
+		_SINCOS_PLATFORM( 2 * DX_PI_F / CirVertNum * i, t, t + 1 ) ;
+	}
+	vert1 = Vertex ;
+	vert2 = Vertex + CirVertNum ;
+	vert3 = Vertex + CirVertNum * 2 ;
+	vert4 = Vertex + CirVertNum * 3 ;
+	t = SinCosTable ;
+	bottomvec = VTransformSR( VGet( 0.0f, 0.0f, -1.0f ), Axis ) ;
+	topvec    = VScale( bottomvec, -1.0f ) ;
+	for( i = 0 ; i < CirVertNum ; i ++, vert1 ++, vert2 ++, vert3 ++, vert4 ++, t += 2 )
+	{
+		vert1->pos = VTransform( VGet( t[ 0 ] * rf, t[ 1 ] * rf, LengthF ), Axis ) ;
+		vert2->pos = vert1->pos ;
+		vert3->pos = VTransform( VGet( t[ 0 ] * rf, t[ 1 ] * rf, 0.0f    ), Axis ) ;
+		vert4->pos = vert3->pos ;
+		vert1->norm = topvec ;
+		vert2->norm = VTransformSR( VGet( t[ 0 ] * norm.x, t[ 1 ] * norm.x, norm.y ), Axis ) ;
+		vert3->norm = vert2->norm ;
+		vert4->norm = bottomvec ;
+
+		vert1->dif.b = ( BYTE )db ; vert1->dif.g = ( BYTE )dg ; vert1->dif.r = ( BYTE )dr ; vert1->dif.a = ( BYTE )a ;
+		vert2->dif.b = ( BYTE )db ; vert2->dif.g = ( BYTE )dg ; vert2->dif.r = ( BYTE )dr ; vert2->dif.a = ( BYTE )a ;
+		vert3->dif.b = ( BYTE )db ; vert3->dif.g = ( BYTE )dg ; vert3->dif.r = ( BYTE )dr ; vert3->dif.a = ( BYTE )a ;
+		vert4->dif.b = ( BYTE )db ; vert4->dif.g = ( BYTE )dg ; vert4->dif.r = ( BYTE )dr ; vert4->dif.a = ( BYTE )a ;
+		vert1->spc.b = ( BYTE )sb ; vert1->spc.g = ( BYTE )sg ; vert1->spc.r = ( BYTE )sr ; vert1->spc.a = 0 ;
+		vert2->spc.b = ( BYTE )sb ; vert2->spc.g = ( BYTE )sg ; vert2->spc.r = ( BYTE )sr ; vert2->spc.a = 0 ;
+		vert3->spc.b = ( BYTE )sb ; vert3->spc.g = ( BYTE )sg ; vert3->spc.r = ( BYTE )sr ; vert3->spc.a = 0 ;
+		vert4->spc.b = ( BYTE )sb ; vert4->spc.g = ( BYTE )sg ; vert4->spc.r = ( BYTE )sr ; vert4->spc.a = 0 ;
+		vert1->u = 0.0f ; vert1->v = 0.0f ;
+		vert2->u = 0.0f ; vert2->v = 0.0f ;
+		vert3->u = 0.0f ; vert3->v = 0.0f ;
+		vert4->u = 0.0f ; vert4->v = 0.0f ;
+		vert1->su = 0.0f ; vert1->sv = 0.0f ;
+		vert2->su = 0.0f ; vert2->sv = 0.0f ;
+		vert3->su = 0.0f ; vert3->sv = 0.0f ;
+		vert4->su = 0.0f ; vert4->sv = 0.0f ;
+	}
+
+	// 塗りつぶすかどうかで処理を分岐
+	if( FillFlag )
+	{
+		ind = Index ;
+		j = CirVertNum ;
+		k = CirVertNum * 2 ;
+		for( i = 0 ; i < CirVertNum - 1 ; i ++, j ++, k ++, ind += 6 )
+		{
+			ind[ 0 ] = ( WORD )( k ) ;
+			ind[ 1 ] = ( WORD )( j ) ;
+			ind[ 2 ] = ( WORD )( k + 1 ) ;
+			ind[ 3 ] = ( WORD )( j + 1 ) ;
+			ind[ 4 ] = ( WORD )( k + 1 ) ;
+			ind[ 5 ] = ( WORD )( j ) ;
+		}
+		ind[ 0 ] = ( WORD )( k ) ;
+		ind[ 1 ] = ( WORD )( j ) ;
+		ind[ 2 ] = ( WORD )( CirVertNum * 2 ) ;
+		ind[ 3 ] = ( WORD )( CirVertNum ) ;
+		ind[ 4 ] = ( WORD )( CirVertNum * 2 ) ;
+		ind[ 5 ] = ( WORD )( j ) ;
+		ind += 6 ;
+
+		j = bottomind + CirVertNum - 1 ;
+		i = bottomind ;
+		ind[ 0 ] = ( WORD )i ;
+		ind[ 1 ] = ( WORD )( i + 1 ) ;
+		ind[ 2 ] = ( WORD )j ;
+		ind += 3 ;
+
+		num = CirVertNum - 2 ;
+		for( k = 1 ; k < num ; )
+		{
+			ind[ 0 ] = ( WORD )j ;
+			ind[ 1 ] = ( WORD )( i + 1 ) ;
+			ind[ 2 ] = ( WORD )( i + 2 ) ;
+			ind += 3 ;
+			k ++ ;
+			i ++ ;
+			if( k >= num ) break ;
+
+			ind[ 0 ] = ( WORD )j ;
+			ind[ 1 ] = ( WORD )( i + 1 ) ;
+			ind[ 2 ] = ( WORD )( j - 1 ) ;
+			ind += 3 ;
+
+			j -- ;
+			k ++ ;
+			if( k >= num ) break ;
+		}
+
+		j = CirVertNum - 1 ;
+		i = 0 ;
+		ind[ 2 ] = ( WORD )i ;
+		ind[ 1 ] = ( WORD )( i + 1 ) ;
+		ind[ 0 ] = ( WORD )j ;
+		ind += 3 ;
+
+		num = CirVertNum - 2 ;
+		for( k = 1 ; k < num ; )
+		{
+			ind[ 2 ] = ( WORD )j ;
+			ind[ 1 ] = ( WORD )( i + 1 ) ;
+			ind[ 0 ] = ( WORD )( i + 2 ) ;
+			ind += 3 ;
+			k ++ ;
+			i ++ ;
+			if( k >= num ) break ;
+
+			ind[ 2 ] = ( WORD )j ;
+			ind[ 1 ] = ( WORD )( i + 1 ) ;
+			ind[ 0 ] = ( WORD )( j - 1 ) ;
+			ind += 3 ;
+
+			j -- ;
+			k ++ ;
+			if( k >= num ) break ;
+		}
+
+		NS_DrawPrimitiveIndexed3D( Vertex, vertnum, Index, indexnum, DX_PRIMTYPE_TRIANGLELIST, DX_NONE_GRAPH, TRUE ) ;
+	}
+	else
+	{
+		ind = Index ;
+		j = CirVertNum ;
+		k = CirVertNum * 2 ;
+		for( i = 0 ; i < CirVertNum ; i ++, ind += 2 )
+		{
+			ind[ 0 ] = ( WORD )( j + i ) ;
+			ind[ 1 ] = ( WORD )( k + i ) ;
+		}
+
+		for( i = 0 ; i < CirVertNum - 1 ; i ++, ind += 2 )
+		{
+			ind[ 0 ] = ( WORD )( bottomind + i ) ;
+			ind[ 1 ] = ( WORD )( bottomind + i + 1 ) ;
+		}
+		ind[ 0 ] = ( WORD )( bottomind + i ) ;
+		ind[ 1 ] = ( WORD )bottomind ;
+
+		for( i = 0 ; i < CirVertNum - 1 ; i ++, ind += 2 )
+		{
+			ind[ 0 ] = ( WORD )( i ) ;
+			ind[ 1 ] = ( WORD )( i + 1 ) ;
+		}
+		ind[ 0 ] = ( WORD )i ;
+		ind[ 1 ] = ( WORD )0 ;
+
+		NS_DrawPrimitiveIndexed3D( Vertex, vertnum, Index, indexnum, DX_PRIMTYPE_LINELIST, DX_NONE_GRAPH, TRUE ) ;
+	}
+
+	// メモリの解放
+	DXFREE( Vertex ) ;
+
+	if( GSYS.DrawSetting.Large3DPositionSupport )
+	{
+		Graphics_Draw_EndLarge3DPositionSupportDraw( &Large3DPosDrawInfo ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// ３Ｄの筒を描画する
+extern int NS_DrawTube3D( VECTOR Pos1, VECTOR Pos2, float r1, float r2, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag )
+{
+	return NS_DrawTube3DD( VConvFtoD( Pos1 ), VConvFtoD( Pos2 ), r1, r2, DivNum, DifColor, SpcColor, FillFlag ) ;
+}
+
+// ３Ｄの筒を描画する
+extern int NS_DrawTube3DD( VECTOR_D Pos1, VECTOR_D Pos2, double r1, double r2, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag )
+{
+	VERTEX3D *Vertex, *vert1, *vert2, *vert3, *vert4, *vert5, *vert6, *vert7, *vert8 ;
+	MATRIX   Axis ;
+	WORD *Index, *ind ;
+	VECTOR_D SubV, xv, yv, zv ;
+	VECTOR topvec, bottomvec, norm, rnorm, Pos1F ;
+	double Length ;
+	float LengthF ;
+	float *SinCosTable, *t, r1f, r2f ;
+	int CirVertNum, vertnum, indexnum ;
+	int dr, dg, db, a, sr, sg, sb, i, j, k ;
+	LARGE3DPOSITIONSUPPORT_DRAWINFO Large3DPosDrawInfo ;
+
+	if( r1 > r2 )
+	{
+		double temp = r1 ;
+		r1 = r2 ;
+		r2 = temp ;
+	}
+
+	if( GSYS.DrawSetting.Large3DPositionSupport )
+	{
+		Graphics_Draw_BeginLarge3DPositionSupportDraw( &Large3DPosDrawInfo, Pos1 ) ; 
+
+		Pos2 = VSubD( Pos2, Pos1 ) ;
+		Pos1 = VGetD( 0.0, 0.0, 0.0 ) ;
+	}
+
+	Pos1F = VConvDtoF( Pos1 ) ;
+	r1f    = ( float )r1 ;
+	r2f    = ( float )r2 ;
+
+	NS_GetColor2( DifColor, &dr, &dg, &db ) ;
+	NS_GetColor2( SpcColor, &sr, &sg, &sb ) ;
+	a = GSYS.DrawSetting.BlendMode == DX_BLENDMODE_NOBLEND ? 255 : GSYS.DrawSetting.BlendParam ;
+
+	SubV    = VSubD( Pos1, Pos2 ) ;
+	Length  = VSizeD( SubV ) ;
+	LengthF = ( float )Length ;
+	zv      = VScaleD( SubV, 1.0 / Length ) ;
+	xv      = VGetD( 1.0, 0.0, 0.0 ) ;
+	VectorOuterProductD( &yv, &xv, &zv ) ;
+	if( VSquareSizeD( yv ) < 0.000000001 )
+	{
+		xv = VGetD( 0.0, 0.0, 1.0 ) ;
+		VectorOuterProductD( &yv, &xv, &zv ) ;
+	}
+	xv   = VNormD( VCrossD( yv, zv ) ) ;
+	yv   = VNormD( yv ) ;
+	Axis = MGetAxis1( VConvDtoF( xv ), VConvDtoF( yv ), VConvDtoF( zv ), VConvDtoF( Pos2 ) ) ;
+
+	norm  = VConvDtoF( VNormD( VCrossD( VGetD( 0.0, 0.0, 1.0 ), VSubD( VGetD( r1, 0.0, 0.0 ), VGetD( 0.0, Length, 0.0 ) ) ) ) ) ;
+	rnorm = VScale( norm, -1.0f ) ;
+
+	CirVertNum = DivNum + 4 ;
+	vertnum    = CirVertNum * 8 ;
+	indexnum   = FillFlag ? CirVertNum * 6 * 4 : CirVertNum * 2 * 8 ;
+	Vertex     = ( VERTEX3D * )DXALLOC( sizeof( WORD ) * indexnum + sizeof( VERTEX3D ) * vertnum + sizeof( float ) * CirVertNum * 2 ) ;
+	if( Vertex == NULL )
+	{
+		if( GSYS.DrawSetting.Large3DPositionSupport )
+		{
+			Graphics_Draw_EndLarge3DPositionSupportDraw( &Large3DPosDrawInfo ) ;
+		}
+		return 0 ;
+	}
+	SinCosTable = ( float * )( Vertex + vertnum ) ;
+	Index       = ( WORD * )( SinCosTable + CirVertNum * 2 ) ;
+
+	// 頂点データの作成
+	t = SinCosTable ;
+	for( i = 0 ; i < CirVertNum ; i ++, t += 2 )
+	{
+		_SINCOS_PLATFORM( 2 * DX_PI_F / CirVertNum * i, t, t + 1 ) ;
+	}
+	vert1 = Vertex ;
+	vert2 = Vertex + CirVertNum ;
+	vert3 = Vertex + CirVertNum * 2 ;
+	vert4 = Vertex + CirVertNum * 3 ;
+	vert5 = Vertex + CirVertNum * 4 ;
+	vert6 = Vertex + CirVertNum * 5 ;
+	vert7 = Vertex + CirVertNum * 6 ;
+	vert8 = Vertex + CirVertNum * 7 ;
+	t = SinCosTable ;
+	bottomvec = VTransformSR( VGet( 0.0f, 0.0f, -1.0f ), Axis ) ;
+	topvec    = VScale( bottomvec, -1.0f ) ;
+	for( i = 0 ; i < CirVertNum ; i ++, vert1 ++, vert2 ++, vert3 ++, vert4 ++, vert5 ++, vert6 ++, vert7 ++, vert8 ++, t += 2 )
+	{
+		vert1->pos = VTransform( VGet( t[ 0 ] * r2f, t[ 1 ] * r2f, LengthF ), Axis ) ;
+		vert2->pos = vert1->pos ;
+		vert3->pos = VTransform( VGet( t[ 0 ] * r2f, t[ 1 ] * r2f, 0.0f    ), Axis ) ;
+		vert4->pos = vert3->pos ;
+		vert5->pos = VTransform( VGet( t[ 0 ] * r1f, t[ 1 ] * r1f, LengthF ), Axis ) ;
+		vert6->pos = vert5->pos ;
+		vert7->pos = VTransform( VGet( t[ 0 ] * r1f, t[ 1 ] * r1f, 0.0f    ), Axis ) ;
+		vert8->pos = vert7->pos ;
+		vert1->norm = topvec ;
+		vert2->norm = VTransformSR( VGet( t[ 0 ] * norm.x, t[ 1 ] * norm.x, norm.y ), Axis ) ;
+		vert3->norm = vert2->norm ;
+		vert4->norm = bottomvec ;
+		vert5->norm = topvec ;
+		vert6->norm = VTransformSR( VGet( t[ 0 ] * rnorm.x, t[ 1 ] * rnorm.x, rnorm.y ), Axis ) ;
+		vert7->norm = vert6->norm ;
+		vert8->norm = bottomvec ;
+
+		vert1->dif.b = ( BYTE )db ; vert1->dif.g = ( BYTE )dg ; vert1->dif.r = ( BYTE )dr ; vert1->dif.a = ( BYTE )a ;
+		vert2->dif.b = ( BYTE )db ; vert2->dif.g = ( BYTE )dg ; vert2->dif.r = ( BYTE )dr ; vert2->dif.a = ( BYTE )a ;
+		vert3->dif.b = ( BYTE )db ; vert3->dif.g = ( BYTE )dg ; vert3->dif.r = ( BYTE )dr ; vert3->dif.a = ( BYTE )a ;
+		vert4->dif.b = ( BYTE )db ; vert4->dif.g = ( BYTE )dg ; vert4->dif.r = ( BYTE )dr ; vert4->dif.a = ( BYTE )a ;
+		vert5->dif.b = ( BYTE )db ; vert5->dif.g = ( BYTE )dg ; vert5->dif.r = ( BYTE )dr ; vert5->dif.a = ( BYTE )a ;
+		vert6->dif.b = ( BYTE )db ; vert6->dif.g = ( BYTE )dg ; vert6->dif.r = ( BYTE )dr ; vert6->dif.a = ( BYTE )a ;
+		vert7->dif.b = ( BYTE )db ; vert7->dif.g = ( BYTE )dg ; vert7->dif.r = ( BYTE )dr ; vert7->dif.a = ( BYTE )a ;
+		vert8->dif.b = ( BYTE )db ; vert8->dif.g = ( BYTE )dg ; vert8->dif.r = ( BYTE )dr ; vert8->dif.a = ( BYTE )a ;
+		vert1->spc.b = ( BYTE )sb ; vert1->spc.g = ( BYTE )sg ; vert1->spc.r = ( BYTE )sr ; vert1->spc.a = 0 ;
+		vert2->spc.b = ( BYTE )sb ; vert2->spc.g = ( BYTE )sg ; vert2->spc.r = ( BYTE )sr ; vert2->spc.a = 0 ;
+		vert3->spc.b = ( BYTE )sb ; vert3->spc.g = ( BYTE )sg ; vert3->spc.r = ( BYTE )sr ; vert3->spc.a = 0 ;
+		vert4->spc.b = ( BYTE )sb ; vert4->spc.g = ( BYTE )sg ; vert4->spc.r = ( BYTE )sr ; vert4->spc.a = 0 ;
+		vert5->spc.b = ( BYTE )sb ; vert5->spc.g = ( BYTE )sg ; vert5->spc.r = ( BYTE )sr ; vert5->spc.a = 0 ;
+		vert6->spc.b = ( BYTE )sb ; vert6->spc.g = ( BYTE )sg ; vert6->spc.r = ( BYTE )sr ; vert6->spc.a = 0 ;
+		vert7->spc.b = ( BYTE )sb ; vert7->spc.g = ( BYTE )sg ; vert7->spc.r = ( BYTE )sr ; vert7->spc.a = 0 ;
+		vert8->spc.b = ( BYTE )sb ; vert8->spc.g = ( BYTE )sg ; vert8->spc.r = ( BYTE )sr ; vert8->spc.a = 0 ;
+		vert1->u = 0.0f ; vert1->v = 0.0f ;
+		vert2->u = 0.0f ; vert2->v = 0.0f ;
+		vert3->u = 0.0f ; vert3->v = 0.0f ;
+		vert4->u = 0.0f ; vert4->v = 0.0f ;
+		vert5->u = 0.0f ; vert5->v = 0.0f ;
+		vert6->u = 0.0f ; vert6->v = 0.0f ;
+		vert7->u = 0.0f ; vert7->v = 0.0f ;
+		vert8->u = 0.0f ; vert8->v = 0.0f ;
+		vert1->su = 0.0f ; vert1->sv = 0.0f ;
+		vert2->su = 0.0f ; vert2->sv = 0.0f ;
+		vert3->su = 0.0f ; vert3->sv = 0.0f ;
+		vert4->su = 0.0f ; vert4->sv = 0.0f ;
+		vert5->su = 0.0f ; vert5->sv = 0.0f ;
+		vert6->su = 0.0f ; vert6->sv = 0.0f ;
+		vert7->su = 0.0f ; vert7->sv = 0.0f ;
+		vert8->su = 0.0f ; vert8->sv = 0.0f ;
+	}
+
+	// 塗りつぶすかどうかで処理を分岐
+	if( FillFlag )
+	{
+		ind = Index ;
+
+		j = CirVertNum ;
+		k = CirVertNum * 2 ;
+		for( i = 0 ; i < CirVertNum - 1 ; i ++, j ++, k ++, ind += 6 )
+		{
+			ind[ 0 ] = ( WORD )( k ) ;
+			ind[ 1 ] = ( WORD )( j ) ;
+			ind[ 2 ] = ( WORD )( k + 1 ) ;
+			ind[ 3 ] = ( WORD )( j + 1 ) ;
+			ind[ 4 ] = ( WORD )( k + 1 ) ;
+			ind[ 5 ] = ( WORD )( j ) ;
+		}
+		ind[ 0 ] = ( WORD )( k ) ;
+		ind[ 1 ] = ( WORD )( j ) ;
+		ind[ 2 ] = ( WORD )( CirVertNum * 2 ) ;
+		ind[ 3 ] = ( WORD )( CirVertNum ) ;
+		ind[ 4 ] = ( WORD )( CirVertNum * 2 ) ;
+		ind[ 5 ] = ( WORD )( j ) ;
+		ind += 6 ;
+
+		j = CirVertNum * 5 ;
+		k = CirVertNum * 6 ;
+		for( i = 0 ; i < CirVertNum - 1 ; i ++, j ++, k ++, ind += 6 )
+		{
+			ind[ 0 ] = ( WORD )( j + 1 ) ;
+			ind[ 1 ] = ( WORD )( k + 1 ) ;
+			ind[ 2 ] = ( WORD )( j ) ;
+			ind[ 3 ] = ( WORD )( k ) ;
+			ind[ 4 ] = ( WORD )( j ) ;
+			ind[ 5 ] = ( WORD )( k + 1 ) ;
+		}
+		ind[ 0 ] = ( WORD )( CirVertNum * 5 ) ;
+		ind[ 1 ] = ( WORD )( CirVertNum * 6 ) ;
+		ind[ 2 ] = ( WORD )( j ) ;
+		ind[ 3 ] = ( WORD )( k ) ;
+		ind[ 4 ] = ( WORD )( j ) ;
+		ind[ 5 ] = ( WORD )( CirVertNum * 6 ) ;
+		ind += 6 ;
+
+		j = 0 ;
+		k = CirVertNum * 4 ;
+		for( i = 0 ; i < CirVertNum - 1 ; i ++, j ++, k ++, ind += 6 )
+		{
+			ind[ 0 ] = ( WORD )( j ) ;
+			ind[ 1 ] = ( WORD )( j + 1 ) ;
+			ind[ 2 ] = ( WORD )( k ) ;
+			ind[ 3 ] = ( WORD )( k + 1 ) ;
+			ind[ 4 ] = ( WORD )( k ) ;
+			ind[ 5 ] = ( WORD )( j + 1 ) ;
+		}
+		ind[ 0 ] = ( WORD )( j ) ;
+		ind[ 1 ] = ( WORD )( 0 ) ;
+		ind[ 2 ] = ( WORD )( k ) ;
+		ind[ 3 ] = ( WORD )( CirVertNum * 4 ) ;
+		ind[ 4 ] = ( WORD )( k ) ;
+		ind[ 5 ] = ( WORD )( 0 ) ;
+		ind += 6 ;
+
+		j = CirVertNum * 3 ;
+		k = CirVertNum * 7 ;
+		for( i = 0 ; i < CirVertNum - 1 ; i ++, j ++, k ++, ind += 6 )
+		{
+			ind[ 0 ] = ( WORD )( j + 1 ) ;
+			ind[ 1 ] = ( WORD )( j ) ;
+			ind[ 2 ] = ( WORD )( k + 1 ) ;
+			ind[ 3 ] = ( WORD )( k ) ;
+			ind[ 4 ] = ( WORD )( k + 1 ) ;
+			ind[ 5 ] = ( WORD )( j ) ;
+		}
+		ind[ 0 ] = ( WORD )( CirVertNum * 3 ) ;
+		ind[ 1 ] = ( WORD )( j ) ;
+		ind[ 2 ] = ( WORD )( CirVertNum * 7 ) ;
+		ind[ 3 ] = ( WORD )( k ) ;
+		ind[ 4 ] = ( WORD )( CirVertNum * 7 ) ;
+		ind[ 5 ] = ( WORD )( j ) ;
+		ind += 6 ;
+
+		NS_DrawPrimitiveIndexed3D( Vertex, vertnum, Index, indexnum, DX_PRIMTYPE_TRIANGLELIST, DX_NONE_GRAPH, TRUE ) ;
+	}
+	else
+	{
+		ind = Index ;
+
+		j = CirVertNum ;
+		k = CirVertNum * 2 ;
+		for( i = 0 ; i < CirVertNum ; i ++, ind += 2 )
+		{
+			ind[ 0 ] = ( WORD )( j + i ) ;
+			ind[ 1 ] = ( WORD )( k + i ) ;
+		}
+
+		j = CirVertNum * 5 ;
+		k = CirVertNum * 6 ;
+		for( i = 0 ; i < CirVertNum ; i ++, ind += 2 )
+		{
+			ind[ 0 ] = ( WORD )( j + i ) ;
+			ind[ 1 ] = ( WORD )( k + i ) ;
+		}
+
+
+		j = 0 ;
+		k = CirVertNum * 4 ;
+		for( i = 0 ; i < CirVertNum ; i ++, ind += 2 )
+		{
+			ind[ 0 ] = ( WORD )( j + i ) ;
+			ind[ 1 ] = ( WORD )( k + i ) ;
+		}
+
+		j = CirVertNum * 3 ;
+		k = CirVertNum * 7 ;
+		for( i = 0 ; i < CirVertNum ; i ++, ind += 2 )
+		{
+			ind[ 0 ] = ( WORD )( j + i ) ;
+			ind[ 1 ] = ( WORD )( k + i ) ;
+		}
+
+
+		j = 0 ;
+		for( i = 0 ; i < CirVertNum - 1 ; i ++, ind += 2 )
+		{
+			ind[ 0 ] = ( WORD )( j + i ) ;
+			ind[ 1 ] = ( WORD )( j + i + 1 ) ;
+		}
+		ind[ 0 ] = ( WORD )( j + i ) ;
+		ind[ 1 ] = ( WORD )j ;
+		ind += 2 ;
+
+		j = CirVertNum * 3 ;
+		for( i = 0 ; i < CirVertNum - 1 ; i ++, ind += 2 )
+		{
+			ind[ 0 ] = ( WORD )( j + i ) ;
+			ind[ 1 ] = ( WORD )( j + i + 1 ) ;
+		}
+		ind[ 0 ] = ( WORD )( j + i ) ;
+		ind[ 1 ] = ( WORD )j ;
+		ind += 2 ;
+
+		
+		j = CirVertNum * 4 ;
+		for( i = 0 ; i < CirVertNum - 1 ; i ++, ind += 2 )
+		{
+			ind[ 0 ] = ( WORD )( j + i ) ;
+			ind[ 1 ] = ( WORD )( j + i + 1 ) ;
+		}
+		ind[ 0 ] = ( WORD )( j + i ) ;
+		ind[ 1 ] = ( WORD )j ;
+		ind += 2 ;
+
+		j = CirVertNum * 7 ;
+		for( i = 0 ; i < CirVertNum - 1 ; i ++, ind += 2 )
+		{
+			ind[ 0 ] = ( WORD )( j + i ) ;
+			ind[ 1 ] = ( WORD )( j + i + 1 ) ;
+		}
+		ind[ 0 ] = ( WORD )( j + i ) ;
+		ind[ 1 ] = ( WORD )j ;
+		ind += 2 ;
 
 		NS_DrawPrimitiveIndexed3D( Vertex, vertnum, Index, indexnum, DX_PRIMTYPE_LINELIST, DX_NONE_GRAPH, TRUE ) ;
 	}
@@ -14784,7 +15342,7 @@ extern	int NS_DrawModiGraphToZBuffer( int x1, int y1, int x2, int y2, int x3, in
 extern int NS_DrawBoxToZBuffer( int x1, int y1, int x2, int y2, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */ )
 {
 	DrawZBuffer_Pre( WriteZMode );
-	NS_DrawBox( x1, y1, x2, y2, NS_GetColor(255,255,255), FillFlag );
+	NS_DrawBox( x1, y1, x2, y2, NS_GetColor(255,255,255), FillFlag, 1 );
 	DrawZBuffer_Post();
 
 	// 終了
@@ -17489,6 +18047,23 @@ extern int NS_SetDrawZ( float Z )
 	return 0;
 }
 
+// Ｚバッファに書き込むＺ値を標準方式と反転した値( リバースＺ )にするかどうかを設定する、DxLib_Init実行前のみ使用可能( TRUE:反転した値にする　FALSE:通常の値にする( デフォルト ) )
+extern int NS_SetUseReversedZ( int Flag )
+{
+	// 初期化前のみ有効
+	if( DxSysData.DxLib_InitializeFlag != FALSE )
+	{
+		return -1 ;
+	}
+
+	// 値を保存
+	GSYS.DrawSetting.UseReversedZFlag = Flag ;
+
+	// 終了
+	return 0 ;
+}
+
+
 
 
 // 描画可能領域のセット
@@ -18214,6 +18789,12 @@ extern VECTOR NS_ConvWorldPosToScreenPos( VECTOR WorldPos )
 	ScreenPos.y *= w ;
 	ScreenPos.z *= w ;
 
+	// リバースＺが有効な場合はスクリーン座標を反転する
+	if( GSYS.DrawSetting.UseReversedZFlag )
+	{
+		ScreenPos.z = 1.0f - ScreenPos.z ;
+	}
+
 	return ScreenPos ;
 }
 
@@ -18232,6 +18813,12 @@ extern VECTOR_D NS_ConvWorldPosToScreenPosD( VECTOR_D WorldPos )
 	ScreenPos.x *= w ;
 	ScreenPos.y *= w ;
 	ScreenPos.z *= w ;
+
+	// リバースＺが有効な場合はスクリーン座標を反転する
+	if( GSYS.DrawSetting.UseReversedZFlag )
+	{
+		ScreenPos.z = 1.0 - ScreenPos.z ;
+	}
 
 	return ScreenPos ;
 }
@@ -18280,6 +18867,12 @@ extern VECTOR NS_ConvScreenPosToWorldPos( VECTOR ScreenPos )
 	float w ;
 	VECTOR WorldPos ;
 
+	// リバースＺが有効な場合はスクリーン座標を反転する
+	if( GSYS.DrawSetting.UseReversedZFlag )
+	{
+		ScreenPos.z = 1.0f - ScreenPos.z ;
+	}
+
 	// ブレンド行列の逆行列が有効ではなかったら逆行列を構築する
 	if( GSYS.DrawSetting.ValidInverseBlend3DMatrix == FALSE )
 	{
@@ -18308,6 +18901,12 @@ extern VECTOR_D NS_ConvScreenPosToWorldPosD( VECTOR_D ScreenPos )
 {
 	double w ;
 	VECTOR_D WorldPos ;
+
+	// リバースＺが有効な場合はスクリーン座標を反転する
+	if( GSYS.DrawSetting.UseReversedZFlag )
+	{
+		ScreenPos.z = 1.0 - ScreenPos.z ;
+	}
 
 	// ブレンド行列の逆行列が有効ではなかったら逆行列を構築する
 	if( GSYS.DrawSetting.ValidInverseBlend3DMatrix == FALSE )
@@ -18343,6 +18942,12 @@ extern VECTOR_D NS_ConvScreenPosToWorldPos_ZLinearD( VECTOR_D ScreenPos )
 {
 	double w, inz ;
 	VECTOR_D WorldPos ;
+
+	// リバースＺが有効な場合はスクリーン座標を反転する
+	if( GSYS.DrawSetting.UseReversedZFlag )
+	{
+		ScreenPos.z = 1.0 - ScreenPos.z ;
+	}
 
 	// ブレンド行列の逆行列が有効ではなかったら逆行列を構築する
 	if( GSYS.DrawSetting.ValidInverseBlend3DMatrix == FALSE )
@@ -18830,6 +19435,168 @@ extern	int	NS_SetFogDensity( float density )
 extern float NS_GetFogDensity( void )
 {
 	return GSYS.DrawSetting.FogDensity ;
+}
+
+// 高さフォグを有効にするかどうかを設定する( TRUE:有効  FALSE:無効 )
+extern int NS_SetVerticalFogEnable( int Flag )
+{
+	if( GSYS.DrawSetting.VerticalFogEnable == Flag ) return 0;
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	GSYS.DrawSetting.VerticalFogEnable = Flag ;
+	GSYS.ChangeSettingFlag     = TRUE ;
+
+	// ハードウエアアクセラレーションに設定
+	if( GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+	{
+		Graphics_Hardware_SetVerticalFogEnable_PF( Flag ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// 高さフォグが有効かどうかを取得する( TRUE:有効  FALSE:無効 )
+extern int NS_GetVerticalFogEnable( void )
+{
+	return GSYS.DrawSetting.VerticalFogEnable ;
+}
+
+// 高さフォグモードを設定する
+extern int NS_SetVerticalFogMode( int Mode /* DX_FOGMODE_NONE 等 */ )
+{
+	if( GSYS.DrawSetting.VerticalFogMode == Mode ) return 0;
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	GSYS.DrawSetting.VerticalFogMode = Mode ;
+
+	// ハードウエアアクセラレーションに設定
+	if( GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+	{
+		Graphics_Hardware_SetVerticalFogMode_PF( Mode ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// 高さフォグモードを取得する
+extern int NS_GetVerticalFogMode( void )
+{
+	return GSYS.DrawSetting.VerticalFogMode ;
+}
+
+// 高さフォグカラーを設定する
+extern int NS_SetVerticalFogColor( int  r, int  g, int  b )
+{
+	DWORD color = ( DWORD )( ( ( 0xff ) << 24 ) | ( ( r & 0xff ) << 16 ) | ( ( g & 0xff ) << 8 ) | ( b & 0xff ) ) ;
+
+	if( GSYS.DrawSetting.VerticalFogColor == color ) return 0;
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	GSYS.DrawSetting.VerticalFogColor = color ;
+
+	// ハードウエアアクセラレーションに設定
+	if( GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+	{
+		Graphics_Hardware_SetVerticalFogColor_PF( color ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// 高さフォグカラーを取得する
+extern int NS_GetVerticalFogColor( int *r, int *g, int *b )
+{
+	if( r != NULL )
+	{
+		*r = ( int )( ( GSYS.DrawSetting.VerticalFogColor >> 16 ) & 0xff ) ;
+	}
+
+	if( g != NULL )
+	{
+		*g = ( int )( ( GSYS.DrawSetting.VerticalFogColor >> 8  ) & 0xff ) ;
+	}
+
+	if( b != NULL )
+	{
+		*b = ( int )( ( GSYS.DrawSetting.VerticalFogColor       ) & 0xff ) ;
+	}
+
+	return 0 ;
+}
+
+// 高さフォグが始まる距離と終了する距離を設定する( 0.0f ～ 1.0f )
+extern int NS_SetVerticalFogStartEnd( float  start, float  end )
+{
+	if( GSYS.DrawSetting.VerticalFogStart == start && GSYS.DrawSetting.VerticalFogEnd == end ) return 0 ;
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	GSYS.DrawSetting.VerticalFogStart = start ;
+	GSYS.DrawSetting.VerticalFogEnd = end ;
+
+	// ハードウエアアクセラレーションに設定
+	if( GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+	{
+		Graphics_Hardware_SetVerticalFogStartEnd_PF( start, end ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// 高さフォグが始まる距離と終了する距離を取得する( 0.0f ～ 1.0f )
+extern int NS_GetVerticalFogStartEnd( float *start, float *end )
+{
+	if( start != NULL )
+	{
+		*start = GSYS.DrawSetting.VerticalFogStart ;
+	}
+
+	if( end != NULL )
+	{
+		*end = GSYS.DrawSetting.VerticalFogEnd ;
+	}
+
+	return 0 ;
+}
+
+// 高さフォグが始まる処理と密度を設定する( 0.0f ～ 1.0f )
+extern int NS_SetVerticalFogDensity( float start, float density )
+{
+	if( GSYS.DrawSetting.VerticalFogDensity == density ) return 0;
+
+	// 描画待機している描画物を描画
+	DRAWSTOCKINFO
+
+	GSYS.DrawSetting.VerticalFogDensity = density ;
+
+	// ハードウエアアクセラレーションに設定
+	if( GSYS.Setting.ValidHardware && GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode == FALSE )
+	{
+		Graphics_Hardware_SetVerticalFogDensity_PF( start, density ) ;
+	}
+
+	// 終了
+	return 0 ;
+}
+
+// 高さフォグの始まる処理と密度を取得する( 0.0f ～ 1.0f )
+extern int NS_GetVerticalFogDensity( float *start, float *density )
+{
+	if( start   != NULL ) *start   = GSYS.DrawSetting.VerticalFogDensityStart ;
+	if( density != NULL ) *density = GSYS.DrawSetting.VerticalFogDensity ;
+
+	return 0 ;
 }
 
 
@@ -20050,7 +20817,7 @@ extern DISPLAYMODEDATA NS_GetDisplayMode( int ModeIndex, int DisplayIndex )
 }
 
 // フルスクリーンモードで起動している場合の使用しているディスプレイモードの情報を取得する
-extern DISPLAYMODEDATA GetFullScreenUseDisplayMode( void )
+extern DISPLAYMODEDATA NS_GetFullScreenUseDisplayMode( void )
 {
 	static DISPLAYMODEDATA ErrorResult = { -1, -1, -1, -1 } ;
 
@@ -23631,7 +24398,7 @@ extern int NS_GetLastUpdateTimeMovieToGraph( int GraphHandle )
 }
 
 // 動画ファイルの更新処理を行う
-extern int UpdateMovieToGraph( int GraphHandle )
+extern int NS_UpdateMovieToGraph( int GraphHandle )
 {
 	IMAGEDATA *Image ;
 
@@ -24499,6 +25266,25 @@ extern int NS_SetUseLightAngleAttenuation( int UseFlag )
 
 	// ハードウェアに設定する
 	Graphics_Hardware_Light_SetNoAngleAttenuation_PF( GSYS.Light.NoLightAngleAttenuation ) ;
+
+	// 終了
+	return 0 ;
+}
+
+// ３Ｄ描画のライティング計算でハーフランバートを使用するかどうかを設定する( TRUE:ハーフランバートを使用する  FALSE:ハーフランバートを使用しない( デフォルト ) )
+extern int NS_SetUseHalfLambertLighting( int UseFlag )
+{
+	// 値が同じ場合は何もせず終了
+	if( GSYS.Light.UseHalfLambert == UseFlag )
+	{
+		return 0 ;
+	}
+
+	// 値を保存
+	GSYS.Light.UseHalfLambert = UseFlag ? TRUE : FALSE ;
+
+	// ハードウェアに設定する
+	Graphics_Hardware_Light_SetUseHalfLambert_PF( GSYS.Light.UseHalfLambert ) ;
 
 	// 終了
 	return 0 ;
@@ -27527,6 +28313,14 @@ extern int Graphics_Screen_ChangeMode( int ScreenSizeX, int ScreenSizeY, int Col
 		// チェンジ
 		Graphics_RestoreOrChangeSetupGraphSystem( TRUE, ScreenSizeX, ScreenSizeY, ColorBitDepth, RefreshRate ) ;
 
+		// 描画先が裏画面又は表画面の場合は描画先サイズを更新する
+		if( GSYS.DrawSetting.TargetScreen[ 0 ] == DX_SCREEN_FRONT ||
+			GSYS.DrawSetting.TargetScreen[ 0 ] == DX_SCREEN_BACK )
+		{
+			GSYS.DrawSetting.DrawSizeX = ScreenSizeX ;
+			GSYS.DrawSetting.DrawSizeY = ScreenSizeY ;
+		}
+
 		// ソフトウエアレンダリングの場合ここで後始末と初期化を行う
 		if( GSYS.Setting.ValidHardware == FALSE || GSYS.Screen.UserScreenImagePixelFormatMatchSoftRenderMode )
 		{
@@ -29917,12 +30711,25 @@ extern void Graphics_Image_UpdateGraphMovie( MOVIEGRAPH *Movie, DWORD_PTR GrHand
 		if( Movie->YGrHandle >= 0 )
 		{
 			// フィルターを使用してRGBカラーに変換する
-			NS_GraphFilterBlt(
-				Movie->YGrHandle,
-				( int )GrHandle,
-				DX_GRAPH_FILTER_Y2UV1_TO_RGB, 
-				Movie->UVGrHandle
-			) ;
+			if( Movie->RightAlpha )
+			{
+				NS_GraphFilterRectBlt(
+					Movie->YGrHandle,
+					( int )GrHandle,
+					0, 0, Movie->Width / 2, Movie->Height, 0, 0,
+					DX_GRAPH_FILTER_Y2UV1_TO_RGB_RRA, 
+					Movie->UVGrHandle
+				) ;
+			}
+			else
+			{
+				NS_GraphFilterBlt(
+					Movie->YGrHandle,
+					( int )GrHandle,
+					DX_GRAPH_FILTER_Y2UV1_TO_RGB, 
+					Movie->UVGrHandle
+				) ;
+			}
 		}
 		else
 #endif // DX_NON_FILTER
@@ -31885,11 +32692,13 @@ extern int Graphics_Image_CreateGraph_UseGParam(
 		}
 		else
 		{
+#ifndef DX_NON_ASYNCLOAD
 			// 非同期読み込みカウントをインクリメント
 			if( ASyncThread )
 			{
 				IncASyncLoadCount( Param->GrHandle, -1 ) ;
 			}
+#endif // DX_NON_ASYNCLOAD
 		}
 	}
 	else
@@ -33312,6 +34121,7 @@ extern	int		Graphics_DrawSetting_Initialize( void )
 //	int NotUseManagedTextureFlag               = GSYS.CreateImage.NotUseManagedTextureFlag ;
 	RECT OriginalDrawRect                      = GSYS.DrawSetting.OriginalDrawRect ;
 	int Large3DPositionSupport                 = GSYS.DrawSetting.Large3DPositionSupport ;
+	int UseReversedZFlag                       = GSYS.DrawSetting.UseReversedZFlag ;
 
 	// ゼロ初期化
 	_MEMSET( &GSYS.DrawSetting, 0, sizeof( GSYS.DrawSetting ) ) ;
@@ -33325,6 +34135,7 @@ extern	int		Graphics_DrawSetting_Initialize( void )
 //	GSYS.CreateImage.NotUseManagedTextureFlag   = NotUseManagedTextureFlag ;
 	GSYS.DrawSetting.OriginalDrawRect           = OriginalDrawRect ;
 	GSYS.DrawSetting.Large3DPositionSupport     = Large3DPositionSupport ;
+	GSYS.DrawSetting.UseReversedZFlag           = UseReversedZFlag ;
 
 	// テクスチャアドレスモードの初期設定
 	for( i = 0 ; i < USE_TEXTURESTAGE_NUM ; i ++ )
@@ -33356,8 +34167,8 @@ extern	int		Graphics_DrawSetting_Initialize( void )
 	GSYS.DrawSetting.DrawZ = 0.2f;
 
 	// 初期Ｚ比較モードをセット
-	GSYS.DrawSetting.ZBufferCmpType2D = DX_CMP_LESSEQUAL;
-	GSYS.DrawSetting.ZBufferCmpType3D = DX_CMP_LESSEQUAL;
+	GSYS.DrawSetting.ZBufferCmpType2D = GSYS.DrawSetting.UseReversedZFlag ? DX_CMP_GREATEREQUAL : DX_CMP_LESSEQUAL;
+	GSYS.DrawSetting.ZBufferCmpType3D = GSYS.DrawSetting.UseReversedZFlag ? DX_CMP_GREATEREQUAL : DX_CMP_LESSEQUAL;
 
 	// 初期はテクスチャサーフェスを作成する方向で
 //	GSYS.TextureImageCreateFlag = TRUE ;
@@ -33851,10 +34662,40 @@ extern void Graphics_DrawSetting_RefreshProjectionMatrix( void )
 	{
 	case 0 :	// 遠近法
 		CreatePerspectiveFovMatrixD( &GSYS.DrawSetting.ProjMatrix, GSYS.DrawSetting.ProjFov, GSYS.DrawSetting.ProjNear, GSYS.DrawSetting.ProjFar, Aspect ) ;
+
+		// リバースＺの場合はリバースＺ行列に変換
+		if( GSYS.DrawSetting.UseReversedZFlag )
+		{
+			MATRIX_D MulMatrix ;
+			MulMatrix.m[ 0 ][ 0 ] = 1.0 ;	MulMatrix.m[ 0 ][ 1 ] = 0.0 ;	MulMatrix.m[ 0 ][ 2 ] =  0.0 ;	MulMatrix.m[ 0 ][ 3 ] = 0.0 ;
+			MulMatrix.m[ 1 ][ 0 ] = 0.0 ;	MulMatrix.m[ 1 ][ 1 ] = 1.0 ;	MulMatrix.m[ 1 ][ 2 ] =  0.0 ;	MulMatrix.m[ 1 ][ 3 ] = 0.0 ;
+			MulMatrix.m[ 2 ][ 0 ] = 0.0 ;	MulMatrix.m[ 2 ][ 1 ] = 0.0 ;	MulMatrix.m[ 2 ][ 2 ] = -1.0 ;	MulMatrix.m[ 2 ][ 3 ] = 0.0 ;
+			MulMatrix.m[ 3 ][ 0 ] = 0.0 ;	MulMatrix.m[ 3 ][ 1 ] = 0.0 ;	MulMatrix.m[ 3 ][ 2 ] =  1.0 ;	MulMatrix.m[ 3 ][ 3 ] = 1.0 ;
+			CreateMultiplyMatrixD( &GSYS.DrawSetting.ProjMatrix, &GSYS.DrawSetting.ProjMatrix, &MulMatrix ) ;
+		}
+//		{
+//			VECTOR_D VectorIn = VGetD( 0.0, 0.0, 20415.691406250000 ) ;
+//			double V4In = 1.0 ;
+//			VECTOR_D VectorOut ;
+//			double V4Out ;
+//			VectorTransform4D( &VectorOut, &V4Out, &VectorIn, &V4In, &GSYS.DrawSetting.ProjMatrix ) ;
+//			V4In = 0.0 ;
+//		}
 		break ;
 
 	case 1 :	// 正射影
 		CreateOrthoMatrixD( &GSYS.DrawSetting.ProjMatrix, GSYS.DrawSetting.ProjSize, GSYS.DrawSetting.ProjNear, GSYS.DrawSetting.ProjFar, Aspect ) ;
+
+		// リバースＺの場合はリバースＺ行列に変換
+		if( GSYS.DrawSetting.UseReversedZFlag )
+		{
+			MATRIX_D MulMatrix ;
+			MulMatrix.m[ 0 ][ 0 ] = 1.0 ;	MulMatrix.m[ 0 ][ 1 ] = 0.0 ;	MulMatrix.m[ 0 ][ 2 ] =  0.0 ;	MulMatrix.m[ 0 ][ 3 ] = 0.0 ;
+			MulMatrix.m[ 1 ][ 0 ] = 0.0 ;	MulMatrix.m[ 1 ][ 1 ] = 1.0 ;	MulMatrix.m[ 1 ][ 2 ] =  0.0 ;	MulMatrix.m[ 1 ][ 3 ] = 0.0 ;
+			MulMatrix.m[ 2 ][ 0 ] = 0.0 ;	MulMatrix.m[ 2 ][ 1 ] = 0.0 ;	MulMatrix.m[ 2 ][ 2 ] = -1.0 ;	MulMatrix.m[ 2 ][ 3 ] = 0.0 ;
+			MulMatrix.m[ 3 ][ 0 ] = 0.0 ;	MulMatrix.m[ 3 ][ 1 ] = 0.0 ;	MulMatrix.m[ 3 ][ 2 ] =  1.0 ;	MulMatrix.m[ 3 ][ 3 ] = 1.0 ;
+			CreateMultiplyMatrixD( &GSYS.DrawSetting.ProjMatrix, &GSYS.DrawSetting.ProjMatrix, &MulMatrix ) ;
+		}
 		break ;
 
 	case 2 :	// 行列直指定

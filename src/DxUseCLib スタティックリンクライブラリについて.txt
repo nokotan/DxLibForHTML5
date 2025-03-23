@@ -50,13 +50,13 @@ DxUseCLib.lib のコンパイルについて
 
 
 
-	・libpng 1.6.12 ( ファイル名 lpng1612.zip )
+	・libpng 1.6.37 ( ファイル名 lpng1637.zip )
 
 	　http://www.libpng.org/pub/png/libpng.html
 
 
 
-	・zlib 1.2.8 ( ファイル名 zlib128.zip )
+	・zlib 1.2.12 ( ファイル名 zlib1212.zip )
 
 	　http://www.zlib.net/
 

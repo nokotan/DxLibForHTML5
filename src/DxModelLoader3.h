@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ読み込み処理３用ヘッダ
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -338,6 +338,18 @@ struct DX_MODELLOADER3_PMD_PHYSICS_INFO
 
 #ifndef DX_NON_BULLET_PHYSICS
 
+#ifndef DX_NON_NAMESPACE
+extern int SetupPhysicsObject_PMDPhysicsInfo(		DxLib::DX_MODELLOADER3_PMD_PHYSICS_INFO *MLPhysicsInfo, int DisablePhysicsFile ) ;
+extern int ReleasePhysicsObject_PMDPhysicsInfo(		DxLib::DX_MODELLOADER3_PMD_PHYSICS_INFO *MLPhysicsInfo ) ;
+extern int OneFrameProcess_PMDPhysicsInfo(			DxLib::DX_MODELLOADER3_PMD_PHYSICS_INFO *MLPhysicsInfo, int FrameNo, int LoopNo, bool FPS60, int ValidNextRate, int TimeDivNum ) ;
+extern int CheckDisablePhysicsAnim_PMDPhysicsInfo(	DxLib::DX_MODELLOADER3_PMD_PHYSICS_INFO *MLPhysicsInfo, int PhysicsIndex ) ;
+
+extern int SetupPhysicsObject_ModelPhysicsInfo(		DxLib::MV1_MODEL *Model ) ;
+extern int ReleasePhysicsObject_ModelPhysicsInfo(	DxLib::MV1_MODEL *Model ) ;
+extern int ResetState_ModelPhysicsInfo(				DxLib::MV1_MODEL *Model ) ;
+extern int StepSimulation_ModelPhysicsInfo(			DxLib::MV1_MODEL *Model, float TimeStep ) ;
+extern int SetWorldGravity_ModelPhysiceInfo(		DxLib::MV1_MODEL *Model, DxLib::VECTOR Gravity ) ;
+#else // DX_NON_NAMESPACE
 extern int SetupPhysicsObject_PMDPhysicsInfo(		DX_MODELLOADER3_PMD_PHYSICS_INFO *MLPhysicsInfo, int DisablePhysicsFile ) ;
 extern int ReleasePhysicsObject_PMDPhysicsInfo(		DX_MODELLOADER3_PMD_PHYSICS_INFO *MLPhysicsInfo ) ;
 extern int OneFrameProcess_PMDPhysicsInfo(			DX_MODELLOADER3_PMD_PHYSICS_INFO *MLPhysicsInfo, int FrameNo, int LoopNo, bool FPS60, int ValidNextRate, int TimeDivNum ) ;
@@ -348,6 +360,7 @@ extern int ReleasePhysicsObject_ModelPhysicsInfo(	MV1_MODEL *Model ) ;
 extern int ResetState_ModelPhysicsInfo(				MV1_MODEL *Model ) ;
 extern int StepSimulation_ModelPhysicsInfo(			MV1_MODEL *Model, float TimeStep ) ;
 extern int SetWorldGravity_ModelPhysiceInfo(		MV1_MODEL *Model, VECTOR Gravity ) ;
+#endif // DX_NON_NAMESPACE
 
 #endif
 

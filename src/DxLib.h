@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		ƒwƒbƒ_ƒtƒ@ƒCƒ‹
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -12,24 +12,9 @@
 #include "DxCompileConfig.h"
 
 // ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Ìƒo[ƒWƒ‡ƒ“
-#define DXLIB_VERSION 0x324d
-#define DXLIB_VERSION_STR_T _T( "3.24d" )
-#define DXLIB_VERSION_STR_W    L"3.24d"
-
-// İ’è -----------------------------------------------------------------------
-
-// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚É•K—v‚È lib ƒtƒ@ƒCƒ‹‚ğAƒvƒƒWƒFƒNƒg‚ÌƒJƒŒƒ“ƒgƒtƒHƒ‹ƒ_‚â
-// ƒRƒ“ƒpƒCƒ‰‚ÌƒfƒtƒHƒ‹ƒg LIB ƒpƒX‚Éİ’è‚¹‚¸‚Ég—p‚³‚ê‚éê‡‚ÍˆÈ‰º‚Ì
-// ƒRƒƒ“ƒg‚ğŠO‚µ‚Ä‚­‚¾‚³‚¢
-//#define DX_LIB_NOT_DEFAULTPATH
-
-#ifndef DX_MAKE
-
-// •`‰æŠÖ˜A‚ÌŠÖ”‚ğˆêØg—p‚³‚ê‚È‚¢ê‡‚ÍˆÈ‰º‚ÌƒRƒƒ“ƒg‚ğŠO‚µ‚Ä‰º‚³‚¢
-//#define DX_NOTUSE_DRAWFUNCTION
-
-#endif // DX_MAKE
-
+#define DXLIB_VERSION 0x324f
+#define DXLIB_VERSION_STR_T _T( "3.24f" )
+#define DXLIB_VERSION_STR_W    L"3.24f"
 
 // ’è‹`---------------------------------------------------------------------------
 
@@ -104,7 +89,7 @@
 #define DX_DEFAULT_FONT_HANDLE						(-2)				// ƒfƒtƒHƒ‹ƒgƒtƒHƒ“ƒg‚ğ¦‚·’l
 
 #define DEFAULT_FONT_SIZE							(16)				// ƒtƒHƒ“ƒg‚ÌƒfƒtƒHƒ‹ƒg‚ÌƒTƒCƒY
-#define DEFAULT_FONT_THINCK							(6)					// ƒtƒHƒ“ƒg‚ÌƒfƒtƒHƒ‹ƒg‚Ì‘¾‚³
+#define DEFAULT_FONT_THICKNESS						(6)					// ƒtƒHƒ“ƒg‚ÌƒfƒtƒHƒ‹ƒg‚Ì‘¾‚³
 #define DEFAULT_FONT_TYPE							( DX_FONTTYPE_NORMAL )	// ƒtƒHƒ“ƒg‚ÌƒfƒtƒHƒ‹ƒg‚ÌŒ`‘Ô
 #define DEFAULT_FONT_EDGESIZE						(1)					// ƒtƒHƒ“ƒg‚ÌƒfƒtƒHƒ‹ƒg‚Ì‘¾‚³
 
@@ -2449,8 +2434,6 @@ extern	int			GetOneChar(			TCHAR *CharBuffer, int DeleteFlag ) ;			// •¶šƒR[ƒh
 extern	int			GetOneCharWait(		TCHAR *CharBuffer, int DeleteFlag ) ;			// •¶šƒR[ƒhƒoƒbƒtƒ@‚É—­‚Ü‚Á‚½ƒf[ƒ^‚©‚ç‚P•¶š•ªæ“¾‚·‚éAƒoƒbƒtƒ@‚É‰½‚à•¶šƒR[ƒh‚ª‚È‚¢ê‡‚Í•¶šƒR[ƒh‚ªƒoƒbƒtƒ@‚Éˆê•¶š•ª—­‚Ü‚é‚Ü‚Å‘Ò‚Â
 extern	int			GetCtrlCodeCmp(		TCHAR Char ) ;									// w’è‚Ì•¶šƒR[ƒh‚ªƒAƒXƒL[ƒRƒ“ƒgƒ[ƒ‹ƒR[ƒh‚©’²‚×‚é
 
-#endif // DX_NON_INPUTSTRING
-
 #ifndef DX_NON_KEYEX
 
 extern	int			DrawIMEInputString(				int x, int y,                                 int SelectStringNum , int DrawCandidateList DEFAULTPARAM( = TRUE ) ) ;	// ‰æ–Êã‚É“ü—Í’†‚Ì•¶š—ñ‚ğ•`‰æ‚·‚é
@@ -2461,6 +2444,8 @@ extern	int			SetInputStringMaxLengthIMESync(	int Flag ) ;							// ‚h‚l‚d‚Å“ü—Í‚
 extern	int			SetIMEInputStringMaxLength(		int Length ) ;							// ‚h‚l‚d‚Åˆê“x‚É“ü—Í‚Å‚«‚éÅ‘å•¶š”‚ğİ’è‚·‚é( 0:§ŒÀ‚È‚µ  1ˆÈã:w’è‚Ì•¶š”‚Å§ŒÀ )
 
 #endif // DX_NON_KEYEX
+
+#endif // DX_NON_INPUTSTRING
 
 extern	int			GetStringPoint(				const TCHAR *String,                      int Point ) ;		// ‘SŠp•¶šA”¼Šp•¶š“ü‚è—‚ê‚é’†‚©‚çw’è‚Ì•¶š”‚Å‚Ì”¼Šp•¶š”‚ğ“¾‚é
 extern	int			GetStringPointWithStrLen(	const TCHAR *String, size_t StringLength, int Point ) ;		// ‘SŠp•¶šA”¼Šp•¶š“ü‚è—‚ê‚é’†‚©‚çw’è‚Ì•¶š”‚Å‚Ì”¼Šp•¶š”‚ğ“¾‚é
@@ -2480,6 +2465,8 @@ extern	int			GetObtainsStringCharPosition_CharClip(	int x, int y, int AddY, cons
 extern	int			GetObtainsStringCharPosition_WordClip(	int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle DEFAULTPARAM( = -1 ) , int *LineCount DEFAULTPARAM( = NULL ) ) ;		// •`‰æ‰Â”\—Ìˆæ‚Éû‚Ü‚é‚æ‚¤‚É‰üs‚µ‚È‚ª‚ç•¶š—ñ‚ğ•`‰æ‚µ‚½ê‡‚Ì•¶š—ñ‚Ì––’[‚ÌÀ•W‚ğæ“¾‚·‚é( ƒNƒŠƒbƒv‚ª’PŒê’PˆÊ )
 #endif // DX_NON_FONT
 extern	int			DrawObtainsBox(					int x1, int y1, int x2, int y2, int AddY, unsigned int Color, int FillFlag ) ;																																										// •`‰æ‰Â”\—Ìˆæ‚Éû‚Ü‚é‚æ‚¤‚É•â³‚ğ‰Á‚¦‚È‚ª‚ç‹éŒ`‚ğ•`‰æ
+
+#ifndef DX_NON_INPUTSTRING
 
 #ifndef DX_NON_KEYEX
 
@@ -2530,6 +2517,7 @@ extern	int			GetKeyInputCursorPosition(		int InputHandle ) ;																				
 
 #endif // DX_NON_KEYEX
 
+#endif // DX_NON_INPUTSTRING
 
 
 
@@ -2778,7 +2766,7 @@ extern	int			GetCreateGraphInitGraphDelete(				void ) ;										// ì¬‚·‚éƒOƒ‰
 extern	int			SetCreateGraphHandle(						int GrHandle ) ;								// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ìƒnƒ“ƒhƒ‹’l‚ğİ’è‚·‚éA‚OˆÈ‰º‚Ì’l‚ğ“n‚·‚Æİ’è‰ğœ( ‘¶İ‚µ‚È‚¢ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ì’l‚Ìê‡‚Ì‚İ—LŒø )
 extern	int			GetCreateGraphHandle(						void ) ;										// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ìƒnƒ“ƒhƒ‹’l‚ğæ“¾‚·‚é
 extern	int			SetCreateDivGraphHandle(					const int *HandleArray, int HandleNum ) ;		// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ìƒnƒ“ƒhƒ‹’l‚ğİ’è‚·‚éALoadDivGraph “™‚Ì•ªŠ„‰æ‘œ“Ç‚İ‚İ—pAHandleArray ‚É NULL ‚ğ“n‚·‚Æİ’è‰ğœ( ‘¶İ‚µ‚È‚¢ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ì’l‚Ìê‡‚Ì‚İ—LŒø )
-extern	int			GetCreateDivGraphHandle(					int *HandleArray ) ;							// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ìƒnƒ“ƒhƒ‹’l‚ğæ“¾‚·‚éALoadDivGraph “™‚Ì•ªŠ„‰æ‘œ“Ç‚İ‚İ—pA–ß‚è’l‚Í SetCreateDivGraphHandle ‚Ìˆø” HandleNum ‚É“n‚µ‚½’lAHandleArray ‚ğ NULL ‚É‚·‚é‚±‚Æ‚ª‰Â”\
+extern	int			GetCreateDivGraphHandle(					int *HandleArray ) ;							// ì¬‚·‚éƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚Ìƒnƒ“ƒhƒ‹’l‚ğæ“¾‚·‚éALoadDivGraph “™‚Ì•ªŠ„‰æ‘œ“Ç‚İ‚İ—pA–ß‚è’l‚Í SetCreateDivGraphHandle ‚Ìˆø” HandleNum ‚É“n‚µ‚½’lAHandleArray ‚Í NULL ‚Å‚à‰Â
 extern	int			SetDrawValidGraphCreateFlag(				int Flag ) ;									// SetDrawScreen ‚Éˆø”‚Æ‚µ‚Ä“n‚¹‚é( •`‰æ‘ÎÛ‚Æ‚µ‚Äg—p‚Å‚«‚é )ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:•`‰æ‰Â”\ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é  FLASE:’Êí‚ÌƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é( ƒfƒtƒHƒ‹ƒg ) )
 extern	int			GetDrawValidGraphCreateFlag(				void ) ;										// SetDrawScreen ‚Éˆø”‚Æ‚µ‚Ä“n‚¹‚é( •`‰æ‘ÎÛ‚Æ‚µ‚Äg—p‚Å‚«‚é )ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğì¬‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚ğæ“¾‚·‚é
 extern	int			SetDrawValidFlagOf3DGraph(					int Flag ) ;									// SetDrawValidGraphCreateFlag ‚Ì‹Œ–¼Ì
@@ -2869,10 +2857,10 @@ extern	int			ResetGraphPalette(				int GrHandle ) ;																		// SetGraph
 // }Œ`•`‰æŠÖ”
 extern	int			DrawLine(         int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int   Thickness DEFAULTPARAM( = 1 )    ) ;							// ü‚ğ•`‰æ‚·‚é
 extern	int			DrawLineAA(       float x1, float y1, float x2, float y2,                                         unsigned int Color, float Thickness DEFAULTPARAM( = 1.0f ) ) ;							// ü‚ğ•`‰æ‚·‚é( ƒAƒ“ƒ`ƒGƒCƒŠƒAƒX•t‚« )
-extern	int			DrawBox(          int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int FillFlag ) ;														// lŠpŒ`‚ğ•`‰æ‚·‚é
+extern	int			DrawBox(          int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int FillFlag, int   LineThickness DEFAULTPARAM( = 1 )    ) ;			// lŠpŒ`‚ğ•`‰æ‚·‚é
 extern	int			DrawBoxAA(        float x1, float y1, float x2, float y2,                                         unsigned int Color, int FillFlag, float LineThickness DEFAULTPARAM( = 1.0f ) ) ;			// lŠpŒ`‚ğ•`‰æ‚·‚é( ƒAƒ“ƒ`ƒGƒCƒŠƒAƒX•t‚« )
 extern	int			DrawFillBox(      int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color ) ;																	// ’†g‚ğ“h‚è‚Â‚Ô‚·lŠpŒ`‚ğ•`‰æ‚·‚é
-extern	int			DrawLineBox(      int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color ) ;																	// ˜g‚¾‚¯‚ÌlŠpŒ`‚Ì•`‰æ ‚·‚é
+extern	int			DrawLineBox(      int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int LineThickness DEFAULTPARAM( = 1 ) ) ;								// ˜g‚¾‚¯‚ÌlŠpŒ`‚Ì•`‰æ ‚·‚é
 extern	int			DrawCircle(       int   x,  int   y,  int   r,                                                    unsigned int Color, int FillFlag DEFAULTPARAM( = TRUE ), int   LineThickness DEFAULTPARAM( = 1 )    ) ;	// ‰~‚ğ•`‰æ‚·‚é
 extern	int			DrawCircleAA(     float x,  float y,  float r,            int posnum,                             unsigned int Color, int FillFlag DEFAULTPARAM( = TRUE ), float LineThickness DEFAULTPARAM( = 1.0f ), double Angle DEFAULTPARAM( = 0.0 ) ) ;	// ‰~‚ğ•`‰æ‚·‚é( ƒAƒ“ƒ`ƒGƒCƒŠƒAƒX•t‚« )
 extern	int			DrawOval(         int   x,  int   y,  int   rx, int   ry,                                         unsigned int Color, int FillFlag,        int   LineThickness DEFAULTPARAM( = 1 )    ) ;	// ‘È‰~‚ğ•`‰æ‚·‚é
@@ -2903,12 +2891,16 @@ extern	int			DrawTriangle3DD( VECTOR_D Pos1,   VECTOR_D Pos2, VECTOR_D Pos3,    
 extern	int			DrawCube3D(      VECTOR   Pos1,   VECTOR   Pos2,                            unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì—§•û‘Ì‚ğ•`‰æ‚·‚é
 extern	int			DrawCube3DD(     VECTOR_D Pos1,   VECTOR_D Pos2,                            unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì—§•û‘Ì‚ğ•`‰æ‚·‚é
 extern	int			DrawCubeSet3D(   CUBEDATA *CubeDataArray, int Num, int FillFlag ) ;																				// ‚R‚c‚Ì—§•û‘Ì‚ÌW‡‚ğ•`‰æ‚·‚é
-extern	int			DrawSphere3D(    VECTOR   CenterPos,                  float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‹…‘Ì‚ğ•`‰æ‚·‚é
-extern	int			DrawSphere3DD(   VECTOR_D CenterPos,                  double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‹…‘Ì‚ğ•`‰æ‚·‚é
-extern	int			DrawCapsule3D(   VECTOR   Pos1,   VECTOR   Pos2,      float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚ÌƒJƒvƒZƒ‹‚ğ•`‰æ‚·‚é
-extern	int			DrawCapsule3DD(  VECTOR_D Pos1,   VECTOR_D Pos2,      double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚ÌƒJƒvƒZƒ‹‚ğ•`‰æ‚·‚é
-extern	int			DrawCone3D(      VECTOR   TopPos, VECTOR   BottomPos, float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‰~‚ğ•`‰æ‚·‚é
-extern	int			DrawCone3DD(     VECTOR_D TopPos, VECTOR_D BottomPos, double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‰~‚ğ•`‰æ‚·‚é
+extern	int			DrawSphere3D(    VECTOR   CenterPos,                  float  r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‹…‘Ì‚ğ•`‰æ‚·‚é
+extern	int			DrawSphere3DD(   VECTOR_D CenterPos,                  double r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‹…‘Ì‚ğ•`‰æ‚·‚é
+extern	int			DrawCapsule3D(   VECTOR   Pos1,   VECTOR   Pos2,      float  r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚ÌƒJƒvƒZƒ‹‚ğ•`‰æ‚·‚é
+extern	int			DrawCapsule3DD(  VECTOR_D Pos1,   VECTOR_D Pos2,      double r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚ÌƒJƒvƒZƒ‹‚ğ•`‰æ‚·‚é
+extern	int			DrawCylinder3D(  VECTOR   Pos1,   VECTOR   Pos2,      float  r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‰~’Œ‚ğ•`‰æ‚·‚é
+extern	int			DrawCylinder3DD( VECTOR_D Pos1,   VECTOR_D Pos2,      double r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‰~’Œ‚ğ•`‰æ‚·‚é
+extern	int			DrawTube3D(      VECTOR   Pos1,   VECTOR   Pos2,      float  r1, float  r2, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì“›‚ğ•`‰æ‚·‚é
+extern	int			DrawTube3DD(     VECTOR_D Pos1,   VECTOR_D Pos2,      double r1, double r2, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì“›‚ğ•`‰æ‚·‚é
+extern	int			DrawCone3D(      VECTOR   TopPos, VECTOR   BottomPos, float  r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‰~‚ğ•`‰æ‚·‚é
+extern	int			DrawCone3DD(     VECTOR_D TopPos, VECTOR_D BottomPos, double r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‰~‚ğ•`‰æ‚·‚é
 
 // ‰æ‘œ•`‰æŠÖ”
 extern	int			LoadGraphScreen(           int x, int y, const TCHAR *GraphName,                         int TransFlag ) ;										// ‰æ‘œƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚±‚ñ‚Å‰æ–Ê‚É•`‰æ‚·‚é
@@ -2927,7 +2919,7 @@ extern	int			DrawTurnGraph(            int x, int y,                            
 extern	int			DrawReverseGraph(         int x, int y,                                                                 int GrHandle, int TransFlag, int ReverseXFlag DEFAULTPARAM( = FALSE ) , int ReverseYFlag DEFAULTPARAM( = FALSE ) ) ;	// ‰æ‘œ‚Ì”½“]•`‰æ
 
 extern	int			DrawGraphF(               float xf, float yf,                                                                       int GrHandle, int TransFlag ) ;															// ‰æ‘œ‚Ì•`‰æ( À•Ww’è‚ª float ”Å )
-extern	int			DrawExtendGraphF(         float x1f, float y1f, float x2f, float y2,                                                int GrHandle, int TransFlag ) ;															// ‰æ‘œ‚ÌŠg‘å•`‰æ( À•Ww’è‚ª float ”Å )
+extern	int			DrawExtendGraphF(         float x1f, float y1f, float x2f, float y2f,                                               int GrHandle, int TransFlag ) ;															// ‰æ‘œ‚ÌŠg‘å•`‰æ( À•Ww’è‚ª float ”Å )
 extern	int			DrawRotaGraphF(           float xf, float yf,                       double ExRate,                    double Angle, int GrHandle, int TransFlag, int ReverseXFlag DEFAULTPARAM( = FALSE ) , int ReverseYFlag DEFAULTPARAM( = FALSE ) ) ;	// ‰æ‘œ‚Ì‰ñ“]•`‰æ( À•Ww’è‚ª float ”Å )
 extern	int			DrawRotaGraph2F(          float xf, float yf, float cxf, float cyf, double ExtRate,                   double Angle, int GrHandle, int TransFlag, int ReverseXFlag DEFAULTPARAM( = FALSE ) , int ReverseYFlag DEFAULTPARAM( = FALSE ) ) ;	// ‰æ‘œ‚Ì‰ñ“]•`‰æ‚Q( ‰ñ“]’†Sw’è•t‚« )( À•Ww’è‚ª float ”Å )
 extern	int			DrawRotaGraph3F(          float xf, float yf, float cxf, float cyf, double ExtRateX, double ExtRateY, double Angle, int GrHandle, int TransFlag, int ReverseXFlag DEFAULTPARAM( = FALSE ) , int ReverseYFlag DEFAULTPARAM( = FALSE ) ) ; 	// ‰æ‘œ‚Ì‰ñ“]•`‰æ‚R( ‰ñ“]’†Sw’è•t‚«{c‰¡Šg‘å—¦•Êw’è”Å )( À•Ww’è‚ª float ”Å )
@@ -3067,6 +3059,7 @@ extern	int			SetWriteZBuffer3D(					int Flag ) ;													// ‚yƒoƒbƒtƒ@‚É‘‚«
 extern	int			SetZBufferCmpType3D(				int CmpType /* DX_CMP_NEVER “™ */ ) ;							// ‚yƒoƒbƒtƒ@‚Ì‚y’l‚Æ‘‚«‚Ş‚y’l‚Æ‚Ì”äŠrƒ‚[ƒh‚ğİ’è‚·‚é( ‚R‚c•`‰æ‚Ì‚İ‚É‰e‹¿ )( CmpType:DX_CMP_NEVER“™( ƒfƒtƒHƒ‹ƒg:DX_CMP_LESSEQUAL ) )
 extern	int			SetZBias3D(							int Bias ) ;													// ‘‚«‚Ş‚y’l‚ÌƒoƒCƒAƒX‚ğİ’è‚·‚é( ‚R‚c•`‰æ‚Ì‚İ‚É‰e‹¿ )( Bias:ƒoƒCƒAƒX’l( ƒfƒtƒHƒ‹ƒg:0 ) )
 extern	int			SetDrawZ(							float Z ) ;														// ‚Q‚c•`‰æ‚Å‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğİ’è‚·‚é( Z:‘‚«‚Ş‚y’l( ƒfƒtƒHƒ‹ƒg:0.2f ) )
+extern	int			SetUseReversedZ(					int Flag ) ;													// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğ•W€•û®‚Æ”½“]‚µ‚½’l( ƒŠƒo[ƒX‚y )‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚éADxLib_InitÀs‘O‚Ì‚İg—p‰Â”\( TRUE:”½“]‚µ‚½’l‚É‚·‚é@FALSE:’Êí‚Ì’l‚É‚·‚é( ƒfƒtƒHƒ‹ƒg ) )
 
 extern	int			SetDrawArea(						int x1, int y1, int x2, int y2 ) ;								// •`‰æ‰Â”\—Ìˆæ‚Ìİ’è‚·‚é
 extern	int			GetDrawArea(						RECT *Rect ) ;													// •`‰æ‰Â”\—Ìˆæ‚ğæ“¾‚·‚é
@@ -3138,6 +3131,17 @@ extern	int			SetFogStartEnd(						float  start, float  end ) ;									// ƒtƒHƒO
 extern	int			GetFogStartEnd(						float *start, float *end ) ;									// ƒtƒHƒO‚ªn‚Ü‚é‹——£‚ÆI—¹‚·‚é‹——£‚ğæ“¾‚·‚é( 0.0f ` 1.0f )
 extern	int			SetFogDensity(						float density ) ;												// ƒtƒHƒO‚Ì–§“x‚ğİ’è‚·‚é( 0.0f ` 1.0f )
 extern	float		GetFogDensity(						void ) ;														// ƒtƒHƒO‚Ì–§“x‚ğæ“¾‚·‚é( 0.0f ` 1.0f )
+
+extern	int			SetVerticalFogEnable(				int Flag ) ;													// ‚‚³ƒtƒHƒO‚ğ—LŒø‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:—LŒø  FALSE:–³Œø )
+extern	int			GetVerticalFogEnable(				void ) ;														// ‚‚³ƒtƒHƒO‚ª—LŒø‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( TRUE:—LŒø  FALSE:–³Œø )
+extern	int			SetVerticalFogMode(					int Mode /* DX_FOGMODE_NONE “™ */ ) ;							// ‚‚³ƒtƒHƒOƒ‚[ƒh‚ğİ’è‚·‚é
+extern	int			GetVerticalFogMode(					void ) ;														// ‚‚³ƒtƒHƒOƒ‚[ƒh‚ğæ“¾‚·‚é
+extern	int			SetVerticalFogColor(				int  r, int  g, int  b ) ;										// ‚‚³ƒtƒHƒOƒJƒ‰[‚ğİ’è‚·‚é
+extern	int			GetVerticalFogColor(				int *r, int *g, int *b ) ;										// ‚‚³ƒtƒHƒOƒJƒ‰[‚ğæ“¾‚·‚é
+extern	int			SetVerticalFogStartEnd(				float  start, float  end ) ;									// ‚‚³ƒtƒHƒO‚ªn‚Ü‚é‹——£‚ÆI—¹‚·‚é‹——£‚ğİ’è‚·‚é( 0.0f ` 1.0f )
+extern	int			GetVerticalFogStartEnd(				float *start, float *end ) ;									// ‚‚³ƒtƒHƒO‚ªn‚Ü‚é‹——£‚ÆI—¹‚·‚é‹——£‚ğæ“¾‚·‚é( 0.0f ` 1.0f )
+extern	int			SetVerticalFogDensity(				float start, float density ) ;									// ‚‚³ƒtƒHƒO‚ªn‚Ü‚éˆ—‚Æ–§“x‚ğİ’è‚·‚é( 0.0f ` 1.0f )
+extern	int			GetVerticalFogDensity(				float *start, float *density ) ;								// ‚‚³ƒtƒHƒO‚Ìn‚Ü‚éˆ—‚Æ–§“x‚ğæ“¾‚·‚é( 0.0f ` 1.0f )
 
 
 // ‰æ–ÊŠÖŒWŠÖ”
@@ -3551,6 +3555,7 @@ extern	int			SetMaterialParam(			MATERIALPARAM Material ) ;														// ‚R‚c
 extern	int			SetUseSpecular(				int UseFlag ) ;																	// ‚R‚c•`‰æ‚ÉƒXƒyƒLƒ…ƒ‰‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
 extern	int			SetGlobalAmbientLight(		COLOR_F Color ) ;																// ƒOƒ[ƒoƒ‹ƒAƒ“ƒrƒGƒ“ƒgƒ‰ƒCƒgƒJƒ‰[‚ğİ’è‚·‚é
 extern	int			SetUseLightAngleAttenuation( int UseFlag ) ;																// ‚R‚c•`‰æ‚Ìƒ‰ƒCƒeƒBƒ“ƒOŒvZ‚ÅŠp“xŒ¸Š‚ğs‚¤‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:Šp“xŒ¸Š‚ğs‚¤( ƒfƒtƒHƒ‹ƒg )  FALSE:Šp“xŒ¸Š‚ğs‚í‚È‚¢ )
+extern	int			SetUseHalfLambertLighting(	 int UseFlag ) ;																	// ‚R‚c•`‰æ‚Ìƒ‰ƒCƒeƒBƒ“ƒOŒvZ‚Åƒn[ƒtƒ‰ƒ“ƒo[ƒg‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:ƒn[ƒtƒ‰ƒ“ƒo[ƒg‚ğg—p‚·‚é  FALSE:ƒn[ƒtƒ‰ƒ“ƒo[ƒg‚ğg—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
 
 extern	int			ChangeLightTypeDir(			VECTOR Direction ) ;															// ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚Ìƒ^ƒCƒv‚ğƒfƒBƒŒƒNƒVƒ‡ƒiƒ‹ƒ‰ƒCƒg‚É‚·‚é
 extern	int			ChangeLightTypeSpot(		VECTOR Position, VECTOR Direction, float OutAngle, float InAngle, float Range, float Atten0, float Atten1, float Atten2 ) ;	// ƒfƒtƒHƒ‹ƒgƒ‰ƒCƒg‚Ìƒ^ƒCƒv‚ğƒXƒ|ƒbƒgƒ‰ƒCƒg‚É‚·‚é
@@ -5162,6 +5167,7 @@ extern	int			MV1LoadModelWithStrLen(				const TCHAR *FileName, size_t FileNameLe
 extern	int			MV1LoadModelFromMem(				const void *FileImage, int FileSize, int (* FileReadFunc )( const TCHAR *FilePath, void **FileImageAddr, int *FileSize, void *FileReadFuncData ), int (* FileReleaseFunc )( void *MemoryAddr, void *FileReadFuncData ), void *FileReadFuncData DEFAULTPARAM( = NULL ) ) ;	// ƒƒ‚ƒŠã‚Ìƒ‚ƒfƒ‹ƒtƒ@ƒCƒ‹ƒCƒ[ƒW‚Æ“Æ©‚Ì“Ç‚İ‚İƒ‹[ƒ`ƒ“‚ğg—p‚µ‚Äƒ‚ƒfƒ‹‚ğ“Ç‚İ‚Ş
 extern	int			MV1DuplicateModel(					int SrcMHandle ) ;													// w’è‚Ìƒ‚ƒfƒ‹‚Æ“¯‚¶ƒ‚ƒfƒ‹Šî–{ƒf[ƒ^‚ğg—p‚µ‚Äƒ‚ƒfƒ‹‚ğì¬‚·‚é( -1:ƒGƒ‰[  0ˆÈã:ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹ )
 extern	int			MV1CreateCloneModel(				int SrcMHandle ) ;													// w’è‚Ìƒ‚ƒfƒ‹‚ğƒ‚ƒfƒ‹Šî–{ƒf[ƒ^‚àŠÜ‚ß•¡»‚·‚é( MV1DuplicateModel ‚Íƒ‚ƒfƒ‹Šî–{ƒf[ƒ^‚Í‹¤—L‚µ‚Ü‚·‚ªA‚±‚¿‚ç‚Í•¡»Œ³‚Ìƒ‚ƒfƒ‹‚Æ‚ÍˆêØ‹¤—Lƒf[ƒ^‚Ì–³‚¢ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹‚ğì¬‚µ‚Ü‚· )( -1:ƒGƒ‰[  0ˆÈã:ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹ )
+extern	int			MV1CreateSimpleModel(				VERTEX3D *Vertex, int VertexNum, unsigned int *Index, int IndexNum, MATERIALPARAM *Material, int GrHandle ) ;		// w’è‚Ì’¸“_ƒf[ƒ^‚Æƒ}ƒeƒŠƒAƒ‹î•ñAƒeƒNƒXƒ`ƒƒ‚ğg—p‚µ‚½ƒVƒ“ƒvƒ‹‚È‚R‚cƒ‚ƒfƒ‹‚Ìƒnƒ“ƒhƒ‹‚ğì¬‚·‚é
 
 extern	int			MV1DeleteModel(						int MHandle ) ;														// ƒ‚ƒfƒ‹‚ğíœ‚·‚é
 extern	int			MV1InitModel(						void ) ;															// ‚·‚×‚Ä‚Ìƒ‚ƒfƒ‹‚ğíœ‚·‚é
@@ -5341,6 +5347,7 @@ extern	int			MV1SetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex, in
 extern	int			MV1GetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex ) ;										// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚ÅƒTƒuƒfƒBƒtƒ…[ƒYƒ}ƒbƒv‚Æ‚µ‚Äg—p‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾‚·‚é
 extern	int			MV1SetMaterialSpcMapTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;						// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚ÅƒXƒyƒLƒ…ƒ‰ƒ}ƒbƒv‚Æ‚µ‚Äg—p‚·‚éƒeƒNƒXƒ`ƒƒ‚ğw’è‚·‚é
 extern	int			MV1GetMaterialSpcMapTexture(		int MHandle, int MaterialIndex ) ;										// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚ÅƒXƒyƒLƒ…ƒ‰ƒ}ƒbƒv‚Æ‚µ‚Äg—p‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾‚·‚é
+extern	int			MV1SetMaterialNormalMapTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;						// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚Å–@üƒ}ƒbƒv‚Æ‚µ‚Äg—p‚·‚éƒeƒNƒXƒ`ƒƒ‚ğw’è‚·‚é
 extern	int			MV1GetMaterialNormalMapTexture(		int MHandle, int MaterialIndex ) ;										// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚Å–@üƒ}ƒbƒv‚Æ‚µ‚Äg—p‚³‚ê‚Ä‚¢‚éƒeƒNƒXƒ`ƒƒ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğæ“¾‚·‚é
 extern	int			MV1SetMaterialDifGradTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;						// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚ÅƒgƒD[ƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÌƒfƒBƒtƒ…[ƒYƒOƒ‰ƒf[ƒVƒ‡ƒ“ƒ}ƒbƒv‚Æ‚µ‚Äg—p‚·‚éƒeƒNƒXƒ`ƒƒ‚ğİ’è‚·‚é
 extern	int			MV1GetMaterialDifGradTexture(		int MHandle, int MaterialIndex ) ;										// w’è‚Ìƒ}ƒeƒŠƒAƒ‹‚ÅƒgƒD[ƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒO‚ÌƒfƒBƒtƒ…[ƒYƒOƒ‰ƒf[ƒVƒ‡ƒ“ƒ}ƒbƒv‚Æ‚µ‚Äg—p‚·‚éƒeƒNƒXƒ`ƒƒ‚ğæ“¾‚·‚é
@@ -5404,6 +5411,10 @@ extern	int			MV1SetTextureBumpImageNextPixelLength(	int MHandle, int TexIndex, f
 extern	float		MV1GetTextureBumpImageNextPixelLength(	int MHandle, int TexIndex ) ;										// ƒoƒ“ƒvƒ}ƒbƒv‰æ‘œ‚Ìê‡‚Ì—×‚ÌƒsƒNƒZƒ‹‚Æ‚Ì‹——£‚ğæ“¾‚·‚é
 extern	int			MV1SetTextureSampleFilterMode(			int MHandle, int TexIndex, int FilterMode ) ;						// ƒeƒNƒXƒ`ƒƒ‚ÌƒtƒBƒ‹ƒ^ƒŠƒ“ƒOƒ‚[ƒh‚ğİ’è‚·‚é
 extern	int			MV1GetTextureSampleFilterMode(			int MHandle, int TexIndex ) ;										// ƒeƒNƒXƒ`ƒƒ‚ÌƒtƒBƒ‹ƒ^ƒŠƒ“ƒOƒ‚[ƒh‚ğæ“¾‚·‚é( –ß‚è’l  DX_DRAWMODE_BILINEAR“™ )
+extern	int			MV1AddTexture(							int MHandle, const TCHAR *Name,                    const TCHAR *ColorFilePath,                             const TCHAR *AlphaFilePath DEFAULTPARAM( = NULL ) ,                                                  void *ColorFileImage DEFAULTPARAM( = NULL ) , void *AlphaFileImage DEFAULTPARAM( = NULL ) , int AddressModeU DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int AddressModeV DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int FilterMode DEFAULTPARAM( = DX_DRAWMODE_ANISOTROPIC ) , int BumpImageFlag DEFAULTPARAM( = FALSE ) , float BumpImageNextPixelLength DEFAULTPARAM( = 0.1f ) , int ReverseFlag DEFAULTPARAM( = FALSE ) , int Bmp32AllZeroAlphaToXRGB8Flag DEFAULTPARAM( = FALSE ) ) ;	// ƒ‚ƒfƒ‹‚Åg—p‚·‚éƒeƒNƒXƒ`ƒƒ‚ğ’Ç‰Á‚·‚é
+extern	int			MV1AddTextureWithStrLen(				int MHandle, const TCHAR *Name, size_t NameLength, const TCHAR *ColorFilePath, size_t ColorFilePathLength, const TCHAR *AlphaFilePath DEFAULTPARAM( = NULL ) , size_t AlphaFilePathLength DEFAULTPARAM( = 0 ) , void *ColorFileImage DEFAULTPARAM( = NULL ) , void *AlphaFileImage DEFAULTPARAM( = NULL ) , int AddressModeU DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int AddressModeV DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int FilterMode DEFAULTPARAM( = DX_DRAWMODE_ANISOTROPIC ) , int BumpImageFlag DEFAULTPARAM( = FALSE ) , float BumpImageNextPixelLength DEFAULTPARAM( = 0.1f ) , int ReverseFlag DEFAULTPARAM( = FALSE ) , int Bmp32AllZeroAlphaToXRGB8Flag DEFAULTPARAM( = FALSE ) ) ;	// ƒ‚ƒfƒ‹‚Åg—p‚·‚éƒeƒNƒXƒ`ƒƒ‚ğ’Ç‰Á‚·‚é
+extern	int			MV1AddTextureGraphHandle(				int MHandle, const TCHAR *Name,                    int GrHandle, int SemiTransFlag,                                                                                                                                                                                                                         int AddressModeU DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int AddressModeV DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int FilterMode DEFAULTPARAM( = DX_DRAWMODE_ANISOTROPIC ) ) ;																																																			// ƒ‚ƒfƒ‹‚Åg—p‚·‚éƒeƒNƒXƒ`ƒƒ‚ğ’Ç‰Á‚·‚é( ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹‚ğƒeƒNƒXƒ`ƒƒ‚Æ‚µ‚Ä’Ç‰Á )
+
 extern	int			MV1LoadTexture(							const TCHAR *FilePath                        ) ;					// ‚R‚cƒ‚ƒfƒ‹‚É“\‚è•t‚¯‚é‚Ì‚ÉŒü‚¢‚½‰æ‘œ‚Ì“Ç‚İ‚İ•û®‚Å‰æ‘œ‚ğ“Ç‚İ‚Ş( –ß‚è’l  -1:ƒGƒ‰[  0ˆÈã:ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹ )
 extern	int			MV1LoadTextureWithStrLen(				const TCHAR *FilePath, size_t FilePathLength ) ;					// ‚R‚cƒ‚ƒfƒ‹‚É“\‚è•t‚¯‚é‚Ì‚ÉŒü‚¢‚½‰æ‘œ‚Ì“Ç‚İ‚İ•û®‚Å‰æ‘œ‚ğ“Ç‚İ‚Ş( –ß‚è’l  -1:ƒGƒ‰[  0ˆÈã:ƒOƒ‰ƒtƒBƒbƒNƒnƒ“ƒhƒ‹ )
 

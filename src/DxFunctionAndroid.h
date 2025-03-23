@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android専用関数プロトタイプ宣言用ヘッダファイル
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -222,6 +222,9 @@ extern int GetOpenGLInfo(
 
 // グラフィックハンドルのテクスチャオブジェクトを取得する
 extern unsigned int GetGraphOpenGLESTextureObject( int GrHandle ) ;
+
+// サブバックバッファテクスチャのテクスチャオブジェクトを取得する
+extern unsigned int GetSubBackbufferOpenGLESTextureObject( void ) ;
 
 // ＤＸライブラリが行った OpenGL ES の設定を再度行う( 特殊用途 )
 extern int RefreshDxLibOpenGLESSetting( void ) ;

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Ogg関係
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -10,6 +10,14 @@
 #define DX_MAKE
 
 #include "DxCompileConfig.h"
+
+#ifndef DX_NON_NAMESPACE
+#ifdef DX_NON_USING_NAMESPACE_DXLIB
+
+using namespace DxLib ;
+
+#endif // DX_NON_USING_NAMESPACE_DXLIB
+#endif // DX_NON_NAMESPACE
 
 #if !defined( DX_NON_OPUS ) || !defined( DX_NON_OGGVORBIS ) || !defined( DX_NON_OGGTHEORA )
 

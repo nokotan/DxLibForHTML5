@@ -2,7 +2,7 @@
 // 
 // 		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ		“ü—Íî•ñƒvƒƒOƒ‰ƒ€ƒwƒbƒ_ƒtƒ@ƒCƒ‹
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -187,7 +187,7 @@ extern	int InitializeInputSystem( void ) ;											// “ü—ÍƒVƒXƒeƒ€‚ğ‰Šú‰»‚·‚é
 extern	int TerminateInputSystem( void ) ;											// “ü—ÍƒVƒXƒeƒ€‚ÌŒãn––‚ğ‚·‚é
 
 extern	int JoypadEffectProcess( void ) ;											// ƒpƒbƒhƒGƒtƒFƒNƒg‚ÉŠÖ‚·‚éƒtƒŒ[ƒ€ˆ—‚ğs‚¤
-extern	int RefreshEffectPlayState( void ) ;										// ƒpƒbƒhƒGƒtƒFƒNƒg‚ÌÄ¶ó‘Ô‚ğXV‚·‚é(ƒ\ƒtƒg‚ª”ñƒAƒNƒeƒBƒu‚É‚È‚é‚±‚Æ‚à‚ ‚é‚½‚ß)
+extern	int RefreshEffectPlayState( int AlwaysRunFlag = FALSE ) ;					// ƒpƒbƒhƒGƒtƒFƒNƒg‚ÌÄ¶ó‘Ô‚ğXV‚·‚é(ƒ\ƒtƒg‚ª”ñƒAƒNƒeƒBƒu‚É‚È‚é‚±‚Æ‚à‚ ‚é‚½‚ß)
 extern	int UpdateKeyboardInputState( int UseProcessMessage = TRUE ) ;				// “ü—Íó‘Ô‚ÌXV
 extern	int SetupJoypad( void ) ;													// ƒWƒ‡ƒCƒpƒbƒh‚ÌƒZƒbƒgƒAƒbƒv‚ğs‚¤
 extern	int TerminateJoypad( void ) ;												// ƒWƒ‡ƒCƒpƒbƒh‚ÌŒãn––‚ğs‚¤
@@ -222,7 +222,7 @@ extern	int TerminateJoypad_PF( void ) ;											// ƒWƒ‡ƒCƒpƒbƒh‚ÌŒãn––‚ğs‚¤
 
 extern	int UpdateKeyboardInputState_PF( int UseProcessMessage = TRUE ) ;			// “ü—Íó‘Ô‚ÌXV‚ÌŠÂ‹«ˆË‘¶ˆ—
 extern	int UpdateJoypadInputState_PF( int PadNo ) ;								// ƒpƒbƒh‚Ì“ü—Íó‘Ô‚ÌXV‚ÌŠÂ‹«ˆË‘¶ˆ—
-extern	int RefreshEffectPlayState_PF( void ) ;										// ƒpƒbƒhƒGƒtƒFƒNƒg‚ÌÄ¶ó‘Ô‚ğXV‚·‚éŠÖ”‚ÌŠÂ‹«ˆË‘¶ˆ—
+extern	int RefreshEffectPlayState_PF( int AlwaysRunFlag ) ;						// ƒpƒbƒhƒGƒtƒFƒNƒg‚ÌÄ¶ó‘Ô‚ğXV‚·‚éŠÖ”‚ÌŠÂ‹«ˆË‘¶ˆ—
 
 extern	int CheckJoypadVibrationEnable_PF( INPUTPADDATA *pad, int EffectIndex ) ;	// w’è‚Ìƒpƒbƒh‚ªU“®‚É‘Î‰‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( TRUE:‘Î‰‚µ‚Ä‚¢‚é  FALSE:‘Î‰‚µ‚Ä‚¢‚È‚¢ )
 extern	int CheckJoypadXInput_PF( int InputType ) ;									// w’è‚Ì“ü—ÍƒfƒoƒCƒX‚ª XInput ‚É‘Î‰‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğæ“¾‚·‚éˆ—‚ÌŠÂ‹«ˆË‘¶ˆ—( –ß‚è’l  TRUE:XInput‘Î‰‚Ì“ü—ÍƒfƒoƒCƒX  FALSE:XInput”ñ‘Î‰‚Ì“ü—ÍƒfƒoƒCƒX   -1:ƒGƒ‰[ )( DX_INPUT_KEY ‚â DX_INPUT_KEY_PAD1 ‚È‚ÇAƒL[ƒ{[ƒh‚ª—‚Şƒ^ƒCƒv‚ğ InputType ‚É“n‚·‚ÆƒGƒ‰[‚Æ‚È‚è -1 ‚ğ•Ô‚· )

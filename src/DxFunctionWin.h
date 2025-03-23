@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Windows専用関数プロトタイプ宣言用ヘッダファイル
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ extern	int			GetMonitorDpi(					int *XDpi, int *YDpi, int MonitorIndex DEFAULTPA
 extern	int			GetNoActiveState(				int ResetFlag DEFAULTPARAM( = TRUE ) ) ;				// メインウインドウが非アクティブになり、処理が一時停止していたかどうかを取得する(引数 ResetFlag=TRUE:状態をリセット FALSE:状態をリセットしない    戻り値: 0=一時停止はしていない  1=一時停止していた )
 extern	int			GetMouseDispFlag(				void ) ;												// マウスポインタを表示するかどうかの設定を取得する( 戻り値  TRUE:表示する  FALSE:表示しない )
 extern	int			GetAlwaysRunFlag(				void ) ;												// メインウインドウが非アクティブになっても処理を実行し続けるかどうかの設定を取得する( TRUE:実行する  FALSE:停止する )
-extern	int			_GetSystemInfo(					int *DxLibVer , int *DirectXVer , int *WindowsVer ) ;	// ＤＸライブラリと DirectX のバージョンと Windows のバージョン番号を取得する
+extern	int			GetSystemInfo_(					int *DxLibVer , int *DirectXVer , int *WindowsVer ) ;	// ＤＸライブラリと DirectX のバージョンと Windows のバージョン番号を取得する
 extern	int			GetPcInfo(						TCHAR *OSString , TCHAR *DirectXString , TCHAR *CPUString , int *CPUSpeed /* 単位MHz */ , double *FreeMemorySize /* 単位MByte */ , double *TotalMemorySize , TCHAR *VideoDriverFileName , TCHAR *VideoDriverString , double *FreeVideoMemorySize /* 単位MByte */ , double *TotalVideoMemorySize ) ;	// ＰＣの情報を取得する
 extern	int			GetWindowOSVersion(				void ) ;												// WindowsOSのバージョンを取得する( 戻り値 : DX_WINDOWSVERSION_10 など )
 extern	int			GetUseMMXFlag(					void ) ;												// ＭＭＸが使えるかどうかの情報を得る
@@ -362,6 +362,7 @@ extern	const void*	GetUseDirect3D11BackBufferRenderTargetView(		void ) ;								
 extern	const void*	GetUseDirect3D11DepthStencilTexture2D(			void ) ;										// 使用中の深度ステンシルバッファのID3D11Texture2Dオブジェクトを取得する( 戻り値を ID3D11Texture2D * にキャストしてください )
 extern	int			SetDrawScreen_ID3D11RenderTargetView(			const void *pID3D11RenderTargetView, const void *pID3D11DepthStencilView DEFAULTPARAM( = NULL ) ) ;		// 指定の ID3D11RenderTargetView を描画対象にする( pID3D11DepthStencilView が NULL の場合はデフォルトの深度ステンシルバッファを使用する )
 extern	int			RefreshDxLibDirect3DSetting(					void ) ;										// ＤＸライブラリが行ったDirect3Dの設定を再度行う( 特殊用途 )
+extern	int			SetUseDirect3D11SwapEffect(						int SwapEffect /* DX_SWAP_EFFECT_DISCARD 等 */ ) ;	// Direct3D11 を使用した場合の SwapEffect を指定する( DxLib_Init の前でのみ有効 )
 
 #ifndef DX_NON_MEDIA_FOUNDATION
 extern	int			SetUseMediaFoundationFlag(						int Flag ) ;									// Media Foundation を使用するかどうかを設定する( TRUE:使用する( デフォルト )  FALSE:使用しない )
