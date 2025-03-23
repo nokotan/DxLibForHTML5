@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用モデルデータ制御プログラムヘッダファイル
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24d
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 // 
 // -------------------------------------------------------------------------------
 
@@ -16,7 +20,11 @@
 
 #include "../DxLib.h"
 #include "../DxModel.h"
+<<<<<<< HEAD
 #include <GLES2/gl2.h>
+=======
+#include <OpenGLES/ES2/gl.h>
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 
 #ifndef DX_NON_NAMESPACE
 

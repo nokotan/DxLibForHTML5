@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		描画処理プログラム( HTML5 )
 // 
+<<<<<<< HEAD
 //  	Ver 3.24b
+=======
+//  	Ver 3.24d
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 // 
 //-----------------------------------------------------------------------------
 
@@ -20,7 +24,11 @@
 #include "DxMaskHTML5.h"
 #include "DxMemoryHTML5.h"
 #include "DxSystemHTML5.h"
+<<<<<<< HEAD
 
+=======
+#include "DxSystemHTML5_ObjC.h"
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 #include "../DxSystem.h"
 #include "../DxLog.h"
 #include "../DxModel.h"
@@ -35,11 +43,14 @@
 #include "../DxASyncLoad.h"
 #include <unistd.h>
 
+<<<<<<< HEAD
 #include <emscripten.h>
 #include <emscripten/threading.h>
 #include <emscripten/html5.h>
 #include <emscripten/proxying.h>
 
+=======
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 
 #ifndef DX_NON_NAMESPACE
 
@@ -330,13 +341,21 @@ DX_HTML5_RENDER_BLEND_INFO g_DefaultBlendDescArray[ DX_BLENDMODE_NUM ] =
 	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_NOBLEND			ノーブレンド
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA			αブレンド
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD				加算ブレンド
+<<<<<<< HEAD
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB				減算ブレンド
+=======
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_ONE_MINUS_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB				減算ブレンド
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				乗算ブレンド
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB2			内部処理用減算ブレンド１
 	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_XOR				XORブレンド(非対応)
 	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// 欠番
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,				GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_DESTCOLOR		カラーは更新されない
+<<<<<<< HEAD
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,			GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR	描画先の色の反転値を掛ける
+=======
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_ONE_MINUS_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR	描画先の色の反転値を掛ける
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 	{ HTML5_RENDER_TYPE_INVERSE,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_INVSRC			描画元の色を反転する
 	{ HTML5_RENDER_TYPE_MUL,			TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_MULA			アルファチャンネル考慮付き乗算ブレンド
 	{ HTML5_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA_X4		αブレンドの描画側の輝度を最大４倍にできるモード
@@ -364,6 +383,15 @@ DX_HTML5_RENDER_BLEND_INFO g_DefaultBlendDescArray[ DX_BLENDMODE_NUM ] =
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ONE_MINUS_SRC_COLOR,	GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_SCREEN	Spine のブレンドモード Screen 用
 
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_CUSTOM			カスタムブレンド
+<<<<<<< HEAD
+=======
+
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_DST_RGB_SRC_A	描画元の A のみを書き込む( 描画先の RGB は変更されない )
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ONE_MINUS_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR_A	描画先の A の反転値を掛ける( 描画先の RGB は変更されない )
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				A のみの乗算ブレンド( 描画先の RGB は変更されない )
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_ALPHA,			GL_FUNC_ADD,				GL_ONE_MINUS_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR_A	描画先の A の反転値を掛ける( 描画先の RGB は変更されない )
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_ALPHA,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				A のみの乗算ブレンド( 描画先の RGB は変更されない )
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 } ;
 
 // ＤＸライブラリのブレンド要素タイプを OpenGL ES の要素タイプに変換するためのテーブル
@@ -2312,7 +2340,11 @@ extern int Graphics_HTML5_Shader_Terminate( void )
 	Graphics_HTML5_ShaderList_Terminate() ;
 
 #ifndef DX_NON_FILTER
+<<<<<<< HEAD
 	GraphFilter_HTML5_ReleaseShaderAll();
+=======
+	GraphFilter_HTML5_ReleaseShaderAll() ;
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 #endif // DX_NON_FILTER
 
 #ifndef DX_NON_LIVE2D_CUBISM4
@@ -2329,12 +2361,20 @@ extern int Graphics_HTML5_Shader_Normal3DDraw_Setup( void )
 	GRAPHICS_HARDWARE_HTML5_SHADER_BASE3D		*SB3D  = &GHTML5.Device.Shader.Base3D ;
 	GRAPHICS_HARDWARE_HTML5_SHADERCODE_BASE3D	*SCB3D = &GHTML5.ShaderCode.Base3D ;
 	int											ValidPL ;
+<<<<<<< HEAD
 	GRAPHICS_HTML5_SHADER					**Shader_PL		= NULL ;
+=======
+	GRAPHICS_HTML5_SHADER						**Shader_PL		= NULL ;
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 	GLuint										*VS_PL			= NULL ;
 	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*VSAddress_PL	= NULL ;
 	GLuint										*FS_PL			= NULL ;
 	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*FSAddress_PL	= NULL ;
+<<<<<<< HEAD
 	GRAPHICS_HTML5_SHADER					**Shader		= NULL ;
+=======
+	GRAPHICS_HTML5_SHADER						**Shader		= NULL ;
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 	GLuint										*VS				= NULL ;
 	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*VSAddress		= NULL ;
 	GLuint										*FS				= NULL ;
@@ -3572,6 +3612,7 @@ extern	int		Graphics_HTML5_Device_Create( void )
 //	eglQuerySurface( GHTML5.Device.Screen.Display, GHTML5.Device.Screen.Surface, EGL_HEIGHT, &GHTML5.Device.Screen.Height ) ;
 //	DXST_LOGFILEFMT_ADDUTF16LE(( "\xb9\x30\xaf\x30\xea\x30\xfc\x30\xf3\x30\xb5\x30\xa4\x30\xba\x30\x3a\x00\x25\x00\x64\x00\x20\x00\x78\x00\x20\x00\x25\x00\x64\x00\x00"/*@ L"スクリーンサイズ:%d x %d" @*/, GHTML5.Device.Screen.Width, GHTML5.Device.Screen.Height )) ;
 
+<<<<<<< HEAD
 	{
 		EmscriptenWebGLContextAttributes attrib;
 		int ctxHandle;
@@ -3599,6 +3640,8 @@ extern	int		Graphics_HTML5_Device_Create( void )
 		emscripten_webgl_make_context_current(ctxHandle);
 	}
 
+=======
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 	// バージョンやベンダー名を取得
 	{
 		const GLubyte *Version					= glGetString( GL_VERSION ) ;
@@ -3967,7 +4010,11 @@ extern	int		Graphics_HTML5_Device_Delete( void )
 		eglTerminate( GHTML5.Device.Screen.Display ) ;
 	}
 */
+<<<<<<< HEAD
 	// g_HTML5Sys.SoftThreadWait = 0 ;
+=======
+	g_HTML5Sys.SoftThreadWait = 0 ;
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 //	GHTML5.Device.Screen.Display = EGL_NO_DISPLAY ;
 //	GHTML5.Device.Screen.Context = EGL_NO_CONTEXT ;
 //	GHTML5.Device.Screen.Surface = EGL_NO_SURFACE ;
@@ -5606,7 +5653,11 @@ static int Graphics_HTML5_DeviceState_UpdateConstantFogParam( void )
 	return 0 ;
 }
 
+<<<<<<< HEAD
 // フォグが始まる距離と終了する距離を設定する( 0.0f 〜 1.0f )
+=======
+// フォグが始まる距離と終了する距離を設定する( 0.0f ～ 1.0f )
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 extern int  Graphics_HTML5_DeviceState_SetFogStartEnd( float Start, float End )
 {
 	int UpdateFlag ;
@@ -5641,7 +5692,11 @@ extern int  Graphics_HTML5_DeviceState_SetFogStartEnd( float Start, float End )
 	return 0 ;
 }
 
+<<<<<<< HEAD
 // フォグの密度を設定する( 0.0f 〜 1.0f )
+=======
+// フォグの密度を設定する( 0.0f ～ 1.0f )
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 extern int  Graphics_HTML5_DeviceState_SetFogDensity( float Density )
 {
 	if( Density == GHTML5.Device.State.FogDensity &&
@@ -17107,6 +17162,12 @@ extern	int		Graphics_Initialize_Timing0_PF( void )
 		return -1 ;
 	}
 
+<<<<<<< HEAD
+=======
+	// このタイミングでジェスチャーを無効化する
+	DisableGesture_HTML5() ;
+
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 	// 正常終了
 	return 0 ;
 }
@@ -17380,7 +17441,11 @@ extern	int		Graphics_Hardware_SetRenderTargetToShader_PF( int TargetIndex, int D
 	return 0 ;
 }
 
+<<<<<<< HEAD
 // メインウインドウの背景色を設定する( Red,Green,Blue:それぞれ ０〜２５５ )
+=======
+// メインウインドウの背景色を設定する( Red,Green,Blue:それぞれ ０～２５５ )
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 extern	int		Graphics_Hardware_SetBackgroundColor_PF( int Red, int Green, int Blue, int Alpha )
 {
 	Graphics_HTML5_DeviceState_SetBackgroundColor( Red, Green, Blue, Alpha ) ;
@@ -17454,6 +17519,11 @@ extern	int		Graphics_Hardware_SetDrawAddColor_PF( int Red, int Green, int Blue )
 	GHTML5.Device.Shader.Constant.uAddColor[ 1 ] = GSYS.DrawSetting.DrawAddColorF.g ;
 	GHTML5.Device.Shader.Constant.uAddColor[ 2 ] = GSYS.DrawSetting.DrawAddColorF.b ;
 
+<<<<<<< HEAD
+=======
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
+
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 	// 正常終了
 	return 0 ;
 }
@@ -17616,7 +17686,11 @@ extern	int		Graphics_Hardware_SetFogColor_PF( DWORD FogColor )
 	return 0 ;
 }
 
+<<<<<<< HEAD
 // フォグが始まる距離と終了する距離を設定する( 0.0f 〜 1.0f )
+=======
+// フォグが始まる距離と終了する距離を設定する( 0.0f ～ 1.0f )
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 extern	int		Graphics_Hardware_SetFogStartEnd_PF( float start, float end )
 {
 	Graphics_HTML5_DeviceState_SetFogStartEnd( start, end ) ;
@@ -17625,7 +17699,11 @@ extern	int		Graphics_Hardware_SetFogStartEnd_PF( float start, float end )
 	return 0 ;
 }
 
+<<<<<<< HEAD
 // フォグの密度を設定する( 0.0f 〜 1.0f )
+=======
+// フォグの密度を設定する( 0.0f ～ 1.0f )
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 extern	int		Graphics_Hardware_SetFogDensity_PF( float density )
 {
 	Graphics_HTML5_DeviceState_SetFogDensity( density ) ;
@@ -18082,7 +18160,11 @@ extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSur
 	{
 		Graphics_HTML5_DeviceState_SetTexture( 0, NULL ) ;
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 	// 描画先の変更
 
 	// マスクサーフェスが存在していて且つ有効な場合はマスクサーフェスを描画対象にする
@@ -18116,7 +18198,11 @@ extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSur
 	{
 		Graphics_HTML5_DeviceState_SetRenderTarget( GHTML5.Device.Screen.SubBackBufferFrameBuffer, GHTML5.Device.Screen.SubBackBufferTextureSizeX, GHTML5.Device.Screen.SubBackBufferTextureSizeY ) ;
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 	// 使用するＺバッファのセットアップ
 	Graphics_Screen_SetupUseZBuffer() ;
 
@@ -18244,11 +18330,15 @@ extern	int		Graphics_Hardware_WaitVSync_PF( int SyncNum )
 // ScreenFlip 実行時にＶＳＹＮＣ待ちをするかどうかを設定する
 extern	int		Graphics_SetWaitVSyncFlag_PF( int Flag )
 {
+<<<<<<< HEAD
 	GSYS.Screen.NotWaitVSyncFlag = Flag ;
+=======
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 	return 0 ;
 }
 
 
+<<<<<<< HEAD
 static void glUnbindFramebuffer(GLenum target) {
 	MAIN_THREAD_ASYNC_EM_ASM({
 		GLctx.bindFramebuffer($0, null);
@@ -18502,6 +18592,8 @@ static void Graphics_ScreenFlip_MainThread(void* unused)
 		NotWriteAlphaChannelFlag
 	) ;
 }
+=======
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 
 
 // 裏画面と表画面を交換する
@@ -18518,6 +18610,7 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 	// 描画を終了する
 	Graphics_HTML5_RenderEnd() ;
 
+<<<<<<< HEAD
 #ifdef PROXY_TO_PTHREAD
 	auto defaultQueue = emscripten_proxy_get_system_queue();
 	emscripten_proxy_sync(
@@ -18528,6 +18621,251 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 #else
     Graphics_ScreenFlip_MainThread(nullptr);
 #endif
+=======
+	// サブバックバッファの内容を実バッファに転送する
+	{
+		RECT DestRect ;
+		DWORD DestW ;
+		DWORD DestH ;
+        GLuint ViewFrameBuffer ;
+		int BlendMode ;
+		int BlendEnable ;
+		int BlendRGBSrc ;
+		int BlendRGBDest ;
+		int BlendRGBOp ;
+		int BlendASrc ;
+		int BlendADest ;
+		int BlendAOp ;
+		int NotWriteAlphaChannelFlag ;
+		float VertexData[ 4 ][ 4 ] =
+		{
+			{ -1.0f,  1.0f,  0.0f, 0.0f },
+			{  1.0f,  1.0f,  1.0f, 0.0f },
+			{ -1.0f, -1.0f,  0.0f, 1.0f },
+			{  1.0f, -1.0f,  1.0f, 1.0f },
+		} ;
+
+		GetGraphicsViewFramebufferInfo( ( unsigned int * )&ViewFrameBuffer, ( int * )&GHTML5.Device.Screen.Width, ( int * )&GHTML5.Device.Screen.Height );
+
+		if( GSYS.Screen.FullScreenFitScalingFlag )
+		{
+			DestW = GHTML5.Device.Screen.Width ;
+			DestH = GHTML5.Device.Screen.Height ;
+		}
+		else
+		{
+			DestW = GHTML5.Device.Screen.Width ;
+			DestH = GHTML5.Device.Screen.Width * GHTML5.Device.Screen.SubBackBufferTextureSizeY / GHTML5.Device.Screen.SubBackBufferTextureSizeX ;
+			if( DestH > GHTML5.Device.Screen.Height )
+			{
+				DestW = GHTML5.Device.Screen.Height * GHTML5.Device.Screen.SubBackBufferTextureSizeX / GHTML5.Device.Screen.SubBackBufferTextureSizeY ;
+				DestH = GHTML5.Device.Screen.Height ;
+			}
+		}
+
+		DestRect.left   = ( GHTML5.Device.Screen.Width  - DestW ) / 2 ;
+		DestRect.top    = ( GHTML5.Device.Screen.Height - DestH ) / 2 ;
+		DestRect.right  = DestRect.left + DestW ;
+		DestRect.bottom = DestRect.top  + DestH ;
+
+		// ブレンドモードをブレンド無しに変更
+		BlendMode		= GHTML5.Device.State.BlendMode ;
+		BlendEnable		= GHTML5.Device.State.BlendEnable ;
+		BlendRGBSrc		= GHTML5.Device.State.BlendRGBSrc ;
+		BlendRGBDest	= GHTML5.Device.State.BlendRGBDest ;
+		BlendRGBOp		= GHTML5.Device.State.BlendRGBOp ;
+		BlendASrc		= GHTML5.Device.State.BlendASrc ;
+		BlendADest		= GHTML5.Device.State.BlendADest ;
+		BlendAOp		= GHTML5.Device.State.BlendAOp ;
+		NotWriteAlphaChannelFlag = GHTML5.Device.State.NotWriteAlphaChannelFlag ;
+		Graphics_HTML5_DeviceState_SetBlendMode( DX_BLENDMODE_NOBLEND, FALSE, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, DX_BLEND_ONE, DX_BLEND_ZERO, DX_BLENDOP_ADD, FALSE ) ;
+
+		// 描画先をフレームバッファに変更( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
+		glBindFramebuffer( GL_FRAMEBUFFER, ViewFrameBuffer ) ;
+
+		// ビューポートをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
+		glViewport( DestRect.left, DestRect.top, DestRect.right - DestRect.left, DestRect.bottom - DestRect.top ) ;
+
+		// Ｚバッファを無効にする
+		Graphics_HTML5_DeviceState_SetDepthEnable( FALSE ) ;
+		Graphics_HTML5_DeviceState_SetDepthWriteEnable( FALSE ) ;
+
+		// カリングを無効にする
+		Graphics_HTML5_DeviceState_SetCullMode( DX_CULLING_NONE ) ;
+
+		// 画面をクリア( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
+		glClearColor( 0.0f, 0.0f, 0.0f, 0.0f ) ;
+		glClear( GL_COLOR_BUFFER_BIT ) ;
+
+		// 単純転送シェーダーをセット
+		Graphics_HTML5_DeviceState_SetShader( &GHTML5.Device.Shader.Base.StretchRect_Shader, FALSE ) ;
+
+		// Uniform の更新
+		Graphics_HTML5_DeviceState_UpdateShaderUniform( GHTML5.Device.State.SetShader, 0 ) ;
+
+		// テクスチャをセット( 設定は Graphics_HTML5_DeviceState_RefreshRenderState で戻す )
+		glActiveTexture( GL_TEXTURE0 ) ;
+		glBindTexture( GL_TEXTURE_2D, GHTML5.Device.Screen.SubBackBufferTexture ) ;
+
+		// ユーザー指定のメモリイメージがあるかどうかで処理を分岐
+		if( GSYS.Screen.UserScreenImage != NULL )
+		{
+			BYTE *Src = ( BYTE * )GSYS.Screen.UserScreenImage ;
+			BYTE *Dst = ( BYTE * )GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ;
+			DWORD i ;
+			DWORD Bytes ;
+
+			// ネイティブに対応していない場合は変換してから転送
+			if( GSYS.Screen.UserScreenImagePixelFormat == DX_USER_SCREEN_PIXEL_FORMAT_X8R8G8B8 &&
+				GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] == FALSE )
+			{
+				Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 4 ;
+				for( i = 0 ; i < Bytes ; i += 4 )
+				{
+					Dst[ i + 2 ] = Src[ i + 0 ] ;
+					Dst[ i + 1 ] = Src[ i + 1 ] ;
+					Dst[ i + 0 ] = Src[ i + 2 ] ;
+				}
+
+				glTexSubImage2D(
+					GL_TEXTURE_2D,
+					0,
+					0,
+					0,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+					GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
+				) ;
+			}
+			else
+			if( GSYS.Screen.UserScreenImagePixelFormat == DX_USER_SCREEN_PIXEL_FORMAT_X1R5G5B5 )
+			{
+				Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 2 ;
+				for( i = 0 ; i < Bytes ; i += 2 )
+				{
+					*( ( WORD * )&Dst[ i ] ) = ( WORD )( ( *( ( WORD * )&Src[ i ] ) << 1 ) | 1 ) ;
+				}
+
+				glTexSubImage2D(
+					GL_TEXTURE_2D,
+					0,
+					0,
+					0,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+					GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
+				) ;
+			}
+			else
+			{
+				glTexSubImage2D(
+					GL_TEXTURE_2D,
+					0,
+					0,
+					0,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+					GSYS.Screen.UserScreenImage
+				) ;
+			}
+		}
+		else
+		// ソフトウェアレンダリングモードの場合はここでテクスチャを更新
+		if( GSYS.Setting.NotUseHardware )
+		{
+			// ネイティブに対応している場合は単純転送
+			if( GSYS.Screen.MainScreenColorBitDepth == 16 || GHTML5.Device.Caps.Extensions[ HTML5_GL_EXTENSION_TEXTURE_FORMAT_BGRA8888 ] )
+			{
+				glTexSubImage2D(
+					GL_TEXTURE_2D,
+					0,
+					0,
+					0,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+					GSYS.SoftRender.MainBufferMemImg.UseImage
+				) ;
+			}
+			else
+			{
+				BYTE *Src ;
+				BYTE *Dst ;
+				DWORD i ;
+				DWORD Bytes ;
+
+				// 対応していない場合は変換してから転送
+				Src = GSYS.SoftRender.MainBufferMemImg.UseImage ;
+				Dst = ( BYTE * )GHTML5.Device.Screen.SubBackBufferTextureTempBuffer ;
+				Bytes = GHTML5.Device.Screen.SubBackBufferTextureSizeX * GHTML5.Device.Screen.SubBackBufferTextureSizeY * 4 ;
+				for( i = 0 ; i < Bytes ; i += 4 )
+				{
+					Dst[ i + 2 ] = Src[ i + 0 ] ;
+					Dst[ i + 1 ] = Src[ i + 1 ] ;
+					Dst[ i + 0 ] = Src[ i + 2 ] ;
+				}
+
+				glTexSubImage2D(
+					GL_TEXTURE_2D,
+					0,
+					0,
+					0,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeX,
+					GHTML5.Device.Screen.SubBackBufferTextureSizeY,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelFormat,
+					GHTML5.Device.Screen.SubBackBufferTexturePixelType,
+					GHTML5.Device.Screen.SubBackBufferTextureTempBuffer
+				) ;
+			}
+		}
+
+		// 拡大モードをセット
+		{
+			GLint FilterMode = GL_LINEAR ;
+			switch( GSYS.Screen.FullScreenScalingMode )
+			{
+			case DX_FSSCALINGMODE_BILINEAR :	FilterMode = GL_LINEAR ;	break ;
+			case DX_FSSCALINGMODE_NEAREST :		FilterMode = GL_NEAREST ;	break ;
+			}
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, FilterMode ) ;
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilterMode ) ;
+		}
+
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ) ;
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE ) ;
+
+		// 頂点データのセットアップ
+		Graphics_HTML5_DeviceState_SetupShaderVertexData(
+			&GHTML5.Device.Shader.Base.StretchRect_Shader,
+			&g_StretchRectVertexInputInfo,
+			VertexData
+		) ;
+
+		// 描画
+		glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ) ;
+		GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
+
+		// ブレンドモードを元に戻す
+		Graphics_HTML5_DeviceState_SetBlendMode(
+			BlendMode,
+			BlendEnable,
+			BlendRGBSrc,
+			BlendRGBDest,
+			BlendRGBOp,
+			BlendASrc,
+			BlendADest,
+			BlendAOp,
+			NotWriteAlphaChannelFlag
+		) ;
+	}
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 
 	// ＶＳＹＮＣ待ちフラグを立てる
 	GHTML5.Device.Screen.WaitVSyncFlag = TRUE ;
@@ -18541,11 +18879,18 @@ extern	int		Graphics_ScreenFlipBase_PF( void )
 	// ＶＳＹＮＣ待ちする
 	if( GSYS.Screen.NotWaitVSyncFlag == FALSE )
 	{
+<<<<<<< HEAD
 		WaitForNewFrame();
 	}
 	else
 	{
 		YieldToBrowserMessageLoop();
+=======
+		while( GHTML5.Device.Screen.WaitVSyncFlag == TRUE )
+		{
+			usleep( 50 ) ;
+		}
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 	}
 
 	return 0 ;

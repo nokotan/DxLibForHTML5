@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用サウンドプログラムヘッダファイル
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24d
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 // 
 // -------------------------------------------------------------------------------
 
@@ -17,8 +21,13 @@
 #include "../DxLib.h"
 #include "../DxThread.h"
 
+<<<<<<< HEAD
 #include <AL/al.h>
 #include <AL/alc.h>
+=======
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 
 #ifndef DX_NON_NAMESPACE
 
@@ -138,8 +147,11 @@ extern	void	SoundSystem_HTML5_SetALDeviceAndALContext( void *ALCDevice, void *AL
 // 再生中の ALBuffer を再作成して再再生する
 extern	void	SoundSystem_HTML5_ALBuffer_RePlay( void ) ;
 
+<<<<<<< HEAD
 extern	int		UpdateSound_PF( void ) ;
 
+=======
+>>>>>>> 69adeba ([Bot] Update iOS Part before 3.24f)
 
 #ifndef DX_NON_NAMESPACE
 
