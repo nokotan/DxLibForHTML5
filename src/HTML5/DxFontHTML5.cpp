@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用フォント関係プログラム
 // 
+<<<<<<< HEAD
 //  	Ver 3.24b
+=======
+//  	Ver 3.24f
+>>>>>>> c642b76 ([Bot] Create Patch of 3.24f (Android))
 // 
 //-----------------------------------------------------------------------------
 
@@ -427,6 +431,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             dst->pitch *= 2;
         }
 
+<<<<<<< HEAD
         /* Adjust for bold and italic text */
         if ( FALSE ) {
             int bump = font->glyph_overhang;
@@ -438,6 +443,18 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             dst->pitch += bump;
             dst->width += bump;
         }
+=======
+		// 文字を描画
+		env->CallVoidMethod(
+			ManageData->PF->object_Canvas,
+			JAVAHTML5.methodID_Canvas_drawText,
+			charArray_DrawChar,
+			0, CharNum,
+			0.0f,
+			-ManageData->PF->PaintFontMetrics_top + 2.0f,
+			ManageData->PF->object_Paint
+		) ;
+>>>>>>> c642b76 ([Bot] Create Patch of 3.24f (Android))
 
         if (dst->rows != 0) {
             dst->buffer = (unsigned char *)DXALLOC( dst->pitch * dst->rows );
@@ -587,12 +604,32 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
             }
         }
 
+<<<<<<< HEAD
 #ifdef DEBUG_FONTS
         DXST_LOGFILEFMT_ADDA(("X=%d, Y=%d, Add=%d\n", 
             metrics->horiBearingX / 64,
             font->ascent - metrics->horiBearingY / 64,
             metrics->horiAdvance / 64));
 #endif
+=======
+				// イメージを転送
+				FontCacheCharImageBltToHandle(
+					ManageData,
+					CharData,
+					CharCode, 
+					IVSCode,
+					FALSE,
+					DX_FONT_SRCIMAGETYPE_8BIT_MAX255,
+					ManageData->PF->ImageBuffer,
+					BltWidth,
+					ManageData->PF->BitmapSizeY,
+					ManageData->PF->BitmapSizeX,
+					0,
+					-2 - ( ManageData->PF->PaintFontMetrics_ascent - ManageData->PF->PaintFontMetrics_top ),
+					DrawWidth,
+					TextureCacheUpdate
+				) ;
+>>>>>>> c642b76 ([Bot] Create Patch of 3.24f (Android))
 
         if (Space != 0) {
             /* We're done, mark this glyph cached */

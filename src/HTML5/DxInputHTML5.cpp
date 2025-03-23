@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		HTML5用入力情報プログラム
 // 
+<<<<<<< HEAD
 //  	Ver 3.24b
+=======
+//  	Ver 3.24f
+>>>>>>> c642b76 ([Bot] Create Patch of 3.24f (Android))
 // 
 //-----------------------------------------------------------------------------
 
@@ -491,7 +495,7 @@ extern int UpdateJoypadInputState_PF( int PadNo )
 }
 
 // パッドエフェクトの再生状態を更新する関数の環境依存処理
-extern int RefreshEffectPlayState_PF( void )
+extern int RefreshEffectPlayState_PF( int AlwaysRunFlag )
 {
 	// 終了
 	return 0 ;
