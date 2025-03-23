@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		Windows用データタイプ定義ヘッダファイル
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -1311,6 +1315,13 @@ namespace DxLib
 #define DX_TEXTUREFORMAT_DIRECT3D9_R32F					(20)
 #define DX_TEXTUREFORMAT_DIRECT3D9_G32R32F				(21)
 #define DX_TEXTUREFORMAT_DIRECT3D9_A32B32G32R32F		(22)
+
+// DXGI_SWAP_EFFECT の定義
+#define DX_SWAP_EFFECT_DISCARD							(0)
+#define DX_SWAP_EFFECT_SEQUENTIAL						(1)
+#define DX_SWAP_EFFECT_FLIP_SEQUENTIAL					(3)
+#define DX_SWAP_EFFECT_FLIP_DISCARD						(4)
+
 
 // エラーコード
 #define DX_ERRORCODE_WIN_DESKTOP_24BIT_COLOR				(0x01010001)				// デスクトップが２４ビットカラーモードだった

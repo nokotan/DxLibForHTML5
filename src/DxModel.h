@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -1643,7 +1647,7 @@ extern	int				MV1SubLoadFunc( int ( *AddLoadFunc )( const MV1_MODEL_LOAD_PARAM *
 extern	int				MV1InitModelBase( void ) ;																// 有効なモデル基本データをすべて削除する
 extern	int				MV1AddModelBase( int ASyncThread ) ;													// モデル基本データを追加する( -1:エラー  0以上:モデル基本データハンドル )
 extern	int				MV1SubModelBase( int MBHandle ) ;														// モデル基本データを削除する
-extern	int				MV1CreateCloneModelBase( int SrcMBHandle ) ;											// モデル基本データを複製する
+extern	int				MV1CreateCloneModelBase( int SrcMBHandle, int ASyncThread ) ;							// モデル基本データを複製する
 
 extern	int				InitializeModelBaseHandle( HANDLEINFO *HandleInfo ) ;									// モデル基本データハンドルの初期化
 extern	int				TerminateModelBaseHandle( HANDLEINFO *HandleInfo ) ;									// モデル基本データハンドルの後始末
@@ -1729,6 +1733,7 @@ extern	int				MV1AddTextureBase(
 							int BumpImageFlag, float BumpImageNextPixelLength,
 							bool ReverseFlag,
 							bool Bmp32AllZeroAlphaToXRGB8Flag,
+							int NotTextureLoad,
 							int ASyncThread ) ;																	// テクスチャの追加
 extern	int				MV1DeleteTextureBase( int MBHandle, int TexIndex ) ;									// テクスチャの削除
 #ifndef UNICODE
@@ -2260,6 +2265,7 @@ extern	int			NS_MV1LoadModelFromMem( const void *FileImage, int FileSize, int (*
 extern	int			NS_MV1DeleteModel( int MHandle ) ;														// モデルを削除する
 extern	int			NS_MV1InitModel( void ) ;																		// すべてのモデルを削除する
 extern	int			NS_MV1CreateCloneModel( int SrcMHandle ) ;														// 指定のモデルと全く同じ情報を持つ別のﾓﾃﾞﾙデータハンドルを作成する( -1:エラー  0以上:モデルハンドル )
+extern	int			NS_MV1CreateSimpleModel( VERTEX3D *Vertex, int VertexNum, unsigned int *Index, int IndexNum, MATERIALPARAM *Material, int GrHandle ) ;		// 指定の頂点データとマテリアル情報、テクスチャを使用したシンプルな３Ｄモデルのハンドルを作成する
 extern	int			NS_MV1DuplicateModel( int SrcMHandle ) ;												// 指定のモデルと同じモデル基本データを使用してモデルを作成する( -1:エラー  0以上:モデルハンドル )
 extern	int			NS_MV1SetLoadModelReMakeNormal( int Flag ) ;											// モデルを読み込む際に法線の再計算を行うかどうかを設定する( TRUE:行う  FALSE:行わない )
 extern	int			NS_MV1SetLoadModelReMakeNormalSmoothingAngle( float SmoothingAngle = 89.5f * DX_PI_F / 180.0f ) ;	// モデルを読み込む際に行う法泉の再計算で使用するスムージング角度を設定する( 単位はラジアン )
@@ -2435,10 +2441,11 @@ extern	int			NS_MV1SetMaterialSpcPower( int MHandle, int MaterialIndex, float Po
 extern	float		NS_MV1GetMaterialSpcPower( int MHandle, int MaterialIndex ) ;								// 指定のマテリアルのスペキュラの強さを取得する
 extern	int			NS_MV1SetMaterialDifMapTexture( int MHandle, int MaterialIndex, int TexIndex ) ;			// 指定のマテリアルでディフューズマップとして使用するテクスチャを指定する
 extern	int			NS_MV1GetMaterialDifMapTexture( int MHandle, int MaterialIndex ) ;							// 指定のマテリアルでディフューズマップとして使用されているテクスチャのインデックスを取得する
-extern	int			NS_MV1SetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;						// 指定のマテリアルでサブディフューズマップとして使用するテクスチャを指定する
-extern	int			NS_MV1GetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex ) ;										// 指定のマテリアルでサブディフューズマップとして使用されているテクスチャのインデックスを取得する
+extern	int			NS_MV1SetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;	// 指定のマテリアルでサブディフューズマップとして使用するテクスチャを指定する
+extern	int			NS_MV1GetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex ) ;					// 指定のマテリアルでサブディフューズマップとして使用されているテクスチャのインデックスを取得する
 extern	int			NS_MV1SetMaterialSpcMapTexture( int MHandle, int MaterialIndex, int TexIndex ) ;			// 指定のマテリアルでスペキュラマップとして使用するテクスチャを指定する
 extern	int			NS_MV1GetMaterialSpcMapTexture( int MHandle, int MaterialIndex ) ;							// 指定のマテリアルでスペキュラマップとして使用されているテクスチャのインデックスを取得する
+extern	int			NS_MV1SetMaterialNormalMapTexture( int MHandle, int MaterialIndex, int TexIndex ) ;			// 指定のマテリアルで法線マップとして使用するテクスチャを指定する
 extern	int			NS_MV1GetMaterialNormalMapTexture( int MHandle, int MaterialIndex ) ;					// 指定のマテリアルで法線マップとして使用されているテクスチャのインデックスを取得する
 //extern	const char *NS_MV1GetMaterialDifMapTexPath( int MHandle, int MaterialIndex ) ;					// 指定のマテリアルのディフューズマップテクスチャのパスを取得する
 //extern	const char *NS_MV1GetMaterialSpcMapTexPath( int MHandle, int MaterialIndex ) ;					// 指定のマテリアルのスペキュラマップテクスチャのパスを取得する
@@ -2511,6 +2518,9 @@ extern	int			NS_MV1SetTextureBumpImageNextPixelLength( int MHandle, int TexIndex
 extern	float		NS_MV1GetTextureBumpImageNextPixelLength( int MHandle, int TexIndex ) ;					// バンプマップ画像の場合の隣のピクセルとの距離を取得する
 extern	int			NS_MV1SetTextureSampleFilterMode( int MHandle, int TexIndex, int FilterMode ) ;			// テクスチャのフィルタリングモードを設定する
 extern	int			NS_MV1GetTextureSampleFilterMode( int MHandle, int TexIndex ) ;							// テクスチャのフィルタリングモードを取得する( 戻り値  DX_DRAWMODE_BILINEAR等 )
+extern	int			NS_MV1AddTexture(						int MHandle, const TCHAR *Name, const TCHAR *ColorFilePath, const TCHAR *AlphaFilePath DEFAULTPARAM( = NULL ) , void *ColorFileImage DEFAULTPARAM( = NULL ) , void *AlphaFileImage DEFAULTPARAM( = NULL ) , int AddressModeU DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int AddressModeV DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int FilterMode DEFAULTPARAM( = DX_DRAWMODE_ANISOTROPIC ) , int BumpImageFlag DEFAULTPARAM( = FALSE ) , float BumpImageNextPixelLength DEFAULTPARAM( = 0.1f ) , int ReverseFlag DEFAULTPARAM( = FALSE ) , int Bmp32AllZeroAlphaToXRGB8Flag DEFAULTPARAM( = FALSE ) ) ;	// モデルで使用するテクスチャを追加する
+extern	int			NS_MV1AddTextureWithStrLen(				int MHandle, const TCHAR *Name, size_t NameLength, const TCHAR *ColorFilePath, size_t ColorFilePathLength, const TCHAR *AlphaFilePath DEFAULTPARAM( = NULL ) , size_t AlphaFilePathLength DEFAULTPARAM( = 0 ) , void *ColorFileImage DEFAULTPARAM( = NULL ) , void *AlphaFileImage DEFAULTPARAM( = NULL ) , int AddressModeU DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int AddressModeV DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int FilterMode DEFAULTPARAM( = DX_DRAWMODE_ANISOTROPIC ) , int BumpImageFlag DEFAULTPARAM( = FALSE ) , float BumpImageNextPixelLength DEFAULTPARAM( = 0.1f ) , int ReverseFlag DEFAULTPARAM( = FALSE ) , int Bmp32AllZeroAlphaToXRGB8Flag DEFAULTPARAM( = FALSE ) ) ;	// モデルで使用するテクスチャを追加する
+extern	int			NS_MV1AddTextureGraphHandle(				int MHandle, const TCHAR *Name,                    int GrHandle, int SemiTransFlag,                                                                                                                                                                                                                     int AddressModeU DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int AddressModeV DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int FilterMode DEFAULTPARAM( = DX_DRAWMODE_ANISOTROPIC ) ) ;																																																			// モデルで使用するテクスチャを追加する( グラフィックハンドルをテクスチャとして追加 )
 extern	int			NS_MV1LoadTexture( const TCHAR *FilePath ) ;													// ３Ｄモデルに貼り付けるのに向いた画像の読み込み方式で画像を読み込む( 戻り値  -1:エラー  0以上:グラフィックハンドル )
 extern	int			NS_MV1LoadTextureWithStrLen(				const TCHAR *FilePath, size_t FilePathLength ) ;				// ３Ｄモデルに貼り付けるのに向いた画像の読み込み方式で画像を読み込む( 戻り値  -1:エラー  0以上:グラフィックハンドル )
 
@@ -2654,6 +2664,7 @@ extern	MV1_REF_POLYGONLIST	NS_MV1GetReferenceMesh(		int MHandle, int FrameIndex,
 #define NS_MV1DeleteModel										MV1DeleteModel
 #define NS_MV1InitModel											MV1InitModel
 #define NS_MV1CreateCloneModel									MV1CreateCloneModel
+#define NS_MV1CreateSimpleModel									MV1CreateSimpleModel
 #define NS_MV1DuplicateModel									MV1DuplicateModel
 #define NS_MV1SetLoadModelReMakeNormal							MV1SetLoadModelReMakeNormal
 #define NS_MV1SetLoadModelReMakeNormalSmoothingAngle			MV1SetLoadModelReMakeNormalSmoothingAngle
@@ -2827,6 +2838,7 @@ extern	MV1_REF_POLYGONLIST	NS_MV1GetReferenceMesh(		int MHandle, int FrameIndex,
 #define NS_MV1GetMaterialSubDifMapTexture				MV1GetMaterialSubDifMapTexture
 #define NS_MV1SetMaterialSpcMapTexture					MV1SetMaterialSpcMapTexture
 #define NS_MV1GetMaterialSpcMapTexture					MV1GetMaterialSpcMapTexture
+#define NS_MV1SetMaterialNormalMapTexture				MV1SetMaterialNormalMapTexture
 #define NS_MV1GetMaterialNormalMapTexture				MV1GetMaterialNormalMapTexture
 #define NS_MV1SetMaterialDifGradTexture					MV1SetMaterialDifGradTexture
 #define NS_MV1GetMaterialDifGradTexture					MV1GetMaterialDifGradTexture
@@ -2892,6 +2904,11 @@ extern	MV1_REF_POLYGONLIST	NS_MV1GetReferenceMesh(		int MHandle, int FrameIndex,
 #define NS_MV1GetTextureBumpImageNextPixelLength		MV1GetTextureBumpImageNextPixelLength
 #define NS_MV1SetTextureSampleFilterMode				MV1SetTextureSampleFilterMode
 #define NS_MV1GetTextureSampleFilterMode				MV1GetTextureSampleFilterMode
+#define NS_MV1AddTexture								MV1AddTexture
+#define NS_MV1AddTextureWithStrLen						MV1AddTextureWithStrLen
+#define NS_MV1AddTextureGraphHandle						MV1AddTextureGraphHandle
+
+
 #define NS_MV1LoadTexture								MV1LoadTexture
 #define NS_MV1LoadTextureWithStrLen						MV1LoadTextureWithStrLen
 

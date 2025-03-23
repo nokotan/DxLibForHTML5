@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		iOS専用関数プロトタイプ宣言用ヘッダファイル
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -84,6 +88,13 @@ extern int GetDeviceMotionInfo_iOS( DEVICEMOTIONINFO_IOS *DeviceMotionInfo ) ;
 // 振動を再生する
 // VibrationType : 振動の種類( IOS_VIBRATE_ONE_STRONG_LONG など )
 extern int PlayVibration_iOS( int VibrationType ) ;
+
+// サブバックバッファテクスチャのテクスチャオブジェクトを取得する
+extern unsigned int GetSubBackbufferOpenGLESTextureObject( void ) ;
+
+// ＤＸライブラリが行った OpenGL ES の設定を再度行う( 特殊用途 )
+extern int RefreshDxLibOpenGLESSetting( void ) ;
+
 
 #ifndef DX_NON_NAMESPACE
 

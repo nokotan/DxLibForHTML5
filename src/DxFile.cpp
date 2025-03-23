@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		ファイルアクセスプログラム
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -1609,22 +1613,30 @@ extern int NS_FileRead_gets( TCHAR *Buffer, int BufferSize, int FileHandle )
 			}
 			else
 			{
-				if( i + DestCharBytes1 / UnitSize > BufferSize - 1 )
-				{
-					FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, NowPos1, SEEK_SET ) ;
-					break ;
-				}
-				_MEMCPY( &( ( BYTE * )Buffer )[ i * UnitSize ], DestChar1, DestCharBytes1 ) ;
-				i += DestCharBytes1 / UnitSize ;
+				FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, NowPos2, SEEK_SET ) ;
+				break ;
 
-				if( i + DestCharBytes2 / UnitSize > BufferSize - 1 )
-				{
-					FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, NowPos2, SEEK_SET ) ;
-					break ;
-				}
-				_MEMCPY( &( ( BYTE * )Buffer )[ i * UnitSize ], DestChar2, DestCharBytes2 ) ;
-				i += DestCharBytes2 / UnitSize ;
+//				if( i + DestCharBytes1 / UnitSize > BufferSize - 1 )
+//				{
+//					FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, NowPos1, SEEK_SET ) ;
+//					break ;
+//				}
+//				_MEMCPY( &( ( BYTE * )Buffer )[ i * UnitSize ], DestChar1, DestCharBytes1 ) ;
+//				i += DestCharBytes1 / UnitSize ;
+//
+//				if( i + DestCharBytes2 / UnitSize > BufferSize - 1 )
+//				{
+//					FileInfo->StreamData.ReadShred.Seek( FileInfo->StreamData.DataPoint, NowPos2, SEEK_SET ) ;
+//					break ;
+//				}
+//				_MEMCPY( &( ( BYTE * )Buffer )[ i * UnitSize ], DestChar2, DestCharBytes2 ) ;
+//				i += DestCharBytes2 / UnitSize ;
 			}
+		}
+		else
+		if( CharCode1 == '\n' )
+		{
+			break ;
 		}
 		else
 		{
@@ -5841,10 +5853,11 @@ extern	int ConvertFullPathW_( const wchar_t *Src, wchar_t *Dest, size_t BufferBy
 		( Src[0] == L'/'  && Src[1] == L'/'  ) )
 	{
 		Dest[0] = L'\\';
-		Dest[1] = L'\0';
+		Dest[1] = L'\\';
+		Dest[2] = L'\0';
 
-		i += 2;
-		j ++ ;
+		i += 2 ;
+		j += 2 ;
 
 		FirstCheckEnd = TRUE ;
 	}

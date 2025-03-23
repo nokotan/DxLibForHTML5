@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＤｒａｗ制御プログラム
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // ----------------------------------------------------------------------------
 
@@ -1449,7 +1453,7 @@ extern int InitFontManage( void )
 
 	if( FSYS.EnableInitDefaultFontThick == FALSE )
 	{
-		FSYS.DefaultFontThick    = DEFAULT_FONT_THINCK ;
+		FSYS.DefaultFontThick    = DEFAULT_FONT_THICKNESS ;
 	}
 	FSYS.EnableInitDefaultFontThick = FALSE ;
 
@@ -1867,7 +1871,7 @@ extern int RefreshDefaultFont( void )
 		}
 		if( EdgeSize	> 1   )	FontType |= DX_FONTTYPE_EDGE ;
 		if( Size 		== -1 ) Size      = DEFAULT_FONT_SIZE ;
-		if( Thick 		== -1 ) Thick     = DEFAULT_FONT_THINCK ;
+		if( Thick 		== -1 ) Thick     = DEFAULT_FONT_THICKNESS ;
 //		if( CharSet		== -1 ) CharSet   = _GET_CHARSET() ;
 		if( EdgeSize	== -1 ) EdgeSize  = DEFAULT_FONT_EDGESIZE ;
 		
@@ -6573,7 +6577,7 @@ static int CreateFontToHandle_Static(
 
 	if( FontType 	< 0 ) FontType 	 = FSYS.AntialiasingFontOnlyFlag ? DX_FONTTYPE_ANTIALIASING : DEFAULT_FONT_TYPE ;
 	if( Size 		< 0 ) Size 		= DEFAULT_FONT_SIZE ;
-	if( Thick 		< 0 ) Thick 	= DEFAULT_FONT_THINCK ;
+	if( Thick 		< 0 ) Thick 	= DEFAULT_FONT_THICKNESS ;
 	if( EdgeSize	< 0 ) EdgeSize	= DEFAULT_FONT_EDGESIZE ;
 	if( CharSet		< 0 || CharSet >= DX_CHARSET_NUM )
 	{
@@ -7510,7 +7514,7 @@ extern int SetDefaultFontState_WCHAR_T( const wchar_t *FontName, int Size, int T
 	if( EdgeSize	> 1 ) FontType	|= DX_FONTTYPE_EDGE ;
 
 	if( Size 		< 0 ) Size 		= DEFAULT_FONT_SIZE ;
-	if( Thick 		< 0 ) Thick 	= DEFAULT_FONT_THINCK ;
+	if( Thick 		< 0 ) Thick 	= DEFAULT_FONT_THICKNESS ;
 	if( EdgeSize	< 0 ) EdgeSize	= DEFAULT_FONT_EDGESIZE ;
 //	if( CharSet		< 0 ) CharSet   = _GET_CHARSET() ;
 
@@ -7897,7 +7901,7 @@ extern int NS_SetFontSize( int FontSize )
 // フォントの太さをセット
 extern int NS_SetFontThickness( int ThickPal )
 {
-	if( ThickPal == -1 ) ThickPal = DEFAULT_FONT_THINCK ;
+	if( ThickPal == -1 ) ThickPal = DEFAULT_FONT_THICKNESS ;
 
 	FSYS.DefaultFontThick = ThickPal ;
 
@@ -8267,6 +8271,7 @@ extern int FontCacheStringDrawToHandleST(
 	DWORD			OrigColor ;
 	DWORD			FColor ;
 	DWORD			FEdgeColor ;
+	int				IgnoreDrawGraphColor ;
 #endif // DX_NON_GRAPHICS
 	DWORD			DstPitch = 0 ;
 	DWORD			SrcPitch ;
@@ -8502,6 +8507,9 @@ extern int FontCacheStringDrawToHandleST(
 		// 描画色を保存しておく
 		OrigColor = GSYS.DrawSetting.bDrawBright ;
 
+		// 描画する画像のRGBを無視するかどうかのフラグを保存しておく
+		IgnoreDrawGraphColor = NS_GetIgnoreDrawGraphColor() ;
+
 		// 縁なしの場合は最初に描画色を設定する
 		if( ( ManageData->FontType & DX_FONTTYPE_EDGE ) == 0 )
 		{
@@ -8544,6 +8552,8 @@ extern int FontCacheStringDrawToHandleST(
 			{
 				tmp_xi = xi ;
 				tmp_yi = yi ;
+				tmp_xf = xf ;
+				tmp_yf = yf ;
 				if( VerticalFlag )
 				{
 					if( PosIntFlag )
@@ -8730,6 +8740,8 @@ extern int FontCacheStringDrawToHandleST(
 					// 画像置き換え文字かどうかで処理を分岐
 					if( CharData->GraphHandleFlag )
 					{
+						NS_SetIgnoreDrawGraphColor( IgnoreDrawGraphColor ) ;
+
 						Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 						if( OnlyType == 0 || OnlyType == 1 )
 						{
@@ -8770,6 +8782,8 @@ extern int FontCacheStringDrawToHandleST(
 
 						Param.GraphHandle = UseManageData->TextureCache ;
 						Param.TransFlag   = TRUE ;
+
+						NS_SetIgnoreDrawGraphColor( TRUE ) ;
 
 						// エッジがある場合はそれを先に描画する
 						if( ( UseManageData->FontType & DX_FONTTYPE_EDGE ) != 0 )
@@ -8816,6 +8830,8 @@ extern int FontCacheStringDrawToHandleST(
 					// 画像置き換え文字かどうかで処理を分岐
 					if( CharData->GraphHandleFlag )
 					{
+						NS_SetIgnoreDrawGraphColor( IgnoreDrawGraphColor ) ;
+
 						// 拡大描画かどうかで処理を分岐
 						if( ExRateValidFlag == FALSE )
 						{
@@ -8941,6 +8957,9 @@ extern int FontCacheStringDrawToHandleST(
 
 						// キャッシュテクスチャのサイズを取得する
 						NS_GetGraphSize( UseManageData->TextureCache, &GraphSizeX, &GraphSizeY ) ;
+
+						// テクスチャの RGB は無視する
+						NS_SetIgnoreDrawGraphColor( TRUE ) ;
 
 						// 拡大描画かどうかで処理を分岐
 						if( ExRateValidFlag == FALSE )
@@ -9173,6 +9192,8 @@ extern int FontCacheStringDrawToHandleST(
 						// 画像置き換え文字かどうかで処理を分岐
 						if( CharData->GraphHandleFlag )
 						{
+							NS_SetIgnoreDrawGraphColor( IgnoreDrawGraphColor ) ;
+
 							Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 							if( OnlyType == 0 || OnlyType == 1 )
 							{
@@ -9198,12 +9219,15 @@ extern int FontCacheStringDrawToHandleST(
 						}
 						else
 						{
+							// テクスチャの RGB は無視する
+							NS_SetIgnoreDrawGraphColor( TRUE ) ;
+
 							// エッジがある場合はそれを先に描画する
 							if( ( UseManageData->FontType & DX_FONTTYPE_EDGE ) != 0 )
 							{
-								Graphics_DrawSetting_SetDrawBrightToOneParam( FEdgeColor ) ;
 								if( OnlyType == 0 || OnlyType == 2 )
 								{
+									Graphics_DrawSetting_SetDrawBrightToOneParam( FEdgeColor ) ;
 									if( PosIntFlag )
 									{
 										NS_DrawRectGraph(
@@ -9233,12 +9257,12 @@ extern int FontCacheStringDrawToHandleST(
 										) ;
 									}
 								}
-								Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 							}
 
 							// 本体を描画
 							if( OnlyType == 0 || OnlyType == 1 )
 							{
+								Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 								if( PosIntFlag )
 								{
 									NS_DrawRectGraph(
@@ -9279,6 +9303,8 @@ extern int FontCacheStringDrawToHandleST(
 						// 画像置き換え文字かどうかで処理を分岐
 						if( CharData->GraphHandleFlag )
 						{
+							NS_SetIgnoreDrawGraphColor( IgnoreDrawGraphColor ) ;
+
 							if( PosIntFlag )
 							{
 								x1 = ( float )( tmp_xi + DrawPos    + CharData->DrawX * ExRateX ) ;
@@ -9307,6 +9333,9 @@ extern int FontCacheStringDrawToHandleST(
 						}
 						else
 						{
+							// テクスチャの RGB は無視する
+							NS_SetIgnoreDrawGraphColor( TRUE ) ;
+
 							if( PosIntFlag )
 							{
 								x1 = ( float )( tmp_xi + DrawPos    + ( CharData->DrawX - 1 ) * ExRateX ) ;
@@ -9325,9 +9354,9 @@ extern int FontCacheStringDrawToHandleST(
 							// エッジがある場合はそれを先に描画する
 							if( ( UseManageData->FontType & DX_FONTTYPE_EDGE ) != 0 )
 							{
-								Graphics_DrawSetting_SetDrawBrightToOneParam( FEdgeColor ) ;
 								if( OnlyType == 0 || OnlyType == 2 )
 								{
+									Graphics_DrawSetting_SetDrawBrightToOneParam( FEdgeColor ) ;
 									if( PosIntFlag )
 									{
 										NS_DrawRectExtendGraphF(
@@ -9348,13 +9377,13 @@ extern int FontCacheStringDrawToHandleST(
 											UseManageData->TextureCacheSub,
 											TRUE ) ;
 									}
-									Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 								}
 							}
 
 							// 本体を描画
 							if( OnlyType == 0 || OnlyType == 1 )
 							{
+								Graphics_DrawSetting_SetDrawBrightToOneParam( FColor ) ;
 								if( PosIntFlag )
 								{
 									NS_DrawRectExtendGraphF(
@@ -11260,6 +11289,9 @@ LOOPEND :
 			}
 		}
 		DrawPosSub += ( UseManageData->BaseInfo.FontHeight - UseManageData->BaseInfo.FontAddHeight ) * ( VerticalFlag ? ExRateX : ExRateY ) ;
+
+		// テクスチャの RGB を無視するかどうかの設定を元に戻す
+		NS_SetIgnoreDrawGraphColor( IgnoreDrawGraphColor ) ;
 
 		// 縁なしの場合は最後に描画輝度を元に戻す
 		Graphics_DrawSetting_SetDrawBrightToOneParam( OrigColor ) ;

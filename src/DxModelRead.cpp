@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		モデルデータ読み込みプログラム
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -5804,12 +5808,18 @@ extern int MV1LoadModelToReadModel(
 		AllocSize = 0 ;
 
 		// ファイルパスを保存する相対アドレスをセット
-		MTBase.FilePath = ( wchar_t * )AllocSize ;
-		AllocSize += ( ( _WCSLEN( ReadModel->FilePath ) + 1 ) * sizeof( wchar_t ) + 3 ) / 4 * 4 ;
+		if( ReadModel->FilePath != NULL )
+		{
+			MTBase.FilePath = ( wchar_t * )AllocSize ;
+			AllocSize += ( ( _WCSLEN( ReadModel->FilePath ) + 1 ) * sizeof( wchar_t ) + 3 ) / 4 * 4 ;
+		}
 
 		// モデル名を保存する相対アドレスをセット
-		MTBase.Name = ( wchar_t * )AllocSize ;
-		AllocSize += ( ( _WCSLEN( ReadModel->Name ) + 1 ) * sizeof( wchar_t ) + 3 ) / 4 * 4 ;
+		if( ReadModel->Name != NULL )
+		{
+			MTBase.Name = ( wchar_t * )AllocSize ;
+			AllocSize += ( ( _WCSLEN( ReadModel->Name ) + 1 ) * sizeof( wchar_t ) + 3 ) / 4 * 4 ;
+		}
 
 		// ディレクトリパスを保存する相対アドレスをセット
 		MTBase.DirectoryPath = ( wchar_t * )AllocSize ;
@@ -6048,8 +6058,14 @@ extern int MV1LoadModelToReadModel(
 		}
 
 		// モデル名とファイルパスとディレクトリパスを保存
-		_WCSCPY( MBase->Name,          ReadModel->Name ) ;
-		_WCSCPY( MBase->FilePath,      ReadModel->FilePath ) ;
+		if( ReadModel->Name != NULL )
+		{
+			_WCSCPY( MBase->Name,          ReadModel->Name ) ;
+		}
+		if( ReadModel->FilePath != NULL )
+		{
+			_WCSCPY( MBase->FilePath,      ReadModel->FilePath ) ;
+		}
 		_WCSCPY( MBase->DirectoryPath, CurrentDir == NULL ? L"" : DirectoryPath ) ;
 
 		// 同時複数描画に対応するかどうかを保存

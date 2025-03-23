@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -11,6 +15,15 @@
 
 // インクルード ------------------------------------------------------------------
 #include "DxCompileConfig.h"
+
+#ifndef DX_NON_NAMESPACE
+#ifdef DX_NON_USING_NAMESPACE_DXLIB
+
+using namespace DxLib ;
+
+#endif // DX_NON_USING_NAMESPACE_DXLIB
+#endif // DX_NON_NAMESPACE
+
 #include "DxUseCLib.h"
 #include "DxLib.h"
 #include "DxStatic.h"

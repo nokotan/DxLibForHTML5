@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		描画プログラムヘッダファイル
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -783,6 +787,7 @@ struct GRAPHICSSYS_LIGHTATA
 	int						MaterialNotUseVertexDiffuseColor ;		// ライト計算に頂点のディフューズカラーを使用しないかどうか
 	int						MaterialNotUseVertexSpecularColor;		// ライト計算に頂点のスペキュラカラーを使用しないかどうか
 	int						NoLightAngleAttenuation ;				// ライト計算で角度減衰を行わないかどうか
+	int						UseHalfLambert ;						// ハーフランバートを使用するか( 0:使用しない  1:使用する )
 	LIGHT_HANDLE			*Data[ MAX_LIGHT_NUM ] ;				// ライト情報へのポインタ
 	int						Num ;									// ライトの数
 	int						Area ;									// 有効なライトがある範囲
@@ -834,6 +839,8 @@ struct GRAPHICSSYS_DRAWSETTINGDATA
 	int						ZBufferCmpType3D ;						// Ｚ値の比較モード
 	int						ZBias3D ;								// Ｚバイアス
 
+	int						UseReversedZFlag ;						// リバースＺを使用するかどうかのフラグ( TRUE:リバースＺ　FALSE:通常Ｚ )
+
 	int						NotDrawFlagInSetDrawArea ;				// 描画不可能フラグ（SetDrawArea用）
 	int						UseNoBlendModeParam ;					// DX_BLENDMODE_NOBLEND 時でも Param の値を使用するかどうかのフラグ( TRUE:使用する  FALSE:使用しない )
 
@@ -852,6 +859,13 @@ struct GRAPHICSSYS_DRAWSETTINGDATA
 	DWORD					FogColor ;								// フォグカラー
 	float					FogStart, FogEnd ;						// フォグ開始アドレスと終了アドレス
 	float					FogDensity ;							// フォグ密度
+
+	int						VerticalFogEnable ;						// 高さフォグが有効かどうか( TRUE:有効  FALSE:無効 )
+	int						VerticalFogMode ;						// 高さフォグモード
+	DWORD					VerticalFogColor ;						// 高さフォグカラー
+	float					VerticalFogStart, VerticalFogEnd ;		// 高さフォグ開始アドレスと終了アドレス
+	float					VerticalFogDensityStart ;				// 高さフォグ密度の開始アドレス
+	float					VerticalFogDensity ;					// 高さフォグ密度
 
 	float					DrawZ;									// ２Ｄ描画時にＺバッファに書き込むＺ値
 	int						DrawMode ;								// 描画モード
@@ -1611,6 +1625,11 @@ extern	int		Graphics_Hardware_SetFogMode_PF( int Mode /* DX_FOGMODE_NONE 等 */ )
 extern	int		Graphics_Hardware_SetFogColor_PF( DWORD FogColor ) ;													// フォグカラーを変更する
 extern	int		Graphics_Hardware_SetFogStartEnd_PF( float start, float end ) ;											// フォグが始まる距離と終了する距離を設定する( 0.0f ～ 1.0f )
 extern	int		Graphics_Hardware_SetFogDensity_PF( float density ) ;													// フォグの密度を設定する( 0.0f ～ 1.0f )
+extern	int		Graphics_Hardware_SetVerticalFogEnable_PF( int Flag ) ;													// 高さフォグを有効にするかどうかを設定する( TRUE:有効  FALSE:無効 )
+extern	int		Graphics_Hardware_SetVerticalFogMode_PF( int Mode /* DX_FOGMODE_NONE 等 */ ) ;							// 高さフォグモードを設定する
+extern	int		Graphics_Hardware_SetVerticalFogColor_PF( DWORD FogColor ) ;											// 高さフォグカラーを変更する
+extern	int		Graphics_Hardware_SetVerticalFogStartEnd_PF( float start, float end ) ;									// 高さフォグが始まる距離と終了する距離を設定する( 0.0f ～ 1.0f )
+extern	int		Graphics_Hardware_SetVerticalFogDensity_PF( float start, float density ) ;								// 高さフォグの密度を設定する( 0.0f ～ 1.0f )
 extern	int		Graphics_Hardware_DeviceDirect_SetWorldMatrix_PF( const MATRIX *Matrix ) ;								// ワールド変換用行列をセットする
 extern	int		Graphics_Hardware_DeviceDirect_SetViewMatrix_PF( const MATRIX *Matrix ) ;								// ビュー変換用行列をセットする
 extern	int		Graphics_Hardware_DeviceDirect_SetProjectionMatrix_PF( const MATRIX *Matrix ) ;							// 投影変換用行列をセットする
@@ -1772,6 +1791,7 @@ extern	int		Graphics_Hardware_Light_GlobalAmbient_PF( COLOR_F *Color ) ;								
 extern	int		Graphics_Hardware_Light_SetState_PF( int LightNumber, LIGHTPARAM *LightParam ) ;						// ライトパラメータをセット
 extern	int		Graphics_Hardware_Light_SetEnable_PF( int LightNumber, int EnableState ) ;								// ライトの有効、無効を変更
 extern	int		Graphics_Hardware_Light_SetNoAngleAttenuation_PF( int NoAngleAttenuation ) ;							// ライトの計算で角度減衰を行わないようにするかどうかを設定する
+extern	int		Graphics_Hardware_Light_SetUseHalfLambert_PF( int UseHalfLambert ) ;									// ライトの計算でハーフランバートを使用するかどうかを設定する
 
 
 
@@ -1855,7 +1875,7 @@ extern	int		Graphics_Hardware_DrawSimpleQuadrangleGraphF_PF( const GRAPHICS_DRAW
 extern	int		Graphics_Hardware_DrawSimpleTriangleGraphF_PF(   const GRAPHICS_DRAW_DRAWSIMPLETRIANGLEGRAPHF_PARAM *Param,							  IMAGEDATA *Image, IMAGEDATA *BlendImage ) ;											// ハードウエアアクセラレータ使用版 DrawSimpleTriangleGraphF
 
 extern	int		Graphics_Hardware_DrawFillBox_PF(          int x1, int y1, int x2, int y2,                                                 unsigned int Color ) ;																// ハードウエアアクセラレータ使用版 DrawFillBox
-extern	int		Graphics_Hardware_DrawLineBox_PF(          int x1, int y1, int x2, int y2,                                                 unsigned int Color ) ;																// ハードウエアアクセラレータ使用版 DrawLineBox
+extern	int		Graphics_Hardware_DrawLineBox_PF(          int x1, int y1, int x2, int y2,                                                 unsigned int Color, int Thickness ) ;												// ハードウエアアクセラレータ使用版 DrawLineBox
 extern	int		Graphics_Hardware_DrawLine_PF(             int x1, int y1, int x2, int y2,                                                 unsigned int Color ) ;																// ハードウエアアクセラレータ使用版 DrawLine
 extern	int		Graphics_Hardware_DrawLine3D_PF(           VECTOR Pos1, VECTOR Pos2,                                                       unsigned int Color, int DrawFlag = TRUE, RECT *DrawArea = NULL ) ;					// ハードウエアアクセラレータ使用版 DrawLine3D
 extern	int		Graphics_Hardware_DrawCircle_Thickness_PF( int x, int y, int r,                                                            unsigned int Color, int Thickness ) ;												// ハードウエアアクセラレータ使用版 DrawCircle( 太さ指定あり )

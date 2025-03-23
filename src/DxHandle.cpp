@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		ハンドル管理プログラム
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -272,11 +276,20 @@ extern int AddHandle( int HandleType, int ASyncThread, int Handle )
 	return NewHandle ;
 }
 
+<<<<<<< HEAD
 // ハンドルを削除する
 extern int SubHandle( int Handle )
+=======
+// SubHandle の実処理関数
+static int SubHandleBase( int Handle )
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 {
 	HANDLEINFO *HandleInfo ;
 	int Index ;
+<<<<<<< HEAD
+=======
+	HANDLEINFO *HandleInfo ;
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 	int HandleType = ( int )( ( ( DWORD )Handle & DX_HANDLETYPE_MASK ) >> DX_HANDLETYPE_ADDRESS ) ;
 	HANDLEMANAGE *HandleManage = &HandleManageArray[ HandleType ] ;
 
@@ -286,8 +299,11 @@ extern int SubHandle( int Handle )
 	// クリティカルセクションの取得
 	CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
 
+<<<<<<< HEAD
 	Index = Handle & DX_HANDLEINDEX_MASK ;
 
+=======
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 	// エラー判定
 	if( HANDLECHK_ASYNC( HandleType, Handle, HandleInfo ) )
 	{
@@ -296,6 +312,11 @@ extern int SubHandle( int Handle )
 
 		return -1 ;
 	}
+<<<<<<< HEAD
+=======
+
+	Index = HandleInfo->Handle & DX_HANDLEINDEX_MASK ;
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 
 #ifndef DX_NON_ASYNCLOAD
 	// 非同期読み込み中である場合でまだ処理が走っていなかったら処理をキャンセルする
@@ -376,6 +397,72 @@ END :
 	return 0 ;
 }
 
+<<<<<<< HEAD
+=======
+// ハンドルを削除する
+extern int SubHandle( int Handle, int ASyncLoadFlag, int ASyncThread )
+{
+	HANDLEINFO *HandleInfo ;
+	int HandleType = ( int )( ( ( DWORD )Handle & DX_HANDLETYPE_MASK ) >> DX_HANDLETYPE_ADDRESS ) ;
+	HANDLEMANAGE *HandleManage = &HandleManageArray[ HandleType ] ;
+
+	if( HandleManage->InitializeFlag == FALSE )
+		return -1 ;
+
+	// クリティカルセクションの取得
+	CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
+
+	// エラー判定
+	if( HANDLECHK_ASYNC( HandleType, Handle, HandleInfo ) )
+	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+
+		return -1 ;
+	}
+
+	// 既に削除リクエストリストに登録されている場合はエラー
+	if( HandleInfo->DeleteRequestFlag )
+	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+
+		return -1 ;
+	}
+
+#ifndef DX_NON_ASYNCLOAD
+	if( ASyncThread || ASyncLoadFlag )
+	{
+		// 非同期実行希望や別スレッドからの呼び出しの場合は削除リクエストリストに追加
+		AddHandleList( &HandleManage->DeleteRequestListFirst, &HandleInfo->DeleteRequestList, HandleInfo->Handle, HandleInfo ) ;
+
+		// 削除リクエストリストに登録されているフラグを立てる
+		HandleInfo->DeleteRequestFlag = TRUE ;
+
+		// 削除リクエストのハンドル数をインクリメント
+		HandleManage->DeleteRequestHandleNum ++ ;
+
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+	}
+	else
+#endif // DX_NON_ASYNCLOAD
+	{
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManage->CriticalSection ) ;
+
+		// 非同期実行希望や別スレッドからの呼び出しではない場合は即座に削除
+		if( SubHandleBase( Handle ) < 0 )
+		{
+			return -1 ;
+		}
+	}
+
+	// 終了
+	return 0 ;
+}
+
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // ハンドルの情報を格納するメモリ領域のサイズを変更する、非同期読み込み中でないことが前提
 extern int ReallocHandle( int Handle, size_t NewSize )
 {
@@ -882,7 +969,46 @@ extern int WaitASyncLoad( int Handle )
 		}
 
 		// クリティカルセクションの取得
+<<<<<<< HEAD
 		CRITICALSECTION_LOCK( &HandleManage->CriticalSection ) ;
+=======
+		CRITICALSECTION_LOCK( &HandleManageArray[ i ].CriticalSection ) ;
+
+		// 削除リクエストが無ければループから抜ける
+		while( HandleManageArray[ i ].DeleteRequestHandleNum > 0 )
+		{
+			// 非同期読み込みが完了しているハンドルを探す
+			HandleInfo = ( HANDLEINFO * )HandleManageArray[ i ].DeleteRequestListLast.Prev->Data ;
+			while( HandleInfo != NULL && HandleInfo->ASyncLoadCount != 0 )
+			{
+				HandleInfo = ( HANDLEINFO * )HandleInfo->DeleteRequestList.Next->Data ;
+			}
+
+			// 非同期読み込みが完了しているハンドルが無かったらループを抜ける
+			if( HandleInfo == NULL )
+			{
+				break ;
+			}
+
+			// ハンドルを削除
+			if( HandleInfo != NULL )
+			{
+				SubHandleBase( HandleInfo->Handle ) ;
+			}
+
+			// 2ms経過していたらループを抜ける
+			if( NS_GetNowCount( FALSE ) - StartTime >= 2 )
+			{
+				break ;
+			}
+		}
+
+		// 削除リクエストの残り数を加算
+		DeleteRequestTotal += HandleManageArray[ i ].DeleteRequestHandleNum ;
+
+		// クリティカルセクションの解放
+		CriticalSection_Unlock( &HandleManageArray[ i ].CriticalSection ) ;
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 	}
 
 	// クリティカルセクションの解放

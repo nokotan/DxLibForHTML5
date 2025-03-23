@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		内部との出入り口プログラムファイル
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -1334,11 +1338,11 @@ extern int GetAlwaysRunFlag( void )
 	DXFUNC_END
 	return Result ;
 }
-extern int _GetSystemInfo( int *DxLibVer, int *DirectXVer, int *WindowsVer )
+extern int GetSystemInfo_( int *DxLibVer, int *DirectXVer, int *WindowsVer )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS__GetSystemInfo( DxLibVer, DirectXVer, WindowsVer ) ;
+	Result = NS_GetSystemInfo_( DxLibVer, DirectXVer, WindowsVer ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -3928,8 +3932,6 @@ extern int GetCtrlCodeCmp( TCHAR Char )
 	return Result ;
 }
 
-#endif // DX_NON_INPUTSTRING
-
 #ifndef DX_NON_KEYEX
 
 extern int DrawIMEInputString( int x, int y, int SelectStringNum , int DrawCandidateList )
@@ -3989,9 +3991,11 @@ extern int SetUseTSFFlag( int UseFlag )
 	return Result ;
 }
 
+#endif // DX_NON_KEYEX
+
+#endif // DX_NON_INPUTSTRING
 
 
-#endif
 
 extern int GetStringPoint( const TCHAR *String, int Point )
 {
@@ -4093,6 +4097,8 @@ extern int DrawObtainsBox( int x1, int y1, int x2, int y2, int AddY, unsigned in
 	DXFUNC_END
 	return Result ;
 }
+
+#ifndef DX_NON_INPUTSTRING
 
 #ifndef DX_NON_KEYEX
 
@@ -4421,9 +4427,9 @@ extern int GetKeyInputCursorPosition( int InputHandle )
 	return Result ;
 }
 
+#endif // DX_NON_KEYEX
 
-#endif
-
+#endif // DX_NON_INPUTSTRING
 
 
 
@@ -4596,7 +4602,7 @@ extern	double GetJoypadDeadZone( int InputType )
 }
 extern	int SetJoypadDefaultDeadZoneAll( double Zone )
 {
-	double Result ;
+	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_SetJoypadDefaultDeadZoneAll( Zone ) ;
 	DXFUNC_END
@@ -6564,11 +6570,11 @@ extern int DrawLineAA( float x1, float y1, float x2, float y2, unsigned int Colo
 	DXFUNC_END
 	return Result ;
 }
-extern int DrawBox( int x1, int y1, int x2, int y2, unsigned int Color, int FillFlag )
+extern int DrawBox( int x1, int y1, int x2, int y2, unsigned int Color, int FillFlag, int LineThickness )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_DrawBox( x1,  y1,  x2,  y2,  Color,  FillFlag ) ;
+	Result = NS_DrawBox( x1,  y1,  x2,  y2,  Color,  FillFlag, LineThickness ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -6588,11 +6594,11 @@ extern int DrawFillBox( int x1, int y1, int x2, int y2, unsigned int Color )
 	DXFUNC_END
 	return Result ;
 }
-extern int DrawLineBox( int x1, int y1, int x2, int y2, unsigned int Color )
+extern int DrawLineBox( int x1, int y1, int x2, int y2, unsigned int Color, int LineThickness )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_DrawLineBox( x1,  y1,  x2,  y2,  Color ) ;
+	Result = NS_DrawLineBox( x1,  y1,  x2,  y2,  Color, LineThickness ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -6833,6 +6839,38 @@ extern int DrawCapsule3DD( VECTOR_D Pos1, VECTOR_D Pos2, float r, int DivNum, un
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_DrawCapsule3DD(  Pos1,  Pos2,  r,  DivNum, DifColor, SpcColor, FillFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawCylinder3D( VECTOR Pos1, VECTOR Pos2, float r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawCylinder3D( Pos1, Pos2, r, DivNum, DifColor, SpcColor, FillFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawCylinder3DD( VECTOR_D Pos1, VECTOR_D Pos2, double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawCylinder3DD( Pos1, Pos2, r, DivNum, DifColor, SpcColor, FillFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawTube3D( VECTOR Pos1, VECTOR Pos2, float  r1, float  r2, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawTube3D( Pos1, Pos2, r1, r2, DivNum, DifColor, SpcColor, FillFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int DrawTube3DD( VECTOR_D Pos1, VECTOR_D Pos2, double r1, double r2, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_DrawTube3DD( Pos1, Pos2, r1, r2, DivNum, DifColor, SpcColor, FillFlag ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -9736,6 +9774,95 @@ extern float GetFogDensity( void )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetVerticalFogEnable( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetVerticalFogEnable( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetVerticalFogEnable( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetVerticalFogEnable() ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetVerticalFogMode( int Mode /* DX_FOGMODE_NONE 等 */ )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetVerticalFogMode( Mode ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetVerticalFogMode( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetVerticalFogMode() ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetVerticalFogColor( int  r, int  g, int  b )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetVerticalFogColor(  r,  g,  b ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetVerticalFogColor( int *r, int *g, int *b )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetVerticalFogColor( r, g, b ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetVerticalFogStartEnd( float  start, float  end )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetVerticalFogStartEnd(  start,  end ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetVerticalFogStartEnd( float *start, float *end )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetVerticalFogStartEnd( start, end ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetVerticalFogDensity( float start, float density )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetVerticalFogDensity( start, density ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetVerticalFogDensity( float *start, float *density )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetVerticalFogDensity( start, density ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+
+
+
+
+
+
+
+
 extern int SetUseSystemMemGraphCreateFlag( int Flag )
 {
 	int Result ;
@@ -10349,6 +10476,14 @@ extern int RefreshDxLibDirect3DSetting( void )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_RefreshDxLibDirect3DSetting() ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetUseDirect3D11SwapEffect( int SwapEffect )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseDirect3D11SwapEffect( SwapEffect ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -12226,6 +12361,15 @@ extern	int			SetUseLightAngleAttenuation( int UseFlag )
 	return Result ;
 }
 
+extern	int			SetUseHalfLambertLighting(	 int UseFlag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseHalfLambertLighting( UseFlag ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 extern	int			ChangeLightTypeDir( VECTOR Direction )
 {
 	int Result ;
@@ -13069,6 +13213,14 @@ extern int SetDrawZ( float Z )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_SetDrawZ( Z ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int SetUseReversedZ( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseReversedZ( Flag ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -18582,6 +18734,14 @@ extern int MV1CreateCloneModel( int SrcMHandle )
 	DXFUNC_END
 	return Result ;
 }
+extern int MV1CreateSimpleModel( VERTEX3D *Vertex, int VertexNum, unsigned int *Index, int IndexNum, MATERIALPARAM *Material, int GrHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1CreateSimpleModel( Vertex, VertexNum, Index, IndexNum, Material, GrHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int MV1DuplicateModel( int SrcMHandle )	
 {
 	int Result ;
@@ -19947,6 +20107,15 @@ extern int MV1GetMaterialSpcMapTexture( int MHandle, int MaterialIndex )
 	return Result ;
 }
 
+extern int MV1SetMaterialNormalMapTexture( int MHandle, int MaterialIndex, int TexIndex )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1SetMaterialNormalMapTexture( MHandle, MaterialIndex, TexIndex ) ;
+	DXFUNC_END
+	return Result ;
+}
+
 extern int MV1GetMaterialNormalMapTexture( int MHandle, int MaterialIndex )
 {
 	int Result ;
@@ -20521,6 +20690,75 @@ extern int MV1GetTextureSampleFilterMode( int MHandle, int TexIndex )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_MV1GetTextureSampleFilterMode(  MHandle,  TexIndex ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int MV1AddTexture(
+	int MHandle,
+	const TCHAR *Name,
+	const TCHAR *ColorFilePath, const TCHAR *AlphaFilePath,
+	void *ColorFileImage, void *AlphaFileImage,
+	int AddressModeU, int AddressModeV,	int FilterMode,
+	int BumpImageFlag, float BumpImageNextPixelLength,
+	int ReverseFlag,
+	int Bmp32AllZeroAlphaToXRGB8Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1AddTexture(
+		MHandle,
+		Name,
+		ColorFilePath, AlphaFilePath,
+		ColorFileImage, AlphaFileImage,
+		AddressModeU, AddressModeV, FilterMode,
+		BumpImageFlag, BumpImageNextPixelLength,
+		ReverseFlag,
+		Bmp32AllZeroAlphaToXRGB8Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int MV1AddTextureWithStrLen(
+	int MHandle,
+	const TCHAR *Name, size_t NameLength,
+	const TCHAR *ColorFilePath, size_t ColorFilePathLength, const TCHAR *AlphaFilePath, size_t AlphaFilePathLength,
+	void *ColorFileImage, void *AlphaFileImage,
+	int AddressModeU, int AddressModeV,	int FilterMode,
+	int BumpImageFlag, float BumpImageNextPixelLength,
+	int ReverseFlag,
+	int Bmp32AllZeroAlphaToXRGB8Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1AddTextureWithStrLen(
+		MHandle,
+		Name, NameLength,
+		ColorFilePath, ColorFilePathLength, AlphaFilePath, AlphaFilePathLength,
+		ColorFileImage, AlphaFileImage,
+		AddressModeU, AddressModeV,	FilterMode,
+		BumpImageFlag, BumpImageNextPixelLength,
+		ReverseFlag,
+		Bmp32AllZeroAlphaToXRGB8Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
+
+extern int MV1AddTextureGraphHandle(
+	int MHandle,
+	const TCHAR *Name,
+	int GrHandle, int SemiTransFlag,
+	int AddressModeU, int AddressModeV, int FilterMode
+)
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_MV1AddTextureGraphHandle(
+		MHandle,
+		Name,
+		GrHandle, SemiTransFlag,
+		AddressModeU, AddressModeV, FilterMode
+	) ;
 	DXFUNC_END
 	return Result ;
 }

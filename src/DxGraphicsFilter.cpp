@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		GraphFilter系プログラム
 // 
+<<<<<<< HEAD
 //  	Ver 3.24b
+=======
+//  	Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 //-----------------------------------------------------------------------------
 
@@ -603,6 +607,18 @@ static int	GraphFilter_SoftImageTerminate( GRAPHFILTER_INFO *Info )
 		else
 		{
 			RECT Rect ;
+
+			if( Info->SrcEqualDestClearFlag && Info->SrcGrHandle == Info->DestGrHandle && Info->Pass == 0 )
+			{
+				BASEIMAGE TempImage ;
+
+				if( NS_CreateARGB8ColorBaseImage( Info->SrcX2 - Info->SrcX1, Info->SrcY2 - Info->SrcY1, &TempImage ) == 0 )
+				{
+					NS_FillBaseImage( &TempImage, 0, 0, 0, 0 ) ;
+					NS_BltBmpOrGraphImageToGraph( NULL, NULL, NULL, FALSE, &TempImage, NULL, Info->SrcX1, Info->SrcY1, Info->SrcGrHandle ) ;
+					NS_ReleaseBaseImage( &TempImage ) ;
+				}
+			}
 
 			Rect.left   = 0 ;
 			Rect.top    = 0 ;
@@ -1235,7 +1251,7 @@ extern int GraphFilter_RectBltBase(
 
 		// 出力元と先が同じ場合で、出力元と先が同じ場合は出力元をクリアするフラグが立っていた場合は
 		// 最初のパスが終わった時点で出力元の矩形をクリアする
-		if( Info.SrcEqualDestClearFlag && SrcGrHandle == DestGrHandle && Info.Pass == 0 )
+		if( GSYS.HardInfo.UseShader == TRUE && Info.SrcEqualDestClearFlag && SrcGrHandle == DestGrHandle && Info.Pass == 0 )
 		{
 			BASEIMAGE TempImage ;
 

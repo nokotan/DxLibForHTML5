@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		標準Ｃライブラリ使用コード　Live2D Cubism4 関係ヘッダファイル
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -99,7 +103,8 @@ enum
 	D_csmOpacityDidChange						= 1 << 2,	// Flag set when opacity did change.
 	D_csmDrawOrderDidChange						= 1 << 3,	// Flag set when draw order did change.
 	D_csmRenderOrderDidChange					= 1 << 4,	// Flag set when render order did change.
-	D_csmVertexPositionsDidChange				= 1 << 5	// Flag set when vertex positions did change.
+	D_csmVertexPositionsDidChange				= 1 << 5,	// Flag set when vertex positions did change.
+	D_csmBlendColorDidChange					= 1 << 6	// Flag set when blend color did change.
 } ;
 
 // moc3 file format version.
@@ -108,8 +113,23 @@ enum
 	D_csmMocVersion_Unknown						= 0,		// unknown
 	D_csmMocVersion_30							= 1,		// moc3 file version 3.0.00 - 3.2.07
 	D_csmMocVersion_33							= 2,		// moc3 file version 3.3.00 -
-	D_csmMocVersion_40							= 3			// moc3 file version 4.0.00 -
+	D_csmMocVersion_40							= 3,		// moc3 file version 4.0.00 -
+	D_csmMocVersion_42							= 4,		// moc3 file version 4.2.00 -
 } ;
+
+enum
+{
+	D_csmParameterType_Normal					= 0,		// Normal parameter
+	D_csmParameterType_BlendShape				= 1			// Parameter for blend shape
+} ;
+
+// ベジェカーブの解釈方法のフラグタイプ
+enum D_EvaluationOptionFlag
+{
+	D_EvaluationOptionFlag_AreBeziersRistricted	= 0,		// ベジェハンドルの規制状態
+} ;
+
+typedef int D_csmParameterType ;
 
 #define CSM_STRING_SMALL_LENGTH					64
 #define CSM_MAP_DEFAULT_SIZE					10
@@ -163,6 +183,15 @@ struct D_CubismVector2
 	float						Dot( const D_CubismVector2& a ) const ;								// ドット積の計算
 } ;
 
+// 4次元ベクトル型
+struct D_CubismVector4
+{
+	float X ;          // X軸の値
+	float Y ;          // Y軸の値
+	float Z ;          // Z軸の値
+	float W ;          // W軸の値
+} ;
+
 // Utility functions for csmVector2.
 D_CubismVector2					operator+( const D_CubismVector2& a, const D_CubismVector2& b ) ;
 D_CubismVector2					operator-( const D_CubismVector2& a, const D_CubismVector2& b ) ;
@@ -176,10 +205,16 @@ class D_CubismMath
 public:
 	static const float Pi;
 	static float RangeF( float value, float min, float max ) ;								// 第一引数の値を最小値と最大値の範囲に収めた値を返す
+#ifndef DX_NON_NAMESPACE
+	static float SinF( float x ){ float Sin, Cos ; DxLib::_SINCOS( x, &Sin, &Cos ) ; return Sin ; }// サイン関数の値を求める
+	static float CosF( float x ){ float Sin, Cos ; DxLib::_SINCOS( x, &Sin, &Cos ) ; return Cos ; }// コサイン関数の値を求める
+	static float SqrtF( float x ){ return DxLib::_SQRT( x ) ; }									// 平方根(ルート)を求める
+#else // DX_NON_NAMESPACE
 	static float SinF( float x ){ float Sin, Cos ; _SINCOS( x, &Sin, &Cos ) ; return Sin ; }// サイン関数の値を求める
 	static float CosF( float x ){ float Sin, Cos ; _SINCOS( x, &Sin, &Cos ) ; return Cos ; }// コサイン関数の値を求める
-	static float AbsF( float x ){ return x < 0.0f ? -x : x ; }								// 絶対値の値を求める
 	static float SqrtF( float x ){ return _SQRT( x ) ; }									// 平方根(ルート)を求める
+#endif // DX_NON_NAMESPACE
+	static float AbsF( float x ){ return x < 0.0f ? -x : x ; }								// 絶対値の値を求める
 	static float GetEasingSine( float value ) ;												// イージング処理されたサインを求める	
 	static float Max( float l, float r ){ return ( l > r ) ? l : r ; }						// 大きい方の値を返す
 	static float Min( float l, float r ){ return ( l > r ) ? r : l ; }						// 小さい方の値を返す。
@@ -555,7 +590,11 @@ private:
 
 	D_CubismId *				_ids[ CSM_IDMANAGER_MAX_ID_NUM ] ;							// 登録されているIDのリスト
 	volatile int				_idNum ;													// 登録されているIDの数
+#ifndef DX_NON_NAMESPACE
+	DxLib::DX_CRITICAL_SECTION	_criticalSection ;											// クリティカルセクション
+#else // DX_NON_NAMESPACE
 	DX_CRITICAL_SECTION			_criticalSection ;											// クリティカルセクション
+#endif // DX_NON_NAMESPACE
 } ;
 
 class D_JsonValue ;
@@ -581,8 +620,8 @@ public:
 	virtual const BYTE/*wchar_t*/ *	GetRawStringW( const D_csmString& defaultValue = "", const D_csmString& indent = "" ) ;// 要素を文字列で返す(wchar_t*)
 	virtual int					ToInt( int defaultValue = 0 ) { return defaultValue ; }			// 要素を数値型で返す( int)
 	virtual float				ToFloat( float defaultValue = 0.0f ) { return defaultValue ; }	// 要素を数値型で返す(float)
-	virtual bool				ToBoolean( bool defaultValue = false ) { return defaultValue ; }	// 要素を真偽値で返す(bool)
-	virtual int					GetSize() { return 0; }											// 要素を真偽値で返す(bool)
+	virtual bool				ToBoolean( bool defaultValue = false ) { return defaultValue ; }	// 要素を真偽値で返す( bool)
+	virtual int					GetSize() { return 0; }											// 要素を真偽値で返す( bool)
 	virtual D_csmVector<D_JsonValue*>*				GetVector( D_csmVector<D_JsonValue*>* defaultValue = NULL ) { return defaultValue ; }		// 要素をコンテナで返す(D_csmVector<D_JsonValue*>)
 	virtual D_csmMap<D_csmString, D_JsonValue*>*	GetMap( D_csmMap<D_csmString, D_JsonValue*>* defaultValue = NULL ) { return defaultValue ; }	// 要素をマップで返す(D_csmMap<D_csmString, D_JsonValue*>)
 	virtual D_csmVector<D_csmString>&				GetKeys(){ return *s_dummyKeys ; }															// マップのキー一覧をコンテナで返す
@@ -670,7 +709,7 @@ public:
 	static D_JsonBoolean*		FalseValue ;// false
 	virtual ~D_JsonBoolean() {}																// デストラクタ
 	virtual bool				IsBool() { return true ; }									// D_JsonValueの種類が真偽値ならtrue。
-	virtual bool				ToBoolean( bool /*defaultValue = false*/ ) { return _boolValue ; }// 要素を真偽値で返す(bool)
+	virtual bool				ToBoolean( bool /*defaultValue = false*/ ) { return _boolValue ; }// 要素を真偽値で返す( bool)
 	virtual D_csmString&		GetString( const D_csmString& defaultValue = "", const D_csmString& indent = "" ) ;// 要素を文字列で返す(D_csmString型)
 	virtual bool				Equals( bool v ) { return v == _boolValue ; }				// 引数の値と等しければtrue。
 	virtual bool				Equals( const D_csmString& /*v*/ ) { return false ; }		// 引数の値と等しければtrue。
@@ -783,6 +822,7 @@ public:
 	virtual ~D_CubismMotionJson() ;															// デストラクタ
 	float						GetMotionDuration() const ;									// モーションの長さの取得
 	bool						IsMotionLoop() const ;										// モーションのループ情報の取得
+	bool						GetEvaluationOptionFlag( int flagType ) const ;				// モーションのベジェカーブの解釈方式のフラグ取得
 	int							GetMotionCurveCount() const ;								// モーションカーブの個数の取得
 	float						GetMotionFps() const ;										// モーションのフレームレートの取得
 	int							GetMotionTotalSegmentCount() const ;						// モーションのセグメントの総合計の取得
@@ -807,7 +847,8 @@ public:
 private:
 	static const char*			Meta ;
 	static const char*			Duration ;
-	static const char*			Loop;
+	static const char*			Loop ;
+	static const char*			AreBeziersRestricted ;
 	static const char*			CurveCount ;
 	static const char*			Fps ;
 	static const char*			TotalSegmentCount ;
@@ -894,16 +935,150 @@ private:
 	int							_modelCount ;				// Mocデータから作られたモデルの個数
 } ;
 
+//  前方宣言
+class D_CubismModel ;
+
+// 4x4の行列
+class D_CubismMatrix44
+{
+public:
+	D_CubismMatrix44() ;																	// コンストラクタ
+	virtual ~D_CubismMatrix44() ;															// デストラクタ
+	static void					Multiply( float* a, float* b, float* dst ) ;				// 乗算
+	void						LoadIdentity() ;											// 単位行列に初期化
+	float*						GetArray() ;												// 行列を浮動小数点数の配列で取得
+	void						SetMatrix( float* tr ) ;									// 行列を設定
+	float						GetScaleX() const ;											// X軸の拡大率を取得
+	float						GetScaleY() const ;											// Y軸の拡大率を取得
+	float						GetTranslateX() const ;										// X軸の移動量を取得
+	float						GetTranslateY() const ;										// Y軸の移動量を取得
+	float						TransformX( float src ) ;									// X軸の値を現在の行列で計算
+	float						TransformY( float src ) ;									// Y軸の値を現在の行列で計算
+	float						InvertTransformX( float src ) ;								// X軸の値を現在の行列で逆計算
+	float						InvertTransformY( float src ) ;								// Y軸の値を現在の行列で逆計算
+	void						TranslateRelative( float x, float y ) ;						// 現在の行列の位置を起点にして移動
+	void						Translate( float x, float y ) ;								// 現在の行列の位置を移動
+	void						TranslateX( float x ) ;										// 現在の行列のX軸の位置を移動
+	void						TranslateY( float y ) ;										// 現在の行列のY軸の位置を移動
+	void						ScaleRelative( float x, float y ) ;							// 現在の行列の拡大率を相対的に設定
+	void						Scale( float x, float y ) ;									// 現在の行列の拡大率を設定
+	void						RotateRelative( float angle ) ;								// 現在の行列の回転( ラジアン )を相対的に設定
+	void						MultiplyByMatrix( D_CubismMatrix44* m ) ;					// 現在の行列に行列を乗算
+
+protected:
+	float						_tr[ 16 ] ;					// 4x4行列データ
+} ;
+
+// モデル描画を処理するレンダラ
+class D_CubismRenderer
+{
+public:
+	// テクスチャの色をRGBAで扱うための構造体
+	struct CubismTextureColor
+	{
+		CubismTextureColor() : R( 1.0f ), G( 1.0f ), B( 1.0f ), A( 1.0f ) {} ;				// コンストラクタ
+		CubismTextureColor( float r, float g, float b, float a )							// コンストラクタ
+		: R( r )
+		, G( g )
+		, B( b )
+		, A( a ) {};
+
+		virtual ~CubismTextureColor() {} ;													// デストラクタ
+
+		float					R ;							// 赤チャンネル
+		float					G ;							// 緑チャンネル
+		float					B ;							// 青チャンネル
+		float					A ;							// αチャンネル
+	} ; // CubismTextureColor
+	static D_CubismRenderer*	Create() ;													// レンダラのインスタンスを生成して取得する
+	static void					Delete( D_CubismRenderer* renderer ) ;						// レンダラのインスタンスを解放する
+	static void					StaticRelease() ;											// レンダラが保持する静的なリソースを解放する
+	virtual void				Initialize( D_CubismModel* model, int ASyncThread ) ;		// レンダラの初期化処理を実行する
+	void						DrawModel() ;												// モデルを描画する
+	void						SetMvpMatrix( D_CubismMatrix44* matrix4x4 ) ;				// Model-View-Projection 行列をセットする
+	D_CubismMatrix44			GetMvpMatrix() const ;										// Model-View-Projection 行列を取得する
+	void						SetModelColor( float red, float green, float blue, float alpha ) ;	// モデルの色をセットする。
+	CubismTextureColor			GetModelColor() const ;										// モデルの色を取得する。
+	void						IsPremultipliedAlpha( bool enable ) ;						//  乗算済みαの有効・無効をセットする。
+	bool						IsPremultipliedAlpha() const ;								//  乗算済みαの有効・無効を取得する。
+	void						IsCulling( bool culling ) ;									//  カリング（片面描画）の有効・無効をセットする。
+	bool						IsCulling() const ;											//  カリング（片面描画）の有効・無効を取得する。
+	void						SetAnisotropy( float anisotropy ) ;							// テクスチャの異方性フィルタリングのパラメータをセットする
+	float						GetAnisotropy() const ;										// テクスチャの異方性フィルタリングのパラメータをセットする
+	D_CubismModel*				GetModel() const ;											// レンダリングするモデルを取得する。
+	void						UseHighPrecisionMask( bool high ) ;							// マスク描画の方式を変更する。
+	bool						IsUsingHighPrecisionMask() ;								// マスク描画の方式を取得する。
+
+protected:
+	D_CubismRenderer() ;																	// コンストラクタ
+	virtual ~D_CubismRenderer() ;															// デストラクタ
+	virtual void				DoDrawModel() = 0 ;											// モデル描画の実装
+	virtual void				DrawMesh( int textureNo, int indexCount, int vertexCount, WORD* indexArray, float* vertexArray, float* uvArray, float opacity, D_CubismBlendMode colorBlendMode, bool invertedMask ) = 0 ;	// 描画オブジェクト（アートメッシュ）を描画する。
+	virtual void				SaveProfile() = 0 ;											// モデル描画直前のレンダラのステートを保持する
+	virtual void				RestoreProfile() = 0 ;										// モデル描画直前のレンダラのステートを復帰させる
+
+private:
+	// コピーコンストラクタを隠す
+	D_CubismRenderer( const D_CubismRenderer& ) ;
+	D_CubismRenderer&			operator=( const D_CubismRenderer& ) ;
+
+	D_CubismMatrix44			_mvpMatrix4x4 ;				// Model-View-Projection 行列
+	CubismTextureColor			_modelColor ;				// モデル自体のカラー(RGBA)
+	bool						_isCulling ;				// カリングが有効ならtrue
+	bool						_isPremultipliedAlpha ;		// 乗算済みαならtrue
+	float						_anisotropy ;				// テクスチャの異方性フィルタリングのパラメータ
+	D_CubismModel*				_model ;					// レンダリング対象のモデル
+	bool						_useHighPrecisionMask ;		// falseの場合、マスクを纏めて描画する trueの場合、マスクはパーツ描画ごとに書き直す 
+} ;
+
 // モデル
 class D_CubismModel
 {
 	friend class D_CubismMoc ;
 public:
+
+	// テクスチャの色をRGBAで扱うための構造体
+	struct DrawableColorData
+	{
+		DrawableColorData() : IsOverwritten( false ) , Color() {};		// コンストラクタ
+		DrawableColorData( bool isOverwritten, D_CubismRenderer::CubismTextureColor color ) : IsOverwritten( isOverwritten ), Color( color ) {};	// コンストラクタ
+		virtual ~DrawableColorData() {};								// デストラクタ
+
+		bool IsOverwritten ;
+		D_CubismRenderer::CubismTextureColor Color ;
+	} ;
+
+	// テクスチャのカリング設定を管理するための構造体
+	struct DrawableCullingData
+	{
+		DrawableCullingData() : IsOverwritten( false ), IsCulling( 0 ) {} ;	// コンストラクタ
+		DrawableCullingData( bool isOverwritten, int isCulling ) : IsOverwritten( isOverwritten ), IsCulling( isCulling ) {} ;	// コンストラクタ
+		virtual ~DrawableCullingData() {} ;								// デストラクタ
+
+		bool IsOverwritten ;
+		int IsCulling ;
+	} ;
+
+	// テクスチャの色をRGBAで扱うための構造体
+	struct PartColorData
+	{
+		PartColorData()	: IsOverwritten( false ) , Color() {} ;			// コンストラクタ
+		PartColorData( bool isOverwritten, D_CubismRenderer::CubismTextureColor color )	: IsOverwritten( isOverwritten ) , Color( color ) {} ;	// コンストラクタ
+		virtual ~PartColorData() {} ;									// デストラクタ
+
+		bool IsOverwritten ;
+		D_CubismRenderer::CubismTextureColor Color ;
+	} ;
+
 	void						Update() const ;											// モデルのパラメータの更新
+	float						GetCanvasWidthPixel() const ;								// キャンバスの幅を取得
+	float						GetCanvasHeightPixel() const ;								// キャンバスの高さを取得
+	float						GetPixelsPerUnit() const ;									// PixelsPerUnitを取得
 	float						GetCanvasWidth() const ;									// キャンバスの幅の取得
 	float						GetCanvasHeight() const ;									// キャンバスの高さの取得
 	void						GetCanvasInfo( D_CubismVector2 *SizeInPixels, D_CubismVector2 *OriginInPixels, float *PixelsPerUnit ) ;		// キャンバスの情報を取得する
 	int							GetPartIndex( D_CubismIdHandle partId ) ;					// パーツのインデックスの取得
+	D_CubismIdHandle			GetPartId( int partIndex ) ;								// パーツのIDを取得
 	int							GetPartCount() const ;										// パーツの個数の取得
 	void						SetPartOpacity( D_CubismIdHandle partId, float opacity ) ;	// パーツの不透明度の設定
 	void						SetPartOpacity( int partIndex, float opacity ) ;			// パーツの不透明度の設定
@@ -912,6 +1087,7 @@ public:
 	int							GetParameterIndex( D_CubismIdHandle parameterId ) ;			// パラメータのインデックスの取得
 	int							GetParameterCount() const ;									// パラメータの個数の取得
 	D_CubismIdHandle			GetParameterId( int parameterIndex ) ;						// パラメータのIDの取得
+	D_csmParameterType			GetParameterType( DWORD parameterIndex ) const ;				// パラメータの種類の取得
 	float						GetParameterMaximumValue( DWORD parameterIndex ) const ;	// パラメータの最大値の取得
 	float						GetParameterMinimumValue( DWORD parameterIndex ) const ;	// パラメータの最小値の取得
 	float						GetParameterDefaultValue( DWORD parameterIndex ) const ;	// パラメータのデフォルト値の取得
@@ -929,7 +1105,7 @@ public:
 	int							GetDrawableCount() const ;									// Drawableの個数の取得
 	D_CubismIdHandle			GetDrawableId( int drawableIndex ) const ;					// DrawableのIDの取得
 	const int *					GetDrawableRenderOrders() const ;							// Drawableの描画順リストの取得
-	int							GetDrawableTextureIndices( int drawableIndex ) const ;		// Drawableのテクスチャインデックスリストの取得
+	int							GetDrawableTextureIndex( int drawableIndex ) const ;		// Drawableのテクスチャインデックスの取得
 	int							GetDrawableVertexIndexCount( int drawableIndex ) const ;	// Drawableの頂点インデックスの個数の取得
 	int							GetDrawableVertexCount( int drawableIndex ) const ;			// Drawableの頂点の個数の取得
 	const float *				GetDrawableVertices( int drawableIndex ) const ;			// Drawableの頂点リストの取得
@@ -937,7 +1113,9 @@ public:
 	const D_CubismVector2 *		GetDrawableVertexPositions( int drawableIndex ) const ;		// Drawableの頂点リストの取得
 	const D_CubismVector2 *		GetDrawableVertexUvs( int drawableIndex ) const ;			// Drawableの頂点のUVリストの取得
 	float						GetDrawableOpacity( int drawableIndex ) const ;				// Drawableの不透明度の取得
-	int							GetDrawableCulling( int drawableIndex ) const ;				// Drawableのカリング情報の取得
+	D_CubismVector4				GetDrawableMultiplyColor( int drawableIndex ) const ;		// Drawableの乗算色の取得
+	D_CubismVector4				GetDrawableScreenColor( int drawableIndex ) const ;			// Drawableのスクリーン色の取得
+	int							GetDrawableParentPartIndex( DWORD drawableIndex ) const ;	// Drawableの親パーツのインデックスの取得
 	D_CubismBlendMode			GetDrawableBlendMode( int drawableIndex ) const ;			// Drawableのブレンドモードの取得
 	bool						GetDrawableInvertedMask( int drawableIndex ) const ;		// Drawableのマスクの反転使用の取得
 	bool						GetDrawableDynamicFlagIsVisible( int drawableIndex ) const ;	// Drawableの表示情報の取得
@@ -946,11 +1124,44 @@ public:
 	bool						GetDrawableDynamicFlagDrawOrderDidChange( int drawableIndex ) const ;	// DrawableのDrawOrderの変化情報の取得
 	bool						GetDrawableDynamicFlagRenderOrderDidChange( int drawableIndex ) const ;	// Drawableの描画順序の変化情報の取得
 	bool						GetDrawableDynamicFlagVertexPositionsDidChange( int drawableIndex ) const ;	// DrawableのVertexPositionsの変化情報の取得
+	bool						GetDrawableDynamicFlagBlendColorDidChange( int drawableIndex ) const ;	// Drawableの乗算色・スクリーン色の変化情報の取得
 	const int**					GetDrawableMasks() const ;									// Drawableのクリッピングマスクリストの取得
 	const int*					GetDrawableMaskCounts() const ;								// Drawableのクリッピングマスクの個数リストの取得
 	bool						IsUsingMasking() const ;									// クリッピングマスクの使用状態
 	void						LoadParameters() ;											// 保存されたパラメータの読み込み
 	void						SaveParameters() ;											// パラメータの保存
+	D_CubismRenderer::CubismTextureColor GetMultiplyColor( int drawableIndex ) const ;		// drawableの乗算色を取得する
+	D_CubismRenderer::CubismTextureColor GetScreenColor( int drawableIndex ) const ;		// drawableのスクリーン色を取得する
+	void						SetMultiplyColor( int drawableIndex, const D_CubismRenderer::CubismTextureColor& color ) ;	// drawableの乗算色を設定する
+	void						SetMultiplyColor( int drawableIndex, float r, float g, float b, float a = 1.0f ) ;			// drawableの乗算色を設定する
+	void						SetScreenColor( int drawableIndex, const D_CubismRenderer::CubismTextureColor& color ) ;	// drawableのスクリーン色を設定する
+	void						SetScreenColor( int drawableIndex, float r, float g, float b, float a = 1.0f ) ;			// drawableのスクリーン色を設定する
+	D_CubismRenderer::CubismTextureColor GetPartMultiplyColor( int partIndex ) const ;		// partの乗算色を取得する
+	D_CubismRenderer::CubismTextureColor GetPartScreenColor( int partIndex ) const ;		// partの乗算色を取得する
+	void						SetPartMultiplyColor( int partIndex, const D_CubismRenderer::CubismTextureColor& color ) ;	// partのスクリーン色を設定する
+	void						SetPartMultiplyColor( int partIndex, float r, float g, float b, float a = 1.0f ) ;			// partの乗算色を設定する
+	void						SetPartScreenColor( int partIndex, const D_CubismRenderer::CubismTextureColor& color ) ;	// partのスクリーン色を設定する
+	void						SetPartScreenColor( int partIndex, float r, float g, float b, float a = 1.0f ) ;			// partのスクリーン色を設定する
+	bool						GetOverwriteFlagForModelMultiplyColors() const ;								// SDKからモデル全体の乗算色を上書きするか。
+	bool						GetOverwriteFlagForModelScreenColors() const ;									// SDKからモデル全体のスクリーン色を上書きするか。
+	void						SetOverwriteFlagForModelMultiplyColors( bool value ) ;							// SDKからモデル全体の乗算色を上書きするかをセットする
+	void						SetOverwriteFlagForModelScreenColors( bool value ) ;							// SDKからモデル全体のスクリーン色を上書きするかをセットする  SDK上の色情報を使うならtrue、モデルの色情報を使うならfalse
+	bool						GetOverwriteFlagForDrawableMultiplyColors( int drawableIndex ) const ;			// SDKからdrawableの乗算色を上書きするか。
+	bool						GetOverwriteFlagForDrawableScreenColors( int drawableIndex ) const ;			// SDKからdrawableのスクリーン色を上書きするか。
+	void						SetOverwriteFlagForDrawableMultiplyColors( DWORD drawableIndex, bool value ) ;	// SDKからdrawableの乗算色を上書きするかをセットする
+	void						SetOverwriteFlagForDrawableScreenColors( DWORD drawableIndex, bool value ) ;	// SDKからdrawableのスクリーン色を上書きするかをセットする
+	bool						GetOverwriteColorForPartMultiplyColors( int partIndex ) const ;					// SDKからpartの乗算色を上書きするか。
+	bool						GetOverwriteColorForPartScreenColors( int partIndex ) const ;					// SDKからpartのスクリーン色を上書きするか。
+	void						SetOverwriteColorForPartMultiplyColors( DWORD partIndex, bool value ) ;			// SDKからpartの乗算色を上書きするかをセットする     SDK上の色情報を使うならtrue、モデルの色情報を使うならfalse
+	void						SetOverwriteColorForPartScreenColors( DWORD partIndex, bool value ) ;			// SDKからpartのスクリーン色を上書きするかをセットする      SDK上の色情報を使うならtrue、モデルの色情報を使うならfalse
+	int							GetDrawableCulling( int drawableIndex ) const ;									// Drawableのカリング情報の取得
+	void						SetDrawableCulling( int drawableIndex, int isCulling ) ;						// Drawableのカリング情報を設定する
+	bool						GetOverwriteFlagForModelCullings() const ;										// SDKからモデル全体のカリング設定を上書きするか。
+	void						SetOverwriteFlagForModelCullings( bool value ) ;								// SDKからモデル全体のカリング設定を上書きするかをセットする  SDK上のカリング設定を使うならtrue、モデルのカリング設定を使うならfalse
+	bool						GetOverwriteFlagForDrawableCullings( int drawableIndex ) const ;				// SDKからdrawableのカリング設定を上書きするか。
+	void						SetOverwriteFlagForDrawableCullings( DWORD drawableIndex, bool value ) ;		// SDKからdrawableのカリング設定を上書きするかをセットする  SDK上のカリング設定を使うならtrue、モデルのカリング設定を使うならfalse
+	float						GetModelOpacity() ;																// モデルの不透明度を取得する
+	void						SetModelOpacity( float value ) ;												// モデルの不透明度を設定する
 	void*						GetModel() const ;
 
 private:
@@ -960,6 +1171,20 @@ private:
 
 	D_CubismModel&				operator=( const D_CubismModel& ) ;
 	void						Initialize() ;												// 初期化
+
+	// partのOverwriteColor Set関数
+	void SetPartColor(
+		DWORD partIndex,
+		float r, float g, float b, float a,
+		D_csmVector< PartColorData >& partColors,
+		D_csmVector< DrawableColorData >& drawableColors ) ;
+
+	// partのOverwriteFlag Set関数
+	void SetOverwriteColorForPartColors(
+		DWORD partIndex,
+		bool value,
+		D_csmVector< PartColorData >& partColors,
+		D_csmVector< DrawableColorData >& drawableColors ) ;
 
 	D_csmMap< int, float >				_notExistPartOpacities ;	// 存在していないパーツの不透明度のリスト
 	D_csmMap< D_CubismIdHandle, int >	_notExistPartId ;			// 存在していないパーツIDのリスト
@@ -972,9 +1197,19 @@ private:
 	const float *						_parameterMaximumValues ;	// パラメータの最大値のリスト
 	const float *						_parameterMinimumValues ;	// パラメータの最小値のリスト
 	float *								_partOpacities ;			// パーツの不透明度のリスト
+    float								_modelOpacity ;				// モデルの不透明度
 	D_csmVector< D_CubismIdHandle >		_parameterIds ;
 	D_csmVector< D_CubismIdHandle >		_partIds ;
 	D_csmVector< D_CubismIdHandle >		_drawableIds ;
+	D_csmVector< DrawableColorData >	_userScreenColors;			// Drawable 乗算色の配列
+	D_csmVector< DrawableColorData >	_userMultiplyColors;		// Drawable スクリーン色の配列
+	D_csmVector< DrawableCullingData >	_userCullings;				// カリング設定の配列
+	D_csmVector< PartColorData >		_userPartScreenColors;		// Part 乗算色の配列
+	D_csmVector< PartColorData >		_userPartMultiplyColors;	// Part スクリーン色の配列
+	D_csmVector< D_csmVector< DWORD > >	_partChildDrawables;		// Partの子DrawableIndexの配列
+	bool								_isOverwrittenModelMultiplyColors; // 乗算色を全て上書きするか？
+	bool								_isOverwrittenModelScreenColors; // スクリーン色を全て上書きするか？
+	bool								_isOverwrittenCullings;		// モデルのカリング設定をすべて上書きするか？
 } ;
 
 // D_CubismMotionQueueManagerで再生している各モーションの管理
@@ -1147,37 +1382,6 @@ private:
 	D_csmVector< D_CubismIdHandle >	_lipSyncParameterIds ;	// リップシンクを適用するパラメータIDハンドルのリスト。  モデル（モデルセッティング）とパラメータを対応付ける。
 	D_CubismIdHandle			_modelCurveIdEyeBlink ;		// モデルが持つ自動まばたき用パラメータIDのハンドル。  モデルとモーションを対応付ける。
 	D_CubismIdHandle			_modelCurveIdLipSync ;		// モデルが持つリップシンク用パラメータIDのハンドル。  モデルとモーションを対応付ける。
-} ;
-
-// 4x4の行列
-class D_CubismMatrix44
-{
-public:
-	D_CubismMatrix44() ;																	// コンストラクタ
-	virtual ~D_CubismMatrix44() ;															// デストラクタ
-	static void					Multiply( float* a, float* b, float* dst ) ;				// 乗算
-	void						LoadIdentity() ;											// 単位行列に初期化
-	float*						GetArray() ;												// 行列を浮動小数点数の配列で取得
-	void						SetMatrix( float* tr ) ;									// 行列を設定
-	float						GetScaleX() const ;											// X軸の拡大率を取得
-	float						GetScaleY() const ;											// Y軸の拡大率を取得
-	float						GetTranslateX() const ;										// X軸の移動量を取得
-	float						GetTranslateY() const ;										// Y軸の移動量を取得
-	float						TransformX( float src ) ;									// X軸の値を現在の行列で計算
-	float						TransformY( float src ) ;									// Y軸の値を現在の行列で計算
-	float						InvertTransformX( float src ) ;								// X軸の値を現在の行列で逆計算
-	float						InvertTransformY( float src ) ;								// Y軸の値を現在の行列で逆計算
-	void						TranslateRelative( float x, float y ) ;						// 現在の行列の位置を起点にして移動
-	void						Translate( float x, float y ) ;								// 現在の行列の位置を移動
-	void						TranslateX( float x ) ;										// 現在の行列のX軸の位置を移動
-	void						TranslateY( float y ) ;										// 現在の行列のY軸の位置を移動
-	void						ScaleRelative( float x, float y ) ;							// 現在の行列の拡大率を相対的に設定
-	void						Scale( float x, float y ) ;									// 現在の行列の拡大率を設定
-	void						RotateRelative( float angle ) ;								// 現在の行列の回転( ラジアン )を相対的に設定
-	void						MultiplyByMatrix( D_CubismMatrix44* m ) ;					// 現在の行列に行列を乗算
-
-protected:
-	float						_tr[ 16 ] ;					// 4x4行列データ
 } ;
 
 // モデル座標設定用の4x4行列
@@ -1737,62 +1941,6 @@ private:
 	D_csmVector<const CubismModelUserDataNode*> _artMeshUserDataNodes ;	// 閲覧リスト保持
 } ;
 
-// モデル描画を処理するレンダラ
-class D_CubismRenderer
-{
-public:
-	// テクスチャの色をRGBAで扱うための構造体
-	struct CubismTextureColor
-	{
-		CubismTextureColor() : R( 1.0f ), G( 1.0f ), B( 1.0f ), A( 1.0f ) {} ;				// コンストラクタ
-		virtual ~CubismTextureColor() {} ;													// デストラクタ
-
-		float					R ;							// 赤チャンネル
-		float					G ;							// 緑チャンネル
-		float					B ;							// 青チャンネル
-		float					A ;							// αチャンネル
-	} ; // CubismTextureColor
-	static D_CubismRenderer*	Create() ;													// レンダラのインスタンスを生成して取得する
-	static void					Delete( D_CubismRenderer* renderer ) ;						// レンダラのインスタンスを解放する
-	static void					StaticRelease() ;											// レンダラが保持する静的なリソースを解放する
-	virtual void				Initialize( D_CubismModel* model, int ASyncThread ) ;		// レンダラの初期化処理を実行する
-	void						DrawModel() ;												// モデルを描画する
-	void						SetMvpMatrix( D_CubismMatrix44* matrix4x4 ) ;				// Model-View-Projection 行列をセットする
-	D_CubismMatrix44			GetMvpMatrix() const ;										// Model-View-Projection 行列を取得する
-	void						SetModelColor( float red, float green, float blue, float alpha ) ;	// モデルの色をセットする。
-	CubismTextureColor			GetModelColor() const ;										// モデルの色を取得する。
-	void						IsPremultipliedAlpha( bool enable ) ;						//  乗算済みαの有効・無効をセットする。
-	bool						IsPremultipliedAlpha() const ;								//  乗算済みαの有効・無効を取得する。
-	void						IsCulling( bool culling ) ;									//  カリング（片面描画）の有効・無効をセットする。
-	bool						IsCulling() const ;											//  カリング（片面描画）の有効・無効を取得する。
-	void						SetAnisotropy( float anisotropy ) ;							// テクスチャの異方性フィルタリングのパラメータをセットする
-	float						GetAnisotropy() const ;										// テクスチャの異方性フィルタリングのパラメータをセットする
-	D_CubismModel*				GetModel() const ;											// レンダリングするモデルを取得する。
-	void						UseHighPrecisionMask( bool high ) ;							// マスク描画の方式を変更する。
-	bool						IsUsingHighPrecisionMask() ;								// マスク描画の方式を取得する。
-
-protected:
-	D_CubismRenderer() ;																	// コンストラクタ
-	virtual ~D_CubismRenderer() ;															// デストラクタ
-	virtual void				DoDrawModel() = 0 ;											// モデル描画の実装
-	virtual void				DrawMesh( int textureNo, int indexCount, int vertexCount, WORD* indexArray, float* vertexArray, float* uvArray, float opacity, D_CubismBlendMode colorBlendMode, bool invertedMask ) = 0 ;	// 描画オブジェクト（アートメッシュ）を描画する。
-	virtual void				SaveProfile() = 0 ;											// モデル描画直前のレンダラのステートを保持する
-	virtual void				RestoreProfile() = 0 ;										// モデル描画直前のレンダラのステートを復帰させる
-
-private:
-	// コピーコンストラクタを隠す
-	D_CubismRenderer( const D_CubismRenderer& ) ;
-	D_CubismRenderer&			operator=( const D_CubismRenderer& ) ;
-
-	D_CubismMatrix44			_mvpMatrix4x4 ;				// Model-View-Projection 行列
-	CubismTextureColor			_modelColor ;				// モデル自体のカラー(RGBA)
-	bool						_isCulling ;				// カリングが有効ならtrue
-	bool						_isPremultipliedAlpha ;		// 乗算済みαならtrue
-	float						_anisotropy ;				// テクスチャの異方性フィルタリングのパラメータ
-	D_CubismModel*				_model ;					// レンダリング対象のモデル
-	bool						_useHighPrecisionMask ;		// falseの場合、マスクを纏めて描画する trueの場合、マスクはパーツ描画ごとに書き直す 
-} ;
-
 //  前方宣言
 class D_CubismRenderer_DxLib ;
 class D_CubismShader_DxLib ;
@@ -1823,7 +1971,11 @@ private:
 } ;
 
 // DirectX::XMMATRIXに変換
+#ifndef DX_NON_NAMESPACE
+DxLib::MATRIX D_ConvertToD3DX( D_CubismMatrix44& mtx ) ;
+#else // DX_NON_NAMESPACE
 MATRIX D_ConvertToD3DX( D_CubismMatrix44& mtx ) ;
+#endif // DX_NON_NAMESPACE
 
 //  クリッピングマスクの処理を実行するクラス
 class D_CubismClippingManager_DxLib
@@ -1931,7 +2083,7 @@ public:
 	{
 		Sampler_Origin							= 0,		// 元々の設定 
 		Sampler_Normal							= 1,		// 使用ステート 
-		Sampler_Max								= 2,
+		Sampler_Max								= 3,
 	} ;
 
 	// デフォルトの=でコピーします
@@ -1955,7 +2107,12 @@ public:
 			_viewportMinZ = 0.0f;
 			_viewportMaxZ = 0.0f;
 			_sampler = Sampler_Normal;
+		// DirectX::XMMATRIXに変換
+		#ifndef DX_NON_NAMESPACE
+			DxLib::_MEMSET( _valid, 0, sizeof( _valid ) ) ;
+		#else // DX_NON_NAMESPACE
 			_MEMSET( _valid, 0, sizeof( _valid ) ) ;
+		#endif // DX_NON_NAMESPACE
 		}
 		// State_Blend 
 		Blend					_blendState ;
@@ -2073,10 +2230,21 @@ private:
 // シェーダーコンスタントバッファ
 struct D_CubismConstantBufferDxLib
 {
+#ifndef DX_NON_NAMESPACE
+	DxLib::MATRIX				projectMatrix ;
+	DxLib::MATRIX				clipMatrix ;
+	DxLib::COLOR_F				baseColor ;
+	DxLib::COLOR_F				multiplyColor ;
+	DxLib::COLOR_F				screenColor ;
+	DxLib::COLOR_F				channelFlag ;
+#else // DX_NON_NAMESPACE
 	MATRIX						projectMatrix ;
 	MATRIX						clipMatrix ;
 	COLOR_F						baseColor ;
+	COLOR_F						multiplyColor ;
+	COLOR_F						screenColor ;
 	COLOR_F						channelFlag ;
+#endif // DX_NON_NAMESPACE
 } ;
 
 // DirectX11用の描画命令を実装したクラス
@@ -2102,14 +2270,14 @@ public:
 	const D_csmMap<int, int>&	GetBindedTextures() const ;									// OpenGLにバインドされたテクスチャのリストを取得する
 	void						SetClippingMaskBufferSize( int size ) ;						//  クリッピングマスクバッファのサイズを設定する、マスク用のFrameBufferを破棄・再作成するため処理コストは高い。
 	int							GetClippingMaskBufferSize() const ;							//  クリッピングマスクバッファのサイズを取得する
-	void						ExecuteDraw( int vertexBuffer, int indexBuffer, int constantBuffer, const int indexCount, const int textureNo, CubismTextureColor& modelColorRGBA, D_CubismBlendMode colorBlendMode, bool invertedMask ) ;	//  使用するシェーダの設定・コンスタントバッファの設定などを行い、描画を実行
+	void						ExecuteDraw( int vertexBuffer, int indexBuffer, int constantBuffer, const int indexCount, const int textureNo, CubismTextureColor& modelColorRGBA, const CubismTextureColor& multiplyColor, const CubismTextureColor& screenColor, D_CubismBlendMode colorBlendMode, bool invertedMask ) ;	//  使用するシェーダの設定・コンスタントバッファの設定などを行い、描画を実行
 
 protected:
 	D_CubismRenderer_DxLib() ;																// コンストラクタ
 	virtual ~D_CubismRenderer_DxLib() ;														// デストラクタ
 	virtual void				DoDrawModel() ;												// モデルを描画する実際の処理
 	void						DrawMesh( int textureNo, int indexCount, int vertexCount, WORD* indexArray, float* vertexArray, float* uvArray, float opacity, D_CubismBlendMode colorBlendMode, bool invertedMask ) ;
-	void						DrawMeshDX11( int drawableIndex, int textureNo, int indexCount, int vertexCount, WORD* indexArray, float* vertexArray, float* uvArray, float opacity, D_CubismBlendMode colorBlendMode, bool invertedMask ) ;// 描画オブジェクト（アートメッシュ）を描画する。ポリゴンメッシュとテクスチャ番号をセットで渡す。
+	void						DrawMeshDX11( int drawableIndex, int textureNo, int indexCount, int vertexCount, WORD* indexArray, float* vertexArray, float* uvArray, const CubismTextureColor& multiplyColor, const CubismTextureColor& screenColor, float opacity, D_CubismBlendMode colorBlendMode, bool invertedMask ) ;// 描画オブジェクト（アートメッシュ）を描画する。ポリゴンメッシュとテクスチャ番号をセットで渡す。
 
 private:
 	static void					DoStaticRelease() ;											// レンダラが保持する静的なリソースを解放する

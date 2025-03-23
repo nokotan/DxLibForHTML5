@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -6457,7 +6461,7 @@ extern int MV1SubModelBase( int MBHandle )
 }
 
 // モデル基本データを複製する
-extern int MV1CreateCloneModelBase( int SrcMBHandle )
+extern int MV1CreateCloneModelBase( int SrcMBHandle, int ASyncThread )
 {
 	MV1_MODEL_BASE MTBase, *MBase = NULL, *FHeader ;
 	MV1_FRAME_BASE *Frame ;
@@ -6593,7 +6597,7 @@ extern int MV1CreateCloneModelBase( int SrcMBHandle )
 	}
 
 	// モデル基データハンドルの作成
-	NewHandle = MV1AddModelBase( FALSE ) ;
+	NewHandle = MV1AddModelBase( ASyncThread ) ;
 	if( NewHandle < 0 )
 	{
 		goto ERRORLABEL ;
@@ -6958,7 +6962,7 @@ extern int MV1CreateCloneModelBase( int SrcMBHandle )
 				true,
 				TRUE,
 				FALSE,
-				FALSE ) == -1 )
+				ASyncThread ) == -1 )
 		{
 			DXST_LOGFILEFMT_ADDW(( L"MV1 CloneModel Error : Texture LoadError : %s\n", Texture->NameW ) ) ;
 			goto ERRORLABEL ;
@@ -7528,7 +7532,7 @@ extern int MV1CreateCloneModelBase( int SrcMBHandle )
 	// 指定がある場合は法線の再計算を行う
 	if( MV1Man.LoadModelToReMakeNormal )
 	{
-		MV1ReMakeNormalBase( NewHandle, MV1Man.LoadModelToReMakeNormalSmoothingAngle ) ;
+		MV1ReMakeNormalBase( NewHandle, MV1Man.LoadModelToReMakeNormalSmoothingAngle, ASyncThread ) ;
 	}
 
 	// 高速処理用頂点データの構築
@@ -7539,6 +7543,13 @@ extern int MV1CreateCloneModelBase( int SrcMBHandle )
 		MV1SetupToonOutLineTriangleList( TriangleList ) ;
 	}
 
+#ifndef DX_NON_ASYNCLOAD
+	if( ASyncThread )
+	{
+		DecASyncLoadCount( NewHandle ) ;
+	}
+#endif // DX_NON_ASYNCLOAD
+
 	// 正常終了
 	return NewHandle ;
 
@@ -7546,6 +7557,13 @@ extern int MV1CreateCloneModelBase( int SrcMBHandle )
 ERRORLABEL :
 	if( NewHandle )
 	{
+#ifndef DX_NON_ASYNCLOAD
+		if( ASyncThread )
+		{
+			DecASyncLoadCount( NewHandle ) ;
+		}
+#endif // DX_NON_ASYNCLOAD
+
 		MV1SubModelBase( NewHandle ) ;
 		NewHandle = 0 ;
 	}
@@ -12114,6 +12132,7 @@ extern int MV1AddTextureBase(
 	int BumpImageFlag, float BumpImageNextPixelLength,
 	bool ReverseFlag,
 	bool Bmp32AllZeroAlphaToXRGB8Flag,
+	int NotTextureLoad,
 	int ASyncThread )
 {
 	MV1_MODEL_BASE *ModelBase ;
@@ -12192,7 +12211,7 @@ extern int MV1AddTextureBase(
 				NULL,
 				false,
 				TRUE,
-				FALSE,
+				NotTextureLoad,
 				ASyncThread ) ;
 
 		if( Result == -1 )
@@ -12440,6 +12459,7 @@ extern int MV1DeleteTextureBase( int MBHandle, int TexIndex )
 
 		if( MBMaterial->DiffuseGradTexture == TexIndex ) break ;
 		if( MBMaterial->SpecularGradTexture == TexIndex ) break ;
+		if( MBMaterial->SphereMapTexture == TexIndex ) break ;
 	}
 
 	// 使用されていたらエラー
@@ -12464,6 +12484,10 @@ extern int MV1DeleteTextureBase( int MBHandle, int TexIndex )
 		}
 		if( i != ModelBase->MaterialNum )
 			break ;
+
+		if( Material->DiffuseGradTexture == TexIndex ) break ;
+		if( Material->SpecularGradTexture == TexIndex ) break ;
+		if( Material->SphereMapTexture == TexIndex ) break ;
 	}
 
 	// 使用されていたらエラー
@@ -12513,6 +12537,13 @@ extern int MV1DeleteTextureBase( int MBHandle, int TexIndex )
 			if( MBMaterial->NormalLayer[ j ].Texture > TexIndex )
 				MBMaterial->NormalLayer[ j ].Texture -- ;
 		}
+
+		if( MBMaterial->DiffuseGradTexture > TexIndex )
+			MBMaterial->DiffuseGradTexture -- ;
+		if( MBMaterial->SpecularGradTexture > TexIndex )
+			MBMaterial->SpecularGradTexture -- ;
+		if( MBMaterial->SphereMapTexture > TexIndex )
+			MBMaterial->SphereMapTexture -- ;
 	}
 
 	Model = ModelBase->UseFirst ;
@@ -12532,6 +12563,13 @@ extern int MV1DeleteTextureBase( int MBHandle, int TexIndex )
 				if( Material->SpecularLayer[ j ].Texture > TexIndex )
 					Material->SpecularLayer[ j ].Texture -- ;
 			}
+
+			if( Material->DiffuseGradTexture > TexIndex )
+				Material->DiffuseGradTexture -- ;
+			if( Material->SpecularGradTexture > TexIndex )
+				Material->SpecularGradTexture -- ;
+			if( Material->SphereMapTexture > TexIndex )
+				Material->SphereMapTexture -- ;
 		}
 	}
 
@@ -13196,8 +13234,16 @@ extern int MV1MakeModel( int MV1ModelHandle, int MV1ModelBaseHandle, int ASyncTh
 	InitDrawMat.Visible = 1 ;
 
 	// モデル基本データハンドルチェック
-	if( MV1BMDLCHK( MV1ModelBaseHandle, MBase ) )
-		return -1 ;
+	if( ASyncThread )
+	{
+		if( MV1BMDLCHK_ASYNC( MV1ModelBaseHandle, MBase ) )
+			return -1 ;
+	}
+	else
+	{
+		if( MV1BMDLCHK( MV1ModelBaseHandle, MBase ) )
+			return -1 ;
+	}
 
 	// モデルデータハンドルチェック
 	if( ASyncThread )
@@ -13234,7 +13280,10 @@ extern int MV1MakeModel( int MV1ModelHandle, int MV1ModelBaseHandle, int ASyncTh
 		sizeof( MV1_PHYSICS_RIGIDBODY ) * MBase->PhysicsRigidBodyNum      +
 		sizeof( MV1_PHYSICS_JOINT     ) * MBase->PhysicsJointNum ;
 	Model->DataBuffer = ( MV1_MODEL * )MDALLOCMEM( Size ) ;
-	if( Model->DataBuffer == NULL ) return -1 ;
+	if( Model->DataBuffer == NULL )
+	{
+		return -1 ;
+	}
 	_MEMSET( Model->DataBuffer, 0, Size ) ;
 	Model->Frame                    = ( MV1_FRAME                * )( Model->DataBuffer                                            ) ;
 	Model->Mesh                     = ( MV1_MESH                 * )( Model->Frame                    + MBase->FrameNum * 2        ) ;
@@ -13298,7 +13347,7 @@ extern int MV1MakeModel( int MV1ModelHandle, int MV1ModelBaseHandle, int ASyncTh
 	// Ｚバッファ関係をセット
 	Model->EnableZBufferFlag = TRUE ;
 	Model->WriteZBufferFlag = TRUE ;
-	Model->ZBufferCmpType = DX_CMP_LESSEQUAL ;
+	Model->ZBufferCmpType = GSYS.DrawSetting.UseReversedZFlag ? DX_CMP_GREATEREQUAL : DX_CMP_LESSEQUAL ;
 	Model->ZBias = 0 ;
 
 	// 異方性フィルタリングの最大次数の初期値は16
@@ -14549,6 +14598,154 @@ extern void InitMV1LoadModelGParam( MV1LOADMODEL_GPARAM *GParam )
 		_WCSCPY_S( GParam->AnimFileName,    sizeof( GParam->AnimFileName    ), MV1Man.AnimFileName ) ;
 		_WCSCPY_S( GParam->AnimFileDirPath, sizeof( GParam->AnimFileDirPath ), MV1Man.AnimFileDirPath ) ;
 	}
+}
+
+// モデルで使用するテクスチャを追加する
+extern int NS_MV1AddTexture(
+	int MHandle,
+	const TCHAR *Name,
+	const TCHAR *ColorFilePath, const TCHAR *AlphaFilePath,
+	void *ColorFileImage, void *AlphaFileImage,
+	int AddressModeU, int AddressModeV, int FilterMode,
+	int BumpImageFlag, float BumpImageNextPixelLength,
+	int ReverseFlag,
+	int Bmp32AllZeroAlphaToXRGB8Flag )
+{
+#ifdef UNICODE
+	return MV1AddTextureBase(
+		MV1GetModelBaseHandle( MHandle ),
+		Name,
+		ColorFilePath, AlphaFilePath,
+		ColorFileImage, AlphaFileImage,
+		AddressModeU, AddressModeV, FilterMode,
+		BumpImageFlag, BumpImageNextPixelLength,
+		ReverseFlag != FALSE,
+		Bmp32AllZeroAlphaToXRGB8Flag != FALSE,
+		FALSE, FALSE
+	) ;
+#else
+	int Result ;
+
+	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( Name, return -1 )
+	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( ColorFilePath, return -1 )
+	TCHAR_TO_WCHAR_T_STRING_ONE_BEGIN( AlphaFilePath, return -1 )
+
+	Result = MV1AddTextureBase(
+		MV1GetModelBaseHandle( MHandle ),
+		UseNameBuffer,
+		UseColorFilePathBuffer, UseAlphaFilePathBuffer,
+		ColorFileImage, AlphaFileImage,
+		AddressModeU, AddressModeV, FilterMode,
+		BumpImageFlag, BumpImageNextPixelLength,
+		ReverseFlag != FALSE,
+		Bmp32AllZeroAlphaToXRGB8Flag != FALSE,
+		FALSE, FALSE
+	) ;
+
+	TCHAR_TO_WCHAR_T_STRING_END( Name )
+	TCHAR_TO_WCHAR_T_STRING_END( ColorFilePath )
+	TCHAR_TO_WCHAR_T_STRING_END( AlphaFilePath )
+
+	return Result ;
+#endif
+}
+
+// モデルで使用するテクスチャを追加する
+extern int NS_MV1AddTextureWithStrLen(
+	int MHandle,
+	const TCHAR *Name, size_t NameLength,
+	const TCHAR *ColorFilePath, size_t ColorFilePathLength, const TCHAR *AlphaFilePath, size_t AlphaFilePathLength,
+	void *ColorFileImage, void *AlphaFileImage,
+	int AddressModeU, int AddressModeV, int FilterMode,
+	int BumpImageFlag, float BumpImageNextPixelLength,
+	int ReverseFlag,
+	int Bmp32AllZeroAlphaToXRGB8Flag
+)
+{
+	int Result = -1 ;
+#ifdef UNICODE
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_BEGIN( Name )
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_BEGIN( ColorFilePath )
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_BEGIN( AlphaFilePath )
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_SETUP( Name, NameLength, goto ERR )
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_SETUP( ColorFilePath, ColorFilePathLength, goto ERR )
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_SETUP( AlphaFilePath, AlphaFilePathLength, goto ERR )
+	Result = MV1AddTextureBase(
+		MV1GetModelBaseHandle( MHandle ),
+		UseNameBuffer,
+		UseColorFilePathBuffer, UseAlphaFilePathBuffer,
+		ColorFileImage, AlphaFileImage,
+		AddressModeU, AddressModeV, FilterMode,
+		BumpImageFlag, BumpImageNextPixelLength,
+		ReverseFlag != FALSE,
+		Bmp32AllZeroAlphaToXRGB8Flag != FALSE,
+		FALSE, FALSE
+	) ;
+ERR :
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( Name )
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( ColorFilePath )
+	WCHAR_T_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( AlphaFilePath )
+#else
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_BEGIN( Name )
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_BEGIN( ColorFilePath )
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_BEGIN( AlphaFilePath )
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_SETUP( Name, NameLength, goto ERR )
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_SETUP( ColorFilePath, ColorFilePathLength, goto ERR )
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_SETUP( AlphaFilePath, AlphaFilePathLength, goto ERR )
+	Result = MV1AddTextureBase(
+		MV1GetModelBaseHandle( MHandle ),
+		UseNameBuffer,
+		UseColorFilePathBuffer, UseAlphaFilePathBuffer,
+		ColorFileImage, AlphaFileImage,
+		AddressModeU, AddressModeV, FilterMode,
+		BumpImageFlag, BumpImageNextPixelLength,
+		ReverseFlag != FALSE,
+		Bmp32AllZeroAlphaToXRGB8Flag != FALSE,
+		FALSE, FALSE
+	) ;
+ERR :
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( Name )
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( ColorFilePath )
+	TCHAR_STRING_WITH_STRLEN_TO_WCHAR_T_STRING_END( AlphaFilePath )
+#endif
+	return Result ;
+}
+
+// モデルで使用するテクスチャを追加する( グラフィックハンドルをテクスチャとして追加 )
+extern int NS_MV1AddTextureGraphHandle(
+	int MHandle,
+	const TCHAR *Name,
+	int GrHandle, int SemiTransFlag,
+	int AddressModeU, int AddressModeV, int FilterMode
+)
+{
+	int Result ;
+	int TexNum ;
+
+	TexNum = NS_MV1GetTextureNum( MHandle ) ;
+	if( TexNum < 0 )
+	{
+		return -1 ;
+	}
+
+	Result = MV1AddTextureBase(
+		MV1GetModelBaseHandle( MHandle ),
+		L"Texture",
+		NULL, NULL,
+		NULL, NULL,
+		AddressModeU, AddressModeV, FilterMode,
+		FALSE, 0.1f,
+		FALSE,
+		FALSE,
+		TRUE,
+		FALSE
+	) ;
+	if( Result >= 0 )
+	{
+		MV1SetTextureGraphHandle( MHandle, TexNum, GrHandle, SemiTransFlag ) ;
+	}
+
+	return Result ;
 }
 
 // モデルの読み込み( -1:エラー  0以上:モデルハンドル )
@@ -16704,40 +16901,192 @@ extern	const wchar_t *MV1GetModelDirectoryPath( int MHandle )
 	return Model->BaseData->DirectoryPath ;
 }
 
-// 指定のモデルと同じモデル基本データを使用してモデルを作成する( -1:エラー  0以上:モデルハンドル )
-extern int NS_MV1DuplicateModel( int SrcMHandle )
+// MV1LoadModelFromMem の実処理関数
+static int MV1DuplicateModel_Static( int MHandle, int SrcMHandle, int ASyncThread )
 {
 	MV1_MODEL *Model ;
-	int NewHandle ;
-	int Result ;
-
-	// 初期化されていなかったらエラー
-	if( MV1Man.Initialize == false ) return -1 ;
 
 	// アドレス取得
 	if( MV1MDLCHK( SrcMHandle, Model ) )
 		return -1 ;
 
-	// モデルデータを作成する
-	NewHandle = MV1AddModel( FALSE ) ;
-	if( NewHandle == -1 )
-	{
-		return -1 ;
-	}
-
 	// 構築
-	Result = MV1MakeModel( NewHandle, Model->BaseDataHandle ) ;
-	if( Result < 0 )
+	if( MV1MakeModel( MHandle, Model->BaseDataHandle, ASyncThread ) < 0 )
 	{
-		MV1SubModel( NewHandle ) ;
 		return -1 ;
 	}
 
 	// 正常終了
-	return NewHandle ;
+	return 0 ;
 }
 
-// 指定のモデルと全く同じ情報を持つ別のﾓﾃﾞﾙデータハンドルを作成する( -1:エラー  0以上:モデルハンドル )
+#ifndef DX_NON_ASYNCLOAD
+// MV1DuplicateModel の非同期読み込みスレッドから呼ばれる関数
+static void MV1DuplicateModel_ASync( ASYNCLOADDATA_COMMON *AParam )
+{
+	MV1_MODEL *Model ;
+	int MHandle ;
+	int SrcMHandle ;
+	int Addr ;
+	int Result ;
+
+	Addr				= 0 ;
+	MHandle				= GetASyncLoadParamInt( AParam->Data, &Addr ) ;
+	SrcMHandle			= GetASyncLoadParamInt( AParam->Data, &Addr ) ;
+
+	Result = MV1DuplicateModel_Static( MHandle, SrcMHandle, TRUE ) ;
+	if( !MV1MDLCHK_ASYNC( MHandle, Model ) )
+	{
+		Model->HandleInfo.ASyncLoadResult = Result ;
+	}
+	DecASyncLoadCount( MHandle ) ;
+	if( Result < 0 )
+	{
+		SubHandle( MHandle, FALSE, FALSE ) ;
+	}
+}
+#endif // DX_NON_ASYNCLOAD
+
+// 指定のモデルと同じモデル基本データを使用してモデルを作成する( -1:エラー  0以上:モデルハンドル )
+extern int NS_MV1DuplicateModel( int SrcMHandle )
+{
+	MV1_MODEL *Model ;
+	int MHandle ;
+
+	// 初期化されていなかったらエラー
+	if( MV1Man.Initialize == false ) return -1 ;
+
+	CheckActiveState() ;
+
+	// アドレス取得
+	if( MV1MDLCHK( SrcMHandle, Model ) )
+		return -1 ;
+
+	MHandle = MV1AddModel( FALSE ) ;
+	if( MHandle < 0 )
+	{
+		return -1 ;
+	}
+
+#ifndef DX_NON_ASYNCLOAD
+	if( GetASyncLoadFlag() )
+	{
+		ASYNCLOADDATA_COMMON *AParam = NULL ;
+		int Addr ;
+
+		// パラメータに必要なメモリのサイズを算出
+		Addr = 0 ;
+		AddASyncLoadParamInt( NULL, &Addr, MHandle ) ;
+		AddASyncLoadParamInt( NULL, &Addr, SrcMHandle ) ;
+
+		// メモリの確保
+		AParam = AllocASyncLoadDataMemory( Addr ) ;
+		if( AParam == NULL )
+			goto ERR ;
+
+		// 処理に必要な情報をセット
+		AParam->ProcessFunction = MV1DuplicateModel_ASync ;
+		Addr = 0 ;
+		AddASyncLoadParamInt( AParam->Data, &Addr, MHandle ) ;
+		AddASyncLoadParamInt( AParam->Data, &Addr, SrcMHandle ) ;
+
+		// データを追加
+		if( AddASyncLoadData( AParam ) < 0 )
+		{
+			DXFREE( AParam ) ;
+			AParam = NULL ;
+			goto ERR ;
+		}
+
+		// 非同期読み込みカウントをインクリメント
+		IncASyncLoadCount( MHandle, AParam->Index ) ;
+	}
+	else
+#endif // DX_NON_ASYNCLOAD
+	{
+		if( MV1DuplicateModel_Static( MHandle, SrcMHandle, FALSE ) < 0 )
+			goto ERR ;
+	}
+
+	// ハンドルを返す
+	return MHandle ;
+
+ERR :
+	MV1SubModel( MHandle ) ;
+	MHandle = -1 ;
+
+	return -1 ;
+}
+
+// MV1CreateCloneModel の実処理関数
+extern int MV1CreateCloneModel_Static( int NewHandle, int SrcMHandle, int ASyncThread )
+{
+	MV1_MODEL *Model ;
+	int NewBaseHandle = -1 ;
+
+	// アドレス取得
+	if( MV1MDLCHK( SrcMHandle, Model ) )
+		return -1 ;
+
+	// 基本データを複製する
+	NewBaseHandle = MV1CreateCloneModelBase( Model->BaseDataHandle, ASyncThread ) ;
+	if( NewBaseHandle == -1 )
+	{
+		goto ERR ;
+	}
+
+	// 頂点バッファのセットアップを行う
+	MV1_SetupVertexBufferBase_PF( NewBaseHandle, 1, ASyncThread ) ;
+
+	// 構築
+	if( MV1MakeModel( NewHandle, NewBaseHandle, ASyncThread ) < 0 )
+	{
+		goto ERR ;
+	}
+
+	// 正常終了
+	return 0 ;
+
+	// エラー
+ERR:
+	if( NewBaseHandle != -1 )
+	{
+		MV1SubModelBase( NewBaseHandle ) ;
+		NewBaseHandle = -1 ;
+	}
+
+	// エラー終了
+	return -1 ;
+}
+
+#ifndef DX_NON_ASYNCLOAD
+// MV1CreateCloneModel の非同期読み込みスレッドから呼ばれる関数
+static void MV1CreateCloneModel_ASync( ASYNCLOADDATA_COMMON *AParam )
+{
+	MV1_MODEL *Model ;
+	int NewHandle ;
+	int SrcMHandle ;
+	int Addr ;
+	int Result ;
+
+	Addr				= 0 ;
+	NewHandle			= GetASyncLoadParamInt( AParam->Data, &Addr ) ;
+	SrcMHandle			= GetASyncLoadParamInt( AParam->Data, &Addr ) ;
+
+	Result = MV1CreateCloneModel_Static( NewHandle, SrcMHandle, TRUE ) ;
+	if( !MV1MDLCHK_ASYNC( NewHandle, Model ) )
+	{
+		Model->HandleInfo.ASyncLoadResult = Result ;
+	}
+	DecASyncLoadCount( NewHandle ) ;
+	if( Result < 0 )
+	{
+		SubHandle( NewHandle, FALSE, FALSE ) ;
+	}
+}
+#endif // DX_NON_ASYNCLOAD
+
+// 指定のモデルと全く同じ情報を持つ別のモデルデータハンドルを作成する( -1:エラー  0以上:モデルハンドル )
 extern int NS_MV1CreateCloneModel( int SrcMHandle )
 {
 	MV1_MODEL *Model ;
@@ -16751,16 +17100,6 @@ extern int NS_MV1CreateCloneModel( int SrcMHandle )
 	if( MV1MDLCHK( SrcMHandle, Model ) )
 		return -1 ;
 
-	// 基本データを複製する
-	NewBaseHandle = MV1CreateCloneModelBase( Model->BaseDataHandle ) ;
-	if( NewBaseHandle == -1 )
-	{
-		goto ERR ;
-	}
-
-	// 頂点バッファのセットアップを行う
-	MV1_SetupVertexBufferBase_PF( NewBaseHandle ) ;
-
 	// モデルデータを作成する
 	NewHandle = MV1AddModel( FALSE ) ;
 	if( NewHandle == -1 )
@@ -16768,13 +17107,47 @@ extern int NS_MV1CreateCloneModel( int SrcMHandle )
 		goto ERR;
 	}
 
-	// 構築
-	if( MV1MakeModel( NewHandle, NewBaseHandle ) < 0 )
+#ifndef DX_NON_ASYNCLOAD
+	if( GetASyncLoadFlag() )
 	{
-		goto ERR ;
+		ASYNCLOADDATA_COMMON *AParam = NULL ;
+		int Addr ;
+
+		// パラメータに必要なメモリのサイズを算出
+		Addr = 0 ;
+		AddASyncLoadParamInt( NULL, &Addr, NewHandle ) ;
+		AddASyncLoadParamInt( NULL, &Addr, SrcMHandle ) ;
+
+		// メモリの確保
+		AParam = AllocASyncLoadDataMemory( Addr ) ;
+		if( AParam == NULL )
+			goto ERR ;
+
+		// 処理に必要な情報をセット
+		AParam->ProcessFunction = MV1CreateCloneModel_ASync ;
+		Addr = 0 ;
+		AddASyncLoadParamInt( AParam->Data, &Addr, NewHandle ) ;
+		AddASyncLoadParamInt( AParam->Data, &Addr, SrcMHandle ) ;
+
+		// データを追加
+		if( AddASyncLoadData( AParam ) < 0 )
+		{
+			DXFREE( AParam ) ;
+			AParam = NULL ;
+			goto ERR ;
+		}
+
+		// 非同期読み込みカウントをインクリメント
+		IncASyncLoadCount( NewHandle, AParam->Index ) ;
+	}
+	else
+#endif // DX_NON_ASYNCLOAD
+	{
+		if( MV1CreateCloneModel_Static( NewHandle, SrcMHandle, FALSE ) < 0 )
+			goto ERR ;
 	}
 
-	// 正常終了
+	// ハンドルを返す
 	return NewHandle ;
 
 	// エラー
@@ -16785,16 +17158,245 @@ ERR:
 		NewHandle = -1 ;
 	}
 
+	// エラー終了
+	return -1 ;
+}
+
+
+// 指定の頂点データとマテリアル情報、テクスチャを使用したシンプルな３Ｄモデルのハンドルを作成する
+extern int NS_MV1CreateSimpleModel( VERTEX3D *Vertex, int VertexNum, unsigned int *Index, int IndexNum, MATERIALPARAM *Material, int GrHandle )
+{
+	int MHandle = -1 ;
+	int NewBaseHandle = -1 ;
+	int PolygonNum = IndexNum / 3 ;
+	MV1_MODEL_R RModel ;
+	MV1_FRAME_R *RFrame = NULL ;
+	MV1_MATERIAL_R *RMaterial ;
+	MV1_MESH_R *RMesh ;
+	MV1_MESHFACE_R *RMeshFace ;
+	MV1LOADMODEL_GPARAM GParam ;
+	int i, j ;
+
+	// インデックスの数が 3 の倍数ではない場合はエラー
+	if( IndexNum % 3 != 0 )
+	{
+		return -1 ;
+	}
+
+	// 初期化されていなかったらエラー
+	if( MV1Man.Initialize == false ) return -1 ;
+
+	CheckActiveState() ;
+
+	// ３Ｄモデル用シェーダーの初期化チェック
+	if( Graphics_Hardware_Shader_ModelCode_Init_PF() < 0 )
+	{
+		return -1 ;
+	}
+
+	// モデルデータを作成する
+	MHandle = MV1AddModel( FALSE ) ;
+	if( MHandle < 0 )
+	{
+		goto ERR ;
+	}
+
+	// 読み込み用データの初期化
+	MV1InitReadModel( &RModel ) ;
+	RModel.MeshFaceRightHand = FALSE ;
+
+	// マテリアルの追加
+	RMaterial = MV1RAddMaterialW( &RModel, L"Material" ) ;
+	if( RMaterial == NULL )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x4d\x00\x61\x00\x74\x00\x65\x00\x72\x00\x69\x00\x61\x00\x6c\x00\x20\x00\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\xfd\x8f\xa0\x52\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"Material オブジェクトの追加に失敗しました\n" @*/ )) ;
+		goto ERR ;
+	}
+	RMaterial->DiffuseTexNum = 0 ;
+	RMaterial->SpecularTexNum = 0 ;
+	RMaterial->NormalTexNum = 0 ;
+
+	RMaterial->Diffuse = Material->Diffuse ;
+	RMaterial->Ambient = Material->Ambient ;
+	RMaterial->Specular = Material->Specular ;
+	RMaterial->Emissive = Material->Emissive ;
+	RMaterial->Power = Material->Power ;
+
+	// フレームの追加
+	RFrame = MV1RAddFrameW( &RModel, L"Frame", NULL ) ;
+	if( RFrame == NULL )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\xd5\x30\xec\x30\xfc\x30\xe0\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\xfd\x8f\xa0\x52\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"フレームオブジェクトの追加に失敗しました\n" @*/ )) ;
+		goto ERR ;
+	}
+
+	RFrame->Visible = 1 ;
+	RFrame->Scale.x = 1.0f ;
+	RFrame->Scale.y = 1.0f ;
+	RFrame->Scale.z = 1.0f ;
+	RFrame->Matrix = MGetScale( RFrame->Scale ) ;
+	RFrame->LocalWorldMatrix = RFrame->Matrix ;
+
+	// メッシュの追加
+	RMesh = MV1RAddMesh( &RModel, RFrame ) ;
+	if( RMesh == NULL )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\xe1\x30\xc3\x30\xb7\x30\xe5\x30\xaa\x30\xd6\x30\xb8\x30\xa7\x30\xaf\x30\xc8\x30\x6e\x30\xfd\x8f\xa0\x52\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"メッシュオブジェクトの追加に失敗しました\n" @*/ )) ;
+		goto ERR ;
+	}
+	RMesh->MaterialNum = 1 ;
+	RMesh->Materials[ 0 ] = RMaterial ;
+
+	// 頂点データのコピー
+	RMesh->PositionNum = VertexNum ;
+	RMesh->Positions = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * RMesh->PositionNum, &RModel.Mem ) ;
+	if( RMesh->Positions == NULL )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x02\x98\xb9\x70\xa7\x5e\x19\x6a\x92\x30\xdd\x4f\x58\x5b\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"頂点座標を保存するメモリ領域の確保に失敗しました\n" @*/ )) ;
+		goto ERR ;
+	}
+	for( i = 0 ; i < ( int )RMesh->PositionNum ; i ++ )
+	{
+		RMesh->Positions[ i ] = Vertex[ i ].pos ;
+	}
+
+	// 法線データのコピー
+	RMesh->NormalNum = VertexNum ;
+	RMesh->Normals = ( VECTOR * )ADDMEMAREA( sizeof( VECTOR ) * RMesh->NormalNum, &RModel.Mem ) ;
+	if( RMesh->Normals == NULL )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\xd5\x6c\xda\x7d\xa7\x5e\x19\x6a\x92\x30\xdd\x4f\x58\x5b\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"法線座標を保存するメモリ領域の確保に失敗しました\n" @*/ )) ;
+		goto ERR ;
+	}
+	for( i = 0 ; i < ( int )RMesh->NormalNum ; i ++ )
+	{
+		RMesh->Normals[ i ] = Vertex[ i ].norm ;
+	}
+
+	// 頂点カラーのコピー
+	RMesh->VertexColorNum = VertexNum ;
+	RMesh->VertexColors = ( COLOR_F * )ADDMEMAREA( sizeof( COLOR_F ) * RMesh->VertexColorNum, &RModel.Mem ) ;
+	if( RMesh->VertexColors == NULL )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x02\x98\xb9\x70\xab\x30\xe9\x30\xfc\x30\x92\x30\xdd\x4f\x58\x5b\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"頂点カラーを保存するメモリ領域の確保に失敗しました\n" @*/ )) ;
+		goto ERR ;
+	}
+	for( i = 0 ; i < ( int )RMesh->VertexColorNum ; i ++ )
+	{
+		RMesh->VertexColors[ i ].r = Vertex[ i ].dif.r / 255.0f ;
+		RMesh->VertexColors[ i ].g = Vertex[ i ].dif.g / 255.0f ;
+		RMesh->VertexColors[ i ].b = Vertex[ i ].dif.b / 255.0f ;
+		RMesh->VertexColors[ i ].a = Vertex[ i ].dif.a / 255.0f ;
+	}
+
+	// UV座標データのコピー
+	RMesh->UVNum[ 0 ] = VertexNum ;
+	RMesh->UVs[ 0 ] = ( FLOAT4 * )ADDMEMAREA( sizeof( FLOAT4 ) * RMesh->UVNum[ 0 ], &RModel.Mem ) ;
+	if( RMesh->UVs[ 0 ] == NULL )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x55\x00\x56\x00\xa7\x5e\x19\x6a\x92\x30\xdd\x4f\x58\x5b\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"UV座標を保存するメモリ領域の確保に失敗しました\n" @*/ )) ;
+		goto ERR ;
+	}
+	for( i = 0 ; i < ( int )RMesh->UVNum[ 0 ] ; i ++ )
+	{
+		RMesh->UVs[ 0 ][ i ].x = Vertex[ i ].u ;
+		RMesh->UVs[ 0 ][ i ].y = Vertex[ i ].v ;
+	}
+	RMesh->UVNum[ 1 ] = VertexNum ;
+	RMesh->UVs[ 1 ] = ( FLOAT4 * )ADDMEMAREA( sizeof( FLOAT4 ) * RMesh->UVNum[ 1 ], &RModel.Mem ) ;
+	if( RMesh->UVs[ 1 ] == NULL )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x53\x00\x75\x00\x62\x00\x55\x00\x56\x00\xa7\x5e\x19\x6a\x92\x30\xdd\x4f\x58\x5b\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"SubUV座標を保存するメモリ領域の確保に失敗しました\n" @*/ )) ;
+		goto ERR ;
+	}
+	for( i = 0 ; i < ( int )RMesh->UVNum[ 1 ] ; i ++ )
+	{
+		RMesh->UVs[ 1 ][ i ].x = Vertex[ i ].su ;
+		RMesh->UVs[ 1 ][ i ].y = Vertex[ i ].sv ;
+	}
+
+	// 面データをコピー
+	if( MV1RSetupMeshFaceBuffer( &RModel, RMesh, PolygonNum, 3 ) < 0 )
+	{
+		DXST_LOGFILEFMT_ADDUTF16LE(( "\x62\x97\xc5\x60\x31\x58\x92\x30\x3c\x68\x0d\x7d\x59\x30\x8b\x30\xe1\x30\xe2\x30\xea\x30\x18\x98\xdf\x57\x6e\x30\xba\x78\xdd\x4f\x6b\x30\x31\x59\x57\x65\x57\x30\x7e\x30\x57\x30\x5f\x30\x0a\x00\x00"/*@ L"面情報を格納するメモリ領域の確保に失敗しました\n" @*/ )) ;
+		goto ERR ;
+	}
+	RMeshFace = RMesh->Faces ;
+	RMeshFace->IndexNum = IndexNum ;
+	j = 0 ;
+	for( i = 0 ; i < PolygonNum ; i ++, j += 3 )
+	{
+		RMeshFace[ i ].IndexNum = 3 ;
+		RMeshFace[ i ].MaterialIndex = 0 ;
+		RMeshFace[ i ].VertexIndex[ 0 ] = Index[ j ] ;
+		RMeshFace[ i ].VertexIndex[ 1 ] = Index[ j + 1 ] ;
+		RMeshFace[ i ].VertexIndex[ 2 ] = Index[ j + 2 ] ;
+		RMeshFace[ i ].NormalIndex[ 0 ] = Index[ j ] ;
+		RMeshFace[ i ].NormalIndex[ 1 ] = Index[ j + 1 ] ;
+		RMeshFace[ i ].NormalIndex[ 2 ] = Index[ j + 2 ] ;
+		RMeshFace[ i ].VertexColorIndex[ 0 ] = Index[ j ] ;
+		RMeshFace[ i ].VertexColorIndex[ 1 ] = Index[ j + 1 ] ;
+		RMeshFace[ i ].VertexColorIndex[ 2 ] = Index[ j + 2 ] ;
+		RMeshFace[ i ].UVIndex[ 0 ][ 0 ] = Index[ j ] ;
+		RMeshFace[ i ].UVIndex[ 0 ][ 1 ] = Index[ j + 1 ] ;
+		RMeshFace[ i ].UVIndex[ 0 ][ 2 ] = Index[ j + 2 ] ;
+		RMeshFace[ i ].UVIndex[ 1 ][ 0 ] = Index[ j ] ;
+		RMeshFace[ i ].UVIndex[ 1 ][ 1 ] = Index[ j + 1 ] ;
+		RMeshFace[ i ].UVIndex[ 1 ][ 2 ] = Index[ j + 2 ] ;
+	}
+
+	// モデル基データハンドルの作成
+	InitMV1LoadModelGParam( &GParam ) ;
+	NewBaseHandle = MV1LoadModelToReadModel( &GParam, &RModel, NULL, NULL, FALSE ) ;
+	if( NewBaseHandle < 0 )
+	{
+		goto ERR ;
+	}
+
+	// 読み込み用モデルを解放
+	MV1TermReadModel( &RModel ) ; 
+
+	// 頂点バッファのセットアップを行う
+	MV1_SetupVertexBufferBase_PF( NewBaseHandle, 1, FALSE ) ;
+
+	// 構築
+	if( MV1MakeModel( MHandle, NewBaseHandle, FALSE ) < 0 )
+	{
+		DXST_LOGFILEFMT_ADDW(( L"MV1CreateSimpleModel Error" )) ;
+		goto ERR ;
+	}
+
+	// テクスチャを設定
+	if( GrHandle != DX_NONE_GRAPH )
+	{
+		NS_MV1AddTextureGraphHandle( MHandle, _T( "Texture" ), GrHandle, FALSE, DX_TEXADDRESS_WRAP, DX_TEXADDRESS_WRAP, DX_DRAWMODE_ANISOTROPIC ) ;
+		NS_MV1SetMaterialDifMapTexture( MHandle, 0, 0 ) ;
+	}
+
+	// ハンドルを返す
+	return MHandle ;
+
+	// エラー
+ERR:
+
 	if( NewBaseHandle != -1 )
 	{
 		MV1SubModelBase( NewBaseHandle ) ;
 		NewBaseHandle = -1 ;
 	}
 
+	if( MHandle != -1 )
+	{
+		MV1SubModel( MHandle ) ;
+		MHandle = -1 ;
+	}
+
+	// 読み込み用モデルを解放
+	MV1TermReadModel( &RModel ) ; 
+
 	// エラー終了
 	return -1 ;
 }
-
 
 // モデルを読み込む際に法線の再計算を行うかどうかを設定する( TRUE:行う  FALSE:行わない )
 extern int NS_MV1SetLoadModelReMakeNormal( int Flag )
@@ -25328,6 +25930,12 @@ extern int NS_MV1GetMaterialSpcMapTexture( int MHandle, int MaterialIndex )
 		return -1 ;
 
 	return Material->SpecularLayer[ 0 ].Texture ;
+}
+
+// 指定のマテリアルで法線マップとして使用するテクスチャを指定する
+extern int NS_MV1SetMaterialNormalMapTexture( int MHandle, int MaterialIndex, int TexIndex )
+{
+	return MV1SetMaterialNormalMapTextureBase( MV1GetModelBaseHandle( MHandle ), MaterialIndex, TexIndex ) ;
 }
 
 // 指定のマテリアルで法線マップとして使用されているテクスチャのインデックスを取得する

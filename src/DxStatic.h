@@ -2,7 +2,11 @@
 //
 //		‚c‚wƒ‰ƒCƒuƒ‰ƒŠ@“à•”g—pŠÖ˜A—pƒwƒbƒ_ƒtƒ@ƒCƒ‹
 //
+<<<<<<< HEAD
 //				Ver 3.24b
+=======
+//				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 //
 // ----------------------------------------------------------------------------
 
@@ -489,7 +493,7 @@ extern	int			NS_GetActiveFlag(					void ) ;												// ƒ\ƒtƒg‚ªƒAƒNƒeƒBƒu‚©‚Ç
 extern	int			NS_GetNoActiveState(				int ResetFlag = TRUE ) ;								// ”ñƒAƒNƒeƒBƒu‚É‚È‚èAˆ—‚ªˆê’â~‚µ‚Ä‚¢‚½‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é(ˆø” ResetFlag=TRUE:ó‘Ô‚ğƒŠƒZƒbƒg FALSE:ó‘Ô‚ğƒŠƒZƒbƒg‚µ‚È‚¢    –ß‚è’l: 0=ˆê’â~‚Í‚µ‚Ä‚¢‚È‚¢  1=ˆê’â~‚µ‚Ä‚¢‚½ )
 extern	int			NS_GetMouseDispFlag(				void ) ;												// ƒ}ƒEƒX‚ğ•\¦‚·‚é‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğæ“¾‚·‚é
 extern	int			NS_GetAlwaysRunFlag(				void ) ;												// ƒEƒCƒ“ƒhƒE‚ªƒAƒNƒeƒBƒu‚Å‚Í‚È‚¢ó‘Ô‚Å‚àˆ—‚ğ‘±s‚·‚é‚©Aƒtƒ‰ƒO‚ğæ“¾‚·‚é
-extern	int			NS__GetSystemInfo(					int *DxLibVer , int *DirectXVer , int *WindowsVer ) ;	// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Æ DirectX ‚Ìƒo[ƒWƒ‡ƒ“‚Æ Windows ‚Ìƒo[ƒWƒ‡ƒ“‚ğ“¾‚é
+extern	int			NS_GetSystemInfo_(					int *DxLibVer , int *DirectXVer , int *WindowsVer ) ;	// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Æ DirectX ‚Ìƒo[ƒWƒ‡ƒ“‚Æ Windows ‚Ìƒo[ƒWƒ‡ƒ“‚ğ“¾‚é
 extern	int			NS_GetPcInfo(						TCHAR *OSString , TCHAR *DirectXString , TCHAR *CPUString , int *CPUSpeed /* ’PˆÊMHz */ , double *FreeMemorySize /* ’PˆÊMByte */ , double *TotalMemorySize , TCHAR *VideoDriverFileName , TCHAR *VideoDriverString , double *FreeVideoMemorySize /* ’PˆÊMByte */ , double *TotalVideoMemorySize ) ;	// ‚o‚b‚Ìî•ñ‚ğ“¾‚é
 extern	int			NS_GetWindowOSVersion(				void ) ;												// WindowsOS‚Ìƒo[ƒWƒ‡ƒ“‚ğæ“¾‚·‚é( –ß‚è’l : DX_WINDOWSVERSION_10 ‚È‚Ç )
 extern	int			NS_GetUseMMXFlag(					void ) ;												// ‚l‚l‚w‚ªg‚¦‚é‚©‚Ç‚¤‚©‚Ìî•ñ‚ğ“¾‚é
@@ -849,8 +853,6 @@ extern	int			NS_GetOneChar(			TCHAR *CharBuffer, int DeleteFlag ) ;			// •¶šƒR
 extern	int			NS_GetOneCharWait(		TCHAR *CharBuffer, int DeleteFlag ) ;			// •¶šƒR[ƒhƒoƒbƒtƒ@‚É—­‚Ü‚Á‚½ƒf[ƒ^‚©‚ç‚P•¶š•ªæ“¾‚·‚éAƒoƒbƒtƒ@‚É‰½‚à•¶šƒR[ƒh‚ª‚È‚¢ê‡‚ÍƒL[‚ª‰Ÿ‚³‚ê‚é‚Ü‚Å‘Ò‚Â
 extern	int			NS_GetCtrlCodeCmp(		TCHAR Char ) ;									// ƒAƒXƒL[ƒRƒ“ƒgƒ[ƒ‹ƒR[ƒh‚©’²‚×‚é
 
-#endif // DX_NON_INPUTSTRING
-
 #ifndef DX_NON_KEYEX
 
 extern	int			NS_DrawIMEInputString(				int x, int y,                                 int SelectStringNum , int DrawCandidateList = TRUE ) ;	// ‰æ–Êã‚É“ü—Í’†‚Ì•¶š—ñ‚ğ•`‰æ‚·‚é
@@ -861,7 +863,9 @@ extern	int			NS_SetInputStringMaxLengthIMESync(	int Flag ) ;							// ‚h‚l‚d‚Å“ü
 extern	int			NS_SetIMEInputStringMaxLength(		int Length ) ;							// ‚h‚l‚d‚Åˆê“x‚É“ü—Í‚Å‚«‚éÅ‘å•¶š”‚ğİ’è‚·‚é( 0:§ŒÀ‚È‚µ  1ˆÈã:w’è‚Ì•¶š”‚Å§ŒÀ )
 extern	int			NS_SetUseTSFFlag( int UseFlag ) ;											// ‚h‚l‚d‚ÌŠ¿š•ÏŠ·Œó•â•\¦‚Ìˆ—‚É TSF ‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:g—p‚·‚é( ƒfƒtƒHƒ‹ƒg )  FALSE:g—p‚µ‚È‚¢ )
 
-#endif
+#endif // DX_NON_KEYEX
+
+#endif // DX_NON_INPUTSTRING
 
 extern	int			NS_GetStringPoint(				const TCHAR *String, int Point ) ;			// ‘SŠp•¶šA”¼Šp•¶š“ü‚è—‚ê‚é’†‚©‚çw’è‚Ì•¶š”‚Å‚Ì”¼Šp•¶š”‚ğ“¾‚é
 extern	int			NS_GetStringPointWithStrLen(	const TCHAR *String, size_t StringLength, int Point ) ;		// ‘SŠp•¶šA”¼Šp•¶š“ü‚è—‚ê‚é’†‚©‚çw’è‚Ì•¶š”‚Å‚Ì”¼Šp•¶š”‚ğ“¾‚é
@@ -878,6 +882,9 @@ extern	int			NS_GetObtainsStringCharPosition(			int x, int y, int AddY, const TC
 extern	int			NS_GetObtainsStringCharPosition_CharClip(	int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle = -1 ) ;		// •`‰æ‰Â”\—Ìˆæ‚Éû‚Ü‚é‚æ‚¤‚É‰üs‚µ‚È‚ª‚ç•¶š—ñ‚ğ•`‰æ‚µ‚½ê‡‚Ì•¶š—ñ‚Ì––’[‚ÌÀ•W‚ğæ“¾‚·‚é( ƒNƒŠƒbƒv‚ª•¶š’PˆÊ )
 #endif // DX_NON_FONT
 extern	int			NS_DrawObtainsBox(				int x1, int y1, int x2, int y2, int AddY, unsigned int Color, int FillFlag ) ;																																										// ‹K’è—Ìˆæ‚Éû‚ß‚½‚©‚½‚¿‚Å‹éŒ`‚ğ•`‰æ 
+
+
+#ifndef DX_NON_INPUTSTRING
 
 #ifndef DX_NON_KEYEX
 
@@ -928,7 +935,7 @@ extern	int			NS_GetKeyInputCursorPosition(	int InputHandle ) ;																		
 
 #endif // DX_NON_KEYEX
 
-
+#endif // DX_NON_INPUTSTRING
 
 
 
@@ -1342,12 +1349,16 @@ extern	int			NS_ResetGraphPalette(				int GrHandle ) ;																		// SetGr
 // }Œ`•`‰æŠÖ”
 extern	int			NS_DrawLine(         int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int   Thickness = 1    ) ;						// ü‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawLineAA(       float x1, float y1, float x2, float y2,                                         unsigned int Color, float Thickness = 1.0f ) ;						// ü‚ğ•`‰æ‚·‚é( ƒAƒ“ƒ`ƒGƒCƒŠƒAƒX•t‚« )
-extern	int			NS_DrawBox(          int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int FillFlag ) ;								// lŠpŒ`‚ğ•`‰æ‚·‚é
+extern	int			NS_DrawBox(          int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int FillFlag, int   LineThickness = 1    ) ;	// lŠpŒ`‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawBoxAA(        float x1, float y1, float x2, float y2,                                         unsigned int Color, int FillFlag, float LineThickness = 1.0f ) ;	// lŠpŒ`‚ğ•`‰æ‚·‚é( ƒAƒ“ƒ`ƒGƒCƒŠƒAƒX•t‚« )
 extern	int			NS_DrawFillBox(      int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color ) ;												// ’†g‚ğ“h‚è‚Â‚Ô‚·lŠpŒ`‚ğ•`‰æ‚·‚é
-extern	int			NS_DrawLineBox(      int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color ) ;												// ˜g‚¾‚¯‚ÌlŠpŒ`‚Ì•`‰æ ‚·‚é
+extern	int			NS_DrawLineBox(      int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int LineThickness = 1 ) ;						// ˜g‚¾‚¯‚ÌlŠpŒ`‚Ì•`‰æ ‚·‚é
 extern	int			NS_DrawCircle(       int   x,  int   y,  int   r,                                                    unsigned int Color, int FillFlag = TRUE, int   LineThickness = 1 ) ;	// ‰~‚ğ•`‰æ‚·‚é
+<<<<<<< HEAD
 extern	int			NS_DrawCircleAA(     float x,  float y,  float r,            int posnum,                             unsigned int Color, int FillFlag = TRUE, float LineThickness = 1 ) ;	// ‰~‚ğ•`‰æ‚·‚é( ƒAƒ“ƒ`ƒGƒCƒŠƒAƒX•t‚« )
+=======
+extern	int			NS_DrawCircleAA(     float x,  float y,  float r,            int posnum,                             unsigned int Color, int FillFlag = TRUE, float LineThickness = 1, double Angle = 0.0 ) ;	// ‰~‚ğ•`‰æ‚·‚é( ƒAƒ“ƒ`ƒGƒCƒŠƒAƒX•t‚« )
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 extern	int			NS_DrawOval(         int   x,  int   y,  int   rx, int   ry,                                         unsigned int Color, int FillFlag,        int   LineThickness = 1 ) ;	// ‘È‰~‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawOvalAA(       float x,  float y,  float rx, float ry, int posnum,                             unsigned int Color, int FillFlag,        float LineThickness = 1 ) ;	// ‘È‰~‚ğ•`‰æ‚·‚é( ƒAƒ“ƒ`ƒGƒCƒŠƒAƒX•t‚« )
 extern	int			NS_DrawOval_Rect(    int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int FillFlag ) ;										// w’è‚Ì‹éŒ`‚Éû‚Ü‚é‰~( ‘È‰~ )‚ğ•`‰æ‚·‚é
@@ -1380,6 +1391,10 @@ extern	int			NS_DrawSphere3D(    VECTOR   CenterPos,                  float  r, 
 extern	int			NS_DrawSphere3DD(   VECTOR_D CenterPos,                  double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‹…‘Ì‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawCapsule3D(   VECTOR   Pos1,   VECTOR   Pos2,      float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚ÌƒJƒvƒZƒ‹‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawCapsule3DD(  VECTOR_D Pos1,   VECTOR_D Pos2,      double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚ÌƒJƒvƒZƒ‹‚ğ•`‰æ‚·‚é
+extern	int			NS_DrawCylinder3D(  VECTOR   Pos1,   VECTOR   Pos2,      float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‰~’Œ‚ğ•`‰æ‚·‚é
+extern	int			NS_DrawCylinder3DD( VECTOR_D Pos1,   VECTOR_D Pos2,      double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‰~’Œ‚ğ•`‰æ‚·‚é
+extern	int			NS_DrawTube3D(      VECTOR   Pos1,   VECTOR   Pos2,      float  r1, float  r2, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì“›‚ğ•`‰æ‚·‚é
+extern	int			NS_DrawTube3DD(     VECTOR_D Pos1,   VECTOR_D Pos2,      double r1, double r2, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì“›‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawCone3D(      VECTOR   TopPos, VECTOR   BottomPos, float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‰~‚ğ•`‰æ‚·‚é
 extern	int			NS_DrawCone3DD(     VECTOR_D TopPos, VECTOR_D BottomPos, double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ‚R‚c‚Ì‰~‚ğ•`‰æ‚·‚é
 
@@ -1400,7 +1415,7 @@ extern	int			NS_DrawTurnGraph(            int x, int y,                         
 extern	int			NS_DrawReverseGraph(         int x, int y,                                                                 int GrHandle, int TransFlag, int ReverseXFlag = FALSE , int ReverseYFlag = FALSE ) ;		// ‰æ‘œ‚Ì”½“]•`‰æ
 
 extern	int			NS_DrawGraphF(               float xf, float yf,                                                                       int GrHandle, int TransFlag ) ;							// ƒOƒ‰ƒtƒBƒbƒN‚Ì•`‰æ
-extern	int			NS_DrawExtendGraphF(         float x1f, float y1f, float x2f, float y2,                                                int GrHandle, int TransFlag ) ;							// ƒOƒ‰ƒtƒBƒbƒN‚ÌŠg‘åk¬•`‰æ
+extern	int			NS_DrawExtendGraphF(         float x1f, float y1f, float x2f, float y2f,                                               int GrHandle, int TransFlag ) ;							// ƒOƒ‰ƒtƒBƒbƒN‚ÌŠg‘åk¬•`‰æ
 extern	int			NS_DrawRotaGraphF(           float xf, float yf,                       double ExRate,                    double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE  ) ;	// ƒOƒ‰ƒtƒBƒbƒN‚Ì‰ñ“]•`‰æ
 extern	int			NS_DrawRotaGraph2F(          float xf, float yf, float cxf, float cyf, double ExtRate,                   double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE  ) ;	// ƒOƒ‰ƒtƒBƒbƒN‚Ì‰ñ“]•`‰æ‚Q
 extern	int			NS_DrawRotaGraph3F(          float xf, float yf, float cxf, float cyf, double ExtRateX, double ExtRateY, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE ) ; 	// ƒOƒ‰ƒtƒBƒbƒN‚Ì‰ñ“]•`‰æ‚R
@@ -1539,6 +1554,7 @@ extern	int			NS_SetWriteZBuffer3D(					int Flag ) ;													// ‚yƒoƒbƒtƒ@‚É
 extern	int			NS_SetZBufferCmpType3D(				int CmpType /* DX_CMP_NEVER “™ */ ) ;							// ‚y’l‚Ì”äŠrƒ‚[ƒh‚ğƒZƒbƒg‚·‚é( ‚R‚c}Œ`•`‰æ‚Ì‚İ‚É‰e‹¿ )
 extern	int			NS_SetZBias3D(							int Bias ) ;													// ‚yƒoƒCƒAƒX‚ğƒZƒbƒg‚·‚é( ‚R‚c}Œ`•`‰æ‚Ì‚İ‚É‰e‹¿ )
 extern	int			NS_SetDrawZ(							float Z ) ;														// ‚Q‚c•`‰æ‚É‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğ•ÏX‚·‚é
+extern	int			NS_SetUseReversedZ(					int Flag ) ;													// ‚yƒoƒbƒtƒ@‚É‘‚«‚Ş‚y’l‚ğ•W€•û®‚Æ”½“]‚µ‚½’l( ƒŠƒo[ƒX‚y )‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚éADxLib_InitÀs‘O‚Ì‚İg—p‰Â”\( TRUE:”½“]‚µ‚½’l‚É‚·‚é@FALSE:’Êí‚Ì’l‚É‚·‚é( ƒfƒtƒHƒ‹ƒg ) )
 
 extern	int			NS_SetDrawArea(						int x1, int y1, int x2, int y2 ) ;								// •`‰æ‰Â”\—Ìˆæ‚ÌƒZƒbƒg
 extern	int			NS_GetDrawArea(						RECT *Rect ) ;													// •`‰æ‰Â”\—Ìˆæ‚ğ“¾‚é
@@ -1610,6 +1626,17 @@ extern	int			NS_SetFogStartEnd(						float  start, float  end ) ;									// ƒtƒ
 extern	int			NS_GetFogStartEnd(						float *start, float *end ) ;									// ƒtƒHƒO‚ªn‚Ü‚é‹——£‚ÆI—¹‚·‚é‹——£‚ğæ“¾‚·‚é( 0.0f ` 1.0f )
 extern	int			NS_SetFogDensity(						float density ) ;												// ƒtƒHƒO‚Ì–§“x‚ğİ’è‚·‚é( 0.0f ` 1.0f )
 extern	float		NS_GetFogDensity(						void ) ;														// ƒtƒHƒO‚Ì–§“x‚ğæ“¾‚·‚é( 0.0f ` 1.0f )
+
+extern	int			NS_SetVerticalFogEnable(				int Flag ) ;													// ‚‚³ƒtƒHƒO‚ğ—LŒø‚É‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:—LŒø  FALSE:–³Œø )
+extern	int			NS_GetVerticalFogEnable(				void ) ;														// ‚‚³ƒtƒHƒO‚ª—LŒø‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é( TRUE:—LŒø  FALSE:–³Œø )
+extern	int			NS_SetVerticalFogMode(					int Mode /* DX_FOGMODE_NONE “™ */ ) ;							// ‚‚³ƒtƒHƒOƒ‚[ƒh‚ğİ’è‚·‚é
+extern	int			NS_GetVerticalFogMode(					void ) ;														// ‚‚³ƒtƒHƒOƒ‚[ƒh‚ğæ“¾‚·‚é
+extern	int			NS_SetVerticalFogColor(				int  r, int  g, int  b ) ;										// ‚‚³ƒtƒHƒOƒJƒ‰[‚ğİ’è‚·‚é
+extern	int			NS_GetVerticalFogColor(				int *r, int *g, int *b ) ;										// ‚‚³ƒtƒHƒOƒJƒ‰[‚ğæ“¾‚·‚é
+extern	int			NS_SetVerticalFogStartEnd(				float  start, float  end ) ;									// ‚‚³ƒtƒHƒO‚ªn‚Ü‚é‹——£‚ÆI—¹‚·‚é‹——£‚ğİ’è‚·‚é( 0.0f ` 1.0f )
+extern	int			NS_GetVerticalFogStartEnd(				float *start, float *end ) ;									// ‚‚³ƒtƒHƒO‚ªn‚Ü‚é‹——£‚ÆI—¹‚·‚é‹——£‚ğæ“¾‚·‚é( 0.0f ` 1.0f )
+extern	int			NS_SetVerticalFogDensity(				float start, float density ) ;									// ‚‚³ƒtƒHƒO‚ªn‚Ü‚éˆ—‚Æ–§“x‚ğİ’è‚·‚é( 0.0f ` 1.0f )
+extern	int			NS_GetVerticalFogDensity(				float *start, float *density ) ;								// ‚‚³ƒtƒHƒO‚Ìn‚Ü‚éˆ—‚Æ–§“x‚ğæ“¾‚·‚é( 0.0f ` 1.0f )
 
 
 // ‰æ–ÊŠÖŒWŠÖ”
@@ -1723,6 +1750,7 @@ extern	const void*	NS_GetUseDirect3D11BackBufferRenderTargetView(		void ) ;					
 extern	const void*	NS_GetUseDirect3D11DepthStencilTexture2D(			void ) ;										// g—p’†‚Ì[“xƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@‚ÌID3D11Texture2DƒIƒuƒWƒFƒNƒg‚ğæ“¾‚·‚é( –ß‚è’l‚ğ ID3D11Texture2D * ‚ÉƒLƒƒƒXƒg‚µ‚Ä‚­‚¾‚³‚¢ )
 extern	int			NS_SetDrawScreen_ID3D11RenderTargetView(			const void *pID3D11RenderTargetView, const void *pID3D11DepthStencilView = NULL ) ;		// w’è‚Ì ID3D11RenderTargetView ‚ğ•`‰æ‘ÎÛ‚É‚·‚é( pID3D11DepthStencilView ‚ª NULL ‚Ìê‡‚ÍƒfƒtƒHƒ‹ƒg‚Ì[“xƒXƒeƒ“ƒVƒ‹ƒoƒbƒtƒ@‚ğg—p‚·‚é )
 extern	int			NS_RefreshDxLibDirect3DSetting(				void ) ;										// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‚Ì‚c‚‰‚’‚…‚ƒ‚”‚R‚cİ’è‚ğ‚µ‚È‚¨‚·( “Áê—p“r )
+extern	int			NS_SetUseDirect3D11SwapEffect(					int SwapEffect /* DX_SWAP_EFFECT_DISCARD “™ */ ) ;	// Direct3D11 ‚ğg—p‚µ‚½ê‡‚Ì SwapEffect ‚ğw’è‚·‚é
 #ifndef DX_NON_MEDIA_FOUNDATION
 extern	int			NS_SetUseMediaFoundationFlag(						int Flag ) ;									// Media Foundation ‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:g—p‚·‚é( ƒfƒtƒHƒ‹ƒg )  FALSE:g—p‚µ‚È‚¢ )
 #endif // DX_NON_MEDIA_FOUNDATION
@@ -2032,6 +2060,7 @@ extern	int			NS_SetMaterialParam(			MATERIALPARAM Material ) ;													// ‚R
 extern	int			NS_SetUseSpecular(				int UseFlag ) ;																// ‚R‚c}Œ`•`‰æ‚ÉƒXƒyƒLƒ…ƒ‰‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é
 extern	int			NS_SetGlobalAmbientLight(		COLOR_F Color ) ;															// ƒOƒ[ƒoƒ‹ƒAƒ“ƒrƒGƒ“ƒgƒ‰ƒCƒgƒJƒ‰[‚ğİ’è‚·‚é
 extern	int			NS_SetUseLightAngleAttenuation( int UseFlag ) ;																// ‚R‚c•`‰æ‚Ìƒ‰ƒCƒeƒBƒ“ƒOŒvZ‚ÅŠp“xŒ¸Š‚ğs‚¤‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:Šp“xŒ¸Š‚ğs‚¤( ƒfƒtƒHƒ‹ƒg )  FALSE:Šp“xŒ¸Š‚ğs‚í‚È‚¢ )
+extern	int			NS_SetUseHalfLambertLighting(	int UseFlag ) ;																	// ‚R‚c•`‰æ‚Ìƒ‰ƒCƒeƒBƒ“ƒOŒvZ‚Åƒn[ƒtƒ‰ƒ“ƒo[ƒg‚ğg—p‚·‚é‚©‚Ç‚¤‚©‚ğİ’è‚·‚é( TRUE:ƒn[ƒtƒ‰ƒ“ƒo[ƒg‚ğg—p‚·‚é  FALSE:ƒn[ƒtƒ‰ƒ“ƒo[ƒg‚ğg—p‚µ‚È‚¢( ƒfƒtƒHƒ‹ƒg ) )
 
 extern	int			NS_ChangeLightTypeDir(			VECTOR Direction ) ;														// ƒ‰ƒCƒg‚Ìƒ^ƒCƒv‚ğƒfƒBƒŒƒNƒVƒ‡ƒiƒ‹ƒ‰ƒCƒg‚É‚·‚é
 extern	int			NS_ChangeLightTypeSpot(		VECTOR Position, VECTOR Direction, float OutAngle, float InAngle, float Range, float Atten0, float Atten1, float Atten2 ) ;	// ƒ‰ƒCƒg‚Ìƒ^ƒCƒv‚ğƒXƒ|ƒbƒgƒ‰ƒCƒg‚É‚·‚é
@@ -3410,7 +3439,7 @@ extern	float		NS_Live2D_Model_GetCanvasHeight(						int Live2DModelHandle ) ;			
 #define NS_GetNoActiveState						GetNoActiveState
 #define NS_GetMouseDispFlag						GetMouseDispFlag
 #define NS_GetAlwaysRunFlag						GetAlwaysRunFlag
-#define NS__GetSystemInfo						_GetSystemInfo
+#define NS_GetSystemInfo_						GetSystemInfo_
 #define NS_GetPcInfo							GetPcInfo
 #define NS_GetWindowOSVersion					GetWindowOSVersion
 #define NS_GetUseMMXFlag						GetUseMMXFlag
@@ -3768,7 +3797,9 @@ extern	float		NS_Live2D_Model_GetCanvasHeight(						int Live2DModelHandle ) ;			
 #define NS_SetIMEInputStringMaxLength			SetIMEInputStringMaxLength
 #define NS_SetUseTSFFlag						SetUseTSFFlag
 
-#endif
+#endif // DX_NON_KEYEX
+
+#endif // DX_NON_INPUTSTRING
 
 #define NS_GetStringPoint						GetStringPoint
 #define NS_GetStringPointWithStrLen				GetStringPointWithStrLen
@@ -3785,6 +3816,9 @@ extern	float		NS_Live2D_Model_GetCanvasHeight(						int Live2DModelHandle ) ;			
 #define NS_GetObtainsStringCharPosition_CharClip	GetObtainsStringCharPosition_CharClip
 #endif // DX_NON_FONT
 #define NS_DrawObtainsBox						DrawObtainsBox
+
+
+#ifndef DX_NON_INPUTSTRING
 
 #ifndef DX_NON_KEYEX
 
@@ -4255,6 +4289,10 @@ extern	float		NS_Live2D_Model_GetCanvasHeight(						int Live2DModelHandle ) ;			
 #define NS_DrawSphere3DD								DrawSphere3DD
 #define NS_DrawCapsule3D								DrawCapsule3D
 #define NS_DrawCapsule3DD								DrawCapsule3DD
+#define NS_DrawCylinder3D								DrawCylinder3D
+#define NS_DrawCylinder3DD								DrawCylinder3DD
+#define NS_DrawTube3D									DrawTube3D
+#define NS_DrawTube3DD									DrawTube3DD
 #define NS_DrawCone3D									DrawCone3D
 #define NS_DrawCone3DD									DrawCone3DD
 
@@ -4405,6 +4443,7 @@ extern	float		NS_Live2D_Model_GetCanvasHeight(						int Live2DModelHandle ) ;			
 #define NS_SetZBufferCmpType3D					SetZBufferCmpType3D
 #define NS_SetZBias3D							SetZBias3D
 #define NS_SetDrawZ								SetDrawZ
+#define NS_SetUseReversedZ						SetUseReversedZ
 
 #define NS_SetDrawArea							SetDrawArea
 #define NS_GetDrawArea							GetDrawArea
@@ -4477,6 +4516,18 @@ extern	float		NS_Live2D_Model_GetCanvasHeight(						int Live2DModelHandle ) ;			
 #define NS_GetFogStartEnd						GetFogStartEnd
 #define NS_SetFogDensity						SetFogDensity
 #define NS_GetFogDensity						GetFogDensity
+
+
+#define NS_SetVerticalFogEnable					SetVerticalFogEnable
+#define NS_GetVerticalFogEnable					GetVerticalFogEnable
+#define NS_SetVerticalFogMode					SetVerticalFogMode
+#define NS_GetVerticalFogMode					GetVerticalFogMode
+#define NS_SetVerticalFogColor					SetVerticalFogColor
+#define NS_GetVerticalFogColor					GetVerticalFogColor
+#define NS_SetVerticalFogStartEnd				SetVerticalFogStartEnd
+#define NS_GetVerticalFogStartEnd				GetVerticalFogStartEnd
+#define NS_SetVerticalFogDensity				SetVerticalFogDensity
+#define NS_GetVerticalFogDensity				GetVerticalFogDensity
 
 // ‰æ–ÊŠÖŒWŠÖ”
 #define NS_GetPixel								GetPixel
@@ -4588,6 +4639,7 @@ extern	float		NS_Live2D_Model_GetCanvasHeight(						int Live2DModelHandle ) ;			
 #define NS_GetUseDirect3D11DepthStencilTexture2D		GetUseDirect3D11DepthStencilTexture2D
 #define NS_SetDrawScreen_ID3D11RenderTargetView	SetDrawScreen_ID3D11RenderTargetView
 #define NS_RefreshDxLibDirect3DSetting			RefreshDxLibDirect3DSetting
+#define NS_SetUseDirect3D11SwapEffect			SetUseDirect3D11SwapEffect
 #ifndef DX_NON_MEDIA_FOUNDATION
 #define NS_SetUseMediaFoundationFlag			SetUseMediaFoundationFlag
 #endif // DX_NON_MEDIA_FOUNDATION
@@ -4871,6 +4923,7 @@ extern	float		NS_Live2D_Model_GetCanvasHeight(						int Live2DModelHandle ) ;			
 #define NS_SetUseSpecular						SetUseSpecular
 #define NS_SetGlobalAmbientLight				SetGlobalAmbientLight
 #define NS_SetUseLightAngleAttenuation			SetUseLightAngleAttenuation
+#define NS_SetUseHalfLambertLighting			SetUseHalfLambertLighting
 
 #define NS_ChangeLightTypeDir					ChangeLightTypeDir
 #define NS_ChangeLightTypeSpot					ChangeLightTypeSpot

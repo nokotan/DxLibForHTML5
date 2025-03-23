@@ -2,7 +2,11 @@
 // 
 // 		ＤＸライブラリ		モデルデータ読み込み処理４用ヘッダ
 // 
+<<<<<<< HEAD
 // 				Ver 3.24b
+=======
+// 				Ver 3.24f
+>>>>>>> d0500ab ([Bot] Create Patch of 3.24f (Platform-Independent))
 // 
 // -------------------------------------------------------------------------------
 
@@ -387,10 +391,17 @@ struct DX_MODELLOADER3_PMX_PHYSICS_INFO
 
 #ifndef DX_NON_BULLET_PHYSICS
 
+#ifndef DX_NON_NAMESPACE
+extern int SetupPhysicsObject_PMXPhysicsInfo(		DxLib::DX_MODELLOADER3_PMX_PHYSICS_INFO *MLPhysicsInfoint, int DisablePhysicsFile ) ;
+extern int ReleasePhysicsObject_PMXPhysicsInfo(		DxLib::DX_MODELLOADER3_PMX_PHYSICS_INFO *MLPhysicsInfo ) ;
+extern int OneFrameProcess_PMXPhysicsInfo(			DxLib::DX_MODELLOADER3_PMX_PHYSICS_INFO *MLPhysicsInfo, int FrameNo, int LoopNo, bool FPS60, int ValidNextRate, int TimeDivNum ) ;
+extern int CheckDisablePhysicsAnim_PMXPhysicsInfo(	DxLib::DX_MODELLOADER3_PMX_PHYSICS_INFO *MLPhysicsInfo, int PhysicsIndex ) ;
+#else // DX_NON_NAMESPACE
 extern int SetupPhysicsObject_PMXPhysicsInfo(		DX_MODELLOADER3_PMX_PHYSICS_INFO *MLPhysicsInfoint, int DisablePhysicsFile ) ;
 extern int ReleasePhysicsObject_PMXPhysicsInfo(		DX_MODELLOADER3_PMX_PHYSICS_INFO *MLPhysicsInfo ) ;
 extern int OneFrameProcess_PMXPhysicsInfo(			DX_MODELLOADER3_PMX_PHYSICS_INFO *MLPhysicsInfo, int FrameNo, int LoopNo, bool FPS60, int ValidNextRate, int TimeDivNum ) ;
 extern int CheckDisablePhysicsAnim_PMXPhysicsInfo(	DX_MODELLOADER3_PMX_PHYSICS_INFO *MLPhysicsInfo, int PhysicsIndex ) ;
+#endif // DX_NON_NAMESPACE
 
 #endif
 
