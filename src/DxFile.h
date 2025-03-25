@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ファイルアクセスプログラムヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -81,10 +81,6 @@
 		#include "iOS/DxFileiOS.h"
     #endif // TARGET_OS_IPHONE
 #endif // __APPLE__
-
-#ifdef EMSCRIPTEN
-#include "HTML5/DxFileHTML5.h"
-#endif
 
 
 

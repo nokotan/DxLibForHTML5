@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		サウンドデータ変換プログラムヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -108,9 +108,6 @@ struct SOUNDCONV
 #ifndef DX_NON_OGGVORBIS
 	int							OggVorbisBitDepth ;			// ＯｇｇＶｏｒｂｉｓ使用時のビット深度(1:8bit 2:16bit)
 	int							OggVorbisFromTheoraFile ;	// Ogg Theora ファイル中の Vorbis データを参照するかどうかのフラグ( TRUE:Theora ファイル中の Vorbis データを参照する )
-#endif
-#ifdef EMSCRIPTEN
-	int							BufferId;
 #endif
 } ;
 

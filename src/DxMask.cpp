@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		マスクデータ管理プログラム
 // 
-//  	Ver 3.24b
+//  	Ver 3.24d
 // 
 //-----------------------------------------------------------------------------
 
@@ -241,7 +241,7 @@ static void Mask_MakeMask_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( MaskHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( MaskHandle ) ;
+		SubHandle( MaskHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -309,7 +309,7 @@ extern int Mask_MakeMask_UseGParam( int Width, int Height, int ASyncLoadFlag )
 	return MaskHandle ;
 
 ERR :
-	SubHandle( MaskHandle ) ;
+	SubHandle( MaskHandle, ASyncLoadFlag, FALSE ) ;
 
 	return -1 ;
 }
@@ -323,7 +323,7 @@ extern int NS_MakeMask( int Width, int Height )
 // マスクデータを削除
 extern int NS_DeleteMask( int MaskHandle )
 {
-	return SubHandle( MaskHandle ) ;
+	return SubHandle( MaskHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 #ifdef WINDOWS_DESKTOP_OS
@@ -679,7 +679,7 @@ static void Mask_LoadMask_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( MaskHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( MaskHandle ) ;
+		SubHandle( MaskHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -748,7 +748,7 @@ extern int Mask_LoadMask_UseGParam( const wchar_t *FileName, int ASyncLoadFlag )
 	return MaskHandle ;
 
 ERR :
-	SubHandle( MaskHandle ) ;
+	SubHandle( MaskHandle, ASyncLoadFlag, FALSE ) ;
 
 	return -1 ;
 }
@@ -902,7 +902,7 @@ static void Mask_LoadDivMask_ASync( ASYNCLOADDATA_COMMON *AParam )
 	{
 		for( i = 0 ; i < AllNum ; i ++ )
 		{
-			NS_DeleteMask( HandleArray[ i ] ) ;
+			SubHandle( HandleArray[ i ], FALSE, FALSE ) ;
 			HandleArray[ i ] = -1 ;
 		}
 	}
@@ -999,7 +999,7 @@ extern int Mask_LoadDivMask_UseGParam(
 ERR :
 	for( i = 0 ; i < AllNum ; i ++ )
 	{
-		NS_DeleteMask( HandleArray[ i ] ) ;
+		SubHandle( HandleArray[ i ], FALSE, FALSE ) ;
 		HandleArray[ i ] = -1 ;
 	}
 
@@ -1130,7 +1130,7 @@ static void Mask_CreateMaskFromMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( MaskHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( MaskHandle ) ;
+		SubHandle( MaskHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -1198,7 +1198,7 @@ extern int Mask_CreateMaskFromMem_UseGParam( const void *FileImage, int FileImag
 	return MaskHandle ;
 
 ERR :
-	SubHandle( MaskHandle ) ;
+	SubHandle( MaskHandle, ASyncLoadFlag, FALSE ) ;
 
 	return -1 ;
 }
@@ -1329,7 +1329,7 @@ static void Mask_CreateDivMaskFromMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	if( Result < 0 )
 	{
 		for( i = 0 ; i < AllNum ; i ++ )
-			NS_DeleteMask( HandleArray[ i ] ) ;
+			SubHandle( HandleArray[ i ], FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -1424,7 +1424,7 @@ extern int Mask_CreateDivMaskFromMem_UseGParam(
 ERR :
 	for( i = 0 ; i < AllNum ; i ++ )
 	{
-		NS_DeleteMask( HandleArray[ i ] ) ;
+		SubHandle( HandleArray[ i ], FALSE, FALSE ) ;
 	}
 
 	return -1 ;
@@ -1826,7 +1826,7 @@ extern int NS_DrawFillMaskToDirectData( int x1, int y1, int x2, int y2,  int Wid
 	NS_DrawFillMask( x1, y1, x2, y2, MaskHandle ) ;
 
 	// マスクハンドルを削除
-	NS_DeleteMask( MaskHandle ) ;
+	SubHandle( MaskHandle, FALSE, FALSE ) ;
 
 	// 終了
 	return 0 ;

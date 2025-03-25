@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		メモリ関係プログラムヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -29,9 +29,6 @@
     #endif // TARGET_OS_IPHONE
 #endif // __APPLE__
 
-#ifdef EMSCRIPTEN
-#include "HTML5/DxMemoryHTML5.h"
-#endif
 
 
 

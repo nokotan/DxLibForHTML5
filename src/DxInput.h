@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		入力情報プログラムヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -31,10 +31,6 @@
 		#include "iOS/DxInputiOS.h"
     #endif // TARGET_OS_IPHONE
 #endif // __APPLE__
-
-#ifdef EMSCRIPTEN
-#include "HTML5/DxInputHTML5.h"
-#endif
 
 
 

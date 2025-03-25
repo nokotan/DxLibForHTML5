@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		内部との出入り口プログラムファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -2122,6 +2122,14 @@ extern int SetWindows10_WM_CHAR_CancelTime( int MilliSecond )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetUseWindows10_WM_CHAR_CancelTime( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseWindows10_WM_CHAR_CancelTime( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
 
 #ifndef DX_NON_ASYNCLOAD
 extern int SetUseASyncLoadFlag( int Flag )
@@ -2240,11 +2248,11 @@ extern int DumpHandleInfo( int HandleType )
 	return Result ;
 }
 
-extern int GetClipboardText( TCHAR *DestBuffer )
+extern int GetClipboardText( TCHAR *DestBuffer, int DestBufferBytes )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_GetClipboardText( DestBuffer ) ;
+	Result = NS_GetClipboardText( DestBuffer, DestBufferBytes ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -4035,51 +4043,75 @@ extern int GetStringLength( const TCHAR *String )
 }
 
 #ifndef DX_NON_FONT
-extern int DrawObtainsString( int x, int y, int AddY, const TCHAR *String, unsigned int StrColor , unsigned int StrEdgeColor , int FontHandle , unsigned int SelectBackColor , unsigned int SelectStrColor , unsigned int SelectStrEdgeColor , int SelectStart , int SelectEnd )
+extern int DrawObtainsString( int x, int y, int AddY, const TCHAR *String, unsigned int StrColor , unsigned int StrEdgeColor , int FontHandle , unsigned int SelectBackColor , unsigned int SelectStrColor , unsigned int SelectStrEdgeColor , int SelectStart , int SelectEnd, int *LineCount )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_DrawObtainsString( x, y, AddY, String, StrColor, StrEdgeColor, FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart , SelectEnd ) ;
+	Result = NS_DrawObtainsString( x, y, AddY, String, StrColor, StrEdgeColor, FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart , SelectEnd, LineCount ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int DrawObtainsNString( int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd )
+extern int DrawObtainsNString( int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd, int *LineCount )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_DrawObtainsNString( x, y, AddY, String, StringLength, StrColor, StrEdgeColor, FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart, SelectEnd ) ;
+	Result = NS_DrawObtainsNString( x, y, AddY, String, StringLength, StrColor, StrEdgeColor, FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart, SelectEnd, LineCount ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int DrawObtainsString_CharClip(	int x, int y, int AddY, const TCHAR *String, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd )
+extern int DrawObtainsString_CharClip(	int x, int y, int AddY, const TCHAR *String, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd, int *LineCount )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_DrawObtainsString_CharClip(	 x,  y,  AddY, String,  StrColor,  StrEdgeColor,  FontHandle,  SelectBackColor,  SelectStrColor,  SelectStrEdgeColor,  SelectStart,  SelectEnd ) ;
+	Result = NS_DrawObtainsString_CharClip(	 x,  y,  AddY, String,  StrColor,  StrEdgeColor,  FontHandle,  SelectBackColor,  SelectStrColor,  SelectStrEdgeColor,  SelectStart,  SelectEnd, LineCount ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int DrawObtainsNString_CharClip( int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd )
+extern int DrawObtainsNString_CharClip( int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd, int *LineCount )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_DrawObtainsNString_CharClip( x, y, AddY, String, StringLength, StrColor, StrEdgeColor, FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart, SelectEnd ) ;
+	Result = NS_DrawObtainsNString_CharClip( x, y, AddY, String, StringLength, StrColor, StrEdgeColor, FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart, SelectEnd, LineCount ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int GetObtainsStringCharPosition( int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle )
+extern int DrawObtainsString_WordClip(	int x, int y, int AddY, const TCHAR *String, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd, int *LineCount )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_GetObtainsStringCharPosition( x, y, AddY, String, StrLen, PosX, PosY, FontHandle ) ;
+	Result = NS_DrawObtainsString_WordClip(	 x,  y,  AddY, String,  StrColor,  StrEdgeColor,  FontHandle,  SelectBackColor,  SelectStrColor,  SelectStrEdgeColor,  SelectStart,  SelectEnd, LineCount ) ;
 	DXFUNC_END
 	return Result ;
 }
-extern int GetObtainsStringCharPosition_CharClip( int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle )
+extern int DrawObtainsNString_WordClip( int x, int y, int AddY, const TCHAR *String, size_t StringLength, unsigned int StrColor, unsigned int StrEdgeColor, int FontHandle, unsigned int SelectBackColor, unsigned int SelectStrColor, unsigned int SelectStrEdgeColor, int SelectStart, int SelectEnd, int *LineCount )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_GetObtainsStringCharPosition_CharClip( x, y, AddY, String, StrLen, PosX, PosY, FontHandle ) ;
+	Result = NS_DrawObtainsNString_WordClip( x, y, AddY, String, StringLength, StrColor, StrEdgeColor, FontHandle, SelectBackColor, SelectStrColor, SelectStrEdgeColor, SelectStart, SelectEnd, LineCount ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetObtainsStringCharPosition( int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle, int *LineCount )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetObtainsStringCharPosition( x, y, AddY, String, StrLen, PosX, PosY, FontHandle, LineCount ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetObtainsStringCharPosition_CharClip( int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle, int *LineCount )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetObtainsStringCharPosition_CharClip( x, y, AddY, String, StrLen, PosX, PosY, FontHandle, LineCount ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetObtainsStringCharPosition_WordClip( int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle, int *LineCount )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetObtainsStringCharPosition_WordClip( x, y, AddY, String, StrLen, PosX, PosY, FontHandle, LineCount ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -4905,11 +4937,11 @@ extern int GetDisplayNum( void )
 	DXFUNC_END
 	return Result ;
 }
-extern int GetDisplayInfo( int DisplayIndex, int *DesktopRectX, int *DesktopRectY, int *DesktopSizeX, int *DesktopSizeY, int *IsPrimary )
+extern int GetDisplayInfo( int DisplayIndex, int *DesktopRectX, int *DesktopRectY, int *DesktopSizeX, int *DesktopSizeY, int *IsPrimary, int *DesktopRefreshRate )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_GetDisplayInfo( DisplayIndex, DesktopRectX, DesktopRectY, DesktopSizeX, DesktopSizeY, IsPrimary ) ;
+	Result = NS_GetDisplayInfo( DisplayIndex, DesktopRectX, DesktopRectY, DesktopSizeX, DesktopSizeY, IsPrimary, DesktopRefreshRate ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -4926,6 +4958,14 @@ extern DISPLAYMODEDATA GetDisplayMode( int ModeIndex, int DisplayIndex )
 	DISPLAYMODEDATA Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetDisplayMode( ModeIndex, DisplayIndex ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern DISPLAYMODEDATA GetFullScreenUseDisplayMode( void )
+{
+	DISPLAYMODEDATA Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetFullScreenUseDisplayMode() ;
 	DXFUNC_END
 	return Result ;
 }
@@ -5446,11 +5486,11 @@ extern int MakeScreen( int SizeX, int SizeY, int UseAlphaChannel )
 	DXFUNC_END
 	return Result ;
 }
-extern int DeleteGraph( int GrHandle, int LogOutFlag  )
+extern int DeleteGraph( int GrHandle  )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_DeleteGraph( GrHandle, LogOutFlag  ) ;
+	Result = NS_DeleteGraph( GrHandle ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -5478,11 +5518,11 @@ extern int SetGraphLostFlag( int GrHandle, int *LostFlag )
 	DXFUNC_END
 	return Result ;
 }
-extern int InitGraph( int LogOutFlag  )
+extern int InitGraph( void )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_InitGraph( LogOutFlag  ) ;
+	Result = NS_InitGraph() ;
 	DXFUNC_END
 	return Result ;
 }
@@ -6604,11 +6644,11 @@ extern int DrawCircle( int x, int y, int r, unsigned int Color, int FillFlag, in
 	DXFUNC_END
 	return Result ;
 }
-extern int DrawCircleAA( float x, float y, float r, int posnum, unsigned int Color, int FillFlag, float LineThickness )
+extern int DrawCircleAA( float x, float y, float r, int posnum, unsigned int Color, int FillFlag, float LineThickness, double Angle )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_DrawCircleAA( x,  y,  r, posnum, Color, FillFlag, LineThickness ) ;
+	Result = NS_DrawCircleAA( x,  y,  r, posnum, Color, FillFlag, LineThickness, Angle ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -10204,6 +10244,22 @@ extern int SetUseDirect3D11AdapterIndex( int Index )
 	DXFUNC_END
 	return Result ;
 }
+extern int SetUseDirect3D11AdapterLUID( LUID *UseLUID )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetUseDirect3D11AdapterLUID( UseLUID ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern LUID GetUseDirect3D11AdapterLUID( void )
+{
+	LUID Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetUseDirect3D11AdapterLUID() ;
+	DXFUNC_END
+	return Result ;
+}
 extern int SetUseDirect3D11BGRASupport( int Flag )
 {
 	int Result ;
@@ -10783,11 +10839,27 @@ extern int SetMovieVolumeToGraph( int Volume, int GraphHandle )
 	DXFUNC_END
 	return Result ;
 }
+extern int GetMovieVolumeToGraph( int GraphHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetMovieVolumeToGraph( GraphHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
 extern int ChangeMovieVolumeToGraph( int Volume, int GraphHandle )
 {
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_ChangeMovieVolumeToGraph( Volume, GraphHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetMovieVolumeToGraph2( int GraphHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetMovieVolumeToGraph2( GraphHandle ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -10845,6 +10917,14 @@ extern int GetLastUpdateTimeMovieToGraph( int GraphHandle )
 	int Result ;
 	DXFUNC_BEGIN
 	Result = NS_GetLastUpdateTimeMovieToGraph( GraphHandle ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int UpdateMovieToGraph( int GraphHandle )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_UpdateMovieToGraph( GraphHandle ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -14725,7 +14805,22 @@ extern int GetFontOnlyDrawType( void )
 	DXFUNC_END
 	return Result ;
 }
-
+extern int SetFontIgnoreLFFlag( int Flag )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_SetFontIgnoreLFFlag( Flag ) ;
+	DXFUNC_END
+	return Result ;
+}
+extern int GetFontIgnoreLFFlag( void )
+{
+	int Result ;
+	DXFUNC_BEGIN
+	Result = NS_GetFontIgnoreLFFlag() ;
+	DXFUNC_END
+	return Result ;
+}
 extern HANDLE AddFontFile( const TCHAR *FontFilePath )
 {
 	HANDLE Result ;
@@ -16549,11 +16644,11 @@ extern int CmpColorData( const COLORDATA * ColorData1, const COLORDATA * ColorDa
 #ifndef DX_NON_SOUND
 
 // サウンドデータ管理系関数
-extern int InitSoundMem( int LogOutFlag  )
+extern int InitSoundMem( void )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_InitSoundMem( LogOutFlag  ) ;
+	Result = NS_InitSoundMem() ;
 	DXFUNC_END
 	return Result ;
 }
@@ -16833,11 +16928,11 @@ extern int LoadSoundMemFromSoftSound( int SoftSoundHandle, int BufferNum )
 	DXFUNC_END
 	return Result ;
 }
-extern int DeleteSoundMem( int SoundHandle, int LogOutFlag  )
+extern int DeleteSoundMem( int SoundHandle )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_DeleteSoundMem( SoundHandle, LogOutFlag  ) ;
+	Result = NS_DeleteSoundMem( SoundHandle ) ;
 	DXFUNC_END
 	return Result ;
 }
@@ -17041,7 +17136,7 @@ extern int SetNextPlayFrequencySoundMem( int FrequencyPal, int SoundHandle )
 
 
 
-extern int SetCurrentPositionSoundMem( int SamplePosition, int SoundHandle )
+extern int SetCurrentPositionSoundMem( LONGLONG SamplePosition, int SoundHandle )
 {
 	int Result ;
 	DXFUNC_BEGIN
@@ -21766,20 +21861,20 @@ extern int Live2D_Model_Draw( int Live2DModelHandle )
 	return Result ;
 }
 
-extern int Live2D_Model_StartMotion( int Live2DModelHandle, const TCHAR *group, int no )
+extern int Live2D_Model_StartMotion( int Live2DModelHandle, const TCHAR *group, int no, float fadeInSeconds, float fadeOutSeconds, int isLoopFadeIn )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_Live2D_Model_StartMotion( Live2DModelHandle, group, no ) ;
+	Result = NS_Live2D_Model_StartMotion( Live2DModelHandle, group, no, fadeInSeconds, fadeOutSeconds, isLoopFadeIn ) ;
 	DXFUNC_END
 	return Result ;
 }
 
-extern int Live2D_Model_StartMotionWithStrLen( int Live2DModelHandle, const TCHAR *group, size_t groupLength, int no )
+extern int Live2D_Model_StartMotionWithStrLen( int Live2DModelHandle, const TCHAR *group, size_t groupLength, int no, float fadeInSeconds, float fadeOutSeconds, int isLoopFadeIn )
 {
 	int Result ;
 	DXFUNC_BEGIN
-	Result = NS_Live2D_Model_StartMotionWithStrLen( Live2DModelHandle, group, groupLength, no ) ;
+	Result = NS_Live2D_Model_StartMotionWithStrLen( Live2DModelHandle, group, groupLength, no, fadeInSeconds, fadeOutSeconds, isLoopFadeIn ) ;
 	DXFUNC_END
 	return Result ;
 }

@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＤｉｒｅｃｔＳｏｕｎｄ制御プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -268,7 +268,7 @@ extern int InitializeSoundSystem( void )
 	// 初期化フラグを立てる
 	SoundSysData.InitializeFlag = TRUE ;
 
-	NS_InitSoundMem( FALSE ) ;
+	NS_InitSoundMem() ;
 	NS_InitSoftSound() ;
 	NS_InitSoftSoundPlayer() ;
 
@@ -327,7 +327,7 @@ extern int TerminateSoundSystem( void )
 	EndSoundCapture() ;
 
 	// すべてのサウンドデータを解放する
-	NS_InitSoundMem( FALSE ) ;
+	NS_InitSoundMem() ;
 
 	// 全てのソフトサウンドデータを解放する
 	NS_InitSoftSound() ;
@@ -420,7 +420,7 @@ static int DeleteCancelCheckInitSoundMemFunction( HANDLEINFO *HandleInfo )
 }
 
 // メモリに読みこんだWAVEデータを削除し、初期化する
-extern int NS_InitSoundMem( int /*LogOutFlag*/ )
+extern int NS_InitSoundMem( void )
 {
 //	int Ret ;
 
@@ -591,7 +591,7 @@ extern int TerminateSoundHandle( HANDLEINFO *HandleInfo )
 				if( Sound->Stream.BufferBorrowSoundHandle != HandleInfo->Handle &&
 					UniSound->Stream.DeleteWaitFlag == TRUE )
 				{
-					NS_DeleteSoundMem( Sound->Stream.BufferBorrowSoundHandle, FALSE ) ;
+					SubHandle( Sound->Stream.BufferBorrowSoundHandle, FALSE, FALSE ) ;
 				}
 			}
 			
@@ -3020,7 +3020,7 @@ LOOPSTART:
 		// 再生中ではなかったら削除
 		if( NS_CheckSoundMem( List->Handle ) == 0 )
 		{
-			NS_DeleteSoundMem( List->Handle, FALSE ) ;
+			SubHandle( List->Handle, FALSE, FALSE ) ;
 			goto LOOPSTART ;
 		}
 	}
@@ -3169,7 +3169,7 @@ static void LoadSoundMem2_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( SoundHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( SoundHandle ) ;
+		SubHandle( SoundHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -3245,7 +3245,7 @@ extern int LoadSoundMem2_UseGParam(
 	return SoundHandle ;
 
 ERR :
-	SubHandle( SoundHandle ) ;
+	SubHandle( SoundHandle, ASyncLoadFlag, FALSE ) ;
 	SoundHandle = -1 ;
 
 	// 終了
@@ -3436,7 +3436,7 @@ static void LoadSoundMem2ByMemImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( SoundHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( SoundHandle ) ;
+		SubHandle( SoundHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -3512,7 +3512,7 @@ extern int LoadSoundMem2ByMemImage_UseGParam(
 	return SoundHandle ;
 
 ERR :
-	SubHandle( SoundHandle ) ;
+	SubHandle( SoundHandle, ASyncLoadFlag, FALSE ) ;
 	SoundHandle = -1 ;
 
 	// 終了
@@ -3620,7 +3620,7 @@ static int SetupSoundPitchRateTimeStretchRateChangeHandle( int SoundHandle, LOAD
 				PitchRate /= 2.0f ;
 			}
 
-			NS_DeleteSoftSound( DSSHandle ) ;
+			SubHandle( DSSHandle, FALSE, FALSE ) ;
 			DSSHandle = -1 ;
 		}
 
@@ -3691,8 +3691,8 @@ static int SetupSoundPitchRateTimeStretchRateChangeHandle( int SoundHandle, LOAD
 	DXFREE( WaveImage ) ;
 	WaveImage = NULL ;
 
-	NS_DeleteSoftSound( SSSHandle ) ;
-	NS_DeleteSoftSound( DSSHandle ) ;
+	SubHandle( SSSHandle, FALSE, FALSE ) ;
+	SubHandle( DSSHandle, FALSE, FALSE ) ;
 	SSSHandle = -1 ;
 	DSSHandle = -1 ;
 
@@ -3709,13 +3709,13 @@ ERR :
 
 	if( SSSHandle >= 0 )
 	{
-		NS_DeleteSoftSound( SSSHandle ) ;
+		SubHandle( SSSHandle, FALSE, FALSE ) ;
 		SSSHandle = -1 ;
 	}
 
 	if( DSSHandle >= 0 )
 	{
-		NS_DeleteSoftSound( DSSHandle ) ;
+		SubHandle( DSSHandle, FALSE, FALSE ) ;
 		DSSHandle = -1 ;
 	}
 
@@ -4204,7 +4204,7 @@ static int LoadSoundMemBase_Static(
 			goto ERR ;
 		}
 
-		NS_DeleteSoftSound( SSSHandleI ) ;
+		SubHandle( SSSHandleI, FALSE, FALSE ) ;
 		SSSHandleI = -1 ;
 	}
 	else
@@ -4281,7 +4281,7 @@ ERR :
 
 	if( SSSHandleI >= 0 )
 	{
-		NS_DeleteSoftSound( SSSHandleI ) ;
+		SubHandle( SSSHandleI, FALSE, FALSE ) ;
 		SSSHandleI = -1 ;
 	}
 
@@ -4317,7 +4317,7 @@ static void LoadSoundMemBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( SoundHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( SoundHandle ) ;
+		SubHandle( SoundHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -4408,7 +4408,7 @@ ERR :
 	}
 #endif // DX_NON_ASYNCLOAD
 
-	SubHandle( SoundHandle ) ;
+	SubHandle( SoundHandle, ASyncLoadFlag, ASyncThread ) ;
 	SoundHandle = -1 ;
 
 	// 終了
@@ -4642,7 +4642,7 @@ extern int NS_DuplicateSoundMem( int SrcSoundHandle, int BufferNum )
 ERR :
 	if( Handle != -1 )
 	{
-		NS_DeleteSoundMem( Handle, FALSE ) ;
+		SubHandle( Handle, FALSE, FALSE ) ;
 	}
 	
 	return -1 ;
@@ -4704,7 +4704,7 @@ static int LoadSoundMemByMemImageBase_Static(
 			goto ERR ;
 		}
 
-		NS_DeleteSoftSound( SSSHandleI ) ;
+		SubHandle( SSSHandleI, FALSE, FALSE ) ;
 		SSSHandleI = -1 ;
 
 		// 正常終了
@@ -4896,7 +4896,7 @@ ERR :
 
 	if( SSSHandleI >= 0 )
 	{
-		NS_DeleteSoftSound( SSSHandleI ) ;
+		SubHandle( SSSHandleI, FALSE, FALSE ) ;
 		SSSHandleI = -1 ;
 	}
 
@@ -4939,7 +4939,7 @@ static void LoadSoundMemByMemImageBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	{
 		if( CreateSoundHandle )
 		{
-			SubHandle( SoundHandle ) ;
+			SubHandle( SoundHandle, FALSE, FALSE ) ;
 		}
 	}
 }
@@ -5049,7 +5049,7 @@ ERR :
 
 	if( CreateSoundHandle )
 	{
-		SubHandle( SoundHandle ) ;
+		SubHandle( SoundHandle, ASyncLoadFlag, ASyncThread ) ;
 		SoundHandle = -1 ;
 	}
 
@@ -5105,9 +5105,9 @@ extern int NS_LoadSoundMemByMemImageToBufNumSitei( const void *FileImageBuffer, 
 
 
 // メモリに読み込んだWAVEデータを削除する
-extern int NS_DeleteSoundMem( int SoundHandle, int )
+extern int NS_DeleteSoundMem( int SoundHandle )
 {
-	return SubHandle( SoundHandle ) ;
+	return SubHandle( SoundHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 // サウンドハンドルの再生準備を行う( -1:エラー 0:正常終了 1:再生する必要なし )
@@ -8756,7 +8756,7 @@ extern	int NS_SetEnableSoundCaptureFlag( int Flag )
 	if( SoundSysData.EnableSoundCaptureFlag == Flag ) return 0 ;
 
 	// 全てのサウンドハンドルを削除する
-	NS_InitSoundMem( FALSE ) ;
+	NS_InitSoundMem() ;
 	
 	// フラグをセットする
 	SoundSysData.EnableSoundCaptureFlag = Flag ;
@@ -11091,7 +11091,7 @@ extern int PlaySoundFile_WCHAR_T( const wchar_t *FileName , int PlayType )
 	// 以前再生中だったデータを止める
 	if( SoundSysData.PlayWavSoundHandle != -1 )
 	{
-		NS_DeleteSoundMem( SoundSysData.PlayWavSoundHandle, FALSE ) ;
+		SubHandle( SoundSysData.PlayWavSoundHandle, FALSE, FALSE ) ;
 	}
 
 	// サウンドデータを読み込む
@@ -13301,7 +13301,7 @@ static void LoadSoftSoundBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( SoftSoundHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( SoftSoundHandle ) ;
+		SubHandle( SoftSoundHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -13380,7 +13380,7 @@ extern int LoadSoftSoundBase_UseGParam(
 	return SoftSoundHandle ;
 
 ERR :
-	SubHandle( SoftSoundHandle ) ;
+	SubHandle( SoftSoundHandle, ASyncLoadFlag, FALSE ) ;
 
 	return -1 ;
 }
@@ -13510,7 +13510,7 @@ static void MakeSoftSoundBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( SoftSoundHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( SoftSoundHandle ) ;
+		SubHandle( SoftSoundHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -13595,7 +13595,7 @@ extern int MakeSoftSoundBase_UseGParam(
 	return SoftSoundHandle ;
 
 ERR :
-	SubHandle( SoftSoundHandle ) ;
+	SubHandle( SoftSoundHandle, ASyncLoadFlag, FALSE ) ;
 
 	return -1 ;
 }
@@ -13677,7 +13677,7 @@ extern	int NS_DeleteSoftSound( int SoftSoundHandle )
 		return -1 ;
 	}
 
-	return SubHandle( SoftSoundHandle ) ;
+	return SubHandle( SoftSoundHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 #ifndef DX_NON_SAVEFUNCTION
@@ -17528,7 +17528,7 @@ extern int NS_WritePitchShiftSoftSoundData( int SrcSoftSoundHandle, int DestSoft
 			TempFloatDSSHandle = NS_MakeSoftSoundCustom( DSSound->BufferFormat.nChannels, 32, ( int )DSSound->BufferFormat.nSamplesPerSec, DSSound->Wave.BufferSampleNum, TRUE ) ;
 			if( TempFloatDSSHandle < 0 )
 			{
-				NS_DeleteSoftSound( TempFloatSSSHandle ) ;
+				SubHandle( TempFloatSSSHandle, FALSE, FALSE ) ;
 				TempFloatSSSHandle = -1 ;
 				return -1 ;
 			}
@@ -17537,8 +17537,8 @@ extern int NS_WritePitchShiftSoftSoundData( int SrcSoftSoundHandle, int DestSoft
 			NS_WritePitchShiftSoftSoundData( TempFloatSSSHandle, TempFloatDSSHandle ) ;
 			ConvertFloatToIntSoftSound( TempFloatDSSHandle, DestSoftSoundHandle ) ;
 
-			NS_DeleteSoftSound( TempFloatSSSHandle ) ;
-			NS_DeleteSoftSound( TempFloatDSSHandle ) ;
+			SubHandle( TempFloatSSSHandle, FALSE, FALSE ) ;
+			SubHandle( TempFloatDSSHandle, FALSE, FALSE ) ;
 			TempFloatSSSHandle = -1 ;
 			TempFloatDSSHandle = -1 ;
 		}
@@ -18326,7 +18326,7 @@ extern	int NS_DeleteSoftSoundPlayer( int SSoundPlayerHandle )
 		return -1 ;
 	}
 
-	return SubHandle( SSoundPlayerHandle ) ;
+	return SubHandle( SSoundPlayerHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 // ソフトウエアで扱う波形データのプレイヤーに波形データを追加する( フォーマットが同じではない場合はエラー )
@@ -19373,7 +19373,7 @@ extern int NS_AddMusicData( void )
 // ＭＩＤＩハンドルを削除する
 extern int NS_DeleteMusicMem( int MusicHandle )
 {
-	return SubHandle( MusicHandle ) ;
+	return SubHandle( MusicHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 // LoadMusicMemByMemImage の実処理関数
@@ -19445,7 +19445,7 @@ static void LoadMusicMemByMemImage_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( MusicHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( MusicHandle ) ;
+		SubHandle( MusicHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -19515,7 +19515,7 @@ extern int LoadMusicMemByMemImage_UseGParam(
 	return MusicHandle ;
 
 ERR :
-	SubHandle( MusicHandle ) ;
+	SubHandle( MusicHandle, ASyncLoadFlag, FALSE ) ;
 
 	return -1 ;
 }
@@ -19611,7 +19611,7 @@ static void LoadMusicMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( MusicHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( MusicHandle ) ;
+		SubHandle( MusicHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -19681,7 +19681,7 @@ extern int LoadMusicMem_UseGParam(
 	return MusicHandle ;
 
 ERR :
-	SubHandle( MusicHandle ) ;
+	SubHandle( MusicHandle, ASyncLoadFlag, FALSE ) ;
 
 	return -1 ;
 }
@@ -19836,7 +19836,7 @@ extern int NS_StopMusicMem( int MusicHandle )
 	if( MidiSystemData.DefaultHandle != 0 && MidiSystemData.DefaultHandleToSoundHandleFlag == TRUE )
 	{
 		NS_StopSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
-		NS_DeleteSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
+		SubHandle( MidiSystemData.DefaultHandle, FALSE, FALSE ) ;
 
 		MidiSystemData.DefaultHandle = 0 ;
 		return 0 ;
@@ -20019,11 +20019,11 @@ extern int PlayMusic_WCHAR_T( const wchar_t *FileName , int PlayType )
 	{
 		if( MidiSystemData.DefaultHandleToSoundHandleFlag == TRUE )
 		{
-			NS_DeleteSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
+			SubHandle( MidiSystemData.DefaultHandle, FALSE, FALSE ) ;
 		}
 		else
 		{
-			NS_DeleteMusicMem( MidiSystemData.DefaultHandle ) ;
+			SubHandle( MidiSystemData.DefaultHandle, FALSE, FALSE ) ;
 		}
 		MidiSystemData.DefaultHandle = 0 ;
 	}
@@ -20043,7 +20043,7 @@ extern int PlayMusic_WCHAR_T( const wchar_t *FileName , int PlayType )
 		LOADSOUND_GPARAM GParam ;
 
 		// 演奏に失敗したら普通のサウンドファイルの可能性がある
-		NS_DeleteMusicMem( MidiSystemData.DefaultHandle ) ;
+		SubHandle( MidiSystemData.DefaultHandle, FALSE, FALSE ) ;
 
 		InitLoadSoundGParam( &GParam ) ;
 		GParam.CreateSoundDataType = DX_SOUNDDATATYPE_MEMPRESS ;
@@ -20075,11 +20075,11 @@ extern int NS_PlayMusicByMemImage( const void *FileImageBuffer, size_t FileImage
 	{
 		if( MidiSystemData.DefaultHandleToSoundHandleFlag == TRUE )
 		{
-			NS_DeleteSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
+			SubHandle( MidiSystemData.DefaultHandle, FALSE, FALSE ) ;
 		}
 		else
 		{
-			NS_DeleteMusicMem( MidiSystemData.DefaultHandle ) ;
+			SubHandle( MidiSystemData.DefaultHandle, FALSE, FALSE ) ;
 		}
 		MidiSystemData.DefaultHandle = 0 ;
 	}
@@ -20120,12 +20120,12 @@ extern int NS_StopMusic( void )
 	if( MidiSystemData.DefaultHandleToSoundHandleFlag == TRUE )
 	{
 		NS_StopSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
-		NS_DeleteSoundMem( MidiSystemData.DefaultHandle, FALSE ) ;
+		SubHandle( MidiSystemData.DefaultHandle, FALSE, FALSE ) ;
 	}
 	else
 	{
 		NS_StopMusicMem( MidiSystemData.DefaultHandle ) ;
-		NS_DeleteMusicMem( MidiSystemData.DefaultHandle ) ;
+		SubHandle( MidiSystemData.DefaultHandle, FALSE, FALSE ) ;
 	}
 
 	MidiSystemData.DefaultHandle = 0 ;
@@ -20452,7 +20452,7 @@ static int SoundTypeChangeToStream( int SoundHandle )
 	// 既存ハンドルの削除
 	{
 		NS_StopSoundMem( SoundHandle, FALSE ) ;				// 再生中だったときのことを考えて止めておく
-		NS_DeleteSoundMem( SoundHandle, FALSE ) ;			// ハンドルを削除
+		SubHandle( SoundHandle, FALSE, FALSE ) ;			// ハンドルを削除
 	}
 
 	// ストリーム再生形式のハンドルとして作り直す

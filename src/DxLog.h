@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ログプログラムヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -31,9 +31,6 @@
     #endif // TARGET_OS_IPHONE
 #endif // __APPLE__
 
-#ifdef EMSCRIPTEN
-#include "HTML5/DxLogHTML5.h"
-#endif
 
 
 

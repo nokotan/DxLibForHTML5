@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		標準関数の互換関数プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -507,12 +507,17 @@ extern void _SINCOS( float Angle, float *DestSin, float *DestCos )
 		fstp	TempCos
 		fstp	TempSin
 	}
-
+	
 	*DestSin = TempSin ;
 	*DestCos = TempCos ;
 #else
+#ifdef __BCC2
+	*DestSin = ( float )sin( ( double )Angle ) ;
+	*DestCos = ( float )cos( ( double )Angle ) ;
+#else // __BCC2
 	*DestSin = ( float )sin( Angle ) ;
 	*DestCos = ( float )cos( Angle ) ;
+#endif // __BCC2
 #endif
 }
 

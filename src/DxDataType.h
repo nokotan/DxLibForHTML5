@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		データタイプ定義ヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -27,10 +27,6 @@
 		#include "DxDataTypeiOS.h"
 	#endif
 #endif // __APPLE__
-
-#ifdef EMSCRIPTEN
-#include "DxDataTypeHTML5.h"
-#endif
 
 
 

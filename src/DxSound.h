@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		サウンドプログラムヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -36,10 +36,6 @@
 		#include "iOS/DxSoundiOS.h"
     #endif // TARGET_OS_IPHONE
 #endif // __APPLE__
-
-#ifdef EMSCRIPTEN
-#include "HTML5/DxSoundHTML5.h"
-#endif
 
 
 

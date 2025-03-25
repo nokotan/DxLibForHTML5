@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Windows専用関数プロトタイプ宣言用ヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -124,6 +124,7 @@ extern	int			SetUseMouseEventTransparentWindowFlag(	int Flag ) ;																
 extern	int			SetResourceModule(						HMODULE ResourceModule ) ;															// リソースを読み込む際に使用するモジュールを設定する( NULL を指定すると初期状態に戻ります、デフォルトでは NULL )
 extern	int			SetUseDxLibWM_PAINTProcess(				int Flag ) ;																		// WM_PAINT メッセージが来た際に『ＤＸライブラリの WM_PAINTメッセージが来た際の処理』を行うかどうかを設定する( 別スレッドで描画処理を行う場合などで使用 )
 extern	int			SetWindows10_WM_CHAR_CancelTime(		int MilliSecond ) ;																	// Windows10 で WM_CHAR で短時間に連続して同じ文字が入力された場合の無効扱いにする時間を設定する( MilliSecond のミリ秒以内に連続して同じ文字が入力された場合に無効にする、MilliSecond の値をマイナスにするとデフォルトの設定に戻る )
+extern	int			SetUseWindows10_WM_CHAR_CancelTime(		int Flag ) ;																		// Windows10 で WM_CHAR で短時間に連続して同じ文字が入力された場合の無効扱いにするかどうかを設定する( TRUE:短時間連続入力は無効扱いにする(デフォルト)  FALSE:短時間連続入力も無効にしない )
 
 // ドラッグ＆ドロップされたファイル関係
 extern	int			SetDragFileValidFlag(		int Flag ) ;																	// ファイルのメインウインドウへのドラッグ＆ドロップ機能を有効にするかどうかのフラグをセットする
@@ -340,6 +341,8 @@ extern	int			SetUseDirect3DVersion(							int Version /* DX_DIRECT3D_9 など */ )
 extern	int			GetUseDirect3DVersion(							void ) ;										// 使用している Direct3D のバージョンを取得する( DX_DIRECT3D_9 など )
 extern	int			GetUseDirect3D11FeatureLevel(					void ) ;										// 使用している Direct3D11 の FeatureLevel ( DX_DIRECT3D_11_FEATURE_LEVEL_9_1 等 )を取得する( 戻り値　-1：エラー　-1以外：Feature Level )
 extern	int			SetUseDirect3D11AdapterIndex(					int Index ) ;									// 使用するグラフィックスデバイスのアダプターのインデックスを設定する
+extern	int			SetUseDirect3D11AdapterLUID(					LUID *UseLUID ) ;								// 使用する IDXGIAdapter の LUID を設定する
+extern	LUID		GetUseDirect3D11AdapterLUID(					void ) ;										// 使用する IDXGIAdapter の LUID を取得する
 extern	int			SetUseDirect3D11BGRASupport(					int Flag ) ;									// D3D11Device 作成時に D3D11_CREATE_DEVICE_BGRA_SUPPORT を指定するかどうかを設定する( TRUE:指定する  FALSE:指定しない( デフォルト ) )
 extern	int			GetUseDirect3D11BGRASupport(					void ) ;										// D3D11Device 作成時に D3D11_CREATE_DEVICE_BGRA_SUPPORT を指定するかどうかを取得する
 extern	int			SetUseDirectDrawFlag(							int Flag ) ;									// ( 同効果のSetUseSoftwareRenderModeFlag を使用して下さい )DirectDrawを使用するかどうかを設定する
