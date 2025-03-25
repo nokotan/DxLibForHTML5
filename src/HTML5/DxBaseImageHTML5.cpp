@@ -2,11 +2,7 @@
 // 
 // 		ＤＸライブラリ		HTML5用BaseImageプログラム
 // 
-<<<<<<< HEAD
-//  	Ver 3.24b
-=======
 //  	Ver 3.24d
->>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 // 
 //-----------------------------------------------------------------------------
 
@@ -17,14 +13,11 @@
 
 // インクルード ---------------------------------------------------------------
 #include "DxBaseImageHTML5.h"
-<<<<<<< HEAD
 #include "../DxStatic.h"
 #include "../DxMemory.h"
 #include "../DxBaseFunc.h"
 
 #include <emscripten.h>
-=======
->>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 #ifndef DX_NON_NAMESPACE
 
@@ -37,7 +30,6 @@ namespace DxLib
 
 // 構造体宣言 -----------------------------------------------------------------
 
-<<<<<<< HEAD
 typedef struct tagDECODEDIMAGE
 {
 	BYTE* DecodedImage;
@@ -46,8 +38,6 @@ typedef struct tagDECODEDIMAGE
 	int Height;
 } DECODEDIMAGE;
 
-=======
->>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 // 関数宣言 -------------------------------------------------------------------
 
 // データ定義 -----------------------------------------------------------------
@@ -60,7 +50,6 @@ int ( *DefaultImageLoadFunc_PF[] )( STREAMDATA *Src, BASEIMAGE *BaseImage, int G
 // プログラム -----------------------------------------------------------------
 
 // 環境依存初期化・終了関数
-<<<<<<< HEAD
 int DecodeImageOnBrowser(BYTE* Src, int Size, DECODEDIMAGE* Decoded) {
 #ifdef ASYNCIFY
 	return EM_ASM_INT({
@@ -103,8 +92,6 @@ int DecodeImageOnBrowser(BYTE* Src, int Size, DECODEDIMAGE* Decoded) {
 	return 0;
 #endif
 }
-=======
->>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 // 基本イメージ管理情報の環境依存処理の初期化
 extern int InitializeBaseImageManage_PF( void )
@@ -118,7 +105,6 @@ extern int TerminateBaseImageManage_PF( void )
 	return 0 ;
 }
 
-<<<<<<< HEAD
 extern int LoadImageFromBrowser(STREAMDATA *Stream, BASEIMAGE *BaseImage, int GetFormatOnly)
 {
 	DWORD_PTR sp;
@@ -183,14 +169,6 @@ ERR:
 
 	return -1;
 }
-=======
-
-
-
-
-
-
->>>>>>> b66228f ([Bot] Update Android Part before 3.24d)
 
 #ifndef DX_NON_NAMESPACE
 

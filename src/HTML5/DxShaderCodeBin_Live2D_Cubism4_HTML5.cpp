@@ -1,29 +1,18 @@
 // -------------------------------------------------------------------------------
 // 
-<<<<<<< HEAD
 // 		ＤＸライブラリ		Live2D Cubism4 用シェーダーバイナリ
-// 
-// 				Ver 3.24b
-// 
-// -------------------------------------------------------------------------------
-
-// ＤＸライブラリ作成時用定義
-=======
-// 		�c�w���C�u����		Live2D Cubism4 �p�V�F�[�_�[�o�C�i��
 // 
 // 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
-// �c�w���C�u�����쐬���p��`
->>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
+// ＤＸライブラリ作成時用定義
 #define DX_MAKE
 
 #include "../DxCompileConfig.h"
 
 #ifndef DX_NON_LIVE2D_CUBISM4
 
-<<<<<<< HEAD
 // インクルード----------------------------------------------------------------
 #include "../DxLib.h"
 #include "../DxStatic.h"
@@ -38,23 +27,6 @@
 //#endif // DX_NON_NAMESPACE
 
 // シェーダーファイルを圧縮したもの
-=======
-// �C���N���[�h----------------------------------------------------------------
-#include "../DxLib.h"
-#include "../DxStatic.h"
-
-// �f�[�^��`------------------------------------------------------------------
-
-// #ifndef DX_NON_NAMESPACE
-// 
-// namespace DxLib
-// {
-// 
-// #endif // DX_NON_NAMESPACE
-
-// �V�F�[�_�[�t�@�C�������k��������
-int  DxShaderCodeBin_Live2D_Cubism4_HTML5Convert ;
->>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 BYTE DxShaderCodeBin_Live2D_Cubism4_HTML5[] = 
 {
 	0x6c,0x1c,0x00,0x00,0x6b,0x06,0x00,0x00,0xfe,0x44,0x58,0x08,0x00,0x3c,0x06,0x00,
@@ -162,18 +134,10 @@ BYTE DxShaderCodeBin_Live2D_Cubism4_HTML5[] =
 	0x61,0xe7,0x02,0xfe,0x21,0x2b,0x1c,0xfe,0x21,0x9f,0x02,
 } ;
 
-<<<<<<< HEAD
 //#ifndef DX_NON_NAMESPACE
 //
 //}
 //
 //#endif // DX_NON_NAMESPACE
-=======
-// #ifndef DX_NON_NAMESPACE
-// 
-// }
-// 
-// #endif // DX_NON_NAMESPACE
->>>>>>> d570d3a ([Bot] Update iOS Part before 3.24d)
 
 #endif // DX_NON_LIVE2D_CUBISM4
