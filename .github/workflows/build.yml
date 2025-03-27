@@ -8,7 +8,7 @@ jobs:
     container: 
       image: emscripten/emsdk:3.1.56
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -18,7 +18,7 @@ jobs:
       - name: Pack
         run: bash ci-scripts/Package.sh
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: DxLibHTML5
           path: DxLibForHTML5.*
