@@ -109,6 +109,9 @@ struct SOUNDCONV
 	int							OggVorbisBitDepth ;			// ＯｇｇＶｏｒｂｉｓ使用時のビット深度(1:8bit 2:16bit)
 	int							OggVorbisFromTheoraFile ;	// Ogg Theora ファイル中の Vorbis データを参照するかどうかのフラグ( TRUE:Theora ファイル中の Vorbis データを参照する )
 #endif
+#ifdef EMSCRIPTEN
+	int							BufferId;
+#endif
 } ;
 
 // サウンド変換処理全体で使用するデータ構造体

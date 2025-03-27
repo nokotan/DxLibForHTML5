@@ -82,6 +82,10 @@
     #endif // TARGET_OS_IPHONE
 #endif // __APPLE__
 
+#ifdef EMSCRIPTEN
+#include "HTML5/DxFileHTML5.h"
+#endif
+
 
 
 

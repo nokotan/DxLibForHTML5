@@ -1955,6 +1955,14 @@ typedef struct tagIPDATA_IPv6
 	#endif
 #endif // __APPLE__
 
+#ifdef EMSCRIPTEN
+#include "DxFunctionHTML5.h"
+#endif // EMSCRIPTEN
+
+#define DXLIBAPI
+
+
+
 
 
 
