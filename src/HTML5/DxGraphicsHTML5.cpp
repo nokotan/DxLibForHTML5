@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画処理プログラム( HTML5 )
 // 
-//  	Ver 3.24b
+//  	Ver 3.24d
 // 
 //-----------------------------------------------------------------------------
 
@@ -20,7 +20,6 @@
 #include "DxMaskHTML5.h"
 #include "DxMemoryHTML5.h"
 #include "DxSystemHTML5.h"
-
 #include "../DxSystem.h"
 #include "../DxLog.h"
 #include "../DxModel.h"
@@ -330,13 +329,13 @@ DX_HTML5_RENDER_BLEND_INFO g_DefaultBlendDescArray[ DX_BLENDMODE_NUM ] =
 	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_NOBLEND			ノーブレンド
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA			αブレンド
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ADD				加算ブレンド
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,			GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB				減算ブレンド
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_ONE_MINUS_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB				減算ブレンド
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				乗算ブレンド
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE,					GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_SUB2			内部処理用減算ブレンド１
 	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_XOR				XORブレンド(非対応)
 	{ HTML5_RENDER_TYPE_NORMAL,		FALSE, GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				 TRUE },	// 欠番
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,				GL_ONE,					GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_DESTCOLOR		カラーは更新されない
-	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_DST_ALPHA,			GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR	描画先の色の反転値を掛ける
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE_MINUS_DST_COLOR,	GL_ZERO,				GL_FUNC_ADD,				GL_ONE_MINUS_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR	描画先の色の反転値を掛ける
 	{ HTML5_RENDER_TYPE_INVERSE,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_INVSRC			描画元の色を反転する
 	{ HTML5_RENDER_TYPE_MUL,			TRUE,  GL_ZERO,					GL_SRC_COLOR,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_MULA			アルファチャンネル考慮付き乗算ブレンド
 	{ HTML5_RENDER_TYPE_X4,			TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				 TRUE },	// DX_BLENDMODE_ALPHA_X4		αブレンドの描画側の輝度を最大４倍にできるモード
@@ -364,6 +363,12 @@ DX_HTML5_RENDER_BLEND_INFO g_DefaultBlendDescArray[ DX_BLENDMODE_NUM ] =
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ONE,					GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				GL_ONE_MINUS_SRC_COLOR,	GL_ONE_MINUS_SRC_COLOR,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_SPINE_SCREEN	Spine のブレンドモード Screen 用
 
 	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				GL_SRC_ALPHA,			GL_ONE_MINUS_SRC_ALPHA,	GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_CUSTOM			カスタムブレンド
+
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ONE,					GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_DST_RGB_SRC_A	描画元の A のみを書き込む( 描画先の RGB は変更されない )
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ONE_MINUS_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR_A	描画先の A の反転値を掛ける( 描画先の RGB は変更されない )
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_ONE,					GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				A のみの乗算ブレンド( 描画先の RGB は変更されない )
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_ALPHA,			GL_FUNC_ADD,				GL_ONE_MINUS_DST_ALPHA,	GL_ZERO,				GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_INVDESTCOLOR_A	描画先の A の反転値を掛ける( 描画先の RGB は変更されない )
+	{ HTML5_RENDER_TYPE_NORMAL,		TRUE,  GL_ZERO,					GL_SRC_ALPHA,			GL_FUNC_ADD,				GL_ZERO,				GL_SRC_ALPHA,			GL_FUNC_ADD,				FALSE },	// DX_BLENDMODE_MUL				A のみの乗算ブレンド( 描画先の RGB は変更されない )
 } ;
 
 // ＤＸライブラリのブレンド要素タイプを OpenGL ES の要素タイプに変換するためのテーブル
@@ -2312,7 +2317,7 @@ extern int Graphics_HTML5_Shader_Terminate( void )
 	Graphics_HTML5_ShaderList_Terminate() ;
 
 #ifndef DX_NON_FILTER
-	GraphFilter_HTML5_ReleaseShaderAll();
+	GraphFilter_HTML5_ReleaseShaderAll() ;
 #endif // DX_NON_FILTER
 
 #ifndef DX_NON_LIVE2D_CUBISM4
@@ -2329,12 +2334,12 @@ extern int Graphics_HTML5_Shader_Normal3DDraw_Setup( void )
 	GRAPHICS_HARDWARE_HTML5_SHADER_BASE3D		*SB3D  = &GHTML5.Device.Shader.Base3D ;
 	GRAPHICS_HARDWARE_HTML5_SHADERCODE_BASE3D	*SCB3D = &GHTML5.ShaderCode.Base3D ;
 	int											ValidPL ;
-	GRAPHICS_HTML5_SHADER					**Shader_PL		= NULL ;
+	GRAPHICS_HTML5_SHADER						**Shader_PL		= NULL ;
 	GLuint										*VS_PL			= NULL ;
 	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*VSAddress_PL	= NULL ;
 	GLuint										*FS_PL			= NULL ;
 	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*FSAddress_PL	= NULL ;
-	GRAPHICS_HTML5_SHADER					**Shader		= NULL ;
+	GRAPHICS_HTML5_SHADER						**Shader		= NULL ;
 	GLuint										*VS				= NULL ;
 	GRAPHICS_HARDWARE_HTML5_SHADERCODE_INFO	*VSAddress		= NULL ;
 	GLuint										*FS				= NULL ;
@@ -5606,7 +5611,7 @@ static int Graphics_HTML5_DeviceState_UpdateConstantFogParam( void )
 	return 0 ;
 }
 
-// フォグが始まる距離と終了する距離を設定する( 0.0f 〜 1.0f )
+// フォグが始まる距離と終了する距離を設定する( 0.0f ～ 1.0f )
 extern int  Graphics_HTML5_DeviceState_SetFogStartEnd( float Start, float End )
 {
 	int UpdateFlag ;
@@ -5641,7 +5646,7 @@ extern int  Graphics_HTML5_DeviceState_SetFogStartEnd( float Start, float End )
 	return 0 ;
 }
 
-// フォグの密度を設定する( 0.0f 〜 1.0f )
+// フォグの密度を設定する( 0.0f ～ 1.0f )
 extern int  Graphics_HTML5_DeviceState_SetFogDensity( float Density )
 {
 	if( Density == GHTML5.Device.State.FogDensity &&
@@ -17380,7 +17385,7 @@ extern	int		Graphics_Hardware_SetRenderTargetToShader_PF( int TargetIndex, int D
 	return 0 ;
 }
 
-// メインウインドウの背景色を設定する( Red,Green,Blue:それぞれ ０〜２５５ )
+// メインウインドウの背景色を設定する( Red,Green,Blue:それぞれ ０～２５５ )
 extern	int		Graphics_Hardware_SetBackgroundColor_PF( int Red, int Green, int Blue, int Alpha )
 {
 	Graphics_HTML5_DeviceState_SetBackgroundColor( Red, Green, Blue, Alpha ) ;
@@ -17453,6 +17458,8 @@ extern	int		Graphics_Hardware_SetDrawAddColor_PF( int Red, int Green, int Blue )
 	GHTML5.Device.Shader.Constant.uAddColor[ 0 ] = GSYS.DrawSetting.DrawAddColorF.r ;
 	GHTML5.Device.Shader.Constant.uAddColor[ 1 ] = GSYS.DrawSetting.DrawAddColorF.g ;
 	GHTML5.Device.Shader.Constant.uAddColor[ 2 ] = GSYS.DrawSetting.DrawAddColorF.b ;
+
+	GHTML5.Device.Shader.Constant.UpdateCount ++ ;
 
 	// 正常終了
 	return 0 ;
@@ -17616,7 +17623,7 @@ extern	int		Graphics_Hardware_SetFogColor_PF( DWORD FogColor )
 	return 0 ;
 }
 
-// フォグが始まる距離と終了する距離を設定する( 0.0f 〜 1.0f )
+// フォグが始まる距離と終了する距離を設定する( 0.0f ～ 1.0f )
 extern	int		Graphics_Hardware_SetFogStartEnd_PF( float start, float end )
 {
 	Graphics_HTML5_DeviceState_SetFogStartEnd( start, end ) ;
@@ -17625,7 +17632,7 @@ extern	int		Graphics_Hardware_SetFogStartEnd_PF( float start, float end )
 	return 0 ;
 }
 
-// フォグの密度を設定する( 0.0f 〜 1.0f )
+// フォグの密度を設定する( 0.0f ～ 1.0f )
 extern	int		Graphics_Hardware_SetFogDensity_PF( float density )
 {
 	Graphics_HTML5_DeviceState_SetFogDensity( density ) ;
@@ -18082,7 +18089,6 @@ extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSur
 	{
 		Graphics_HTML5_DeviceState_SetTexture( 0, NULL ) ;
 	}
-	
 	// 描画先の変更
 
 	// マスクサーフェスが存在していて且つ有効な場合はマスクサーフェスを描画対象にする
@@ -18116,7 +18122,6 @@ extern	int		Graphics_Hardware_SetDrawScreen_PF( int DrawScreen, int OldScreenSur
 	{
 		Graphics_HTML5_DeviceState_SetRenderTarget( GHTML5.Device.Screen.SubBackBufferFrameBuffer, GHTML5.Device.Screen.SubBackBufferTextureSizeX, GHTML5.Device.Screen.SubBackBufferTextureSizeY ) ;
 	}
-	
 	// 使用するＺバッファのセットアップ
 	Graphics_Screen_SetupUseZBuffer() ;
 

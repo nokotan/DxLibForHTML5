@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		サウンドデータ変換プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -105,13 +105,11 @@ extern	int SetupSoundConvert( SOUNDCONV *SoundConv, STREAMDATA *Stream, int Disa
 	SoundConv->Stream = *Stream ;
 	SoundConv->SeekLockPosition = 0 ;
 	Stream->ReadShred.Seek( Stream->DataPoint, 0, SEEK_SET ) ;
-#ifndef DX_NON_WAVE
 	if( ( DisableReadSoundFunctionMask & DX_READSOUNDFUNCTION_PCM ) == 0 )
 	{
 		if( SetupSoundConvert_WAVE( SoundConv ) == 0 ) goto R1 ;
 		Stream->ReadShred.Seek( Stream->DataPoint, 0, SEEK_SET ) ;
 	}
-#endif
 #ifndef DX_NON_OGGVORBIS
 	if( ( DisableReadSoundFunctionMask & DX_READSOUNDFUNCTION_OGG ) == 0 )
 	{
@@ -164,9 +162,7 @@ extern int SetSampleTimeSoundConvert( SOUNDCONV *SoundConv, LONGLONG SampleTime 
 
 	switch( SoundConv->MethodType )
 	{
-#ifndef DX_NON_WAVE
 	case SOUND_METHODTYPE_NORMAL : res = SetSampleTimeSoundConvert_WAVE( SoundConv, SampleTime ) ; break ;
-#endif
 #ifndef DX_NON_OGGVORBIS
 	case SOUND_METHODTYPE_OGG : res = SetSampleTimeSoundConvert_OGG( SoundConv, SampleTime ) ; break ;
 #endif
@@ -206,9 +202,7 @@ extern	size_t RunSoundConvert( SOUNDCONV *SoundConv, void *DestBuffer, size_t De
 			SoundConv->DestDataCompSize = 0 ;
 			switch( SoundConv->MethodType )
 			{
-#ifndef DX_NON_WAVE
 			case SOUND_METHODTYPE_NORMAL : res = ConvertProcessSoundConvert_WAVE( SoundConv ) ; break ;
-#endif
 #ifndef DX_NON_OGGVORBIS
 			case SOUND_METHODTYPE_OGG : res = ConvertProcessSoundConvert_OGG( SoundConv ) ; break ;
 #endif
@@ -280,9 +274,7 @@ extern	int TerminateSoundConvert( SOUNDCONV *SoundConv )
 	
 	switch( SoundConv->MethodType )
 	{
-#ifndef DX_NON_WAVE
 	case SOUND_METHODTYPE_NORMAL : TerminateSoundConvert_WAVE( SoundConv ) ; break ;
-#endif
 #ifndef DX_NON_OGGVORBIS
 	case SOUND_METHODTYPE_OGG : TerminateSoundConvert_OGG( SoundConv ) ; break ;
 #endif
@@ -313,9 +305,7 @@ extern int GetSoundConvertLoopAreaInfo( SOUNDCONV *SoundConv, LONGLONG *LoopStar
 
 	switch( SoundConv->MethodType )
 	{
-#ifndef DX_NON_WAVE
 	case SOUND_METHODTYPE_NORMAL : return GetSoundConvertLoopAreaInfo_WAVE( SoundConv, LoopStartPos, LoopEndPos ) ;
-#endif
 #ifndef DX_NON_OGGVORBIS
 	case SOUND_METHODTYPE_OGG : return GetSoundConvertLoopAreaInfo_OGG( SoundConv, LoopStartPos, LoopEndPos ) ;
 #endif
@@ -334,9 +324,7 @@ extern	LONGLONG GetSoundConvertDestSize_Fast( SOUNDCONV *SoundConv )
 {
 	switch( SoundConv->MethodType )
 	{
-#ifndef DX_NON_WAVE
 	case SOUND_METHODTYPE_NORMAL : return GetSoundConvertDestSize_Fast_WAVE( SoundConv ) ;
-#endif
 #ifndef DX_NON_OGGVORBIS
 	case SOUND_METHODTYPE_OGG : return GetSoundConvertDestSize_Fast_OGG( SoundConv ) ;
 #endif

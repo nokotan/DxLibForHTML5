@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		Android用データタイプ定義ヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -95,37 +95,37 @@ typedef char *		LPSTR ;
 typedef int *		LPLONG ;
 
 #ifndef LONGLONG
-#define LONGLONG	int64_t
+#define LONGLONG	long long
 #endif
 
 #ifndef ULONGLONG
-#define ULONGLONG	uint64_t
+#define ULONGLONG	unsigned long long
 #endif
 
 #ifndef BYTE
-#define BYTE		uint8_t
+#define BYTE		unsigned char
 #endif
 
 #ifndef WORD
-#define WORD		uint16_t
+#define WORD		unsigned short
 #endif
 
 #ifndef DWORD
-#define DWORD		uint32_t
+#define DWORD		unsigned int
 #endif
 
-typedef uint32_t *	LPDWORD ;
+typedef unsigned int * LPDWORD ;
 
 #ifndef DWORD_PTR
 #ifdef __LP64__
-#define DWORD_PTR	uint64_t
+#define DWORD_PTR	unsigned long long
 #else
-#define DWORD_PTR	uint32_t
+#define DWORD_PTR	unsigned int
 #endif
 #endif
 
 #ifndef LONG_PTR
-#define LONG_PTR	int32_t
+#define LONG_PTR	int
 #endif
 
 #define _FPCLASS_SNAN		0x0001

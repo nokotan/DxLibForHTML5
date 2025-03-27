@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		モデルデータ制御プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -50,7 +50,8 @@
 
 #ifdef EMSCRIPTEN
 #include "HTML5/DxModelHTML5.h"
-#endif
+#endif // EMSCRIPTEN
+
 
 
 #include <math.h>
@@ -6301,7 +6302,7 @@ extern int TerminateModelBaseHandle( HANDLEINFO *HandleInfo )
 		}
 
 		// 画像ハンドルを削除
-		NS_DeleteGraph( Texture->GraphHandle, FALSE ) ;
+		SubHandle( Texture->GraphHandle, GetASyncLoadFlag(), FALSE ) ;
 		Texture->GraphHandle = 0 ;
 
 		// ファイルパスの解放
@@ -6453,7 +6454,7 @@ int MV1AddModelBase( int ASyncThread )
 // モデル基本データを削除する
 extern int MV1SubModelBase( int MBHandle )
 {
-	return SubHandle( MBHandle ) ;
+	return SubHandle( MBHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 // モデル基本データを複製する
@@ -10580,7 +10581,7 @@ ERRORLABEL :
 	}
 	if( UserGraphHandle == FALSE && *GraphHandle != -1 )
 	{
-		NS_DeleteGraph( *GraphHandle, FALSE ) ;
+		SubHandle( *GraphHandle, FALSE, ASyncThread ) ;
 		*GraphHandle = -1 ;
 	}
 
@@ -13087,7 +13088,7 @@ extern int TerminateModelHandle( HANDLEINFO *HandleInfo )
 					Texture->AlphaImage = NULL ;
 				}
 
-				NS_DeleteGraph( Texture->GraphHandle, FALSE ) ;
+				SubHandle( Texture->GraphHandle, FALSE, FALSE ) ;
 				Texture->GraphHandle = -1 ;
 				Texture->UseGraphHandle = 0 ;
 			}
@@ -13895,7 +13896,7 @@ extern int MV1SubModel( int MV1ModelHandle )
 	// 描画待機している描画物を描画
 	DRAWSTOCKINFO
 
-	return SubHandle( MV1ModelHandle ) ;
+	return SubHandle( MV1ModelHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 // MV1LoadModelFromMem の実処理関数
@@ -14073,7 +14074,7 @@ static void MV1LoadModelFromMem_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( MHandle ) ;
 	if( Result < 0 )
 	{
-		MV1SubModel( MHandle ) ;
+		SubHandle( MHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -14444,7 +14445,7 @@ static void MV1LoadModel_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( MHandle ) ;
 	if( Result < 0 )
 	{
-		MV1SubModel( MHandle ) ;
+		SubHandle( MHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -22265,6 +22266,9 @@ static int MV1DrawModelBase( MV1_MODEL *Model )
 				}
 			}
 		}
+
+		// シェーダーにセットされているグラフィックハンドルの動画を更新する
+		Graphics_DrawSetting_UpdateUserTextureMovie() ;
 	}
 #endif
 
@@ -22564,6 +22568,9 @@ extern int NS_MV1DrawFrame( int MHandle, int FrameIndex )
 				}
 			}
 		}
+
+		// シェーダーにセットされているグラフィックハンドルの動画を更新する
+		Graphics_DrawSetting_UpdateUserTextureMovie() ;
 	}
 #endif
 
@@ -22731,6 +22738,9 @@ extern int NS_MV1DrawMesh( int MHandle, int MeshIndex )
 				}
 			}
 		}
+
+		// シェーダーにセットされているグラフィックハンドルの動画を更新する
+		Graphics_DrawSetting_UpdateUserTextureMovie() ;
 	}
 #endif
 
@@ -22809,6 +22819,9 @@ extern int NS_MV1DrawTriangleList( int MHandle, int TriangleListIndex )
 				}
 			}
 		}
+
+		// シェーダーにセットされているグラフィックハンドルの動画を更新する
+		Graphics_DrawSetting_UpdateUserTextureMovie() ;
 	}
 #endif
 
@@ -26857,7 +26870,7 @@ static void MV1LoadTexture_WCHAR_T_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( NewGraphHandle ) ;
 	if( Result < 0 )
 	{
-		NS_DeleteGraph( NewGraphHandle, FALSE ) ;
+		SubHandle( NewGraphHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -26946,7 +26959,7 @@ ERR :
 	}
 #endif // DX_NON_ASYNCLOAD
 
-	NS_DeleteGraph( NewGraphHandle, FALSE ) ;
+	SubHandle( NewGraphHandle, ASyncLoadFlag, ASyncThread ) ;
 
 	return -1 ;
 }

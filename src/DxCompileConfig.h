@@ -2,7 +2,7 @@
 //
 //		ＤＸライブラリ　コンパイルコンフィグヘッダファイル
 //
-//				Ver 3.24b
+//				Ver 3.24d
 //
 // ----------------------------------------------------------------------------
 
@@ -50,6 +50,9 @@
 
 // ＢＭＰ画像の読み込み機能がいらない方は次のコメントを外してください
 #define DX_NON_BMPREAD
+
+// Switch の MP4 再生機能がいらない方は次のコメントを外してください
+//#define DX_NON_NSW_MP4
 
 // ＴＧＡ画像の読み込み機能がいらない方は次のコメントを外してください
 // #define DX_NON_TGA
@@ -252,10 +255,6 @@
 #define DX_NON_DIRECT3D9
 #endif
 
-// #ifdef EMSCRIPTEN
-// #define DX_NON_MULTITHREAD
-// #endif
-
 
 
 
@@ -329,6 +328,9 @@
 	#endif
 	#ifndef DX_NOTUSE_DRAWFUNCTION
 		#define DX_NOTUSE_DRAWFUNCTION
+	#endif
+	#ifndef DX_NON_LIVE2D_CUBISM4
+		#define DX_NON_LIVE2D_CUBISM4
 	#endif
 #endif // DX_NON_GRAPHICS
 

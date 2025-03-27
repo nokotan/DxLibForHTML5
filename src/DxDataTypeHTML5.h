@@ -22,6 +22,10 @@
 
 // マクロ定義 --------------------------------------------------------------------
 
+#ifndef DXLIBAPI
+#define DXLIBAPI
+#endif
+
 // センサー
 #define DX_HTML5_SENSOR_ACCELEROMETER			(0)		// 加速度センサー
 #define DX_HTML5_SENSOR_MAGNETIC_FIELD		(1)		// 磁界センサー

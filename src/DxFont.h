@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		フォント処理用プログラムヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -311,6 +311,7 @@ struct FONTSYSTEM
 	int						UsePremulAlphaFlag ;				// 乗算済みαを使用するかどうかのフラグ( TRUE:使用する  FALSE:使用しない )
 	int						DisableAdjustFontSize ;				// フォントサイズの補正を行わないかどうかのフラグ( TRUE:補正を行わない  FALSE:補正を行う )
 	int						OnlyDrawType ;						// フォントの描画で縁のみ、又は本体のみ描画を行うための設定( OnlyType  0:通常描画 1:本体のみ描画 2:縁のみ描画 )
+	int						IgnoreLFFlag ;						// \n を無視するかどうかのフラグ( TRUE:無視する  FALSE:無視しない )
 	BYTE					BitCountTable[ 256 ] ;				// ビットカウントテーブル
 	BYTE					MAX15ToMAX16[ 16 ] ;				// 0～15  の値を 0～16 に変換するためのテーブル
 	BYTE					MAX255ToMAX16[ 256 ] ;				// 0～255 の値を 0～16 に変換するためのテーブル
@@ -389,7 +390,7 @@ extern	int			FontCacheStringDrawToHandleST(
 							int TransFlag, FONTMANAGE *ManageData, unsigned int EdgeColor,
 							int StrLen, int VerticalFlag, SIZE *DrawSize,
 							int *LineCount, 
-							DRAWCHARINFO *CharInfos, size_t CharInfoBufferSize, int *CharInfoNum,
+							DRAWCHARINFO *CharInfos, size_t CharInfoBufferSize, int *CharInfoNum, int CharInfoType /* 0:簡易情報  1:詳細情報 */,
 							int OnlyType /* 0:通常描画 1:本体のみ 2:縁のみ */ ) ;
 extern	int			RefreshDefaultFont( void ) ;																				// デフォルトフォントを再作成する
 extern	int			InitFontToHandleBase( int Terminate = FALSE ) ;																// InitFontToHandle の内部関数

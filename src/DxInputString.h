@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字列入力プログラムヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -233,8 +233,9 @@ extern	int			GetStringPoint2_WCHAR_T(			const wchar_t *String, int Point ) ;
 extern	int			GetStringLength_WCHAR_T(			const wchar_t *String ) ;
 
 #ifndef DX_NON_FONT
-extern	int			DrawObtainsString_WCHAR_T(			int x, int y,                                                   int AddY, const wchar_t *String, int StrLen, unsigned int StrColor, unsigned int StrEdgeColor = 0 , int FontHandle = -1 , unsigned int SelectBackColor = 0xffffffff , unsigned int SelectStrColor = 0 , unsigned int SelectStrEdgeColor = 0xffffffff , int SelectStart = -1 , int SelectEnd = -1 , int DrawFlag = TRUE, int *PosX = NULL, int *PosY = NULL ) ;
-extern	int			DrawObtainsString_CharClip_WCHAR_T(	int x, int y, int EnableExRate, double ExRateX, double ExRateY, int AddY, const wchar_t *String, int StrLen, unsigned int StrColor, unsigned int StrEdgeColor = 0 , int FontHandle = -1 , unsigned int SelectBackColor = 0xffffffff , unsigned int SelectStrColor = 0 , unsigned int SelectStrEdgeColor = 0xffffffff , int SelectStart = -1 , int SelectEnd = -1 , int DrawFlag = TRUE, int *PosX = NULL, int *PosY = NULL ) ;
+extern	int			DrawObtainsString_WCHAR_T(			int x, int y,                                                   int AddY, const wchar_t *String, int StrLen, unsigned int StrColor, unsigned int StrEdgeColor = 0 , int FontHandle = -1 , unsigned int SelectBackColor = 0xffffffff , unsigned int SelectStrColor = 0 , unsigned int SelectStrEdgeColor = 0xffffffff , int SelectStart = -1 , int SelectEnd = -1 , int DrawFlag = TRUE, int *PosX = NULL, int *PosY = NULL, int *LineCount = NULL ) ;
+extern	int			DrawObtainsString_CharClip_WCHAR_T(	int x, int y, int EnableExRate, double ExRateX, double ExRateY, int AddY, const wchar_t *String, int StrLen, unsigned int StrColor, unsigned int StrEdgeColor = 0 , int FontHandle = -1 , unsigned int SelectBackColor = 0xffffffff , unsigned int SelectStrColor = 0 , unsigned int SelectStrEdgeColor = 0xffffffff , int SelectStart = -1 , int SelectEnd = -1 , int DrawFlag = TRUE, int *PosX = NULL, int *PosY = NULL, int *LineCount = NULL ) ;
+extern	int			DrawObtainsString_WordClip_WCHAR_T(	int x, int y, int EnableExRate, double ExRateX, double ExRateY, int AddY, const wchar_t *String, int StrLen, unsigned int StrColor, unsigned int StrEdgeColor = 0 , int FontHandle = -1 , unsigned int SelectBackColor = 0xffffffff , unsigned int SelectStrColor = 0 , unsigned int SelectStrEdgeColor = 0xffffffff , int SelectStart = -1 , int SelectEnd = -1 , int DrawFlag = TRUE, int *PosX = NULL, int *PosY = NULL, int *LineCount = NULL ) ;
 #endif // DX_NON_FONT
 
 #ifndef DX_NON_KEYEX

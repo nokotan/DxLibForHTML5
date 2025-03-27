@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ファイルアクセスプログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -819,7 +819,7 @@ extern int NS_FileRead_open_mem( const void *FileImage, size_t FileImageSize )
 	return FileHandle ;
 
 ERR :
-	SubHandle( FileHandle ) ;
+	SubHandle( FileHandle, FALSE, FALSE ) ;
 
 	return 0 ;
 }
@@ -894,7 +894,7 @@ static void FileRead_open_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( FileHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( FileHandle ) ;
+		SubHandle( FileHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -978,7 +978,7 @@ extern int FileRead_open_UseGParam(
 	return FileHandle ;
 
 ERR :
-	SubHandle( FileHandle ) ;
+	SubHandle( FileHandle, FALSE, FALSE ) ;
 
 	return 0 ;
 }
@@ -1079,7 +1079,7 @@ extern LONGLONG NS_FileRead_size_handle( int FileHandle )
 
 extern int NS_FileRead_close( int FileHandle )
 {
-	return SubHandle( FileHandle ) ;
+	return SubHandle( FileHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 extern LONGLONG NS_FileRead_tell( int FileHandle )
@@ -1910,7 +1910,7 @@ static void FileRead_fullyLoad_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( FileHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( FileHandle ) ;
+		SubHandle( FileHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -1993,7 +1993,7 @@ extern	int FileRead_fullyLoad_UseGParam( const wchar_t *FilePath, int ASyncLoadF
 	return FileHandle ;
 
 ERR :
-	SubHandle( FileHandle ) ;
+	SubHandle( FileHandle, ASyncLoadFlag, FALSE ) ;
 
 	return -1 ;
 }
@@ -2029,7 +2029,7 @@ extern int NS_FileRead_fullyLoad_WithStrLen( const TCHAR *FilePath, size_t FileP
 // FileRead_fullyLoad で読み込んだファイルをメモリから削除する
 extern	int NS_FileRead_fullyLoad_delete( int FLoadHandle )
 {
-	return SubHandle( FLoadHandle ) ;
+	return SubHandle( FLoadHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 // FileRead_fullyLoad で読み込んだファイルの内容を格納したメモリアドレスを取得する

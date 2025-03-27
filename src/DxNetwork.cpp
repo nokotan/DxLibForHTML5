@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		通信関連プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -1202,7 +1202,7 @@ static void ConnectNetWorkBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( NetHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( NetHandle ) ;
+		SubHandle( NetHandle, FALSE, FALSE ) ;
 	}
 }
 
@@ -1367,7 +1367,7 @@ extern int ConnectNetWorkBase_UseGParam(
 	return NetHandle ;
 
 ERR :
-	SubHandle( NetHandle ) ;
+	SubHandle( NetHandle, ASyncLoadFlag, FALSE ) ;
 
 	// クリティカルセクションの解放
 	CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
@@ -1539,7 +1539,7 @@ FUNCTIONEND :
 	// エラー処理
 ERR :
 	// ハンドルの削除
-	SubHandle( SockData.ListenHandle ) ;
+	SubHandle( SockData.ListenHandle, FALSE, FALSE ) ;
 
 	// クリティカルセクションの解放
 	CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
@@ -1692,7 +1692,7 @@ FUNCTIONEND :
 ERR :
 
 	// ハンドルを削除
-	SubHandle( NewNetHandle ) ;
+	SubHandle( NewNetHandle, FALSE, FALSE ) ;
 
 	// クリティカルセクションの解放
 	CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
@@ -1707,7 +1707,7 @@ extern int NS_StopListenNetWork( void )
 		return -1 ;
 
 	// 接続受け付け用のハンドルを削除
-	return SubHandle( SockData.ListenHandle ) ;
+	return SubHandle( SockData.ListenHandle, FALSE, FALSE ) ;
 /*
 	int ReturnValue = 0 ;
 	SOCKETDATA * ListenSock = SockData.CSocket[ MAX_SOCKET_NUM ] ;
@@ -1775,7 +1775,7 @@ extern int NS_CloseNetWork( int NetHandle )
 		return -1 ;
 
 	// ハンドルを削除
-	return SubHandle( NetHandle ) ;
+	return SubHandle( NetHandle, GetASyncLoadFlag(), FALSE ) ;
 /*
 	int ReturnValue = 0 ;
 	SOCKETDATA * Sock ;
@@ -3666,7 +3666,7 @@ static void MakeUDPSocketBase_ASync( ASYNCLOADDATA_COMMON *AParam )
 	DecASyncLoadCount( NetHandle ) ;
 	if( Result < 0 )
 	{
-		SubHandle( NetHandle ) ;
+		SubHandle( NetHandle, FALSE, FALSE ) ;
 	}
 }
 #endif // DX_NON_ASYNCLOAD
@@ -3752,7 +3752,7 @@ extern int MakeUDPSocketBase_UseGParam(
 	return NetHandle ;
 
 ERR :
-	SubHandle( NetHandle ) ;
+	SubHandle( NetHandle, ASyncLoadFlag, FALSE ) ;
 
 	// クリティカルセクションの解放
 	CriticalSection_Unlock( &HandleManageArray[ DX_HANDLETYPE_NETWORK ].CriticalSection ) ;
@@ -3781,7 +3781,7 @@ extern int NS_MakeUDPSocket_IPv6( int RecvPort )
 // UDPを使用した通信を行うソケットハンドルを削除する
 extern int NS_DeleteUDPSocket( int NetUDPHandle )
 {
-	return SubHandle( NetUDPHandle ) ;
+	return SubHandle( NetUDPHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 // NetWorkSendUDP の実処理関数

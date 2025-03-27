@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		描画プログラムヘッダファイル
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // -------------------------------------------------------------------------------
 
@@ -813,7 +813,7 @@ struct GRAPHICSSYS_CAMERA
 // ユーザーの描画設定情報構造体
 struct GRAPHICSSYS_USERRENDERINFO
 {
-	int						SetTextureGraphHandle[ 20 ] ;			// ユーザー設定の各ステージのテクスチャ
+	int						SetTextureGraphHandle[ USE_TEXTURESTAGE_NUM ] ;		// ユーザー設定の各ステージのテクスチャ
 	int						SetRenderTargetGraphHandle[ 4 ] ;		// ユーザー設定の各レンダリングターゲット
 
 	int						SetVertexShaderHandle ;					// ユーザー設定で使用する頂点シェーダー
@@ -1452,6 +1452,7 @@ extern	void			Graphics_DrawSetting_RefreshBlend3DTransformMatrix( void ) ;						
 //extern	void		Graphics_DrawSetting_SetUse2DProjectionMatrix( int Use2DProjectionMatrix ) ;						// 使用する射影行列を３Ｄ用にするか２Ｄ用にするかを設定する
 extern	int				Graphics_DrawSetting_GetScreenDrawSettingInfo(       SCREENDRAWSETTINGINFO *ScreenDrawSettingInfo ) ;	// ＤＸライブラリ内部で SetDrawScreen を使用して描画先を変更する際の、元のカメラ設定や描画領域を復元する為の情報を取得する処理を行う
 extern	int				Graphics_DrawSetting_SetScreenDrawSettingInfo( const SCREENDRAWSETTINGINFO *ScreenDrawSettingInfo ) ;	// ＤＸライブラリ内部で SetDrawScreen を使用して描画先を変更する際の、元のカメラ設定や描画領域を復元する処理を行う
+extern	int				Graphics_DrawSetting_UpdateUserTextureMovie( void ) ;												// シェーダーに設定されているテクスチャの動画を更新する
 
 
 

@@ -3,9 +3,110 @@
 //　ＤＸライブラリ　非公式ログ
 //
 //　Creator : 山田　巧
-//  Last Access : 2023/2/24
+//  Last Access : 2024/1/3
 // ============================================================================
 
+Ver 3.24d	　正式公開のためにバージョン番号を変更。
+Ver 3.24c	　Android版・iOS版：Android と iOS の環境で SetDrawAddColor が
+			正常に動作しないバグを修正。
+			　Windows版：ディスプレイの縦横比と SetGraphMode で指定した
+			縦横比が一致しない場合、Direct3D 9 を使用してフルスクリーンモード
+			で起動した際は余白部分が SetBackgroundColor で指定した色で
+			塗りつぶされなかったバグを修正。
+			　Windows版：SetFullSceneAntiAliasingMode でフルシーンアンチエ
+			イリアスを設定しても Direct3D 9 で起動した場合は設定が適用され
+			ないことがあるバグを修正。
+			　フルスクリーンモードで起動した場合の使用しているディスプレイ
+			モードの情報を取得するための関数 GetFullScreenUseDisplayMode を
+			追加。( 仮想フルスクリーンモードの場合は取得できない )
+			　GetDisplayInfo に画面のリフレッシュレートを取得するための引数
+			DesktopRefreshRate を追加。
+			　GetClipboardText にバッファのサイズを指定するための引数
+			DestBufferBytes を追加。
+			　Windows版：IME で文字列入力中に、文字列変換候補リストが正常に
+			描画されないことがあるバグを修正。
+			　DrawModiStringHardware で描画される文字列の下側が途中で切れて
+			しまう事があるバグを修正。
+			　Windows版：DrawPolygon2DToShader 等のシェーダーを使用した2Dの
+			描画でピクセルシェーダーに VERTEX2DSHADER 構造体の spc の値が
+			渡されていなかったバグを修正。
+			　Windows版：MakeKeyInput で半角文字のみ入力できるようにして
+			入力ハンドルを作成した場合、直前に全角入力をしていると、何も
+			文字が入力できなくなることがあるバグを修正。
+			　Windows版：Direct3D 11 を使用した場合に、頂点シェーダーと
+			ジオメトリシェーダーでもテクスチャを読み込む事ができるように
+			処理を追加。
+			　Windows版：MinGW 13.1.0 x86_64_w64 用のライブラリファイルを追加。
+			　DrawString などの文字列描画関係の関数で \n を無視するかどうかを
+			設定するための関数 SetFontIgnoreLFFlag を追加。
+			　GraphFilter の DX_GRAPH_FILTER_DOWN_SCALE を縮小をしない等倍
+			( DivNum = 1 )に対応。
+			　Windows版：Direct3D 11 が使用する IDXGIAdapter の LUID を
+			指定するための関数 SetUseDirect3D11AdapterLUID を追加。
+			　Windows版：『Windows10 以降で短時間に連続して同じ文字の
+			WM_CHAR が発生した場合は2回目以降の WM_CHAR を無視する』処理を
+			使用するかどうかを設定するための関数
+			SetUseWindows10_WM_CHAR_CancelTime を追加。
+			　GraphBlendRectBlt や GraphBlendRectBlt2 で
+			DX_GRAPH_BLEND_RGBA_SELECT_MIX を使用すると正しく処理が行われない
+			事があるバグを修正。
+			　動画ファイルの更新処理を明示的に行うための関数
+			UpdateMovieToGraph を追加。
+			　関数 SetUseTextureToShader で動画ファイルのグラフィック
+			ハンドルを設定した場合、DrawPolygon2DToShader などで描画を行った
+			際に描画される動画の画像が更新されないバグを修正。
+			　C++ Builder用のライブラリファイルのビルドに使用する
+			C++ Builder のバージョンを 11.3 に変更。
+			　C++ Builderの Win64用のライブラリファイルを追加。
+			　Windows版：Direct3D 11 を使用して起動した上で
+			SetUsePixelLighting( TRUE ); を実行してピクセル単位のライティングを
+			行う設定にしても、ディレクショナルライトのみの場合はピクセル単位の
+			ライティングを行っていなかった仕様を、ディレクショナルライトのみの
+			場合でもピクセル単位のライティングを行うように変更。
+			　Windows版：Direct3D 11 を使用して起動した上で
+			SetUsePixelLighting( TRUE ); を実行してピクセル単位のライティングを
+			行う設定にした場合、レンダーターゲット0 に通常の描画結果、
+			レンダーターゲット1 に法線( ビュー空間 )、
+			レンダーターゲット2 に R:カメラからの距離 G:スペキュラマップ×スペキュラカラー
+			を出力するように処理を追加。( 尚、法線の出力は以前のバージョン
+			から行われています )
+			　SetUseASyncLoadFlag( TRUE ); を実行して非同期読み込み中に
+			読み込み完了後にのみ使用できる関数に非同期読み込み中のハンドルを
+			渡して呼び出すとメモリの不正なアクセスが発生することがあるバグを修正。
+			　非同期読み込み中のハンドルに対して SetUseASyncLoadFlag( TRUE ); を
+			実行して非同期読み込みの設定の状態で DeleteGraph や DeleteSoundMem などの
+			ハンドル削除関数を実行した場合は、関数からはすぐ処理が戻り、
+			ハンドルは非同期読み込みが終わった後に自動的に削除されるように処理を変更。
+			　関数 SetDrawAddColor が乗算済みαのブレンドモードを使用した際に
+			正常に機能しないバグを修正。
+			　コードページ 936( 簡体字 ), 949( ハングル文字 ), 950( 繁体字 ) の
+			文字コードと Unicode との変換が正常に行えないことがあるバグを修正。
+			　Windows版：IMEによる文字列入力中に半角スペースが入力できないバグを修正。
+			　DX_BLENDMODE_INVDESTCOLOR のアルファチャンネルのみ書き換える
+			バージョンとなる DX_BLENDMODE_INVDESTCOLOR_A を追加。
+			　DX_BLENDMODE_MUL のアルファチャンネルのみ書き換える
+			バージョンとなる DX_BLENDMODE_MUL_A を追加。
+			　DX_BLENDMODE_INVDESTCOLOR_A と DX_BLENDMODE_MUL_A の乗算済みα用となる
+			DX_BLENDMODE_PMA_INVDESTCOLOR_A と DX_BLENDMODE_PMA_MUL_A を追加。
+			　GraphBlend で指定できるブレンドタイプに DX_GRAPH_BLEND_MASK と
+			DX_GRAPH_BLEND_PMA_MASK を追加。
+			　関数 GraphBlendRectBlt2 で SrcX2 や SrcY2 が SrcGrHandle の画像の
+			右端・下端からはみ出ていた場合に正常なブレンド結果が得られないバグを修正。
+			　PlayMovieToGraph で再生した動画の音量を取得するための関数
+			GetMovieVolumeToGraph と GetMovieVolumeToGraph2 を追加。
+			　関数 DrawCircleAA に引数 Angle を追加。
+			　関数 SetUseBackCulling( DX_CULLING_LEFT ); 等でカリングを有効にしていると
+			DrawCircleGauge で正常な描画結果を得られないバグを修正。
+			　関数 Live2D_Model_StartMotion にループ時にフェードを行うかどうかを
+			指定するための引数 isLoopFadeIn を追加。
+			　関数 Live2D_Model_StartMotion にフェードイン・フェードアウトの時間を
+			指定するための引数 fadeInSeconds と fadeOutSeconds を追加。
+			　関数 DrawObtainsString, DrawObtainsString_CharClip に、描画した
+			文字列の行数を取得するための引数 LineCount を追加。
+			　単語単位でクリップする関数 DrawObtainsString_WordClip を追加。
+			　非同期読み込みを有効にした状態で DXArchiveCheckFile を使用すると、
+			ＤＸアーカイブ内に存在するファイルのパスを指定しても戻り値が 0 に
+			なる事があるバグを修正。
 Ver 3.24b	　正式公開のためにバージョン番号を変更。
 Ver 3.24a	　DxLibModelViewer.exe の実行時に Log.txt が作成されるように
 			仕様を変更。

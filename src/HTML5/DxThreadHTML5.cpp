@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		HTML5用スレッド関係プログラム
 // 
-//  	Ver 3.24b
+//  	Ver 3.24d
 // 
 //-----------------------------------------------------------------------------
 
@@ -27,6 +27,10 @@ namespace DxLib
 #define THREAD_STACK_SIZE				(128 * 1024)			// スレッドのスタックサイズ
 
 #define THREAD_SUSPEND_EVENT_BIT		(0x00000001)			// 休止状態処理用のイベントのビット
+
+#ifndef SCHED_NORMAL
+#define SCHED_NORMAL (0)
+#endif
 
 // 構造体宣言 -----------------------------------------------------------------
 
@@ -220,8 +224,8 @@ extern void Thread_SetPriority( THREAD_INFO *pThreadInfo, int Priority /* DX_THR
 		int MinPrio ;
 		int MaxPrio ;
 
-		MaxPrio = sched_get_priority_max( 0 ) ;
-		MinPrio = sched_get_priority_min( 0 ) ;
+		MaxPrio = sched_get_priority_max( SCHED_NORMAL ) ;
+		MinPrio = sched_get_priority_min( SCHED_NORMAL ) ;
 
 		PriorityTable[ DX_THREAD_PRIORITY_LOWEST       ] = ( MaxPrio - MinPrio ) * 0 / 3 + MinPrio ;
 		PriorityTable[ DX_THREAD_PRIORITY_BELOW_NORMAL ] = ( MaxPrio - MinPrio ) * 1 / 3 + MinPrio ;
@@ -232,7 +236,7 @@ extern void Thread_SetPriority( THREAD_INFO *pThreadInfo, int Priority /* DX_THR
 	}
 	
 	param.sched_priority = PriorityTable[ Priority ] ;
-	pthread_setschedparam( pThreadInfo->Thread, 0, &param ) ;
+	pthread_setschedparam( pThreadInfo->Thread, SCHED_NORMAL, &param ) ;
 }
 
 // カレントスレッドのＩＤを取得する

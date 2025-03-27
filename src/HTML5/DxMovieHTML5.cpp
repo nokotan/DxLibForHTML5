@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		HTML5用動画プログラム
 // 
-//  	Ver 3.24b
+//  	Ver 3.24d
 // 
 //-----------------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ extern int GetMovieState_PF( MOVIEGRAPH * Movie )
 	return Movie->PlayFlag ;
 }
 
-// ムービーのボリュームをセットする(0〜10000)処理の環境依存処理
+// ムービーのボリュームをセットする(0～10000)処理の環境依存処理
 extern int SetMovieVolume_PF( MOVIEGRAPH * Movie, int Volume )
 {
 	// 正常終了

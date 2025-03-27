@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		文字コード関係プログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // ----------------------------------------------------------------------------
 
@@ -316,14 +316,14 @@ static void SetupCharCodeCP936TableInfo( void )
 			Src[ 0 ] = ( char )( ( i & 0xff00 ) >> 8 ) ;
 			Src[ 1 ] = ( char )( i & 0xff ) ;
 			Src[ 2 ] = 0 ;
-//			if( ( ( BYTE )Src[ 0 ] & 80 ) == 0 )
-//			{
-//				continue ;
-//			}
+			if( ( i & 0xff ) == 0 )
+			{
+				continue ;
+			}
 		}
 
 		result = WinAPIData.Win32Func.MultiByteToWideCharFunc( 936, MB_ERR_INVALID_CHARS, Src, -1, Dest, 8 ) ;
-		if( result != 0 )
+		if( result == 2 )
 		{
 			Info->MultiByteToUTF16[ i ] = ( WORD )Dest[ 0 ] ;
 			Info->UTF16ToMultiByte[ Dest[ 0 ] ] = ( WORD )i ;
@@ -364,14 +364,14 @@ static void SetupCharCodeCP949TableInfo( void )
 			Src[ 0 ] = ( char )( ( i & 0xff00 ) >> 8 ) ;
 			Src[ 1 ] = ( char )( i & 0xff ) ;
 			Src[ 2 ] = 0 ;
-//			if( ( ( BYTE )Src[ 0 ] & 80 ) == 0 )
-//			{
-//				continue ;
-//			}
+			if( ( i & 0xff ) == 0 )
+			{
+				continue ;
+			}
 		}
 
 		result = WinAPIData.Win32Func.MultiByteToWideCharFunc( 949, MB_ERR_INVALID_CHARS, Src, -1, Dest, 8 ) ;
-		if( result != 0 )
+		if( result == 2 )
 		{
 			Info->MultiByteToUTF16[ i ] = ( WORD )Dest[ 0 ] ;
 			Info->UTF16ToMultiByte[ Dest[ 0 ] ] = ( WORD )i ;
@@ -412,14 +412,14 @@ static void SetupCharCodeCP950TableInfo( void )
 			Src[ 0 ] = ( char )( ( i & 0xff00 ) >> 8 ) ;
 			Src[ 1 ] = ( char )( i & 0xff ) ;
 			Src[ 2 ] = 0 ;
-//			if( ( ( BYTE )Src[ 0 ] & 80 ) == 0 )
-//			{
-//				continue ;
-//			}
+			if( ( i & 0xff ) == 0 )
+			{
+				continue ;
+			}
 		}
 
 		result = WinAPIData.Win32Func.MultiByteToWideCharFunc( 950, MB_ERR_INVALID_CHARS, Src, -1, Dest, 8 ) ;
-		if( result != 0 )
+		if( result == 2 )
 		{
 			Info->MultiByteToUTF16[ i ] = ( WORD )Dest[ 0 ] ;
 			Info->UTF16ToMultiByte[ Dest[ 0 ] ] = ( WORD )i ;

@@ -2,7 +2,7 @@
 //
 //		ＤＸライブラリ　ムービー再生処理用プログラム
 //
-//				Ver 3.24b
+//				Ver 3.24d
 //
 // ----------------------------------------------------------------------------
 
@@ -21,6 +21,7 @@
 #include "DxSound.h"
 #include "DxUseCLib.h"
 #include "DxLog.h"
+#include "DxSystem.h"
 
 #ifndef DX_NON_NAMESPACE
 
@@ -138,13 +139,13 @@ extern int TerminateMovieHandle( HANDLEINFO *HandleInfo )
 #ifndef DX_NON_FILTER
 	if( Movie->YGrHandle >= 0 )
 	{
-		NS_DeleteGraph( Movie->YGrHandle, FALSE ) ;
+		SubHandle( Movie->YGrHandle, FALSE, FALSE ) ;
 		Movie->YGrHandle = -1 ;
 	}
 
 	if( Movie->UVGrHandle >= 0 )
 	{
-		NS_DeleteGraph( Movie->UVGrHandle, FALSE ) ;
+		SubHandle( Movie->UVGrHandle, FALSE, FALSE ) ;
 		Movie->UVGrHandle = -1 ;
 	}
 #endif // DX_NON_FILTER
@@ -172,7 +173,7 @@ extern int TerminateMovieHandle( HANDLEINFO *HandleInfo )
 		}
 
 #ifndef DX_NON_SOUND
-		NS_DeleteSoundMem( Movie->TheoraVorbisHandle, FALSE ) ;
+		SubHandle( Movie->TheoraVorbisHandle, FALSE, FALSE ) ;
 		Movie->TheoraVorbisHandle = 0 ;
 #endif // DX_NON_SOUND
 		Movie->TheoraHandle = 0 ;
@@ -370,6 +371,9 @@ extern int OpenMovie_UseGParam(
 	// 再生タイプはバックグラウンドにしておく
 	Movie->PlayType = DX_PLAYTYPE_BACK ;
 
+	// 音量を初期化
+	Movie->SoundVolume = 10000 ;
+
 #ifndef DX_NON_ASYNCLOAD
 	if( ASyncThread )
 	{
@@ -397,7 +401,7 @@ ERR :
 // ムービーグラフィックを終了する
 extern int CloseMovie( int MovieHandle )
 {
-	return SubHandle( MovieHandle ) ;
+	return SubHandle( MovieHandle, GetASyncLoadFlag(), FALSE ) ;
 }
 
 // ムービーの再生を開始する
@@ -706,9 +710,26 @@ extern int SetMovieVolume( int Volume, int MovieHandle )
 		}
 	}
 
+	// ボリュームの値を保存
+	Movie->SoundVolume = Volume ;
+
 	// 終了
 	return 0 ;
 }
+
+// ムービーのボリュームを取得する(0～10000)
+extern int GetMovieVolume( int MovieHandle )
+{
+	MOVIEGRAPH * Movie ;
+
+	// ムービーデータハンドルを取得
+	if( MOVIEHCHK( MovieHandle, Movie ) )
+		return -1 ;
+
+	// ボリュームを返す
+	return Movie->SoundVolume ;
+}
+
 
 // ムービーの基本イメージデータを取得する
 extern BASEIMAGE *GetMovieBaseImage( int MovieHandle, int *ImageUpdateFlag, int ImageUpdateFlagSetOnly )

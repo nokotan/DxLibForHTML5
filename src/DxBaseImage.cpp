@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ＢａｓｅＩｍａｇｅプログラム
 // 
-// 				Ver 3.24b
+// 				Ver 3.24d
 // 
 // ----------------------------------------------------------------------------
 
@@ -219,9 +219,7 @@ int YUVTable[ 5 ][ 256 ] ;		// 0:rv  1:gu   2:gv   3:bu   4:y
 // 画像読み込み関数配列
 int ( *DefaultImageLoadFunc[] )( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) =
 {
-#ifndef DX_NON_BMPREAD
 	LoadBmpImage ,
-#endif
 #ifndef DX_NON_JPEGREAD
 	LoadJpegImage ,
 #endif
@@ -232,19 +230,12 @@ int ( *DefaultImageLoadFunc[] )( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetF
 #ifndef DX_NON_TGA
 	LoadTargaImage ,
 #endif
-#ifndef EMSCRIPTEN
 	LoadDDSImage ,
-#endif
 #ifndef DX_NON_TIFFREAD
 	LoadTiffImage ,
 #endif
-#ifndef EMSCRIPTEN
 	LoadArgbImage ,
 	LoadDxLibBaseImage ,
-#endif
-#ifdef EMSCRIPTEN
-	LoadImageFromBrowser ,
-#endif
 	NULL 
 } ;
 
