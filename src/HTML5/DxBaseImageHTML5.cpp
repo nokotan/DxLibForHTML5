@@ -44,10 +44,13 @@ typedef struct tagDECODEDIMAGE
 
 // 関数宣言 -------------------------------------------------------------------
 
+static int LoadImageFromBrowser(STREAMDATA *Stream, BASEIMAGE *BaseImage, int GetFormatOnly);
+
 // データ定義 -----------------------------------------------------------------
 
 int ( *DefaultImageLoadFunc_PF[] )( STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly ) =
 {
+	LoadImageFromBrowser,
 	NULL
 } ;
 
@@ -142,7 +145,7 @@ extern int TerminateBaseImageManage_PF( void )
 	return 0 ;
 }
 
-extern int LoadImageFromBrowser(STREAMDATA *Stream, BASEIMAGE *BaseImage, int GetFormatOnly)
+static int LoadImageFromBrowser(STREAMDATA *Stream, BASEIMAGE *BaseImage, int GetFormatOnly)
 {
 	DWORD_PTR sp;
 	STREAMDATASHRED *sstr;

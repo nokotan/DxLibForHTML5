@@ -19,8 +19,6 @@ namespace DxLib
     
 #endif // DX_NON_NAMESPACE
 
-extern int LoadImageFromBrowser(STREAMDATA *Src, BASEIMAGE *BaseImage, int GetFormatOnly);
-
 #ifndef DX_NON_NAMESPACE
 
 }
