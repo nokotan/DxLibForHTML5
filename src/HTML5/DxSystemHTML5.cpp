@@ -274,22 +274,22 @@ extern int NS_DxLib_End( void )
 	}
 
 #ifndef DX_NON_ASYNCLOAD
-	// // 非同期読み込みをしない
-	// NS_SetUseASyncLoadFlag( FALSE ) ;
+	// 非同期読み込みをしない
+	NS_SetUseASyncLoadFlag( FALSE ) ;
 
-	// // 全ての非同期読み込みの終了待ち
-	// while( NS_GetASyncLoadNum() > 0 )
-	// {
-	// 	// 削除リクエストが来ているハンドルを削除する
-	// 	DeleteRequestHandleDelete( FALSE ) ;
+	// 全ての非同期読み込みの終了待ち
+	while( NS_GetASyncLoadNum() > 0 )
+	{
+		// 削除リクエストが来ているハンドルを削除する
+		DeleteRequestHandleDelete( FALSE ) ;
 
-	// 	// メインスレッドが処理する非同期読み込みの処理を行う
-	// 	ProcessASyncLoadRequestMainThread() ;
-	// 	Thread_Sleep( 1 ) ;
-	// }
+		// メインスレッドが処理する非同期読み込みの処理を行う
+		ProcessASyncLoadRequestMainThread() ;
+		Thread_Sleep( 1 ) ;
+	}
 
-	// // 削除リクエストが来ているハンドルを全て削除する
-	// DeleteRequestHandleDelete( TRUE ) ;
+	// 削除リクエストが来ているハンドルを全て削除する
+	DeleteRequestHandleDelete( TRUE ) ;
 #endif // DX_NON_ASYNCLOAD
 
 #ifndef DX_NON_SOFTIMAGE

@@ -309,77 +309,72 @@ extern void Thread_Sleep( DWORD MiliSecond )
 // クリティカルセクションの初期化
 extern int CriticalSection_Initialize( DX_CRITICAL_SECTION *pCSection )
 {
-	// emscripten has no support for thread and critical section
-	return 0;
+	pCSection->Mutex_valid		= 0 ;
+	pCSection->Mutexaddr_valid	= 0 ;
 
-// 	pCSection->Mutex_valid		= 0 ;
-// 	pCSection->Mutexaddr_valid	= 0 ;
+	// ミューテックス属性の初期化
+	if( pthread_mutexattr_init( &pCSection->Mutexattr ) != 0 )
+	{
+		goto ERR ;
+	}
+	pCSection->Mutexaddr_valid = 1 ;
 
-// 	// ミューテックス属性の初期化
-// 	if( pthread_mutexattr_init( &pCSection->Mutexattr ) != 0 )
-// 	{
-// 		goto ERR ;
-// 	}
-// 	pCSection->Mutexaddr_valid = 1 ;
+	// 再帰ロック可能にする
+	if( pthread_mutexattr_settype( &pCSection->Mutexattr, PTHREAD_MUTEX_RECURSIVE ) != 0 )
+	{
+		goto ERR ;
+	}
 
-// 	// 再帰ロック可能にする
-// 	if( pthread_mutexattr_settype( &pCSection->Mutexattr, PTHREAD_MUTEX_RECURSIVE ) != 0 )
-// 	{
-// 		goto ERR ;
-// 	}
+	// ミューテックスの作成
+	if( pthread_mutex_init( &pCSection->Mutex, &pCSection->Mutexattr ) != 0 )
+	{
+		goto ERR ;
+	}
+	pCSection->Mutex_valid = 1 ;
 
-// 	// ミューテックスの作成
-// 	if( pthread_mutex_init( &pCSection->Mutex, &pCSection->Mutexattr ) != 0 )
-// 	{
-// 		goto ERR ;
-// 	}
-// 	pCSection->Mutex_valid = 1 ;
+#if defined( _DEBUG )
+	int i ;
+	for( i = 0 ; i < 256 ; i ++ )
+	{
+		pCSection->FilePath[ 0 ] = '\0' ;
+	}
+#endif
 
-// #if defined( _DEBUG )
-// 	int i ;
-// 	for( i = 0 ; i < 256 ; i ++ )
-// 	{
-// 		pCSection->FilePath[ 0 ] = '\0' ;
-// 	}
-// #endif
+	return 0 ;
 
-// 	return 0 ;
+ERR :
 
-// ERR :
+	if( pCSection->Mutex_valid )
+	{
+		pthread_mutex_destroy( &pCSection->Mutex ) ;
+		pCSection->Mutex_valid = 0 ;
+	}
 
-// 	if( pCSection->Mutex_valid )
-// 	{
-// 		pthread_mutex_destroy( &pCSection->Mutex ) ;
-// 		pCSection->Mutex_valid = 0 ;
-// 	}
+	if( pCSection->Mutexaddr_valid )
+	{
+		pthread_mutexattr_destroy( &pCSection->Mutexattr ) ;
+		pCSection->Mutexaddr_valid = 0 ;
+	}
 
-// 	if( pCSection->Mutexaddr_valid )
-// 	{
-// 		pthread_mutexattr_destroy( &pCSection->Mutexattr ) ;
-// 		pCSection->Mutexaddr_valid = 0 ;
-// 	}
-
-// 	return -1 ;
+	return -1 ;
 }
 
 // クリティカルセクションの削除
 extern int CriticalSection_Delete( DX_CRITICAL_SECTION *pCSection )
 {
-	return 0;
+	if( pCSection->Mutex_valid )
+	{
+		pthread_mutex_destroy( &pCSection->Mutex ) ;
+		pCSection->Mutex_valid = 0 ;
+	}
 
-	// if( pCSection->Mutex_valid )
-	// {
-	// 	pthread_mutex_destroy( &pCSection->Mutex ) ;
-	// 	pCSection->Mutex_valid = 0 ;
-	// }
+	if( pCSection->Mutexaddr_valid )
+	{
+		pthread_mutexattr_destroy( &pCSection->Mutexattr ) ;
+		pCSection->Mutexaddr_valid = 0 ;
+	}
 
-	// if( pCSection->Mutexaddr_valid )
-	// {
-	// 	pthread_mutexattr_destroy( &pCSection->Mutexattr ) ;
-	// 	pCSection->Mutexaddr_valid = 0 ;
-	// }
-
-	// return 0 ;
+	return 0 ;
 }
 
 // クリティカルセクションのロックの取得
@@ -395,7 +390,7 @@ extern int CriticalSection_Lock( DX_CRITICAL_SECTION *pCSection )
 #endif
 
 	// ミューテックスをロック
-	// pthread_mutex_lock( &pCSection->Mutex ) ;
+	pthread_mutex_lock( &pCSection->Mutex ) ;
 
 #if defined( _DEBUG )
 	int Length = ( int )_STRLEN( FilePath ) ;

@@ -53,8 +53,8 @@ struct BULLET_RIGIDBODY_SETUP_INFO
 // Bullet の剛体ジョイントを初期化する際に使用する情報
 struct BULLET_JOINT_SETUP_INFO
 {
-	D_btRigidBody		*RigidBodyA ;			// 接続先剛体Ａ
-	D_btRigidBody		*RigidBodyB ;			// 接続先剛体Ｂ
+	btRigidBody		*RigidBodyA ;			// 接続先剛体Ａ
+	btRigidBody		*RigidBodyB ;			// 接続先剛体Ｂ
 	VECTOR				Position ;				// 位置
 	VECTOR				Rotation ;				// 回転( ラジアン )
 	VECTOR				ConstrainPosition1 ;	// 移動制限値１
@@ -70,33 +70,33 @@ struct BULLET_RIGIDBODY_INFO
 {
 	int					DisableFlag ;			// 無効フラグ
 
-	D_btCollisionShape	*btColShape ;			// 形状データ
-	D_btRigidBody		*btRigdBody ;			// 剛体データ
+	btCollisionShape	*btColShape ;			// 形状データ
+	btRigidBody		*btRigdBody ;			// 剛体データ
 
-	D_btTransform		bttrBoneOffset ;		// ボーンのオフセット
-	D_btTransform		bttrInvBoneOffset ;		// ボーンの逆オフセット
-	struct D_btKinematicMotionState *btMotionState ;
+	btTransform		bttrBoneOffset ;		// ボーンのオフセット
+	btTransform		bttrInvBoneOffset ;		// ボーンの逆オフセット
+	struct btKinematicMotionState *btMotionState ;
 } ;
 
 // Bullet の剛体ジョイント処理で使用するデータ
 struct BULLET_JOINT_INFO
 {
 	int									DisableFlag ;			// 無効フラグ
-	D_btGeneric6DofSpringConstraint	*	btcConstraint ;
+	btGeneric6DofSpringConstraint	*	btcConstraint ;
 } ;
 
 // Bullet の Kinematic用モーションステート
-struct D_btKinematicMotionState : public D_btMotionState
+struct btKinematicMotionState : public btMotionState
 {
-	D_btTransform			GraphicsWorldTrans ;
+	btTransform			GraphicsWorldTrans ;
 /*
-	D_btTransform			BoneOffset ;
-//	D_btTransform			InvBoneOffset ;
+	btTransform			BoneOffset ;
+//	btTransform			InvBoneOffset ;
 	PMD_READ_BONE_INFO		*Bone ;
 	PMD_READ_PHYSICS_INFO	*Physics ;
 
-	D_btKinematicMotionState(
-		const D_btTransform	&boneOffset,
+	btKinematicMotionState(
+		const btTransform	&boneOffset,
 		PMD_READ_BONE_INFO	*pBone,
 		PMD_READ_PHYSICS_INFO *pPhysics )
 		:
@@ -108,38 +108,38 @@ struct D_btKinematicMotionState : public D_btMotionState
 //		Flush( true ) ;
 	}
 */
-	D_btKinematicMotionState(){};
+	btKinematicMotionState(){};
 
 #if 0
 	void Flush(bool reset)
 	{
 		if( Physics->RigidBodyType == 0 || Physics->NoCopyToBone || reset)
 		{
-			D_btTransform temp ;
+			btTransform temp ;
 
-			temp.setFromOpenGLMatrix( ( D_btScalar * )&Bone->LocalWorldMatrix ) ;
+			temp.setFromOpenGLMatrix( ( btScalar * )&Bone->LocalWorldMatrix ) ;
 			GraphicsWorldTrans = temp * BoneOffset ;
 		}
 /*		else
 		{
-			D_btTransform temp2 ;
+			btTransform temp2 ;
 
 			temp2 = GraphicsWorldTrans * InvBoneOffset ;
 
-			temp2.getOpenGLMatrix( ( D_btScalar * )&Bone->LocalWorldMatrix ) ;
+			temp2.getOpenGLMatrix( ( btScalar * )&Bone->LocalWorldMatrix ) ;
 		}
 */	}
 #endif
 
 	///synchronizes world transform from user to physics
-	virtual void getWorldTransform( D_btTransform &centerOfMassWorldTrans ) const
+	virtual void getWorldTransform( btTransform &centerOfMassWorldTrans ) const
 	{
 		centerOfMassWorldTrans = GraphicsWorldTrans ;
 	}
 
 	///synchronizes world transform from physics to user
 	///Bullet only calls the update of worldtransform for active objects
-	virtual void setWorldTransform( const D_btTransform &centerOfMassWorldTrans )
+	virtual void setWorldTransform( const btTransform &centerOfMassWorldTrans )
 	{
 		GraphicsWorldTrans = centerOfMassWorldTrans ;
 	}
@@ -148,14 +148,14 @@ struct D_btKinematicMotionState : public D_btMotionState
 // bullet physics の処理に必要なオブジェクトを詰めた構造体
 struct BULLET_PHYSICS
 {
-	D_btDefaultCollisionConfiguration		*CollisionConfig ;			// コリジョンコンフィグ
-	D_btCollisionDispatcher					*CollisionDispatcher ;		// コリジョンディスパッチャ
-	D_btAxisSweep3							*OverlappingPairCache ;		// コリジョンワールドの範囲
-	D_btSequentialImpulseConstraintSolver	*Solver ;					// 高速計算ソルバ
-	D_btDiscreteDynamicsWorld				*World ;					// ワールド
-//	D_btContinuousDynamicsWorld				*World ;					// ワールド
+	btDefaultCollisionConfiguration		*CollisionConfig ;			// コリジョンコンフィグ
+	btCollisionDispatcher					*CollisionDispatcher ;		// コリジョンディスパッチャ
+	btAxisSweep3							*OverlappingPairCache ;		// コリジョンワールドの範囲
+	btSequentialImpulseConstraintSolver	*Solver ;					// 高速計算ソルバ
+	btDiscreteDynamicsWorld				*World ;					// ワールド
+//	btContinuousDynamicsWorld				*World ;					// ワールド
 
-	D_btCollisionShape						*GroundShape ;				// 床コリジョン
+	btCollisionShape						*GroundShape ;				// 床コリジョン
 } ;
 
 // 関数宣言 -------------------------------------
@@ -173,56 +173,56 @@ static int BulleyPhysics_ResetRigidBody(	BULLET_RIGIDBODY_INFO *RigidBodyInfo, M
 static void ModelLoader3_InverseMatrix( MATRIX &InMatrix, MATRIX &OutMatrix ) ;
 
 // PMD用の剛体にボーンの状態を反映する関数
-static void PMD_PhysicsMotionState_Flush( D_btKinematicMotionState *pbtMotionState, PMD_READ_PHYSICS_INFO *pPhysics ) ;
+static void PMD_PhysicsMotionState_Flush( btKinematicMotionState *pbtMotionState, PMD_READ_PHYSICS_INFO *pPhysics ) ;
 
 // モデルの剛体にボーンの状態を反映する関数
-static void Model_PhysicsMotionState_Flush( D_btKinematicMotionState *pbtMotionState, MV1_PHYSICS_RIGIDBODY *pRigidBody ) ;
+static void Model_PhysicsMotionState_Flush( btKinematicMotionState *pbtMotionState, MV1_PHYSICS_RIGIDBODY *pRigidBody ) ;
 
 // プログラム -----------------------------------
 
 // BulletPhysics の初期化
 static int BulletPhysics_Initialize( BULLET_PHYSICS *BulletPhysicsData, VECTOR Gravity )
 {
-	D_btTransform trGroundTransform ;
+	btTransform trGroundTransform ;
 
 	// ゼロ初期化
 	_MEMSET( BulletPhysicsData, 0, sizeof( *BulletPhysicsData ) ) ;
 
 	// コリジョンコンフィグを作成する
-	BulletPhysicsData->CollisionConfig = new D_btDefaultCollisionConfiguration() ;
+	BulletPhysicsData->CollisionConfig = new btDefaultCollisionConfiguration() ;
 
 	// コリジョンディスパッチャを作成する
-	BulletPhysicsData->CollisionDispatcher = new D_btCollisionDispatcher( BulletPhysicsData->CollisionConfig ) ;
+	BulletPhysicsData->CollisionDispatcher = new btCollisionDispatcher( BulletPhysicsData->CollisionConfig ) ;
 
 	// コリジョンワールドの最大サイズを指定する
-	BulletPhysicsData->OverlappingPairCache = new D_btAxisSweep3( D_btVector3( -50000.0f, -50000.0f, -50000.0f ), D_btVector3(  50000.0f,  50000.0f,  50000.0f ), 2048 ) ;
+	BulletPhysicsData->OverlappingPairCache = new btAxisSweep3( btVector3( -50000.0f, -50000.0f, -50000.0f ), btVector3(  50000.0f,  50000.0f,  50000.0f ), 2048 ) ;
 
 	// 拘束計算ソルバを作成する
-	BulletPhysicsData->Solver = new D_btSequentialImpulseConstraintSolver() ;
+	BulletPhysicsData->Solver = new btSequentialImpulseConstraintSolver() ;
 
 	// ワールドの作成
-	BulletPhysicsData->World = new D_btDiscreteDynamicsWorld( BulletPhysicsData->CollisionDispatcher, BulletPhysicsData->OverlappingPairCache, BulletPhysicsData->Solver, BulletPhysicsData->CollisionConfig ) ;
-//	BulletPhysicsData->World = new D_btContinuousDynamicsWorld( BulletPhysicsData->CollisionDispatcher, BulletPhysicsData->OverlappingPairCache, BulletPhysicsData->Solver, BulletPhysicsData->CollisionConfig ) ;
+	BulletPhysicsData->World = new btDiscreteDynamicsWorld( BulletPhysicsData->CollisionDispatcher, BulletPhysicsData->OverlappingPairCache, BulletPhysicsData->Solver, BulletPhysicsData->CollisionConfig ) ;
+//	BulletPhysicsData->World = new btContinuousDynamicsWorld( BulletPhysicsData->CollisionDispatcher, BulletPhysicsData->OverlappingPairCache, BulletPhysicsData->Solver, BulletPhysicsData->CollisionConfig ) ;
 
 	// 重力設定
-	BulletPhysicsData->World->setGravity( D_btVector3( Gravity.x, Gravity.y, Gravity.z ) ) ;
+	BulletPhysicsData->World->setGravity( btVector3( Gravity.x, Gravity.y, Gravity.z ) ) ;
 
 	//-----------------------------------------------------
 	// 床用として無限平面を作成
-//	BulletPhysicsData->GroundShape = new D_btStaticPlaneShape( D_btVector3( 0.0f, 1.0f, 0.0f ), 0.0f ) ;
+//	BulletPhysicsData->GroundShape = new btStaticPlaneShape( btVector3( 0.0f, 1.0f, 0.0f ), 0.0f ) ;
 
 	// 床のトランスフォームを設定
 //	trGroundTransform.setIdentity() ;
 
 	// MotionStateを作成する。剛体の姿勢制御をするもの
-//	D_btMotionState *pMotionState = new D_btDefaultMotionState( trGroundTransform ) ;
+//	btMotionState *pMotionState = new btDefaultMotionState( trGroundTransform ) ;
 
 	// 剛体を作成する
 	// 質量 0.0、慣性テンソル 0.0 ならこの剛体は動かない
-//	D_btRigidBody::D_btRigidBodyConstructionInfo rbInfo( 0.0f, pMotionState, BulletPhysicsData->GroundShape, D_btVector3( 0.0f, 0.0f, 0.0f ) ) ;
+//	btRigidBody::btRigidBodyConstructionInfo rbInfo( 0.0f, pMotionState, BulletPhysicsData->GroundShape, btVector3( 0.0f, 0.0f, 0.0f ) ) ;
 
 	// 物理ワールドに床を追加
-//	BulletPhysicsData->World->addRigidBody( new D_btRigidBody( rbInfo ) ) ;
+//	BulletPhysicsData->World->addRigidBody( new btRigidBody( rbInfo ) ) ;
 
 	return 0 ;
 }
@@ -231,9 +231,9 @@ static int BulletPhysics_Initialize( BULLET_PHYSICS *BulletPhysicsData, VECTOR G
 static int BulletPhysics_Terminate( BULLET_PHYSICS *BulletPhysicsData )
 {
 	int i ;
-	D_btCollisionObject *pObj ;
-	D_btTypedConstraint *pConst ;
-	D_btRigidBody *pRigidBody ;
+	btCollisionObject *pObj ;
+	btTypedConstraint *pConst ;
+	btRigidBody *pRigidBody ;
 
 	if( BulletPhysicsData->World == NULL )
 		return -1 ;
@@ -249,7 +249,7 @@ static int BulletPhysics_Terminate( BULLET_PHYSICS *BulletPhysicsData )
 	for( i = BulletPhysicsData->World->getNumCollisionObjects() - 1 ; i >= 0 ; i -- )
 	{
 		pObj = BulletPhysicsData->World->getCollisionObjectArray()[ i ] ;
-		pRigidBody = D_btRigidBody::upcast( pObj ) ;
+		pRigidBody = btRigidBody::upcast( pObj ) ;
 
 		if( pRigidBody && pRigidBody->getMotionState() )
 			delete pRigidBody->getMotionState() ;
@@ -303,24 +303,24 @@ static int BulletPhysics_SetupRigidBody( BULLET_PHYSICS *BulletPhysicsData, BULL
 	RigidBodyInfo->DisableFlag = FALSE ;
 
 	// ボーンオフセット用トランスフォーム作成
-	D_btMatrix3x3	btmRotationMat ;
+	btMatrix3x3	btmRotationMat ;
 	btmRotationMat.setEulerZYX( SetupInfo->Rotation.x, SetupInfo->Rotation.y, SetupInfo->Rotation.z ) ;
 	RigidBodyInfo->bttrBoneOffset.setIdentity() ;
-	RigidBodyInfo->bttrBoneOffset.setOrigin( D_btVector3( SetupInfo->Position.x, SetupInfo->Position.y, SetupInfo->Position.z ) ) ;
+	RigidBodyInfo->bttrBoneOffset.setOrigin( btVector3( SetupInfo->Position.x, SetupInfo->Position.y, SetupInfo->Position.z ) ) ;
 	RigidBodyInfo->bttrBoneOffset.setBasis( btmRotationMat ) ;
 	RigidBodyInfo->bttrInvBoneOffset = RigidBodyInfo->bttrBoneOffset.inverse() ;
 
 	// シェイプの作成
 	switch( SetupInfo->ShapeType )
 	{
-	case 0 : RigidBodyInfo->btColShape = new D_btSphereShape( SetupInfo->ShapeW ) ; break ;														// 球
-	case 1 : RigidBodyInfo->btColShape = new D_btBoxShape( D_btVector3( SetupInfo->ShapeW, SetupInfo->ShapeH, SetupInfo->ShapeD ) ) ; break ;	// 箱
-	case 2 : RigidBodyInfo->btColShape = new D_btCapsuleShape( SetupInfo->ShapeW, SetupInfo->ShapeH ) ; break ;									// カプセル
+	case 0 : RigidBodyInfo->btColShape = new btSphereShape( SetupInfo->ShapeW ) ; break ;														// 球
+	case 1 : RigidBodyInfo->btColShape = new btBoxShape( btVector3( SetupInfo->ShapeW, SetupInfo->ShapeH, SetupInfo->ShapeD ) ) ; break ;	// 箱
+	case 2 : RigidBodyInfo->btColShape = new btCapsuleShape( SetupInfo->ShapeW, SetupInfo->ShapeH ) ; break ;									// カプセル
 	}
 
 	// 質量と慣性テンソルの設定
-	D_btScalar	btsMass( 0.0f ) ;
-	D_btVector3	btv3LocalInertia( 0.0f, 0.0f ,0.0f ) ;
+	btScalar	btsMass( 0.0f ) ;
+	btVector3	btv3LocalInertia( 0.0f, 0.0f ,0.0f ) ;
 
 	// ボーン追従でない場合は質量を設定
 	if( SetupInfo->RigidBodyType != 0 )
@@ -331,17 +331,17 @@ static int BulletPhysics_SetupRigidBody( BULLET_PHYSICS *BulletPhysicsData, BULL
 		RigidBodyInfo->btColShape->calculateLocalInertia( btsMass, btv3LocalInertia ) ;
 
 	// MotionStateの作成
-	D_btMotionState *pbtMotionState ;
-	pbtMotionState = new D_btKinematicMotionState() ;
-	RigidBodyInfo->btMotionState = ( D_btKinematicMotionState * )pbtMotionState ;
+	btMotionState *pbtMotionState ;
+	pbtMotionState = new btKinematicMotionState() ;
+	RigidBodyInfo->btMotionState = ( btKinematicMotionState * )pbtMotionState ;
 
 	// モーションステートの中の行列を初期化
-	D_btTransform temp ;
-	temp.setFromOpenGLMatrix( ( D_btScalar * )SetupInfo->InitializeMatrix ) ;
+	btTransform temp ;
+	temp.setFromOpenGLMatrix( ( btScalar * )SetupInfo->InitializeMatrix ) ;
 	RigidBodyInfo->btMotionState->GraphicsWorldTrans = temp * RigidBodyInfo->bttrBoneOffset ;
 
 	// 剛体のパラメータの設定
-	D_btRigidBody::D_btRigidBodyConstructionInfo btRbInfo( btsMass, pbtMotionState, RigidBodyInfo->btColShape, btv3LocalInertia ) ;
+	btRigidBody::btRigidBodyConstructionInfo btRbInfo( btsMass, pbtMotionState, RigidBodyInfo->btColShape, btv3LocalInertia ) ;
 	btRbInfo.m_linearDamping  = SetupInfo->RigidBodyPosDim ;	// 移動減
 	btRbInfo.m_angularDamping = SetupInfo->RigidBodyRotDim ;	// 回転減
 	btRbInfo.m_restitution    = SetupInfo->RigidBodyRecoil ;	// 反発力
@@ -349,13 +349,13 @@ static int BulletPhysics_SetupRigidBody( BULLET_PHYSICS *BulletPhysicsData, BULL
 	btRbInfo.m_additionalDamping = true ;
 
 	// 剛体の作成
-	RigidBodyInfo->btRigdBody = new D_btRigidBody( btRbInfo ) ;
+	RigidBodyInfo->btRigdBody = new btRigidBody( btRbInfo ) ;
 
 	// Kinematic設定
 	if( SetupInfo->RigidBodyType == 0 )
 	{
-		RigidBodyInfo->btRigdBody->setCollisionFlags( RigidBodyInfo->btRigdBody->getCollisionFlags() | D_btCollisionObject::D_CF_KINEMATIC_OBJECT ) ;
-		RigidBodyInfo->btRigdBody->setActivationState( D_DISABLE_DEACTIVATION ) ;
+		RigidBodyInfo->btRigdBody->setCollisionFlags( RigidBodyInfo->btRigdBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT ) ;
+		RigidBodyInfo->btRigdBody->setActivationState( DISABLE_DEACTIVATION ) ;
 	}
 	RigidBodyInfo->btRigdBody->setSleepingThresholds( 0.0f, 0.0f ) ;
 
@@ -371,28 +371,28 @@ static int BulletPhysics_SetupJoint( BULLET_PHYSICS *BulletPhysicsData,  BULLET_
 	JointInfo->DisableFlag = FALSE ;
 
 	// 回転行列作成
-	D_btMatrix3x3	btmRotationMat ;
+	btMatrix3x3	btmRotationMat ;
 	btmRotationMat.setEulerZYX( SetupInfo->Rotation.x, SetupInfo->Rotation.y, SetupInfo->Rotation.z ) ;
 
 	// コンストレイントのトランスフォームを作成
-	D_btTransform bttrTransform ;
+	btTransform bttrTransform ;
 	bttrTransform.setIdentity() ;
-	bttrTransform.setOrigin( D_btVector3( SetupInfo->Position.x, SetupInfo->Position.y, SetupInfo->Position.z ) ) ;
+	bttrTransform.setOrigin( btVector3( SetupInfo->Position.x, SetupInfo->Position.y, SetupInfo->Position.z ) ) ;
 	bttrTransform.setBasis( btmRotationMat ) ;
 
 	// 剛体A,Bから見たコンストレイントを作成 
-	JointInfo->btcConstraint = new D_btGeneric6DofSpringConstraint(
+	JointInfo->btcConstraint = new btGeneric6DofSpringConstraint(
 		*SetupInfo->RigidBodyA,
 		*SetupInfo->RigidBodyB,
 		SetupInfo->RigidBodyA->getWorldTransform().inverse() * bttrTransform,
 		SetupInfo->RigidBodyB->getWorldTransform().inverse() * bttrTransform, true ) ;
 
 	// 各種制限パラメータのセット
-	JointInfo->btcConstraint->setLinearLowerLimit( D_btVector3( SetupInfo->ConstrainPosition1.x, SetupInfo->ConstrainPosition1.y, SetupInfo->ConstrainPosition1.z ) ) ;
-	JointInfo->btcConstraint->setLinearUpperLimit( D_btVector3( SetupInfo->ConstrainPosition2.x, SetupInfo->ConstrainPosition2.y, SetupInfo->ConstrainPosition2.z ) ) ;
+	JointInfo->btcConstraint->setLinearLowerLimit( btVector3( SetupInfo->ConstrainPosition1.x, SetupInfo->ConstrainPosition1.y, SetupInfo->ConstrainPosition1.z ) ) ;
+	JointInfo->btcConstraint->setLinearUpperLimit( btVector3( SetupInfo->ConstrainPosition2.x, SetupInfo->ConstrainPosition2.y, SetupInfo->ConstrainPosition2.z ) ) ;
 
-	JointInfo->btcConstraint->setAngularLowerLimit( D_btVector3( SetupInfo->ConstrainRotation1.x, SetupInfo->ConstrainRotation1.y, SetupInfo->ConstrainRotation1.z ) ) ;
-	JointInfo->btcConstraint->setAngularUpperLimit( D_btVector3( SetupInfo->ConstrainRotation2.x, SetupInfo->ConstrainRotation2.y, SetupInfo->ConstrainRotation2.z ) ) ;
+	JointInfo->btcConstraint->setAngularLowerLimit( btVector3( SetupInfo->ConstrainRotation1.x, SetupInfo->ConstrainRotation1.y, SetupInfo->ConstrainRotation1.z ) ) ;
+	JointInfo->btcConstraint->setAngularUpperLimit( btVector3( SetupInfo->ConstrainRotation2.x, SetupInfo->ConstrainRotation2.y, SetupInfo->ConstrainRotation2.z ) ) ;
 
 	// 0 : translation X
 	if( SetupInfo->SpringPosition.x != 0.0f )
@@ -467,22 +467,22 @@ static int BulletPhysics_ReleaseJoint( BULLET_JOINT_INFO *JointInfo )
 
 static int BulleyPhysics_ResetRigidBody( BULLET_RIGIDBODY_INFO *RigidBodyInfo, MATRIX *Matrix )
 {
-	D_btTransform	bttrRbTransform ;
+	btTransform	bttrRbTransform ;
 
 	if( RigidBodyInfo->DisableFlag )
 	{
 		return 0 ;
 	}
 
-	bttrRbTransform.setFromOpenGLMatrix( ( D_btScalar * )Matrix ) ;
+	bttrRbTransform.setFromOpenGLMatrix( ( btScalar * )Matrix ) ;
 	RigidBodyInfo->btMotionState->GraphicsWorldTrans = bttrRbTransform * RigidBodyInfo->bttrBoneOffset ;
 	RigidBodyInfo->btRigdBody->setCenterOfMassTransform( RigidBodyInfo->btMotionState->GraphicsWorldTrans ) ;
 
 	RigidBodyInfo->btRigdBody->setInterpolationWorldTransform( RigidBodyInfo->btRigdBody->getCenterOfMassTransform() ) ;
-	RigidBodyInfo->btRigdBody->setLinearVelocity(               D_btVector3( 0.0f, 0.0f, 0.0f ) ) ;
-	RigidBodyInfo->btRigdBody->setAngularVelocity(              D_btVector3( 0.0f, 0.0f, 0.0f ) ) ;
-	RigidBodyInfo->btRigdBody->setInterpolationLinearVelocity(  D_btVector3( 0.0f, 0.0f, 0.0f ) ) ;
-	RigidBodyInfo->btRigdBody->setInterpolationAngularVelocity( D_btVector3( 0.0f, 0.0f, 0.0f ) ) ;
+	RigidBodyInfo->btRigdBody->setLinearVelocity(               btVector3( 0.0f, 0.0f, 0.0f ) ) ;
+	RigidBodyInfo->btRigdBody->setAngularVelocity(              btVector3( 0.0f, 0.0f, 0.0f ) ) ;
+	RigidBodyInfo->btRigdBody->setInterpolationLinearVelocity(  btVector3( 0.0f, 0.0f, 0.0f ) ) ;
+	RigidBodyInfo->btRigdBody->setInterpolationAngularVelocity( btVector3( 0.0f, 0.0f, 0.0f ) ) ;
 	RigidBodyInfo->btRigdBody->clearForces() ;
 
 	// 終了
@@ -513,72 +513,72 @@ static void ModelLoader3_InverseMatrix( MATRIX &InMatrix, MATRIX &OutMatrix )
 }
 
 // PMD用の剛体にボーンの状態を反映する関数
-static void PMD_PhysicsMotionState_Flush( bool Reset, D_btKinematicMotionState *pbtMotionState, PMD_READ_PHYSICS_INFO *pPhysics )
+static void PMD_PhysicsMotionState_Flush( bool Reset, btKinematicMotionState *pbtMotionState, PMD_READ_PHYSICS_INFO *pPhysics )
 {
 	BULLET_RIGIDBODY_INFO *BulletRigidBodyInfo = ( BULLET_RIGIDBODY_INFO * )pPhysics->BulletInfo ;
 
 	if( pPhysics->RigidBodyType == 0 || pPhysics->NoCopyToBone || Reset )
 	{
-		D_btTransform temp ;
+		btTransform temp ;
 
-		temp.setFromOpenGLMatrix( ( D_btScalar * )&pPhysics->Bone->LocalWorldMatrix ) ;
+		temp.setFromOpenGLMatrix( ( btScalar * )&pPhysics->Bone->LocalWorldMatrix ) ;
 		pbtMotionState->GraphicsWorldTrans = temp * BulletRigidBodyInfo->bttrBoneOffset ;
 	}
 /*	else
 	{
-		D_btTransform temp2 ;
+		btTransform temp2 ;
 
 		temp2 = GraphicsWorldTrans * InvBoneOffset ;
 
-		temp2.getOpenGLMatrix( ( D_btScalar * )&pPhysics->Bone->LocalWorldMatrix ) ;
+		temp2.getOpenGLMatrix( ( btScalar * )&pPhysics->Bone->LocalWorldMatrix ) ;
 	}
 */
 }
 
 // PMX用の剛体にボーンの状態を反映する関数
-static void PMX_PhysicsMotionState_Flush( bool Reset, D_btKinematicMotionState *pbtMotionState, PMX_READ_PHYSICS_INFO *pPhysics )
+static void PMX_PhysicsMotionState_Flush( bool Reset, btKinematicMotionState *pbtMotionState, PMX_READ_PHYSICS_INFO *pPhysics )
 {
 	BULLET_RIGIDBODY_INFO *BulletRigidBodyInfo = ( BULLET_RIGIDBODY_INFO * )pPhysics->BulletInfo ;
 
 	if( pPhysics->Base->RigidBodyType == 0 || pPhysics->NoCopyToBone || Reset )
 	{
-		D_btTransform temp ;
+		btTransform temp ;
 
-		temp.setFromOpenGLMatrix( ( D_btScalar * )&pPhysics->Bone->LocalWorldMatrix ) ;
+		temp.setFromOpenGLMatrix( ( btScalar * )&pPhysics->Bone->LocalWorldMatrix ) ;
 		pbtMotionState->GraphicsWorldTrans = temp * BulletRigidBodyInfo->bttrBoneOffset ;
 	}
 /*	else
 	{
-		D_btTransform temp2 ;
+		btTransform temp2 ;
 
 		temp2 = GraphicsWorldTrans * InvBoneOffset ;
 
-		temp2.getOpenGLMatrix( ( D_btScalar * )&pPhysics->Bone->LocalWorldMatrix ) ;
+		temp2.getOpenGLMatrix( ( btScalar * )&pPhysics->Bone->LocalWorldMatrix ) ;
 	}
 */
 }
 
 // モデルの剛体にボーンの状態を反映する関数
-static void Model_PhysicsMotionState_Flush( D_btKinematicMotionState *pbtMotionState, MV1_PHYSICS_RIGIDBODY *pRigidBody )
+static void Model_PhysicsMotionState_Flush( btKinematicMotionState *pbtMotionState, MV1_PHYSICS_RIGIDBODY *pRigidBody )
 {
 	BULLET_RIGIDBODY_INFO *BulletRigidBodyInfo = ( BULLET_RIGIDBODY_INFO * )pRigidBody->BulletInfo ;
 	MATRIX tempMatrix ;
 
 	if( pRigidBody->BaseData->RigidBodyType == 0 || pRigidBody->BaseData->NoCopyToBone )
 	{
-		D_btTransform temp ;
+		btTransform temp ;
 
 		ConvertMatrix4x4cToMatrixF( &tempMatrix, &pRigidBody->TargetFrame->LocalWorldMatrix ) ;
-		temp.setFromOpenGLMatrix( ( D_btScalar * )&tempMatrix ) ;
+		temp.setFromOpenGLMatrix( ( btScalar * )&tempMatrix ) ;
 		pbtMotionState->GraphicsWorldTrans = temp * BulletRigidBodyInfo->bttrBoneOffset ;
 	}
 /*	else
 	{
-		D_btTransform temp2 ;
+		btTransform temp2 ;
 
 		temp2 = GraphicsWorldTrans * InvBoneOffset ;
 
-		temp2.getOpenGLMatrix( ( D_btScalar * )&pPhysics->Bone->LocalWorldMatrix ) ;
+		temp2.getOpenGLMatrix( ( btScalar * )&pPhysics->Bone->LocalWorldMatrix ) ;
 	}
 */
 }
@@ -777,7 +777,7 @@ extern int SetWorldGravity_ModelPhysiceInfo( MV1_MODEL *Model, VECTOR Gravity )
 {
 	BULLET_PHYSICS *Bullet = ( BULLET_PHYSICS * )Model->BulletPhysicsDataBuffer ;
 
-	Bullet->World->setGravity( D_btVector3( Gravity.x, Gravity.y, Gravity.z ) ) ;
+	Bullet->World->setGravity( btVector3( Gravity.x, Gravity.y, Gravity.z ) ) ;
 
 	// 終了
 	return 0 ;
