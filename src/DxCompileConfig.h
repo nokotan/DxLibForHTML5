@@ -79,7 +79,7 @@
 // #define DX_NON_GRAPHICS
 
 // ソフトウエア２Ｄ描画がいらない方は次のコメントを外してください
-#define DX_NON_2DDRAW
+// #define DX_NON_2DDRAW
 
 // 標準 WAVE ファイル以外の音声ファイルを使用しない方は次のコメントを外してください
 //#define DX_NON_ACM

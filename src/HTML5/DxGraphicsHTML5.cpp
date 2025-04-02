@@ -7571,6 +7571,11 @@ extern	int		Graphics_HTML5_RenderVertex( int NextUse3DVertex, int ASyncThread )
 
 			// 描画
 			glDrawArrays( GHTML5.Device.DrawInfo.PrimitiveType, 0, GHTML5.Device.DrawInfo.VertexNum );
+		#ifdef PROXY_TO_PTHREAD
+			// OFFSCREEN_FRAMEBUFFER と併用する場合は、glDrawArrays が描画スレッドとの同期を取らないので、
+			// 明示的に glFlush() を呼んで、同期をとる必要がある (パフォーマンス的な問題は要調査)
+			glFlush();
+		#endif
 			GSYS.PerformanceInfo.NowFrameDrawCallCount ++ ;
 		}
 	}

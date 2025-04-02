@@ -290,7 +290,7 @@ extern int FontCacheCharAddToHandle_Timing1_PF( FONTMANAGE *ManageData, FONTCHAR
                 0,
                 0,
                 0,
-                FontData.AdvanceX, 
+                Space * ManageData->BaseInfo.FontSize / 2,
                 FALSE
             );
         } else {
