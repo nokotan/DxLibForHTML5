@@ -48,14 +48,14 @@ extern void	_SET_DEFAULT_CHARCODEFORMAT( void )
 
 extern char *_GETCWD( char *Buffer, size_t BufferBytes )
 {
-	ConvString( ( const char * )L"", -1, HTML5_WCHAR_CHARCODEFORMAT, Buffer, BufferBytes, CHAR_CHARCODEFORMAT ) ;
+	ConvString( ( const char * )L"/", -1, HTML5_WCHAR_CHARCODEFORMAT, Buffer, BufferBytes, CHAR_CHARCODEFORMAT ) ;
 
 	return Buffer ;
 }
 
 extern wchar_t *_WGETCWD( wchar_t *Buffer, size_t BufferBytes )
 {
-	ConvString( ( const char * )L"", -1, HTML5_WCHAR_CHARCODEFORMAT, ( char * )Buffer, BufferBytes, WCHAR_T_CHARCODEFORMAT ) ;
+	ConvString( ( const char * )L"/", -1, HTML5_WCHAR_CHARCODEFORMAT, ( char * )Buffer, BufferBytes, WCHAR_T_CHARCODEFORMAT ) ;
 
 	return Buffer ;
 }

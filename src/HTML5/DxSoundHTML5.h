@@ -138,8 +138,6 @@ extern	void	SoundSystem_HTML5_SetALDeviceAndALContext( void *ALCDevice, void *AL
 // 再生中の ALBuffer を再作成して再再生する
 extern	void	SoundSystem_HTML5_ALBuffer_RePlay( void ) ;
 
-extern	int		UpdateSound_PF( void ) ;
-
 
 #ifndef DX_NON_NAMESPACE
 

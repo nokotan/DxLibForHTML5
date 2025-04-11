@@ -846,11 +846,13 @@ extern int NS_ProcessMessage( void )
 		ProcessPlayFinishDeleteSoundMemAll() ;
 //		SoundBuffer_Apply_StopSoundBufferList() ;
 //		ProcessPlay3DSoundMemAll() ;
-		UpdateSound_PF();
 	}
 #endif // DX_NON_SOUND
 
 #ifndef DX_NON_ASYNCLOAD
+	// 削除リクエストが来ているハンドルを削除する
+	DeleteRequestHandleDelete( FALSE ) ;
+
 	// メインスレッドが処理する非同期読み込みの処理を行う
 	ProcessASyncLoadRequestMainThread() ;
 #endif // DX_NON_ASYNCLOAD
