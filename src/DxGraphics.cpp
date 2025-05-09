@@ -20523,13 +20523,13 @@ extern int SaveDrawScreen_WCHAR_T( int x1, int y1, int x2, int y2, const wchar_t
 	switch( SaveType )
 	{
 	case DX_IMAGESAVETYPE_JPEG:
-#ifndef DX_NON_JPEGREAD
+#if !defined(DX_NON_JPEGREAD) || defined(EMSCRIPTEN)
 		SaveBaseImageToJpeg_WCHAR_T( FileName, UseBaseImage, Jpeg_Quality, Jpeg_Sample2x1 );
 #endif
 		break;
 
 	case DX_IMAGESAVETYPE_PNG:
-#ifndef DX_NON_PNGREAD
+#if !defined(DX_NON_PNGREAD) || defined(EMSCRIPTEN)
 		SaveBaseImageToPng_WCHAR_T( FileName, UseBaseImage, Png_CompressionLevel );
 #endif
 		break;

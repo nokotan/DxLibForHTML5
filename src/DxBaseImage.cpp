@@ -40,6 +40,10 @@
     #endif // TARGET_OS_IPHONE
 #endif // __APPLE__
 
+#ifdef EMSCRIPTEN
+#include "HTML5/DxBaseImageHTML5.h"
+#endif // EMSCRIPTEN
+
 
 
 
@@ -999,6 +1003,12 @@ extern int NS_SaveBaseImageToJpeg( const TCHAR *pFilePath, BASEIMAGE *BaseImage,
 #else
 	return SaveBaseImageToJpegBase( NULL, pFilePath, BaseImage, Quality, Sample2x1 ) ;
 #endif
+#elif defined(EMSCRIPTEN)
+#ifdef UNICODE
+	return SaveBaseImage( ( const char * )pFilePath, NULL, BaseImage, DX_IMAGESAVETYPE_JPEG, Quality ) ;
+#else
+	return SaveBaseImage( NULL, pFilePath, BaseImage, DX_IMAGESAVETYPE_JPEG, Quality ) ;
+#endif
 #else
 	return -1 ;
 #endif
@@ -1017,6 +1027,16 @@ extern int NS_SaveBaseImageToJpegWithStrLen( const TCHAR *FilePath, size_t FileP
 #endif
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FilePath )
 	return Result ;
+#elif defined(EMSCRIPTEN)
+	int Result ;
+	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FilePath, FilePathLength, return -1 )
+#ifdef UNICODE
+	Result = SaveBaseImage( ( const char * )UseFilePathBuffer, NULL, BaseImage,  DX_IMAGESAVETYPE_JPEG, Quality ) ;
+#else
+	Result = SaveBaseImage( NULL, UseFilePathBuffer, BaseImage,  DX_IMAGESAVETYPE_JPEG, Quality) ;
+#endif
+	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FilePath )
+	return Result ;
 #else
 	return -1 ;
 #endif
@@ -1026,6 +1046,8 @@ extern int SaveBaseImageToJpeg_WCHAR_T( const wchar_t *pFilePath, BASEIMAGE *Bas
 {
 #ifndef DX_NON_JPEGREAD
 	return SaveBaseImageToJpegBase( ( const char * )pFilePath, NULL, BaseImage, Quality, Sample2x1 ) ;
+#elif defined(EMSCRIPTEN)
+	return SaveBaseImage( ( const char * )pFilePath, NULL, BaseImage, DX_IMAGESAVETYPE_JPEG, Quality ) ;
 #else
 	return -1 ;
 #endif
@@ -1038,6 +1060,12 @@ extern int NS_SaveBaseImageToPng( const TCHAR *pFilePath, BASEIMAGE *BaseImage, 
 	return SaveBaseImageToPngBase( ( const char * )pFilePath, NULL, BaseImage, CompressionLevel ) ;
 #else
 	return SaveBaseImageToPngBase( NULL, pFilePath, BaseImage, CompressionLevel ) ;
+#endif
+#elif defined(EMSCRIPTEN)
+#ifdef UNICODE
+	return SaveBaseImage( ( const char * )pFilePath, NULL, BaseImage, DX_IMAGESAVETYPE_PNG, CompressionLevel ) ;
+#else
+	return SaveBaseImage( NULL, pFilePath, BaseImage, DX_IMAGESAVETYPE_PNG, CompressionLevel ) ;
 #endif
 #else
 	return -1 ;
@@ -1057,6 +1085,16 @@ extern int NS_SaveBaseImageToPngWithStrLen( const TCHAR *FilePath, size_t FilePa
 #endif
 	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FilePath )
 	return Result ;
+#elif defined(EMSCRIPTEN)
+	int Result ;
+	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_ONE_BEGIN( FilePath, FilePathLength, return -1 )
+#ifdef UNICODE
+	Result = SaveBaseImage( ( const char * )UseFilePathBuffer, NULL, BaseImage,  DX_IMAGESAVETYPE_PNG, CompressionLevel ) ;
+#else
+	Result = SaveBaseImage( NULL, UseFilePathBuffer, BaseImage,  DX_IMAGESAVETYPE_PNG, CompressionLevel) ;
+#endif
+	TCHAR_STRING_WITH_STRLEN_TO_TCHAR_STRING_END( FilePath )
+	return Result ;
 #else
 	return -1 ;
 #endif
@@ -1066,6 +1104,8 @@ extern int SaveBaseImageToPng_WCHAR_T( const wchar_t *pFilePath, BASEIMAGE *Base
 {
 #ifndef DX_NON_PNGREAD
 	return SaveBaseImageToPngBase( ( const char * )pFilePath, NULL, BaseImage, CompressionLevel ) ;
+#elif defined(EMSCRIPTEN)
+	return SaveBaseImage( ( const char * )pFilePath, NULL, BaseImage, DX_IMAGESAVETYPE_PNG, CompressionLevel ) ;
 #else
 	return -1 ;
 #endif

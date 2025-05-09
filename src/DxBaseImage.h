@@ -188,10 +188,10 @@ extern	int		ReadJpegExif_WCHAR_T(                  const wchar_t *FilePath, cons
 
 extern	int		SaveBaseImageToBmp_WCHAR_T(            const wchar_t *FilePath, const BASEIMAGE *BaseImage ) ;
 extern	int		SaveBaseImageToDds_WCHAR_T(            const wchar_t *FilePath, const BASEIMAGE *BaseImage, int CubeMapFlag = FALSE , int MipMapCount = 1 ) ;
-#ifndef DX_NON_PNGREAD
+#if !defined(DX_NON_PNGREAD) || defined(EMSCRIPTEN)
 extern	int		SaveBaseImageToPng_WCHAR_T(            const wchar_t *FilePath,       BASEIMAGE *BaseImage, int CompressionLevel ) ;
 #endif // DX_NON_PNGREAD
-#ifndef DX_NON_JPEGREAD
+#if !defined(DX_NON_JPEGREAD) || defined(EMSCRIPTEN)
 extern	int		SaveBaseImageToJpeg_WCHAR_T(           const wchar_t *FilePath,       BASEIMAGE *BaseImage, int Quality, int Sample2x1 ) ;
 #endif // DX_NON_JPEGREAD
 

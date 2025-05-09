@@ -16,6 +16,8 @@
 #include "../DxStatic.h"
 #include "../DxMemory.h"
 #include "../DxBaseFunc.h"
+#include "../DxFile.h"
+#include "../DxChar.h"
 
 #include <emscripten.h>
 #include <emscripten/threading.h>
@@ -41,6 +43,18 @@ typedef struct tagDECODEDIMAGE
 	int Width;
 	int Height;
 } DECODEDIMAGE;
+
+typedef struct tagENCODEDIMAGE
+{
+	BYTE* SrcImage;
+	int SrcLength;
+	BYTE* EncodedImage;
+	int Length;
+	int Width;
+	int Height;
+	int ImageSaveType;
+	float Quality;
+} ENCODEDIMAGE;
 
 // 関数宣言 -------------------------------------------------------------------
 
@@ -117,7 +131,7 @@ EM_JS(void, DecodeImage, (DECODEDIMAGE* Decoded),
 );
 
 // 環境依存初期化・終了関数
-int DecodeImageOnBrowser(DECODEDIMAGE* Decoded) {
+static int DecodeImageOnBrowser(DECODEDIMAGE* Decoded) {
 
 #ifdef ASYNCIFY
 	DecodeImage(Decoded);
@@ -213,6 +227,149 @@ static int LoadImageFromBrowser(STREAMDATA *Stream, BASEIMAGE *BaseImage, int Ge
 ERR:
 	DXFREE(ImageData);
 
+	return -1;
+}
+
+#ifdef PROXY_TO_PTHREAD
+EM_JS(void, EncodeImage, (em_proxying_ctx* ctx, void* Encoded),
+#else
+EM_JS(void, EncodeImage, (DECODEDIMAGE* Encoded),
+#endif
+	{
+		function EncodeImageImpl(wakeUp) {
+			if (!Module["encodeCanvas"]) {
+				Module["encodeCanvas"] = document.createElement('canvas');
+				Module["encodeContext"] = Module["encodeCanvas"].getContext("2d");
+			}
+
+			const Src = HEAPU32[(Encoded>>2)+0];
+			const Size = HEAPU32[(Encoded>>2)+1];
+			const rawImageData = new Uint8ClampedArray(HEAPU8.buffer, Src, Size);
+			const width = HEAPU32[(Encoded>>2)+4];
+			const height = HEAPU32[(Encoded>>2)+5];
+
+			const imageSaveType = HEAPU32[(Encoded>>2)+6];
+			const quality = HEAPF32[(Encoded>>2)+7];
+		
+			const imageData = new ImageData(width, height);
+			imageData.data.set(rawImageData);
+
+			Module["encodeCanvas"].width = width;
+			Module["encodeCanvas"].height = height;
+			Module["encodeContext"].putImageData(imageData, 0, 0);
+
+			Module["encodeCanvas"].toBlob(
+				async function(blob) {
+					const encodedImageData = await blob.arrayBuffer();
+					const encodedImageDataView = new Uint8Array(encodedImageData);
+
+					const dataBuffer = _malloc(encodedImageDataView.byteLength);
+					HEAPU8.set(encodedImageDataView, dataBuffer);
+
+					HEAPU32[(Encoded>>2)+2] = dataBuffer;
+					HEAPU32[(Encoded>>2)+3] = encodedImageDataView.byteLength;
+
+					wakeUp();
+				},
+				imageSaveType == 1 ? "image/jpeg" : "image/png",
+				quality
+			);
+		}
+
+#ifdef ASYNCIFY
+		return Asyncify.handleSleep(DecodeImageImpl);
+#elif defined(PROXY_TO_PTHREAD)
+		EncodeImageImpl(function() {
+			_emscripten_proxy_finish(ctx);
+		});
+#endif
+	}
+);
+
+static int EncodeImageOnBrowser(ENCODEDIMAGE* Encoded) {
+
+#ifdef ASYNCIFY
+	EncodeImage(Encoded);
+#elif defined(PROXY_TO_PTHREAD)
+	auto defaultQueue = emscripten_proxy_get_system_queue();
+	emscripten_proxy_sync_with_ctx(
+		defaultQueue,
+		emscripten_main_runtime_thread_id(),
+		&EncodeImage,
+		(void*)Encoded);
+#endif
+
+	return (Encoded->EncodedImage != NULL ? 0 : -1);
+}
+
+extern int SaveBaseImage(const char *pFilePathW, const char *pFilePathA, BASEIMAGE *BaseImage, int ImageSaveType, double Quality)
+{
+	DWORD_PTR fp ;
+	char*  buffer = NULL ;
+	char*  sample;
+	int r, g, b, a, i, j;
+	ENCODEDIMAGE EncodedImage;
+
+	// 保存用のファイルを開く
+	if( pFilePathW )
+	{
+		fp = WriteOnlyFileAccessOpenWCHAR( pFilePathW ) ;
+	}
+	else
+	{
+		char TempBuffer[ 1024 ] ;
+
+		ConvString( pFilePathA, -1, CHAR_CHARCODEFORMAT, TempBuffer, sizeof( TempBuffer ), WCHAR_T_CHARCODEFORMAT ) ;
+		fp = WriteOnlyFileAccessOpenWCHAR( TempBuffer ) ;
+	}
+	if( fp == 0 ) return -1;
+
+	// 圧縮用データの用意
+	{
+		// バッファの確保
+		buffer = (char*)DXALLOC( sizeof( char* ) * BaseImage->Width * BaseImage->Height );
+		if( buffer == NULL ) goto ERR;
+		_MEMSET( buffer, 0, sizeof( char* ) * BaseImage->Width * BaseImage->Height );
+		sample = buffer;
+		for( i = 0; i < BaseImage->Height; i++ )
+		{
+			for( j = 0; j < BaseImage->Width; j ++, sample += 4 )
+			{
+				NS_GetPixelBaseImage( BaseImage, j, i, &r, &g, &b, &a );
+				sample[0] = (char)r;
+				sample[1] = (char)g;
+				sample[2] = (char)b;
+				sample[3] = (char)a;
+			}		
+		}
+	}
+
+	{
+		EncodedImage.SrcImage = (BYTE*)buffer;
+		EncodedImage.SrcLength = BaseImage->Width * BaseImage->Height * 4;
+		EncodedImage.Width = BaseImage->Width;
+		EncodedImage.Height = BaseImage->Height;
+		EncodedImage.ImageSaveType = ImageSaveType;
+		EncodedImage.Quality = (float)Quality;
+
+		if( EncodeImageOnBrowser(&EncodedImage) == -1 ) goto ERR ;
+		
+		WriteOnlyFileAccessWrite( fp, EncodedImage.EncodedImage, EncodedImage.Length ) ;
+		free( EncodedImage.EncodedImage );
+	}
+
+	if( buffer )
+	{		
+		DXFREE( buffer );
+	}
+	if( fp ) WriteOnlyFileAccessClose( fp );
+	return 0;
+ERR:
+	if( buffer )
+	{		
+		DXFREE( buffer );
+	}
+	if( fp ) WriteOnlyFileAccessClose( fp );
 	return -1;
 }
 

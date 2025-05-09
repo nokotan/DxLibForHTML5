@@ -28,6 +28,8 @@ namespace DxLib
 
 // 関数プロトタイプ宣言-----------------------------------------------------------
 
+extern int SaveBaseImage(const char *pFilePathW, const char *pFilePathA, BASEIMAGE *BaseImage, int ImageSaveType, double Quality);
+
 #ifndef DX_NON_NAMESPACE
 
 }
